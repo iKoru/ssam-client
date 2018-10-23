@@ -35,5 +35,5 @@ Vue.use(Vuetify, {
     warning: '#FFC107'
   },
   customProperties: true,
-  iconfont: 'mdi',
+  iconfont: 'mdi'
 })
