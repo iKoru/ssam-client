@@ -2,17 +2,53 @@
   <!-- bidirectional data binding（双向数据绑定） -->
   <div>
     <editor/>
-    <survey-maker/>
+    <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
+      <v-btn v-if="!surveyJSON" slot="activator" color="default">설문조사</v-btn>
+      <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
+    </v-dialog>
+    <div v-if="surveyJSON">
+      설문조사가 추가되었습니다.
+      <v-btn @click="openSurvey">확인하기</v-btn>
+    </div>
+    <div>viewer
+      {{surveyJSON}}
+      <survey :surveyJSON="surveyJSON"/>
+    </div>
   </div>
 </template>
 
 <script>
 import Editor from '@/components/Editor'
+import QuestionMaker from '@/components/QuestionMaker'
 import SurveyMaker from '@/components/SurveyMaker'
+import Survey from '@/components/Survey'
 export default {
   components: {
     Editor,
-    SurveyMaker
+    QuestionMaker,
+    SurveyMaker,
+    Survey
+  },
+  data () {
+    return {
+      surveyJSON: undefined,
+      surveyDialog: false,
+      currentSurvey: { questions: [] }
+    }
+  },
+  methods: {
+    extractSurvey (surveyJSON) {
+      console.log(surveyJSON)
+      this.surveyJSON = surveyJSON
+      this.surveyDialog = false
+    },
+    openSurvey () {
+      this.currentSurvey = JSON.parse(this.surveyJSON)
+      this.surveyDialog = true
+    },
+    closeSurvey () {
+      this.surveyDialog = false
+    }
   }
 }
 </script>
