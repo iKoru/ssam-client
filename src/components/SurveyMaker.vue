@@ -26,7 +26,7 @@
                   <v-btn class="btn-xs" fab @click="deleteQuestion(index)">삭제</v-btn>
                 </v-layout>
                 <v-flex xs12 mx-3>
-                  <vue-poll :questionNumber="item.questionNumber" :key="'poll'+index" :optionCount="item.optionCount" :question="item.question" :answers="item.answers" :multiple="false" :selectable=false :finalResults=false />
+                  <vue-poll :questionNumber="item.questionNumber" :key="'poll'+index" :allowMultiple="item.allowMultiple" :question="item.question" :answers="item.answers" :multiple="false" :selectable=false :finalResults=false />
                 </v-flex>
               </v-layout>
               <v-layout row :key="index">
@@ -78,7 +78,7 @@ export default {
           { text: '', selected: false },
           { text: '', selected: false }
         ],
-        optionCount: 1
+        allowMultiple: false
       }
     },
     modifyQuestion (index) {

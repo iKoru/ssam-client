@@ -2,10 +2,17 @@
 <v-layout row>
     <v-btn @click="doSurvey">시행</v-btn>
     <v-flex v-if="survey">
-        <v-card :key="index" v-for="(item, index) in survey">
-            <vue-poll @addVote="addvote" :questionNumber="item.questionNumber" :question="item.question" :optionCount="item.optionCount" :answers="item.answers" :multiple="true" :selectable='true' :finalResults='surveyCompleted' />
-        </v-card>
-        <v-btn @click="completeSurvey">
+        <template v-for="(item, index) in survey">
+          <v-layout row wrap :key="index" style="position:relative" >
+            <v-flex xs12 mx-3>
+              <vue-poll @answerSelected="answerSelected" :questionNumber="item.questionNumber" :question="item.question" :allowMultiple="item.allowMultiple" :answers="item.answers" :multiple="true" :selectable='true' :finalResults="finalResults"/>
+            </v-flex>
+          </v-layout>
+          <v-layout row :key="'devider'+index">
+          <v-divider v-if="index + 1 < survey.length" :key="`divider-${index}`"></v-divider>
+          </v-layout>
+        </template>
+        <v-btn v-if="surveyCompleted" @click="completeSurvey">
             제출하기
         </v-btn>
     </v-flex>
@@ -23,7 +30,9 @@ export default {
   data () {
     return {
       survey: undefined,
-      surveyCompleted: false
+      completedQuestionNumber: [],
+      surveyCompleted: false,
+      finalResults: false
     }
   },
   methods: {
@@ -33,18 +42,42 @@ export default {
     },
     completeSurvey () {
       this.handleSurveyResult()
-      this.surveyCompleted = true
     },
     handleSurveyResult () {
+      // to server
+      if (confirm('yes')) {
+        this.finalResults = true
+      } else {
+        this.finalResults = false
+      }
     },
     addvote (votedObject) {
       console.log(votedObject)
+    },
+    answerSelected (res) {
+      if (res[1]) {
+        if (!this.completedQuestionNumber.includes(res[0])) {
+          this.completedQuestionNumber.push(res[0])
+        }
+      } else {
+        if (this.completedQuestionNumber.includes(res[0])) {
+          this.completedQuestionNumber = this.completedQuestionNumber.filter(function (no) { return no !== res[0] })
+        }
+      }
+      console.log(this.completedQuestionNumber)
     }
   },
   mounted () {
     // this.survey = JSON.parse(this.surveyJSON)
   },
   watch: {
+    completedQuestionNumber: function (to) {
+      if (to.length == this.survey.length) {
+        this.surveyCompleted = true
+      } else {
+        this.surveyCompleted = false
+      }
+    }
   }
 }
 </script>

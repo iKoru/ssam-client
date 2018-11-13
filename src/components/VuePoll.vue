@@ -3,7 +3,6 @@
         <h3 class="qst" v-html="question"></h3>
         <div class="ans-cnt">
             <div v-for="(a,index) in calcAnswers" :key="index" :class="{ ans: true, [a.custom_class]: (a.custom_class) }">
-
                 <template v-if="!finalResults">
 
                     <div v-if="!visibleResults" :class="{ 'ans-no-vote noselect': true, active: a.selected }" @click.prevent="handleVote(a)" >
@@ -27,10 +26,7 @@
             </div>
         </div>
         <div class="votes" v-if="showTotalVotes && (visibleResults || finalResults)" v-text="totalVotesFormatted + ' votes'"></div>
-        <h5 v-if="optionCount>1" class="float-right">{{optionCount}}개 선택해주세요.</h5>
-        <template v-if="!finalResults && !visibleResults && multiple && totalSelections > 0">
-             <a href="#" @click.prevent="handleMultiple" class="submit" v-text="submitButtonText"></a>
-        </template>
+        <h5 v-if="allowMultiple" class="float-right">복수응답</h5>
     </div>
 </template>
 
@@ -39,13 +35,17 @@
 export default{
   name: 'Poll',
   props: {
+    questionCompleted: {
+      type: Boolean,
+      default: false
+    },
     questionNumber: {
       type: Number,
       required: true
     },
-    optionCount: {
-      type: Number,
-      default: 1
+    allowMultiple: {
+      type: Boolean,
+      default: false
     },
     selectable: {
       type: Boolean,
@@ -128,12 +128,22 @@ export default{
       return this.calcAnswers.filter(a => a.selected).length
     }
   },
+  watch: {
+    questionCompleted: function (to, from) {
+      if (!this.finishSurvey()) {
+        this.$emit('surveyNotCompleted', this.questionNumber)
+      }
+    }
+  },
   methods: {
+    initSelectedAnswer () {
+      this.answers.forEach(function (answer) {
+        answer.selected = false
+      })
+    },
     finishSurvey () {
-      console.log(this.totalSelections, this.optionCount)
-      if(this.totalSelections != this.optionCount) {
-        alert('응답을 마쳐주세요')
-        return
+      if (this.totalSelections === 0) {
+        return false
       }
       this.handleMultiple()
       this.finalResults = true
@@ -163,15 +173,17 @@ export default{
       }
       if (this.multiple) {
         if (a.selected === undefined) { console.log("Please add 'selected: false' on the answer object") }
-        console.log(this.totalSelections)
-        if (a.selected) {
-          a.selected = !a.selected
-        } else {
-          if (this.totalSelections + 1 > this.optionCount) {
-            alert(this.optionCount + '개 선택가능합니다.')
-          } else {
-            a.selected = !a.selected
+        if (!this.allowMultiple && this.totalSelections === 1) {
+          if (!a.selected) {
+            this.initSelectedAnswer()
           }
+        }
+        a.selected = !a.selected
+        // if selected any answer, alert Answered
+        if (this.totalSelections > 0) {
+          this.$emit('answerSelected', [this.questionNumber, true])
+        } else {
+          this.$emit('answerSelected', [this.questionNumber, false])
         }
       }
 

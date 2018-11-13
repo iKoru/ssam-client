@@ -20,7 +20,7 @@
               </v-text-field>
             </v-subheader>
           <v-list-tile height="20px" :key='index' v-for="(item, index) in question.answers">
-            {{index+1}})&nbsp;
+            &nbsp; &nbsp;
             <v-text-field
                     color="indigo"
                     height="18px"
@@ -32,17 +32,8 @@
             <!-- <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title> -->
           </v-list-tile>
             <v-layout row class="ml-3 mr-3" style="height: 36px">
-              <v-checkbox class="mr-1 my-auto mb-0" v-model="selectMultipleOptionCounts" label="복수응답가능" value="multiple">
+              <v-checkbox class="mr-1 my-auto mb-0" v-model="question.allowMultiple" label="복수응답가능">
               </v-checkbox>
-              <v-select
-                height="20px"
-                class="v-select-z-index"
-                v-if="selectMultipleOptionCounts"
-                :items="multipleOptionCounts"
-                v-model="question.optionCount"
-                type="number"
-                label="응답갯수"
-              ></v-select>
             </v-layout>
             <v-spacer/>
         </v-list>
@@ -59,9 +50,7 @@ export default {
   props: ['editingQuestion', 'modifyingIndex'],
   data () {
     return {
-      question: undefined,
-      selectMultipleOptionCounts: false,
-      multipleOptionCounts: [2]
+      question: undefined
     }
   },
   components: {
@@ -75,7 +64,7 @@ export default {
           { text: '', selected: false },
           { text: '', selected: false }
         ],
-        optionCount: 1
+        allowMultiple: false
       }
     }
   },
@@ -117,42 +106,17 @@ export default {
         alert('두 개 이상의 응답을 입력하세요.')
         return false
       }
-
-      if (this.selectMultipleOptionCounts) {
-        if (this.question.optionCount < 2) {
-          alert('복수 응답 갯수를 입력하세요.')
-          return
-        }
-      }
-
-      let answerValid = true
-      this.question.answers.some(answer => {
-        if (answer.text.length < 1) {
-          answerValid = false
-        }
+      this.question.answers = this.question.answers.filter(function (item) {
+        return item.text.length > 0
       })
-      if (!answerValid) {
-        alert('응답을 입력해주세요')
-      }
-      return answerValid
+      if (this.question.answers.length < 2) return false
+      return true
     }
   },
   watch: {
     editingQuestion (to, from) {
       console.log(to, from)
       this.question = to
-    },
-    question: {
-      handler (val) {
-        console.log(val)
-        let cnt = this.question.answers.length
-        let cntArray = []
-        for (let i = 1; i < cnt - 1; i++) {
-          cntArray.push(i + 1)
-        }
-        this.multipleOptionCounts = cntArray
-      },
-      deep: true
     }
   }
 }

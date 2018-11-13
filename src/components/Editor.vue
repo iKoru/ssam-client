@@ -1,13 +1,12 @@
 <template>
     <div>
         <quill-editor v-model="content"
-                    ref="myQuillEditor"
+                    ref="editor"
                     :options="editorOption"
                     @blur="onEditorBlur($event)"
                     @focus="onEditorFocus($event)"
                     @ready="onEditorReady($event)">
         </quill-editor>
-        <v-btn class="success" @click="saveLocal()">Save(local)</v-btn>
         <div>
             <div id="boardView" v-if="savedContent" v-html="savedContent">
             </div>
@@ -15,14 +14,31 @@
             <link-prevue v-if="link" :linkUrl="link">
             </link-prevue>
         </div>
+        <v-btn class="success" @click="post()">업로드테스트</v-btn>
+        <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/>
+        <attachment/>
     </div>
 </template>
 <script>
 
+// Import FilePond
+import vueFilePond from 'vue-filepond'
+
+// Import plugins
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
+
 import LinkPrevue from '@/components/LinkPrevue'
+import ImageAttachment from '@/components/ImageAttachment.vue'
+import Attachment from '@/components/Attachment'
+
+// Create FilePond component
+const ImageFilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
 export default {
   components: {
-    LinkPrevue
+    LinkPrevue,
+    Attachment,
+    ImageAttachment
   },
   data () {
     return {
@@ -31,22 +47,29 @@ export default {
       content: '',
       editorOption: {
         modules: {
-          toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            ['blockquote', 'code-block'],
-            [{ 'header': 1 }, { 'header': 2 }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'script': 'sub' }, { 'script': 'super' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'direction': 'rtl' }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'font': [] }],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'align': [] }],
-            ['clean'],
-            ['link', 'image', 'video']
-          ],
+          toolbar: {
+            container: [
+              ['bold', 'italic', 'underline', 'strike'],
+              ['blockquote', 'code-block'],
+              [{ 'header': 1 }, { 'header': 2 }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],
+              [{ 'indent': '-1' }, { 'indent': '+1' }],
+              [{ 'direction': 'rtl' }],
+              [{ 'size': ['small', false, 'large', 'huge'] }],
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              [{ 'font': [] }],
+              [{ 'color': [] }, { 'background': [] }],
+              [{ 'align': [] }],
+              ['clean'],
+              ['link', 'image', 'video']
+            ],
+            handlers: {
+              'image': function () {
+                attachImage()
+              }
+            }
+          },
           imageDrop: true,
           imageResize: true
         }
@@ -69,13 +92,22 @@ export default {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
-    saveLocal () {
+    post () {
       this.savedContent = localStorage.item = this.content
+      this.attachImage();
+      // post with saved imagefiles / files
+    },
+    attachImage() {
+      let fileImages = this.$refs.editor.quill.container.querySelectorAll('img')
+      this.$refs.imageAttachment.addImages(fileImages)
+    },
+    imageAttached () {
+      console.log('done image')
     }
   },
   computed: {
     editor () {
-      return this.$refs.myQuillEditor.quill
+      return this.$refs.editor.quill
     }
   },
   watch: {
