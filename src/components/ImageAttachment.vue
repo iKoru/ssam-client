@@ -25,7 +25,7 @@ import vueFilePond from 'vue-filepond'
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
-import FilePondPluginFileRename from 'filepond-plugin-file-rename';
+import FilePondPluginFileRename from 'filepond-plugin-file-rename'
 
 // Create FilePond component
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileRename)
@@ -35,7 +35,7 @@ export default {
     return {
       files: [],
       server: {},
-      imgExtension: '',
+      imgExtension: ''
     }
   },
   methods: {
@@ -48,7 +48,6 @@ export default {
     handleProcessFile: function () {
       this.$refs.pond.processFiles().then(files => {
         console.log(files)
-        
       })
     },
     handleProcessFileStart: function () {
@@ -68,14 +67,14 @@ export default {
       images.forEach((image, index) => {
         let src = image.src
         pond.addFile(src).then(res => {
-          if(index == images.length -1) {
+          if (index == images.length - 1) {
             this.$emit('imageAttached')
           }
         })
       })
-      //quill 에서 받아서 임베드로 대체하기(임베드에 어떤거 들어갈지 정해지면)
-      //툴바로 업로드했을때도 동일하게 처리하기  -할 필요 없음 어차피 다르게 됨(업로드시에 보낼거임)
-      //임베드로 뭘로 박을지되면, 설문조사 툴바로 만들기 해보기
+      // quill 에서 받아서 임베드로 대체하기(임베드에 어떤거 들어갈지 정해지면)
+      // 툴바로 업로드했을때도 동일하게 처리하기  -할 필요 없음 어차피 다르게 됨(업로드시에 보낼거임)
+      // 임베드로 뭘로 박을지되면, 설문조사 툴바로 만들기 해보기
     },
     renameFile: function (file) {
       // unique id

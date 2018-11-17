@@ -3,12 +3,8 @@
   <div>
     <editor/>
     <!-- <attachment/> -->
-    <div>
-      설문조사 테스트<br>
-      <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
-        <v-btn v-if="!surveyJSON" slot="activator" color="default">설문조사</v-btn>
-        <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
-      </v-dialog>
+    <!-- <div>
+      
       <div v-if="surveyJSON">
         설문조사가 추가되었습니다.
         <v-btn @click="openSurvey">확인하기</v-btn>
@@ -17,7 +13,7 @@
         {{surveyJSON}}
         <survey :surveyJSON="surveyJSON"/>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

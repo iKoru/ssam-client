@@ -17,6 +17,19 @@
         <v-btn class="success" @click="post()">업로드테스트</v-btn>
         <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/>
         <attachment/>
+
+        <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
+          <v-btn v-if="!surveyJSON" slot="activator" color="default">설문조사</v-btn>
+          <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
+        </v-dialog>
+        <div v-if="surveyJSON">설문조사가 추가되었습니다.
+            <v-btn class="primary" @click="surveyDialog = true">설문확인</v-btn>
+          <!-- <v-btn @click="openSurvey">확인하기</v-btn> -->
+        </div>
+        <!-- <div>viewer
+          {{surveyJSON}}
+          <survey :surveyJSON="surveyJSON"/>
+        </div> -->
     </div>
 </template>
 <script>
@@ -27,24 +40,31 @@ import vueFilePond from 'vue-filepond'
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
-
+import Survey from '@/components/Survey'
+import SurveyMaker from '@/components/SurveyMaker'
 import LinkPrevue from '@/components/LinkPrevue'
 import ImageAttachment from '@/components/ImageAttachment.vue'
 import Attachment from '@/components/Attachment'
-
+import Vue from 'vue'
 // Create FilePond component
 const ImageFilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
+var EventBus = new Vue()
 export default {
   components: {
     LinkPrevue,
     Attachment,
-    ImageAttachment
+    ImageAttachment,
+    SurveyMaker,
+    Survey
   },
   data () {
     return {
       savedContent: undefined,
       link: undefined,
       content: '',
+      surveyJSON: undefined,
+      surveyDialog: false,
+      currentSurvey: { questions: [] },
       editorOption: {
         modules: {
           toolbar: {
@@ -62,11 +82,11 @@ export default {
               [{ 'color': [] }, { 'background': [] }],
               [{ 'align': [] }],
               ['clean'],
-              ['link', 'image', 'video']
+              ['image', 'video', 'poll']
             ],
             handlers: {
-              'image': function () {
-                attachImage()
+              'poll': function (value) {
+                EventBus.$emit('openPoll')
               }
             }
           },
@@ -94,15 +114,29 @@ export default {
     },
     post () {
       this.savedContent = localStorage.item = this.content
-      this.attachImage();
+      this.attachImage()
       // post with saved imagefiles / files
     },
-    attachImage() {
+    attachImage () {
       let fileImages = this.$refs.editor.quill.container.querySelectorAll('img')
       this.$refs.imageAttachment.addImages(fileImages)
     },
     imageAttached () {
       console.log('done image')
+    },
+    
+    extractSurvey (surveyJSON) {
+      console.log(surveyJSON)
+      this.surveyJSON = surveyJSON
+      this.surveyDialog = false
+    },
+    openSurvey () {
+      
+      this.currentSurvey = JSON.parse(this.surveyJSON)
+      this.surveyDialog = true
+    },
+    closeSurvey () {
+      this.surveyDialog = false
     }
   },
   computed: {
@@ -120,7 +154,15 @@ export default {
     }
   },
   mounted () {
-    console.log(this.content)
+    EventBus.$on('openPoll', () => {
+      this.surveyDialog = true
+    })
   }
 }
 </script>
+<style>
+
+.ql-poll:after {
+  content: "Ω";
+}
+</style>
