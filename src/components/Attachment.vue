@@ -9,9 +9,9 @@
         allow-multiple="true"
         v-bind:files="files"
         instantUpload="false"
-        accepted-file-types="application/octet-stream, images/*, application/*"
+        accepted-file-types="image/jpeg, image/png, image/jpg"
         v-on:init="handleFilePondInit"/>
-    <button @click="manualUpload">수동업로드</button>
+    <!-- <button @click="manualUpload">수동업로드</button> -->
     <attachment />
   </div>
 </template>
@@ -56,6 +56,12 @@ export default {
     },
     manualUpload: function () {
       this.handleProcessFile()
+    },
+    addImage: function (imageSrc) {
+      return this.$refs.pond.addFile(imageSrc)
+      // quill 에서 받아서 임베드로 대체하기(임베드에 어떤거 들어갈지 정해지면)
+      // 툴바로 업로드했을때도 동일하게 처리하기  -할 필요 없음 어차피 다르게 됨(업로드시에 보낼거임)
+      // 임베드로 뭘로 박을지되면 , 설문조사 툴바로 만들기 해보기
     }
   },
   components: {
@@ -65,6 +71,6 @@ export default {
 </script>
 <style>
 .filepond--root {
-    height: 200px;
+    height: 100px;
 }
 </style>

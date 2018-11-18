@@ -66,7 +66,7 @@ export default {
       const pond = this.$refs.pond
       images.forEach((image, index) => {
         let src = image.src
-        pond.addFile(src).then(res => {
+        pond.addFiles([src]).then(res => {
           if (index == images.length - 1) {
             this.$emit('imageAttached')
           }

@@ -4,7 +4,7 @@
     <editor/>
     <!-- <attachment/> -->
     <!-- <div>
-      
+
       <div v-if="surveyJSON">
         설문조사가 추가되었습니다.
         <v-btn @click="openSurvey">확인하기</v-btn>
