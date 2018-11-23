@@ -18,16 +18,8 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <select class="ql-font">
-              <option selected="selected"></option>
-              <option value="serif"></option>
-              <option value="monospace"></option>
-            </select>
-
-            <!-- Add subscript and superscript buttons -->
-            <button class="ql-script" value="sub"></button>
-            <button class="ql-script" value="super"></button>
-            <button class="ql-image" value="super"></button>
+            <button class="ql-image" value="image"></button>
+            <button id="attach-button" @click="attachButtonClick">파일첨부</button>
             <!-- You can also add your own -->
             <button id="survey-button" @click="surveyButtonClick">설문조사</button>
           </div>
@@ -161,6 +153,9 @@ export default {
     surveyButtonClick () {
       this.surveyDialog = true
     },
+    attachButtonClick () {
+      this.$refs.attachment.browseFile()
+    },
     extractSurvey (surveyJSON) {
       console.log(surveyJSON)
       this.surveyJSON = surveyJSON
@@ -189,12 +184,18 @@ export default {
     }
   },
   mounted () {
+    document.addEventListener('FilePond:loaded', e => {
+    console.log('FilePond ready for use', e.detail);
+});
   }
 }
 </script>
 <style>
 
 #survey-button {
+  width: 75px;
+}
+#attach-button {
   width: 75px;
 }
 </style>

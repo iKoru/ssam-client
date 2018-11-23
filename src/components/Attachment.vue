@@ -62,6 +62,9 @@ export default {
       // quill 에서 받아서 임베드로 대체하기(임베드에 어떤거 들어갈지 정해지면)
       // 툴바로 업로드했을때도 동일하게 처리하기  -할 필요 없음 어차피 다르게 됨(업로드시에 보낼거임)
       // 임베드로 뭘로 박을지되면 , 설문조사 툴바로 만들기 해보기
+    },
+    browseFile: function() {
+      this.$refs.pond.browse()
     }
   },
   components: {
