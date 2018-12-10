@@ -1,20 +1,59 @@
 <template>
-  <v-container fluid>
+  <v-container px-0 fluid>
+    <v-layout>
+      <img src="@/assets/logo.png" alt="Vuetify.js" width="50" height="50">로고 
+    </v-layout>
+    <Menu :boards="boards"/>
     <v-slide-y-transition mode="out-in">
-      <v-layout column align-center>
-        <img src="@/assets/logo.png" alt="Vuetify.js" class="mb-5">
-        <blockquote>
-          &#8220;First, solve the problem. Then, write the code.&#8221;
-          <footer>
-            <small>
-              <em>&mdash;John Johnson</em>
-            </small>
-          </footer>
-        </blockquote>
+      <v-layout row wrap align-center>
+        <v-flex xs8 offset-xs2>
+          <router-view/>
+        </v-flex>
       </v-layout>
     </v-slide-y-transition>
   </v-container>
 </template>
+
+<script>
+export default {
+  name: 'App',
+  components: {
+    Board: ()=>import('@/components/board/Board'),
+    Menu: () => import('@/components/Menu')
+  },
+  data () {
+    return {
+      clipped: false,
+      drawer: true,
+      fixed: false,
+      items: [{
+        icon: 'mdi-chart-bubble',
+        title: 'Inspire'
+      }],
+      miniVariant: false,
+      right: true,
+      rightDrawer: false,
+      title: 'Vuetify.js',
+      boards: undefined
+    }
+  },
+  created () {
+    let token = this.$store.state.token | window.localStorage.token
+    if(token) {
+      this.$store.dispatch('SET_TOKEN', {token})
+    }
+    console.log(this.$store.state.token)
+    this.$axios.get('/board/list')
+      .then(response => {
+        console.log(response)
+        this.boards = response.data
+      })
+      .catch(error => {
+          console.log(error)
+      });
+  }
+}
+</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>

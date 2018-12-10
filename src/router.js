@@ -1,17 +1,44 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import store from './store.js'
 
 Vue.use(Router)
-
+const requireAuth = () => (to, from, next) => {
+  if(store.state.token) return next()
+  next('/')
+}
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
+      name: 'index',
+      component: () => import('@/views/Index')
+    },
+    {
+      path: '/home',
       name: 'home',
-      component: Home
+      component: () => import('@/views/Home'),
+      children: [{
+        path: '/board/:boardId',
+        name: 'board',
+        component: () => import('@/components/board/Board'),
+        children: [
+          {
+            path: '',
+            name: 'boardList',
+            component: () => import('@/components/board/BoardList')
+          },
+          {
+          path: 'writeDocument',
+          name: 'writeDocument',
+          component: () => import('@/components/board/WriteDocument')
+          }
+        ]
+      }],
+      beforeEnter: requireAuth()
     },
     {
       path: '/about',
@@ -24,7 +51,12 @@ export default new Router({
     {
       path: '/view',
       name: 'view',
-      component: () => import('@/components/Viewer')
+      component: () => import('@/components/board/Viewer')
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: () => import('@/pages/SignupPage')
     }
   ]
 })

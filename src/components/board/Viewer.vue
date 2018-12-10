@@ -1,8 +1,8 @@
 <template>
   <!-- bidirectional data binding（双向数据绑定） -->
-  
+
   <div>
-  {{content}}  
+  {{content}}
   </div>
 </template>
 
@@ -10,9 +10,9 @@
 export default {
   props: [],
   data () {
-      return {
-          content: null
-      }
+    return {
+      content: null
+    }
   },
   mounted () {
     this.content = localStorage.item

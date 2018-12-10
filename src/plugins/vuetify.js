@@ -16,10 +16,12 @@ import {
   VDialog,
   VSelect,
   VDivider,
+  VForm,
+  VChip,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
-
+import {Resize} from 'vuetify/lib/directives'
 Vue.use(Vuetify, {
   components: {
     VApp,
@@ -37,7 +39,12 @@ Vue.use(Vuetify, {
     VDialog,
     VSelect,
     VDivider,
+    VForm,
+    VChip,
     transitions
+  },
+  directives: {
+    Resize
   },
   theme: {
     primary: '#ee44aa',

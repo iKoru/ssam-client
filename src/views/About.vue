@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import Editor from '@/components/Editor'
-import QuestionMaker from '@/components/QuestionMaker'
-import SurveyMaker from '@/components/SurveyMaker'
-import Survey from '@/components/Survey'
-import Attachment from '@/components/Attachment.vue'
+import Editor from '@/components/board/editor/Editor'
+import QuestionMaker from '@/components/board/editor/QuestionMaker'
+import SurveyMaker from '@/components/board/editor/SurveyMaker'
+import Survey from '@/components/board/Survey'
+import Attachment from '@/components/board/editor/Attachment.vue'
 export default {
   components: {
     Editor,
