@@ -68,61 +68,61 @@
             </v-flex>
         </v-layout>
     </v-container>
-  
+
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      valid: true,
-      userId: '',
-      userIdRules: [
-        v => !!v || 'Email is required',
-        v => (v && /(?=.*[a-zA-Z]+)(?=.*[a-zA-Z0-9_!\^&\*\$]{4,50}).*/.test(v)) || 'Name must be less than 10 characters'
-      ],
-      password: '',
-      passwordRules: [
-        v => !!v || 'Name is required',
-        v => (v && v.length <= 10) || 'Name must be less than 10 characters'
-      ],
-      email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(sen|goe|ice|gwe|cbe|cne|dje|sje|jbe|jne|gen|gbe|gne|use|pen|jje)\.go\.kr\b/.test(v) || 'E-mail must be valid'
-      ],
-      select: null,
-      items: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4'
-      ],
-      checkbox: false
-    }),
-    methods: {
-      submit () {
-        if (this.$refs.form.validate()) {
-          // Native form submission is not yet supported
-          this.$axios.post('/user', {
-            userId: this.userId,
-            password: this.password,
-            email: this.email,
+export default {
+  data: () => ({
+    valid: true,
+    userId: '',
+    userIdRules: [
+      v => !!v || 'Email is required',
+      v => (v && /(?=.*[a-zA-Z]+)(?=.*[a-zA-Z0-9_!\^&\*\$]{4,50}).*/.test(v)) || 'Name must be less than 10 characters'
+    ],
+    password: '',
+    passwordRules: [
+      v => !!v || 'Name is required',
+      v => (v && v.length <= 10) || 'Name must be less than 10 characters'
+    ],
+    email: '',
+    emailRules: [
+      v => !!v || 'E-mail is required',
+      v => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(sen|goe|ice|gwe|cbe|cne|dje|sje|jbe|jne|gen|gbe|gne|use|pen|jje)\.go\.kr\b/.test(v) || 'E-mail must be valid'
+    ],
+    select: null,
+    items: [
+      'Item 1',
+      'Item 2',
+      'Item 3',
+      'Item 4'
+    ],
+    checkbox: false
+  }),
+  methods: {
+    submit () {
+      if (this.$refs.form.validate()) {
+        // Native form submission is not yet supported
+        this.$axios.post('/user', {
+          userId: this.userId,
+          password: this.password,
+          email: this.email
+        })
+          .then(response => {
+            if (alert(response.data.message)) {
+              this.$router.push('/')
+            }
           })
-            .then(response => { 
-              if(alert(response.data.message)) {
-                this.$router.push('/')
-              }
-            })
-            .catch(error => {
-                console.log(error.response)
-            });
-        }
-      },
-      clear () {
-        this.$refs.form.reset()
+          .catch(error => {
+            console.log(error.response)
+          })
       }
+    },
+    clear () {
+      this.$refs.form.reset()
     }
   }
+}
 </script>
 <style scoped>
 div.v-input__slot {

@@ -1,38 +1,39 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import _axios from './plugins/axios'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: {
-
-  },
   state: {
-    token: null
+    accessToken: null,
+    userId: null
   },
-  mutations: {
-    SET_TOKEN (state, {token}) {
-      state.token = token
+  getters: {
+    accessToken (state) {
+      return state.accessToken
     },
-    LOGOUT (state) {
-      state.token = null
+    userId (state) {
+      return state.userId
     }
   },
-  
-  actions: {
-    SET_TOKEN ({commit}, {token, setAutoLogin}) {
-      _axios.defaults.headers.common['x-auth'] = token
-      if(setAutoLogin) {
-        window.localStorage.token = token
-        // token expires?
-      }
-      commit('SET_TOKEN', {token})
-      // return axios.post(`${resourceHost}/login`, {email, password})
-      // .then(({data}) => commit('LOGIN', data))
+  mutations: {
+    SIGNIN (state, { accessToken, userId }) {
+      state.accessToken = accessToken
+      state.userId = userId
     },
-    LOGOUT ({commit}) {
-      commit('LOGOUT')
+    SIGNOUT (state) {
+      state.accessToken = null
+    }
+  },
+  actions: {
+    signin ({ commit }, { accessToken, userId }) {
+      Vue.axios.defaults.headers.common['x-auth'] = accessToken
+      commit('SIGNIN', { accessToken, userId })
+    },
+    signout ({ commit }) {
+      localStorage.removeItem('accessToken')
+      Vue.axios.defaults.headers.common['x-auth'] = null
+      commit('SIGNOUT')
     }
   }
 })

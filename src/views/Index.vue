@@ -35,7 +35,7 @@
         </v-list-tile>
       </v-list>
        -->
-      
+
       <v-btn icon block flat>
         <v-icon>mdi-menu</v-icon>로고
       </v-btn>
@@ -53,12 +53,12 @@
 <script>
 
 export default {
-    components: {
-        Signin: ()=>import('@/components/Signin.vue'),
-        BoardExtractor: () => import('@/components/board/BoardExtractor.vue')
-    },
-  name: 'IndexApp',
-   data () {
+  components: {
+    Signin: () => import('@/components/Signin.vue'),
+    BoardExtractor: () => import('@/components/board/BoardExtractor.vue')
+  },
+  name: 'Index',
+  data () {
     return {
       clipped: false,
       drawer: true,

@@ -42,8 +42,8 @@
 
 <script>
 // import VuePoll from 'vue-poll'
-import VuePoll from '../VuePoll'
-import QuestionMaker from './QuestionMaker'
+import VuePoll from '@/components/board/survey/VuePoll'
+import QuestionMaker from '@/components/board/survey/QuestionMaker'
 export default {
   components: {
     QuestionMaker,

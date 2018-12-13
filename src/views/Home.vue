@@ -1,7 +1,9 @@
 <template>
   <v-container px-0 fluid>
     <v-layout>
-      <img src="@/assets/logo.png" alt="Vuetify.js" width="50" height="50">로고 
+      <img src="@/assets/logo.png" alt="Vuetify.js" width="50" height="50">로고
+      <v-spacer/>
+      <v-btn @click="signout">로그아웃</v-btn>
     </v-layout>
     <Menu :boards="boards"/>
     <v-slide-y-transition mode="out-in">
@@ -16,9 +18,8 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'Home',
   components: {
-    Board: ()=>import('@/components/board/Board'),
     Menu: () => import('@/components/Menu')
   },
   data () {
@@ -38,19 +39,21 @@ export default {
     }
   },
   created () {
-    let token = this.$store.state.token | window.localStorage.token
-    if(token) {
-      this.$store.dispatch('SET_TOKEN', {token})
-    }
-    console.log(this.$store.state.token)
+    console.log('test')
     this.$axios.get('/board/list')
       .then(response => {
         console.log(response)
         this.boards = response.data
       })
       .catch(error => {
-          console.log(error)
-      });
+        console.log(error)
+      })
+  },
+  methods: {
+    signout () {
+      this.$store.dispatch('signout')
+      this.$router.push('/')
+    }
   }
 }
 </script>

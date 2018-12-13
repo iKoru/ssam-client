@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-
     <file-pond
         name="test"
         ref="pond"
@@ -28,7 +27,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filep
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
 
 export default {
-  name: 'app',
+  name: 'Attachment',
   data: function () {
     return { files: [],
       server: {} }

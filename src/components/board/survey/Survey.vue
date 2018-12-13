@@ -21,7 +21,7 @@
 
 <script>
 // import VuePoll from 'vue-poll'
-import VuePoll from './VuePoll'
+import VuePoll from '@/components/board/survey/VuePoll'
 export default {
   props: ['surveyJSON'],
   components: {
