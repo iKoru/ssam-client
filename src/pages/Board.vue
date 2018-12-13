@@ -4,7 +4,7 @@
           <v-card-title primary-title class="py-2">
             <div class="w-100">
               <h3 class="w-100">{{board.boardName}}
-                <v-icon class="float-right" color="black" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
+                <v-icon class="float-right" color="indigo" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
               </h3>
             </div>
           </v-card-title>
@@ -12,7 +12,7 @@
         <v-card class="mb-1">
           <v-card-title primary-title class="py-2">
             <div class="w-100">
-              <h5 color="grey" class="w-100"><v-icon width="10" height="10" color="yello">mdi-lightbulb-outline</v-icon>{{board.boardDescription}} </h5>
+              <v-icon size="medium" color="orange">mdi-lightbulb-outline</v-icon><h5 color="grey" class="w-100 d-inline">{{board.boardDescription}} </h5>
             </div>
           </v-card-title>
         </v-card>

@@ -1,7 +1,7 @@
 <template>
     <v-layout>
       <v-flex row fill-width>
-        <!-- <Editor/> -->
+        <Editor/>
       </v-flex>
     </v-layout>
 </template>
@@ -10,7 +10,7 @@
 export default {
   name: 'WriteDocument',
   components: {
-    // Editor: () => import('@/components/board/editor/Editor')
+    Editor: () => import('@/components/board/editor/Editor')
   },
   created () {
     console.log('write document')

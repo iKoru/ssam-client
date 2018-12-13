@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-layout column>
         <v-flex
             style="margin-botom: 0; padding-bottom: 0;">
           <v-text-field
@@ -30,9 +30,9 @@
             </select>
             <div class="float-right">
               <button class="ql-image" value="image"></button>
-              <v-icon id="attach-button" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
+              <v-icon id="attach-button" size="medium" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
               <!-- You can also add your own -->
-              <v-icon id="survey-button" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
+              <v-icon id="survey-button" size="medium" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
             </div>
           </div>
         </quill-editor>
@@ -45,7 +45,7 @@
         </div>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
-        <attachment ref="attachment" @imageAttached="imageAttached"/>
+        <Attachment ref="attachment" @imageAttached="imageAttached"/>
 
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
@@ -56,7 +56,6 @@
         </div>
 
         <v-layout ref="isAnonymous" row class="ml-3 mr-3">
-          {{isAnonymous}} {{allowAnonymous}}
           <v-checkbox class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
           </v-checkbox>
           <v-checkbox v-if="!isAnonymous" class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
@@ -67,7 +66,7 @@
           {{surveyJSON}}
           <survey :surveyJSON="surveyJSON"/>
         </div> -->
-    </div>
+    </v-layout>
 </template>
 <script>
 
@@ -75,13 +74,12 @@
 // import vueFilePond from 'vue-filepond'
 
 // Import plugins
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
 import Survey from '@/components/board/survey/Survey'
 import SurveyMaker from '@/components/board/survey/SurveyMaker'
 import Attachment from '@/components/board/editor/Attachment'
 // Create FilePond component
 export default {
+  name: 'Editor',
   components: {
     Attachment,
     SurveyMaker,
