@@ -1,12 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
 import store from './store.js'
 import qs from 'querystring'
 Vue.use(Router)
 const requireAuth = () => (to, from, next) => {
-  console.log(to,from)
-  if (!store.state.accessToken) return next('/index?'+qs.stringify({redirectTo:to.path}))
+  console.log(to, from)
+  if (!store.state.accessToken) return next('/index?' + qs.stringify({ redirectTo: to.path }))
   next()
 }
 const router = new Router({
@@ -44,7 +43,7 @@ const router = new Router({
             component: () => import('@/components/board/ViewDocument')
           }
         ]
-      }],
+      }]
     },
     // {
     //   path: '/about',

@@ -39,8 +39,8 @@ _axios.interceptors.response.use(
   function (error) {
     // Do something with response error
     console.log(error.response)
-    if(error.response.status == 401) {
-      
+    if (error.response.status === 401) {
+
     }
     eventHub.$emit('response-error', error.response.status)
     return Promise.reject(error)
