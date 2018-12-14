@@ -1,19 +1,9 @@
 <template>
   <v-app>
-     <v-dialog
-      v-model="spinner"
-      width="300"
-    >
-      <v-card
-        color="indigo"
-        dark
-      >
+    <v-dialog v-model="spinner" width="300">
+      <v-card color="indigo" dark>
         <v-card-text>
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
+          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
         </v-card-text>
       </v-card>
     </v-dialog>
