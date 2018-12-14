@@ -4,17 +4,21 @@
     <v-layout>
       <v-flex>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required solo maxlength="50"></v-text-field>
-          <v-text-field ref="password" height="20" v-model="password" :error="passwordError" :rules="passwordRules" label="비밀번호" required solo type="password"></v-text-field>
-          <v-checkbox v-model="rememberMe" label="자동로그인" required></v-checkbox>
-          <span type="error" v-show="message">{{message}}</span>
+          <v-text-field name="userId" ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required maxlength="50" @focus="clearError" autofocus></v-text-field>
+          <v-text-field name="password" ref="password" height="20" v-model="password" :error="passwordError" :rules="passwordRules" label="비밀번호" required type="password" @keydown.enter.stop="signin" @focus="clearError"></v-text-field>
+          <v-checkbox class="small" v-model="rememberMe" label="자동 로그인" hide-details></v-checkbox>
+          <p class="text-xs-center">
+            <span class="error--text" v-show="message">{{message}}</span>
+          </p>
 
-          <v-btn primary :disabled="!valid" @click="signin" block :loading="loading">로그인</v-btn>
-          <span class="text-xs-center">
-            <router-link to="/signup">아직 회원이 아니신가요?</router-link>
-            <br>
-            <router-link to="/resetPassword">비밀번호를 잊으셨나요?</router-link>
-          </span>
+          <v-btn color="primary" :disabled="!valid" @click="signin" block :loading="loading">로그인</v-btn>
+          <p class="text-xs-center">
+            <small>
+              <router-link to="/signup">아직 회원이 아니신가요?</router-link>
+              <br>
+              <router-link to="/resetPassword">비밀번호를 잊으셨나요?</router-link>
+            </small>
+          </p>
         </v-form>
       </v-flex>
     </v-layout>
@@ -93,15 +97,26 @@ export default {
       if (this.userIdError) {
         this.userIdError = false;
       }
+      if (this.message) {
+        this.message = null;
+      }
     },
     password() {
       if (this.passwordError) {
         this.passwordError = false;
       }
+      if (this.message) {
+        this.message = null;
+      }
     }
   },
 
   methods: {
+    clearError() {
+      console.log("triggered");
+      this.$refs.form.resetValidation();
+      this.message = null;
+    },
     signin() {
       if (this.$refs.form.validate()) {
         if (!this.userId || !this.password || this.userId === "" || this.password === "") {
@@ -160,5 +175,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.small i.v-icon,
+.small label {
+  font-size: 16px;
+}
+.small .v-input--selection-controls__input {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
 </style>
