@@ -1,5 +1,15 @@
 <template>
-    <div>
+    <v-layout column>
+        <v-flex
+            style="margin-botom: 0; padding-bottom: 0;">
+          <v-text-field
+            label="Solo"
+            placeholder="제목"
+            solo
+            v-model="title"
+            hide-details
+          ></v-text-field>
+        </v-flex>
         <quill-editor v-model="content"
                     ref="editor"
                     :options="editorOption"
@@ -18,10 +28,12 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <button class="ql-image" value="image"></button>
-            <button id="attach-button" @click="attachButtonClick">파일첨부</button>
-            <!-- You can also add your own -->
-            <button id="survey-button" @click="surveyButtonClick">설문조사</button>
+            <div class="float-right">
+              <button class="ql-image" value="image"></button>
+              <v-icon id="attach-button" size="medium" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
+              <!-- You can also add your own -->
+              <v-icon id="survey-button" size="medium" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
+            </div>
           </div>
         </quill-editor>
         <div>
@@ -33,7 +45,7 @@
         </div>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
-        <attachment ref="attachment" @imageAttached="imageAttached"/>
+        <Attachment ref="attachment" @imageAttached="imageAttached"/>
 
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
@@ -42,29 +54,33 @@
             <v-btn class="primary" @click="surveyDialog = true">설문확인</v-btn>
           <!-- <v-btn @click="openSurvey">확인하기</v-btn> -->
         </div>
+
+        <v-layout ref="isAnonymous" row class="ml-3 mr-3">
+          <v-checkbox class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
+          </v-checkbox>
+          <v-checkbox v-if="!isAnonymous" class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
+          </v-checkbox>
+        </v-layout>
         <v-btn class="success" @click="post()">업로드</v-btn>
         <!-- <div>viewer
           {{surveyJSON}}
           <survey :surveyJSON="surveyJSON"/>
         </div> -->
-    </div>
+    </v-layout>
 </template>
 <script>
 
 // Import FilePond
-import vueFilePond from 'vue-filepond'
+// import vueFilePond from 'vue-filepond'
 
 // Import plugins
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
-import Survey from '../Survey'
-import SurveyMaker from './SurveyMaker'
-import LinkPrevue from '../LinkPrevue'
-import Attachment from './Attachment'
+import Survey from '@/components/board/survey/Survey'
+import SurveyMaker from '@/components/board/survey/SurveyMaker'
+import Attachment from '@/components/board/editor/Attachment'
 // Create FilePond component
 export default {
+  name: 'Editor',
   components: {
-    LinkPrevue,
     Attachment,
     SurveyMaker,
     Survey
@@ -73,6 +89,7 @@ export default {
     return {
       savedContent: undefined,
       link: undefined,
+      title: null,
       content: '',
       surveyJSON: undefined,
       surveyDialog: false,
@@ -83,11 +100,12 @@ export default {
           imageDrop: true,
           imageResize: true
         }
-      }
+      },
+      isAnonymous: false,
+      allowAnonymous: false
     }
   },
   // manually control the data synchronization
-  // 如果需要手动控制数据同步，父组件需要显式地处理changed事件
   methods: {
     onEditorBlur (quill) {
       console.log('editor blur!', quill)
@@ -105,6 +123,21 @@ export default {
     post () {
       this.savedContent = localStorage.item = this.content
       this.attachImage()
+      console.log(this.$route.params.boardId)
+      console.log('post document')
+
+      this.$axios.post('/document', {
+        boardId: this.$route.params.boardId,
+        title: this.title,
+        contents: this.content,
+        isAnonymous: this.isAnonymous,
+        allowAnonymous: this.allowAnonymous
+      }).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+        console.log(err.response)
+      })
       // post with saved imagefiles / files
     },
     attachImage () {
@@ -138,17 +171,17 @@ export default {
       console.log(this.$refs.editor.quill.editor.delta.ops)
     },
     embedImages () {
-      console.log(this.$refs.editor.quill.editor)
-      this.$refs.imageAttachment.addImage(fileImages)
-      const range = this.$refs.editor.quill.getSelection(true)
-      fileImages.forEach(image => {
-        console.log(image)
-        image.src = ''
-        this.$refs.editor.quill.enable(true)
-        this.$refs.editor.quill.editor.insertEmbed(range.index, 'image', 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif')
-        this.$refs.editor.quill.setSelection(range.index + 1, Quill.sources.SILENT)
-        console.log(this.$refs.editor.quill.editor.delta)
-      })
+      // console.log(this.$refs.editor.quill.editor)
+      // this.$refs.imageAttachment.addImage(fileImages)
+      // const range = this.$refs.editor.quill.getSelection(true)
+      // fileImages.forEach(image => {
+      //   console.log(image)
+      //   image.src = ''
+      //   this.$refs.editor.quill.enable(true)
+      //   this.$refs.editor.quill.editor.insertEmbed(range.index, 'image', 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif')
+      //   this.$refs.editor.quill.setSelection(range.index + 1, Quill.sources.SILENT)
+      //   console.log(this.$refs.editor.quill.editor.delta)
+      // })
     },
     surveyButtonClick () {
       this.surveyDialog = true
@@ -175,11 +208,9 @@ export default {
     }
   },
   watch: {
-    savedContent (to, from) {
-      let href = to.match(/\bhttps?:\/\/\S+/gi)
-      if (href) {
-        this.link = href[0].substr(0, (href[0]).indexOf('<'))
-        console.log(this.link)
+    'isAnonymous': {
+      handler: function (to) {
+        if (this.isAnonymous) this.allowAnonymous = false
       }
     }
   },
@@ -193,9 +224,13 @@ export default {
 <style>
 
 #survey-button {
-  width: 75px;
+  width: 28px;
 }
 #attach-button {
-  width: 75px;
+  width: 28px;
 }
+.ql-container {
+  height: 400px;
+}
+
 </style>

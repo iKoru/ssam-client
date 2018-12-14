@@ -3,27 +3,26 @@
     <v-layout class="menu">
       <v-flex p-2>
         <v-chip>게시판 목록</v-chip>
-        <v-btn :key="index" v-for="(board, index) in boards" @click.stop="$router.replace(`/board/${board.boardId}`)">
-          {{board.boardName}}
+        <v-btn :key="index" v-for="(board, index) in boards">
+          <router-link :to="{path:`/board/${board.boardId}`}" exact>{{board.boardName}}</router-link>
         </v-btn>
-        
+
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-  import axios from 'axios'
-import { createNamespacedHelpers } from 'vuex';
-  export default {
-    name: 'Signin',
-    props: ['boards']
-  }
+import axios from 'axios'
+export default {
+  name: 'Signin',
+  props: ['boards']
+}
 </script>
 
 <style scoped>
 .menu {
     height: 150px;
-    background-color: lightgrey;  
+    background-color: lightgrey;
 }
 </style>

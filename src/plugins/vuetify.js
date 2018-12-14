@@ -18,10 +18,13 @@ import {
   VDivider,
   VForm,
   VChip,
+  VAlert,
+  VProgressLinear,
+  VDataTable,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
-import {Resize} from 'vuetify/lib/directives'
+import { Resize } from 'vuetify/lib/directives'
 Vue.use(Vuetify, {
   components: {
     VApp,
@@ -41,6 +44,9 @@ Vue.use(Vuetify, {
     VDivider,
     VForm,
     VChip,
+    VAlert,
+    VProgressLinear,
+    VDataTable,
     transitions
   },
   directives: {
