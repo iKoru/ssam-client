@@ -113,7 +113,6 @@ export default {
 
   methods: {
     clearError() {
-      console.log("triggered");
       this.$refs.form.resetValidation();
       this.message = null;
     },
