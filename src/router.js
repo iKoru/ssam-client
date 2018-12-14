@@ -1,13 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import store from './store.js'
-import qs from 'querystring'
+import requireSignin from './middleware/requireSignin'
 Vue.use(Router)
-const requireAuth = () => (to, from, next) => {
-  console.log(to, from)
-  if (!store.state.accessToken) return next('/index?' + qs.stringify({ redirectTo: to.path }))
-  next()
-}
+
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -21,7 +16,7 @@ const router = new Router({
       path: '',
       name: 'home',
       component: () => import('@/views/Home'),
-      beforeEnter: requireAuth(),
+      beforeEnter: requireSignin,
       children: [{
         path: '/board/:boardId',
         name: 'board',
