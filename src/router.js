@@ -10,7 +10,10 @@ const router = new Router({
     {
       path: '/index',
       name: 'index',
-      component: () => import('@/views/Index')
+      component: () => import('@/views/Index'),
+      meta: {
+        title: '선생님들의 공간'
+      }
     },
     {
       path: '',
@@ -38,7 +41,10 @@ const router = new Router({
             component: () => import('@/components/board/ViewDocument')
           }
         ]
-      }]
+      }],
+      meta: {
+        title: '메인'
+      }
     },
     // {
     //   path: '/about',
@@ -51,20 +57,16 @@ const router = new Router({
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('@/pages/SignupPage')
+      component: () => import('@/pages/SignupPage'),
+      meta: {
+        title: '회원가입'
+      }
     }
   ]
 })
-// router.beforeEach((to, from, next) => {
-//   // console.log(to, from)
-//   const publicPages = ['/index', '/error'];
-//   const authRequired = !publicPages.includes(to.path);
-//   const loggedIn = store.getters.accessToken;
-//   console.log(loggedIn)
-//   if (authRequired && !loggedIn) {
-//     console.log('login')
-//     next('/index');
-//   } else next('/home');
-// })
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title ? to.meta.title + ' - pedagy' : 'pedagy'
+  next()
+})
 
 export default router
