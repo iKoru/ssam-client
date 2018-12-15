@@ -56,6 +56,12 @@ export default new Vuex.Store({
     SIGNOUT (state) {
       state.accessToken = null
     },
+    UPDATE_PROFILE (state, profile) {
+      state.loungeNickName = profile.loungeNickName
+      state.topicNickName = profile.topicNickName
+      state.status = profile.status
+      state.profile = profile
+    },
     SWITCH_BOARD_TYPE (state, { boardType }) {
       state.boardType = boardType
     },
@@ -85,6 +91,9 @@ export default new Vuex.Store({
       localStorage.removeItem('accessToken')
       Vue.axios.defaults.headers.common['x-auth'] = null
       commit('SIGNOUT')
+    },
+    profile ({ commit }, profile) {
+      commit('UPDATE_PROFILE', profile)
     },
     switchBoardType ({ commit }, { boardType }) {
       commit('SWITCH_BOARD_TYPE', { boardType })
