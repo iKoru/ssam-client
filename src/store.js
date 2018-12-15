@@ -13,17 +13,39 @@ export default new Vuex.Store({
     status: 'NORMAL',
     profile: {
       picturePath: null
+    },
+    snackbar: {
+      color: null,
+      text: null,
+      isShowing: false,
+      waiting: []
     }
+
   },
   getters: {
-    accessToken (state) {
-      return state.accessToken
+    accessToken ({ accessToken }) {
+      return accessToken
     },
-    userId (state) {
-      return state.userId
+    userId ({ userId }) {
+      return userId
     },
-    isLight (state) {
-      return state.boardType !== 'T'
+    loungeNickName ({ loungeNickName }) {
+      return loungeNickName
+    },
+    topicNickName ({ topicNickName }) {
+      return topicNickName
+    },
+    isLight ({ boardType }) {
+      return boardType !== 'T'
+    },
+    snackbar ({ snackbar }) {
+      return { color: snackbar.color, text: snackbar.text }
+    },
+    isShowingSnackbar ({ snackbar }) {
+      return snackbar.isShowing
+    },
+    snackbarQueue ({ snackbar }) {
+      return snackbar.waiting
     }
   },
   mutations: {
@@ -36,6 +58,22 @@ export default new Vuex.Store({
     },
     SWITCH_BOARD_TYPE (state, { boardType }) {
       state.boardType = boardType
+    },
+    SHOW_SNACKBAR (state, { text, color }) {
+      state.snackbar.text = text;
+      state.snackbar.color = color || 'info'
+      state.snackbar.isShowing = true;
+    },
+    QUEUE_SNACKBAR (state, target) {
+      state.snackbar.waiting.push(target);
+    },
+    DEQUEUE_SNACKBAR (state) {
+      const wait = state.snackbar.waiting.shift();
+      if (wait.text) {
+        state.snackbar.text = wait.text;
+        state.snackbar.color = wait.color || 'info'
+        state.snackbar.isShowing = true;
+      }
     }
   },
   actions: {
@@ -50,6 +88,18 @@ export default new Vuex.Store({
     },
     switchBoardType ({ commit }, { boardType }) {
       commit('SWITCH_BOARD_TYPE', { boardType })
+    },
+    showSnackbar ({ getters, commit }, { text, color }) {
+      if (!getters.isShowingSnackbar) {
+        commit('SHOW_SNACKBAR', { text: text, color: color || 'info' })
+      } else {
+        commit('QUEUE_SNACKBAR', { text: text, color: color });
+      }
+    },
+    showNextSnackbar ({ getters, commit }) {
+      if (getters.snackbarQueue.length > 0) {
+        commit('DEQUEUE_SNACKBAR');
+      }
     }
   }
 })

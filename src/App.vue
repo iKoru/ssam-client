@@ -4,12 +4,18 @@
       <router-view :layout.sync="layout"/>
     </component>
     <v-dialog v-model="spinner" width="300">
-      <v-card color="indigo" :dark="$store.getters.isLight">
+      <v-card color="primary" :dark="$store.getters.isLight">
         <v-card-text>
           <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-snackbar :timeout="$store.getters.snackbar.color === 'success'?3000:5000" bottom left :color="$store.getters.snackbar.color" v-model="$store.getters.isShowingSnackbar">
+      {{ $store.getters.snackbar.text }}
+      <v-btn dark flat @click.native="$store.getters.isShowingSnackbar = false" icon>
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -22,6 +28,18 @@ export default {
     spinner: false,
     layout: "div"
   }),
+  computed: {
+    isShowingSnackbar() {
+      return this.$store.getters.isShowingSnackbar;
+    }
+  },
+  watch: {
+    isShowingSnackbar(val) {
+      if (!val) {
+        this.$store.dispatch("showNextSnackbar");
+      }
+    }
+  },
   methods: {
     showSpinner() {
       console.log("spinner on");
