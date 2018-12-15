@@ -1,10 +1,5 @@
 <template>
   <v-container px-0 fluid>
-    <v-layout>
-      <img src="@/assets/logo.png" alt="Vuetify.js" width="50" height="50">로고
-      <v-spacer/>
-      <v-btn @click="signout">로그아웃</v-btn>
-    </v-layout>
     <Menu :boards="boards"/>
     <v-slide-y-transition mode="out-in">
       <v-layout row wrap align-center>
