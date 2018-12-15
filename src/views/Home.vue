@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import MainLayout from "../layouts/MainLayout";
 export default {
   name: "Home",
   components: {
@@ -41,7 +42,7 @@ export default {
     };
   },
   created() {
-    console.log("test");
+    this.$emit("update:layout", MainLayout);
     this.$axios
       .get("/board/list")
       .then(response => {

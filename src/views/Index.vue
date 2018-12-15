@@ -45,7 +45,6 @@ export default {
       title: "pedagy"
     };
   },
-  mounted() {},
   methods: {}
 };
 </script>
