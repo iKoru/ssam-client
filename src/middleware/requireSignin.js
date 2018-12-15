@@ -18,7 +18,21 @@ export default (to, from, next) => {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
           });
-          return next();
+          const redirectTo = response.data.redirectTo;
+          router.app.$axios
+            .get('/user')
+            .then(response => {
+              store.dispatch('profile', response.data);
+              if (redirectTo) {
+                next(redirectTo + qs.stringify({ redirectTo: to.path })); // preserve original redirect options
+              } else {
+                next();
+              }
+            })
+            .catch(err => {
+              store.dispatch('showSnackbar', { text: err.response.data.message, color: 'error' });
+              next()
+            });
         })
         .catch(() => {
           localStorage.removeItem('accessToken');
