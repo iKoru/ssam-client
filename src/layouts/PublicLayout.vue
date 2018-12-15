@@ -1,7 +1,7 @@
 <template>
   <div class="publicLayout">
     <main class="publicLayout__main">
-      <router-view></router-view>
+      <slot></slot>
     </main>
     <footer class="publicLayout__footer">
       <main-footer></main-footer>

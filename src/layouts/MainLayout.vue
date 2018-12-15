@@ -1,12 +1,10 @@
 <template>
   <div class="mainLayout">
-    <nav class="mainLyaout__nav">
-      <main-toolbar></main-toolbar>
-    </nav>
-    <main class="mainLayout__main"></main>
-    <footer class="mainLayout__footer">
-      <main-footer></main-footer>
-    </footer>
+    <main-toolbar class="mainLayout__nav"></main-toolbar>
+    <main class="mainLayout__main">
+      <slot></slot>
+    </main>
+    <main-footer class="mainLayout__footer"></main-footer>
   </div>
 </template>
 <script>
