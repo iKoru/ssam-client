@@ -1,4 +1,4 @@
-<template>
+<template id="mainToolbar">
   <v-toolbar color="primary" :fixed="false" :dark="!$store.getters.isLight" app>
     <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
@@ -6,7 +6,7 @@
     <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
       <v-btn icon large flat slot="activator" v-if="$vuetify.breakpoint.smAndUp">
         <v-avatar size="30px">
-          <img src="~static/img/avatar/man_4.jpg" alt="Michael Wang">
+          <img src="static/img/man_1.jpg">
         </v-avatar>
         {{nickName || ''}}님, 안녕하세요!
       </v-btn>
@@ -21,47 +21,55 @@
         </v-list-tile>
       </v-list>
     </v-menu>
-    <v-dialog v-model="notification">
-      알림센터입니다.
-    </v-dialog>
+    <v-dialog v-model="notification">알림센터입니다.</v-dialog>
   </v-toolbar>
 </template>
 <script>
-
 export default {
-  name: "toolbar",
+  template: "#mainToolbar",
+  name: "mainToolbar",
   components: {},
-  data: () => ({
-    items: [
-      {
-        href: "#",
-        title: this.$store.getters.loungeNickName,
-        click: e => {
-          this.$router.push('/myPage')
+  data() {
+    return {
+      items: [
+        {
+          href: "#",
+          title: this.$store.getters.loungeNickName,
+          click: e => {
+            this.$router.push("/myPage");
+          }
+        },
+        {
+          href: "#",
+          title: "알림내역",
+          click: e => {
+            this.notification = true;
+          }
+        },
+        {
+          icon: "fullscreen_exit",
+          href: "#",
+          title: "로그아웃",
+          click: e => {
+            this.signout();
+          }
         }
-      },
-      {
-        href: "#",
-        title: "알림내역",
-        click: e => {
-          this.notification = true;
-        }
-      },
-      {
-        icon: "fullscreen_exit",
-        href: "#",
-        title: "로그아웃",
-        click: e => {
-          this.signout();
-        }
-      }
-    ],
-    notification: false
-  }),
+      ],
+      notification: false
+    };
+  },
+  created() {
+    console.log("created toolbar, ", this);
+  },
+  computed: {
+    nickName() {
+      return this.$store.getters.loungeNickName;
+    }
+  },
   methods: {
     signout() {
-      this.$store.dispatch('signout');
-      this.$router.push('/');
+      this.$store.dispatch("signout");
+      this.$router.push("/");
     }
   }
 };
