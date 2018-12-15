@@ -1,5 +1,5 @@
 <template id="mainToolbar">
-  <v-toolbar color="primary" :fixed="false" :dark="!$store.getters.isLight" app>
+  <v-toolbar color="white" :fixed="false" :light="$store.getters.isLight" flat>
     <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
     <v-spacer></v-spacer>
@@ -14,7 +14,7 @@
         <v-icon>menu</v-icon>
       </v-btn>
       <v-list class="pa-0">
-        <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" :href="item.href" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
+        <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
           <v-list-tile-content>
             <v-list-tile-title>{{item.title}}</v-list-tile-title>
           </v-list-tile-content>
@@ -33,14 +33,12 @@ export default {
     return {
       items: [
         {
-          href: "#",
           title: this.$store.getters.loungeNickName,
           click: e => {
             this.$router.push("/myPage");
           }
         },
         {
-          href: "#",
           title: "알림내역",
           click: e => {
             this.notification = true;
@@ -48,9 +46,8 @@ export default {
         },
         {
           icon: "fullscreen_exit",
-          href: "#",
           title: "로그아웃",
-          click: e => {
+          click() {
             this.signout();
           }
         }
