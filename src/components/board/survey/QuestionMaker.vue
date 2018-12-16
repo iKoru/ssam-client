@@ -1,7 +1,13 @@
 <template>
   <v-card>
-    <v-card-media v-if="question">
-        <v-toolbar color="indigo" dark>
+    <v-icon style="
+    position: absolute;
+    right: -5px;
+    z-index: 1000;
+    top: -10px;
+" color="red" @click="$emit('deleteQuestion', questionIndex)">mdi-close-circle</v-icon>
+    <v-card-media v-if="question" >
+        <!-- <v-toolbar color="indigo" dark>
           <v-toolbar-title>질문추가</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
@@ -10,44 +16,46 @@
             <v-btn v-else color="success" dark @click.native="modifyQuestionSuccess()">수정완료</v-btn>
             <v-btn class="toolbar-btn-last" dark flat @click.native="$emit('closeQuestionMaker')">닫기</v-btn>
           </v-toolbar-items>
-        </v-toolbar>
+        </v-toolbar> -->
          <!-- <v-card-title class="headline">Use Google's location service?</v-card-title>
           <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
    -->
         <v-list>
             <v-subheader>
-              <v-text-field v-model="question.question" placeholder="질문 제목을 입력하세요.">
+              <v-text-field v-model="question.title" placeholder="질문 제목을 입력하세요.">
               </v-text-field>
             </v-subheader>
-          <v-list-tile height="20px" :key='index' v-for="(item, index) in question.answers">
-            &nbsp; &nbsp;
+          <v-list-tile class="px-2 py-0 my-0 custom-reduce-height" :key='index' v-for="(item, index) in question.choices">
             <v-text-field
-                    color="indigo"
-                    height="18px"
-                    :label="'응답'+(index+1)"
-                    v-model="item.text"
+              class="py-0"
+                    single-line
+                    :label="'선택지'+(index+1)"
+                    v-model="question.choices[index]"
           ></v-text-field>
-            <v-btn fab dark small color="indigo" @click="deleteAnswer(index)">&#10005;
-            </v-btn>
+            <v-icon color="indigo" @click="deleteAnswer(index)">mdi-minus-circle-outline
+            </v-icon>
             <!-- <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title> -->
           </v-list-tile>
-            <v-layout row class="ml-3 mr-3" style="height: 36px">
-              <v-checkbox class="mr-1 my-auto mb-0" v-model="question.allowMultiple" label="복수응답가능">
-              </v-checkbox>
+          <v-list-tile class="px-2 py-0 my-0" style="height:30px!important; margin-top:-20px!important">
+            <v-layout row>
+              <v-flex xs6 @click="addAnswer()">
+                <v-icon color="indigo">mdi-plus-circle-outline</v-icon>
+                선택지추가
+              </v-flex>
+              <v-flex xs6>
+                <v-checkbox hide-details v-model="question.allowMultiple" label="복수응답가능" class="mt-0 pt-0">
+                </v-checkbox>
+              </v-flex>
             </v-layout>
-            <v-spacer/>
+          </v-list-tile>
         </v-list>
-  </v-card-media>
-  <v-card-actions>
-    <v-spacer></v-spacer>
-
-  </v-card-actions>
+    </v-card-media>
   </v-card>
 </template>
 
 <script>
 export default {
-  props: ['editingQuestion', 'modifyingIndex'],
+  props: ['editingQuestion', 'questionIndex'],
   data () {
     return {
       question: undefined
@@ -56,40 +64,41 @@ export default {
   components: {
   },
   mounted () {
-    if (!this.editingQuestion) {
-      this.question = {
-        question: '',
-        answers: [
-          { text: '', selected: false },
-          { text: '', selected: false },
-          { text: '', selected: false }
-        ],
-        allowMultiple: false
-      }
-    }
+    // if (!this.editingQuestion) {
+    //   this.question = {
+    //     question: '',
+    //     answers: [
+    //       { text: '', selected: false },
+    //       { text: '', selected: false },
+    //       { text: '', selected: false }
+    //     ],
+    //     allowMultiple: false
+    //   }
+    // }
+    this.question = this.editingQuestion
   },
   methods: {
     addAnswer: function () {
-      this.question.answers.push({ text: '', selected: false })
+      this.question.choices.push('')
     },
     deleteAnswer: function (index) {
-      if (this.question.answers.length <= 2) {
-        alert('두 개 이상의 응답을 입력해야합니다.')
+      if (this.question.choices.length < 2) {
+        alert('응답을 입력하세요')
         return
       }
-      this.question.answers.splice(index, 1)
+      this.question.choices.splice(index, 1)
     },
-    addQuestion: function () {
-      if (!this.validateQuestion()) {
-        console.log('invalid')
-        return false
-      }
-      console.log('isthereselected', this.question)
-      this.$emit('addQuestion', this.question)
-    },
-    closeQuestionMaker: function () {
-      this.$emit('closeQuestionMaker')
-    },
+    // addQuestion: function () {
+    //   if (!this.validateQuestion()) {
+    //     console.log('invalid')
+    //     return false
+    //   }
+    //   console.log('isthereselected', this.question)
+    //   this.$emit('addQuestion', this.question)
+    // },
+    // closeQuestionMaker: function () {
+    //   this.$emit('closeQuestionMaker')
+    // },
     modifyQuestionSuccess: function () {
       if (!this.validateQuestion()) {
         console.log('invalid')
@@ -122,9 +131,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .v-select-z-index {
   z-index:5000;
   width: 50px;
+}
+.custom-reduce-height {
+  margin-top: -5px!important
 }
 </style>

@@ -50,16 +50,21 @@
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
-        <div v-if="surveyJSON">설문조사가 추가되었습니다.
-            <v-btn class="primary" @click="surveyDialog = true">설문확인</v-btn>
-          <!-- <v-btn @click="openSurvey">확인하기</v-btn> -->
-        </div>
-
         <v-layout ref="isAnonymous" row class="ml-3 mr-3">
-          <v-checkbox class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
-          </v-checkbox>
-          <v-checkbox v-if="!isAnonymous" class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
-          </v-checkbox>
+          <v-flex xs-4>
+            <v-checkbox class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
+            </v-checkbox>
+          </v-flex>
+          <v-flex xs-4>
+            <v-checkbox v-if="!isAnonymous" class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
+            </v-checkbox>
+          </v-flex>
+          <v-flex xs-12 md-4 text-xs-right>
+            <v-chip v-if="survey" label color="pink" @click="surveyButtonClick">
+              <v-icon left>mdi-poll-box</v-icon><span style="color:white">설문</span>
+            </v-chip>
+            <v-icon>mdi-close</v-icon>
+          </v-flex>
         </v-layout>
         <v-btn class="success" @click="post()">업로드</v-btn>
         <!-- <div>viewer
@@ -91,9 +96,10 @@ export default {
       link: undefined,
       title: null,
       content: '',
-      surveyJSON: undefined,
+      survey: undefined,
       surveyDialog: false,
       currentSurvey: { questions: [] },
+      survey: undefined,
       editorOption: {
         modules: {
           toolbar: '#toolbar',
@@ -183,15 +189,24 @@ export default {
       //   console.log(this.$refs.editor.quill.editor.delta)
       // })
     },
+    
     surveyButtonClick () {
+      if (this.currentSurvey.questions.length === 0) {
+        this.currentSurvey.questions.push(
+          {
+            title: '',
+            choices: ['', '']
+          }
+        )
+      } else this.currentSurvey = this.survey
       this.surveyDialog = true
     },
     attachButtonClick () {
       this.$refs.attachment.browseFile()
     },
-    extractSurvey (surveyJSON) {
-      console.log(surveyJSON)
-      this.surveyJSON = surveyJSON
+    extractSurvey (survey) {
+      // this.surveyJSON = surveyJSON
+      this.survey = survey
       this.surveyDialog = false
     },
     openSurvey () {

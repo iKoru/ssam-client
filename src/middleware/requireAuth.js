@@ -5,5 +5,4 @@ export default function (context) {
     if (!context.store.state.accessToken) {
         return context.redirect('/signin?'+qs.stringify({redirectTo:context.req.url}));
     }
-
 }

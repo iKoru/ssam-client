@@ -4,36 +4,32 @@
     <v-toolbar-title>설문조사</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn slot="activator" color="default" @click="dialog=true; initQuestion()">질문추가</v-btn>
       <v-btn color="success" dark @click="extractSurvey">설문완성</v-btn>
       <v-btn class="toolbar-btn-last" dark flat @click.native="$emit('closeSurvey')">닫기</v-btn>
     </v-toolbar-items>
   </v-toolbar>
-  <v-layout row>
+  <v-layout row style="background-color:lightgrey">
       <v-flex>
-        <v-dialog v-model="dialog" persistent max-width="450">
-          <question-maker :editingQuestion="editingQuestion" :modifyingIndex="modifyingIndex" @addQuestion="addQuestion" @modifyQuestionSuccess="modifyQuestionSuccess" @closeQuestionMaker="closeQuestionMaker"/>
-        </v-dialog>
         <v-flex xs12>
-          <v-layout v-if="questions.length < 1">
-            설문을 만들어보세요
-          </v-layout>
-          <v-list v-else>
-            <template v-for="(item, index) in questions">
-              <v-layout row wrap :key="'devider'+index" style="position:relative" >
+          <v-flex style="background-color:lightgrey" :key="index" class="py-2 px-2" v-for="(item, index) in questions">
+              <question-maker :editingQuestion="item" :questionIndex="index" @addQuestion="addQuestion" @modifyQuestionSuccess="modifyQuestionSuccess" @deleteQuestion="deleteQuestion"/>
+              <!-- <v-layout row wrap :key="'devider'+index" style="position:relative" >
                 <v-layout class="fab-container">
                   <v-btn class="btn-xs" fab @click="modifyQuestion(index)">수정</v-btn>
-                  <v-btn class="btn-xs" fab @click="deleteQuestion(index)">삭제</v-btn>
                 </v-layout>
                 <v-flex xs12 mx-3>
                   <vue-poll :questionNumber="item.questionNumber" :key="'poll'+index" :allowMultiple="item.allowMultiple" :question="item.question" :answers="item.answers" :multiple="false" :selectable=false :finalResults=false />
                 </v-flex>
               </v-layout>
-              <v-layout row :key="index">
-              <v-divider v-if="index + 1 < questions.length" :key="`divider-${index}`"></v-divider>
-              </v-layout>
-            </template>
-          </v-list>
+              <v-layout row :key="index"> -->
+          </v-flex>
+          <v-flex @click="pushQuestion()">
+            <v-card class="text-xs-center">
+              <v-card-media>
+                <v-icon color="indigo">mdi-plus-circle</v-icon>질문추가
+              </v-card-media>
+            </v-card>
+          </v-flex>
         </v-flex>
       </v-flex>
     </v-layout>
@@ -60,36 +56,46 @@ export default {
   },
   methods: {
     addQuestion (question) {
-      question.questionNumber = this.questions.length + 1
       this.questions.push(question)
-      this.dialog = false
-      this.initEditingQuestion()
     },
     closeQuestionMaker () {
       this.dialog = false
       this.initEditingQuestion()
     },
-    initQuestion () {
-      this.editingQuestion = {
-        questionNumber: '',
-        question: '',
-        answers: [
-          { text: '', selected: false },
-          { text: '', selected: false },
-          { text: '', selected: false }
-        ],
-        allowMultiple: false
-      }
+    pushQuestion () {
+      this.questions.push(
+        {
+          title: '',
+          choices: ['', '']
+        }
+      )
     },
-    modifyQuestion (index) {
-      let newEditingQuestion = {}
-      Object.assign(newEditingQuestion, this.questions[index])
-      this.editingQuestion = newEditingQuestion
-      this.modifyingIndex = index
-      this.dialog = true
-    },
+    // initQuestion () {
+    //   this.editingQuestion = {
+    //     questionNumber: '',
+    //     question: '',
+    //     answers: [
+    //       { text: '', selected: false },
+    //       { text: '', selected: false },
+    //       { text: '', selected: false }
+    //     ],
+    //     allowMultiple: false
+    //   }
+    //   this.questions.push(this.editingQuestion)
+    // },
+    // modifyQuestion (index) {
+    //   let newEditingQuestion = {}
+    //   Object.assign(newEditingQuestion, this.questions[index])
+    //   this.editingQuestion = newEditingQuestion
+    //   this.modifyingIndex = index
+    //   this.dialog = true
+    // },
     deleteQuestion (index) {
-      this.questions.splice(index, 1)
+      if(this.questions.length < 2) {
+        alert('최소 하나의 질문을 입력해주세요')
+      } else {
+        this.questions.splice(index, 1)
+      }
     },
     modifyQuestionSuccess (question) {
       this.dialog = false
@@ -107,9 +113,26 @@ export default {
       }
     },
     extractSurvey () {
-      console.log(JSON.stringify(this.questions))
-      this.$emit('extractSurvey', JSON.stringify({ survey: this.questions }))
-    }
+      let catchSurveyError = this.questions.some(question => {
+        if(question.title.length < 1) {
+          alert('질문을 입력하세요')
+          return true;
+        }
+        question = this.validateQuestion(question)
+        if(question.choices.length < 1) {
+          alert('응답을 입력하세요')
+          question.choices.push('')
+          return true;
+        }
+      })
+      if (!catchSurveyError)
+        this.$emit('extractSurvey', JSON.stringify({ survey: this.questions }))
+
+    },
+  validateQuestion (question) {
+        question.choices = question.choices.filter(choice => choice.length > 0)
+        return question
+    },
   },
   mounted () {
     this.initEditingQuestion()

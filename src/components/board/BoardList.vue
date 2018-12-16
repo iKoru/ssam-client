@@ -61,6 +61,7 @@ export default {
   watch: {
     '$route': {
       handler () {
+        console.log('watch')
        this.getList();
       }
     }

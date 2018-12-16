@@ -46,7 +46,7 @@ export default {
         })
     },
     writeDocument: function () {
-      this.$router.push(`writeDocument`)
+      this.$router.push(`${this.$route.params.boardId}/writeDocument`)
     }
   },
   watch: {

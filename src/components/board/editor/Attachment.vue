@@ -38,30 +38,48 @@ export default {
             const formData = new FormData();
             formData.append(fieldName, file, file.name);
 
-            const request = new XMLHttpRequest();
-            request.open('POST', this.$axios.defaults.baseURL+'/document');
-
+            // const request = new XMLHttpRequest();
+            console.log(this.$axios.defaults.baseURL)
+            // request.open('POST', '/document');
+            this.$axios.post('/document', {
+              boardId: this.$route.params.boardId,
+              title: "attachment test",
+              contents: "please go",
+              isAnonymous: true,
+              allowAnonymous: true,
+              attachment: {
+                attachId: 'test', 
+                attachType: 'image',
+                attacyPath: 'test',
+                attachName: 'no'
+              }
+            }).then(res => {
+              console.log(res)
+            }).catch(err => {
+              console.log(err)
+              console.log(err.response)
+            })
             // Should call the progress method to update the progress to 100% before calling load
             // Setting computable to false switches the loading indicator to infinite mode
-            request.upload.onprogress = (e) => {
-                progress(e.lengthComputable, e.loaded, e.total);
-            };
+            // request.upload.onprogress = (e) => {
+            //     progress(e.lengthComputable, e.loaded, e.total);
+            // };
 
-            // Should call the load method when done and pass the returned server file id
-            // this server file id is then used later on when reverting or restoring a file
-            // so your server knows which file to return without exposing that info to the client
-            request.onload = function() {
-                if (request.status >= 200 && request.status < 300) {
-                    // the load method accepts either a string (id) or an object
-                    load(request.responseText);
-                }
-                else {
-                    // Can call the error method if something is wrong, should exit after
-                    error('oh no');
-                }
-            };
+            // // Should call the load method when done and pass the returned server file id
+            // // this server file id is then used later on when reverting or restoring a file
+            // // so your server knows which file to return without exposing that info to the client
+            // request.onload = function() {
+            //     if (request.status >= 200 && request.status < 300) {
+            //         // the load method accepts either a string (id) or an object
+            //         load(request.responseText);
+            //     }
+            //     else {
+            //         // Can call the error method if something is wrong, should exit after
+            //         error('oh no');
+            //     }
+            // };
 
-            request.send(formData);
+            // request.send(formData);
             
             // Should expose an abort method so the request can be cancelled
             return {
