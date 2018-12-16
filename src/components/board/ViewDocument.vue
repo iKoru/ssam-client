@@ -24,6 +24,7 @@ export default {
         .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
         .then(response => {
           console.log(response);
+        
           this.content = response.data;
         })
         .catch(error => {

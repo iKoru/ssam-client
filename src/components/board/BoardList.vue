@@ -6,7 +6,7 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            <td @click="viewDocument(props.item)">{{ props.item.title }}</td>
+            <td @click.stop="viewDocument(props.item)">{{ props.item.title }}</td>
             <td class="text-xs-center">{{ props.item.writeDateTime }}</td>
             <td class="text-xs-center">{{ props.item.nickName }}</td>
           </template>

@@ -5,7 +5,7 @@
     right: -5px;
     z-index: 1000;
     top: -10px;
-" color="red" @click="$emit('deleteQuestion', questionIndex)">mdi-close-circle</v-icon>
+" color="black" @click="$emit('deleteQuestion', questionIndex)">mdi-close-circle</v-icon>
     <v-card-media v-if="question" >
         <!-- <v-toolbar color="indigo" dark>
           <v-toolbar-title>질문추가</v-toolbar-title>
@@ -36,14 +36,16 @@
             </v-icon>
             <!-- <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title> -->
           </v-list-tile>
-          <v-list-tile class="px-2 py-0 my-0" style="height:30px!important; margin-top:-20px!important">
-            <v-layout row>
+          <v-list-tile class="px-2 py-0 my-0" style="height:40px!important; margin-top:-10px!important">
+            <v-layout row align-center>
               <v-flex xs6 @click="addAnswer()">
-                <v-icon color="indigo">mdi-plus-circle-outline</v-icon>
-                선택지추가
+                <v-layout align-center>
+                  <v-icon color="indigo">mdi-plus-circle-outline</v-icon>
+                  &nbsp;선택지추가
+                </v-layout>
               </v-flex>
               <v-flex xs6>
-                <v-checkbox hide-details v-model="question.allowMultiple" label="복수응답가능" class="mt-0 pt-0">
+                <v-checkbox hide-details v-model="question.allowMultipleChoice" label="복수응답가능" class="mt-0 pt-0">
                 </v-checkbox>
               </v-flex>
             </v-layout>
@@ -55,26 +57,13 @@
 
 <script>
 export default {
-  props: ['editingQuestion', 'questionIndex'],
+  props: ['editingQuestion'],
   data () {
     return {
       question: undefined
     }
   },
-  components: {
-  },
   mounted () {
-    // if (!this.editingQuestion) {
-    //   this.question = {
-    //     question: '',
-    //     answers: [
-    //       { text: '', selected: false },
-    //       { text: '', selected: false },
-    //       { text: '', selected: false }
-    //     ],
-    //     allowMultiple: false
-    //   }
-    // }
     this.question = this.editingQuestion
   },
   methods: {
@@ -88,17 +77,6 @@ export default {
       }
       this.question.choices.splice(index, 1)
     },
-    // addQuestion: function () {
-    //   if (!this.validateQuestion()) {
-    //     console.log('invalid')
-    //     return false
-    //   }
-    //   console.log('isthereselected', this.question)
-    //   this.$emit('addQuestion', this.question)
-    // },
-    // closeQuestionMaker: function () {
-    //   this.$emit('closeQuestionMaker')
-    // },
     modifyQuestionSuccess: function () {
       if (!this.validateQuestion()) {
         console.log('invalid')

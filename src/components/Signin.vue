@@ -58,20 +58,21 @@ export default {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
           });
+          console.log(response.data.token, jwt(response.data.token).userId)
           const redirectTo = response.data.redirectTo;
-          this.$axios
-            .get("/user")
-            .then(response => {
-              this.$store.dispatch("profile", response.data);
-              if (redirectTo) {
+          // this.$axios
+          //   .get("/user")
+          //   .then(response => {
+          //     this.$store.dispatch("profile", response.data);
+          //     if (redirectTo) {
                 this.$router.push(redirectTo + window.location.search); //preserve original redirect options
-              } else {
-                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
-              }
-            })
-            .catch(err => {
-              this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
-            });
+            //   } else {
+            //     this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+            //   }
+            // })
+            // .catch(err => {
+            //   this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
+            // });
         })
         .catch(err => {
           this.loading = false;

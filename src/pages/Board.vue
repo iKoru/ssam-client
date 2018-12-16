@@ -5,7 +5,7 @@
         <div class="w-100">
           <h3 class="w-100">
             {{board.boardName}}
-            <v-icon class="float-right" color="indigo" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
+            <v-icon v-if="!$route.path.includes('writeDocument')" class="float-right" color="indigo" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
           </h3>
         </div>
       </v-card-title>
@@ -28,7 +28,8 @@
 export default {
   name: "Board",
   data: () => ({
-    board: undefined
+    board: undefined,
+    writeButton: true
   }),
   components: {},
   created() {

@@ -1,7 +1,7 @@
 <template>
 <v-card>
   <v-toolbar dark color="indigo">
-    <v-toolbar-title>설문조사</v-toolbar-title>
+    <v-toolbar-title>설문조사 생성</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn color="success" dark @click="extractSurvey">설문완성</v-btn>
@@ -25,9 +25,9 @@
           </v-flex>
           <v-flex @click="pushQuestion()">
             <v-card class="text-xs-center">
-              <v-card-media>
-                <v-icon color="indigo">mdi-plus-circle</v-icon>질문추가
-              </v-card-media>
+                <v-layout align-center justify-center py-2 my-auto>
+                  <v-icon color="indigo">mdi-plus-circle</v-icon><v-label size="24">질문추가</v-label>
+                </v-layout>
             </v-card>
           </v-flex>
         </v-flex>
@@ -66,6 +66,7 @@ export default {
       this.questions.push(
         {
           title: '',
+          allowMultipleChoice: false,
           choices: ['', '']
         }
       )
@@ -126,7 +127,7 @@ export default {
         }
       })
       if (!catchSurveyError)
-        this.$emit('extractSurvey', JSON.stringify({ survey: this.questions }))
+        this.$emit('extractSurvey', { questions: this.questions })
 
     },
   validateQuestion (question) {
@@ -146,7 +147,7 @@ export default {
   right: 0;
 }
 .toolbar-btn-last {
-  margin-right:-16px!important
+  margin-right:-15px!important
 }
 .btn-xs {
   width:25px;

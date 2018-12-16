@@ -28,12 +28,12 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <div class="float-right">
+            <v-layout class="float-right" align-center justify-end>
               <button class="ql-image" value="image"></button>
-              <v-icon id="attach-button" size="medium" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
+              <v-icon id="attach-button" size="large" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
               <!-- You can also add your own -->
-              <v-icon id="survey-button" size="medium" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
-            </div>
+              <v-icon id="survey-button" size="large" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
+            </v-layout>
           </div>
         </quill-editor>
         <div>
@@ -50,20 +50,22 @@
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
-        <v-layout ref="isAnonymous" row class="ml-3 mr-3">
+        <v-layout ref="isAnonymous" row class="ml-3 mr-3" align-center>
           <v-flex xs-4>
-            <v-checkbox class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
+            <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
             </v-checkbox>
           </v-flex>
           <v-flex xs-4>
-            <v-checkbox v-if="!isAnonymous" class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
+            <v-checkbox v-if="!isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
             </v-checkbox>
           </v-flex>
           <v-flex xs-12 md-4 text-xs-right>
-            <v-chip v-if="survey" label color="pink" @click="surveyButtonClick">
-              <v-icon left>mdi-poll-box</v-icon><span style="color:white">설문</span>
-            </v-chip>
-            <v-icon>mdi-close</v-icon>
+            <v-layout v-if="survey" align-center justify-end>
+              <v-chip label color="pink" @click="surveyButtonClick">
+                <v-icon left>mdi-poll-box</v-icon><span style="color:white">설문</span>
+              </v-chip>
+              <v-icon @click="deleteSurvey">mdi-close</v-icon>
+            </v-layout>
           </v-flex>
         </v-layout>
         <v-btn class="success" @click="post()">업로드</v-btn>
@@ -99,7 +101,6 @@ export default {
       survey: undefined,
       surveyDialog: false,
       currentSurvey: { questions: [] },
-      survey: undefined,
       editorOption: {
         modules: {
           toolbar: '#toolbar',
@@ -108,7 +109,7 @@ export default {
         }
       },
       isAnonymous: false,
-      allowAnonymous: false
+      allowAnonymous: true
     }
   },
   // manually control the data synchronization
@@ -137,7 +138,8 @@ export default {
         title: this.title,
         contents: this.content,
         isAnonymous: this.isAnonymous,
-        allowAnonymous: this.allowAnonymous
+        allowAnonymous: this.allowAnonymous,
+        survey: this.survey
       }).then(res => {
         console.log(res)
       }).catch(err => {
@@ -195,6 +197,7 @@ export default {
         this.currentSurvey.questions.push(
           {
             title: '',
+            allowMultipleChoice: false,
             choices: ['', '']
           }
         )
@@ -205,16 +208,16 @@ export default {
       this.$refs.attachment.browseFile()
     },
     extractSurvey (survey) {
-      // this.surveyJSON = surveyJSON
       this.survey = survey
+      console.log(this.survey)
       this.surveyDialog = false
-    },
-    openSurvey () {
-      this.currentSurvey = JSON.parse(this.surveyJSON)
-      this.surveyDialog = true
     },
     closeSurvey () {
       this.surveyDialog = false
+    },
+    deleteSurvey () {
+      if(confirm('설문을 삭제합니다.'))
+        this.survey = undefined
     }
   },
   computed: {

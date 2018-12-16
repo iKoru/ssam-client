@@ -26,6 +26,7 @@ import {
   VAvatar,
   VImg,
   VProgressCircular,
+  VLabel,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -57,6 +58,7 @@ Vue.use(Vuetify, {
     VAvatar,
     VImg,
     VProgressCircular,
+    VLabel,
     transitions
   },
   directives: {
