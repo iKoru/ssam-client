@@ -3,12 +3,12 @@
     <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
-      <v-btn icon large flat slot="activator" v-if="$vuetify.breakpoint.smAndUp">
+    <v-menu offset-y right :nudge-bottom="10" transition="slide-y-transition">
+      <v-btn small flat slot="activator" v-if="$vuetify.breakpoint.smAndUp">
         <v-avatar size="30px">
-          <img src="static/img/man_1.jpg">
+          <img src="@/static/img/man_1.jpg">
         </v-avatar>
-        {{nickName || ''}}님, 안녕하세요!
+        {{nickName || ''}}
       </v-btn>
       <v-btn icon large slot="activator" v-if="$vuetify.breakpoint.xsOnly">
         <v-icon>menu</v-icon>
@@ -33,7 +33,7 @@ export default {
     return {
       items: [
         {
-          title: this.$store.getters.loungeNickName,
+          title: "내 계정정보",
           click: e => {
             this.$router.push("/myPage");
           }
@@ -45,18 +45,14 @@ export default {
           }
         },
         {
-          icon: "fullscreen_exit",
           title: "로그아웃",
-          click() {
+          click: () => {
             this.signout();
           }
         }
       ],
       notification: false
     };
-  },
-  created() {
-    console.log("created toolbar, ", this);
   },
   computed: {
     nickName() {
@@ -66,7 +62,7 @@ export default {
   methods: {
     signout() {
       this.$store.dispatch("signout");
-      this.$router.push("/");
+      this.$router.push("/index");
     }
   }
 };
