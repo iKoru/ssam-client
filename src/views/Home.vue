@@ -17,50 +17,55 @@
 </template>
 
 <script>
+import MainLayout from "../layouts/MainLayout";
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
-    Menu: () => import('@/components/Menu')
+    Menu: () => import("@/components/Menu")
   },
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: true,
       fixed: false,
-      items: [{
-        icon: 'mdi-chart-bubble',
-        title: 'Inspire'
-      }],
+      items: [
+        {
+          icon: "mdi-chart-bubble",
+          title: "Inspire"
+        }
+      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js',
+      title: "Vuetify.js",
       boards: undefined
-    }
+    };
   },
-  created () {
-    console.log('test')
-    this.$axios.get('/board/list')
+  created() {
+    this.$emit("update:layout", MainLayout);
+    this.$axios
+      .get("/board/list")
       .then(response => {
-        console.log(response)
-        this.boards = response.data
+        console.log(response);
+        this.boards = response.data;
       })
       .catch(error => {
-        console.log(error)
-      })
+        console.log(error);
+      });
   },
   methods: {
-    signout () {
-      this.$store.dispatch('signout')
-      this.$router.push('/')
+    signout() {
+      this.$store.dispatch("signout");
+      this.$router.push("/index");
     }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 ul {

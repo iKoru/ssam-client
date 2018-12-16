@@ -1,14 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import store from './store.js'
-import qs from 'querystring'
+import requireSignin from './middleware/requireSignin'
 Vue.use(Router)
-const requireAuth = () => (to, from, next) => {
-  console.log(to,from)
-  if (!store.state.accessToken) return next('/index?'+qs.stringify({redirectTo:to.path}))
-  next()
-}
+
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -16,13 +10,16 @@ const router = new Router({
     {
       path: '/index',
       name: 'index',
-      component: () => import('@/views/Index')
+      component: () => import('@/views/Index'),
+      meta: {
+        title: '선생님들의 공간'
+      }
     },
     {
       path: '',
       name: 'home',
       component: () => import('@/views/Home'),
-      beforeEnter: requireAuth(),
+      beforeEnter: requireSignin,
       children: [{
         path: '/board/:boardId',
         name: 'board',
@@ -45,6 +42,9 @@ const router = new Router({
           }
         ]
       }],
+      meta: {
+        title: '메인'
+      }
     },
     // {
     //   path: '/about',
@@ -57,20 +57,16 @@ const router = new Router({
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('@/pages/SignupPage')
+      component: () => import('@/pages/SignupPage'),
+      meta: {
+        title: '회원가입'
+      }
     }
   ]
 })
-// router.beforeEach((to, from, next) => {
-//   // console.log(to, from)
-//   const publicPages = ['/index', '/error'];
-//   const authRequired = !publicPages.includes(to.path);
-//   const loggedIn = store.getters.accessToken;
-//   console.log(loggedIn)
-//   if (authRequired && !loggedIn) {
-//     console.log('login')
-//     next('/index');
-//   } else next('/home');
-// })
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title ? to.meta.title + ' - pedagy' : 'pedagy'
+  next()
+})
 
 export default router

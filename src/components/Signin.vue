@@ -1,45 +1,24 @@
+/*global localStorage */
 <template>
   <v-container>
     <v-layout>
       <v-flex>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field
-            ref='userId'
-            height="20"
-            v-model="userId"
-            :rules="idRules"
-            label="아이디"
-            required
-            solo
-          ></v-text-field>
-          <v-text-field
-            ref='password'
-            height="20"
-            v-model="password"
-            :rules="passwordRules"
-            label="비밀번호"
-            required
-            solo
-            type='password'
-          ></v-text-field>
-          <v-checkbox
-            v-model="checkbox"
-            label="자동로그인"
-            required
-          ></v-checkbox>
-          <v-alert :value="true" type="error" v-show="message">{{message}}</v-alert>
+          <v-text-field name="userId" ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required maxlength="50" @focus="clearError" autofocus></v-text-field>
+          <v-text-field name="password" ref="password" height="20" v-model="password" :error="passwordError" :rules="passwordRules" label="비밀번호" required type="password" @keydown.enter.stop="signin" @focus="clearError"></v-text-field>
+          <v-checkbox class="small" v-model="rememberMe" label="자동 로그인" hide-details></v-checkbox>
+          <p class="text-xs-center">
+            <span class="error--text" v-show="message">{{message}}</span>
+          </p>
 
-          <v-btn
-            primary
-            :disabled="!valid"
-            @click="signin"
-            block
-          >
-            로그인
-          </v-btn>
-          <v-btn block @click.stop="$router.push('signup')">
-            회원가입
-          </v-btn>
+          <v-btn color="primary" :disabled="!valid" @click="signin" block :loading="loading">로그인</v-btn>
+          <p class="text-xs-center">
+            <small>
+              <router-link to="/signup">아직 회원이 아니신가요?</router-link>
+              <br>
+              <router-link to="/resetPassword">비밀번호를 잊으셨나요?</router-link>
+            </small>
+          </p>
         </v-form>
       </v-flex>
     </v-layout>
@@ -47,103 +26,180 @@
 </template>
 
 <script>
-// import { createNamespacedHelpers } from 'vuex'
-import jwt from 'jwt-decode'
+import jwt from "jwt-decode";
 export default {
-  name: 'Signin',
+  name: "Signin",
   data: () => ({
     loading: false,
     message: null,
+    userIdError: false,
+    passwordError: false,
     valid: true,
-    userId: '',
-    idRules: [
-      v => !!v || 'Name is required',
-      v => (v && v.length <= 10) || 'Name must be less than 10 characters'
-    ],
-    password: '',
-    passwordRules: [
-      v => !!v || 'E-mail is required',
-      v => (v && v.length <= 10) || 'E-mail must be valid'
-    ],
-    select: null,
-    checkbox: false
+    userId: "",
+    password: "",
+    rememberMe: false,
+    userIdRules: [v => !!v || "아이디를 입력해주세요."],
+    passwordRules: [v => !!v || "비밀번호를 입력해주세요."]
   }),
-  created () {
-    const token = localStorage.getItem('accessToken')
-    console.log(token)
+  created() {
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      this.loading = true
+      this.loading = true;
       this.$axios({
-        method: 'POST',
-        url: '/refresh',
-        headers: { 'x-auth': token }
+        method: "POST",
+        url: "/refresh",
+        headers: {"x-auth": token}
       })
         .then(response => {
-          this.loading = false
-          localStorage.setItem('accessToken', response.data.token)
-          this.$axios.defaults.headers.common['x-auth'] = response.data.token
-          this.$store.dispatch('signin', {
+          this.loading = false;
+          localStorage.setItem("accessToken", response.data.token);
+          this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+          this.$store.dispatch("signin", {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
-          })
-          this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/')
+          });
+          const redirectTo = response.data.redirectTo;
+          this.$axios
+            .get("/user")
+            .then(response => {
+              this.$store.dispatch("profile", response.data);
+              if (redirectTo) {
+                this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+              } else {
+                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+              }
+            })
+            .catch(err => {
+              this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
+            });
         })
         .catch(err => {
-          this.loading = false
-          if (err.response) {
-            console.log(err.response)
-            this.message = err.response.data.message
+          this.loading = false;
+          if (err.response && err.response.data) {
             if (err.response.data.target && this.$refs[err.response.data.target]) {
-              this.$refs[err.response.data.target].focus()
+              switch (err.response.data.target) {
+                case "userId":
+                  this.userIdError = true;
+                  this.$refs.userId.focus();
+                  break;
+                case "password":
+                  this.passwordError = true;
+                  this.$refs.password.focus();
+                  break;
+                default:
+                  break;
+              }
             }
+            this.message = err.response.data.message;
           } else {
-            console.log(err)
+            this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
           }
-          localStorage.removeItem('accessToken')
-        })
+          localStorage.removeItem("accessToken");
+        });
+    } else if (localStorage.getItem("userId")) {
+      this.userId = localStorage.getItem("userId");
     }
   },
+
+  watch: {
+    userId() {
+      if (this.userIdError) {
+        this.userIdError = false;
+      }
+      if (this.message) {
+        this.message = null;
+      }
+    },
+    password() {
+      if (this.passwordError) {
+        this.passwordError = false;
+      }
+      if (this.message) {
+        this.message = null;
+      }
+    }
+  },
+
   methods: {
-    signin () {
+    clearError() {
+      this.$refs.form.resetValidation();
+      this.message = null;
+    },
+    signin() {
       if (this.$refs.form.validate()) {
-        if (!this.userId || !this.password || this.userId === '' || this.password === '') {
-          this.message = '아이디와 비밀번호를 입력해주세요.'
-          return false
+        if (!this.userId || !this.password || this.userId === "" || this.password === "") {
+          this.message = "아이디와 비밀번호를 입력해주세요.";
+          return false;
         }
-        localStorage.setItem('userId', this.userId)
-        this.message = null
-        this.loading = true
+        localStorage.setItem("userId", this.userId);
+        this.message = null;
+        this.userIdError = false;
+        this.passwordError = false;
+        this.loading = true;
         this.$axios
-          .post('/signin', {
+          .post("/signin", {
             userId: this.userId,
-            password: this.password
+            password: this.password,
+            rememberMe: this.rememberMe
           })
           .then(response => {
-            localStorage.setItem('accessToken', response.data.token)
-            this.$axios.defaults.headers.common['x-auth'] = response.data.token
-            this.$store.dispatch('signin', {
+            localStorage.setItem("accessToken", response.data.token);
+            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+            this.$store.dispatch("signin", {
               accessToken: response.data.token,
-              userId: jwt(response.data.token).userId
-            })
-            this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/')
+              userId: this.userId
+            });
+            const redirectTo = response.data.redirectTo;
+            this.$axios
+              .get("/user")
+              .then(response => {
+                this.$store.dispatch("profile", response.data);
+                if (redirectTo) {
+                  this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                } else {
+                  this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+                }
+              })
+              .catch(err => {
+                this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
+              });
           })
           .catch(err => {
-            this.loading = false
-            console.log(err)
-            if (err.response) {
-              this.message = err.response.data.message
+            this.loading = false;
+            if (err.response && err.response.data) {
               if (err.response.data.target && this.$refs[err.response.data.target]) {
-                this.$refs[err.response.data.target].focus()
+                switch (err.response.data.target) {
+                  case "userId":
+                    this.userIdError = true;
+                    this.$refs.userId.focus();
+                    break;
+                  case "password":
+                    this.passwordError = true;
+                    this.$refs.password.focus();
+                    break;
+                  default:
+                    break;
+                }
               }
+              this.message = err.response.data.message;
             } else {
-              this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.'
+              this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
             }
-          })
+          });
       }
     }
   }
-}
+};
 </script>
 
-<style scoped>
+<style>
+.small i.v-icon,
+.small label {
+  font-size: 16px;
+}
+.small .v-input--selection-controls__input {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
 </style>

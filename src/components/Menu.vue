@@ -6,23 +6,22 @@
         <v-btn :key="index" v-for="(board, index) in boards">
           <router-link :to="{path:`/board/${board.boardId}`}" exact>{{board.boardName}}</router-link>
         </v-btn>
-
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 export default {
-  name: 'Signin',
-  props: ['boards']
-}
+  name: "Signin",
+  props: ["boards"]
+};
 </script>
 
 <style scoped>
 .menu {
-    height: 150px;
-    background-color: lightgrey;
+  height: 150px;
+  background-color: lightgrey;
 }
 </style>
