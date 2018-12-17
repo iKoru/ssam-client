@@ -1,4 +1,3 @@
-/*global localStorage */
 <template>
   <v-container>
     <v-layout>
@@ -26,6 +25,7 @@
 </template>
 
 <script>
+/* global localStorage */
 import jwt from "jwt-decode";
 export default {
   name: "Signin",
@@ -44,7 +44,6 @@ export default {
   created() {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      this.loading = true;
       this.$axios({
         method: "POST",
         url: "/refresh",
@@ -61,16 +60,21 @@ export default {
           const redirectTo = response.data.redirectTo;
           this.$axios
             .get("/user")
-            .then(response => {
+            .then(response=> {
               this.$store.dispatch("profile", response.data);
               if (redirectTo) {
-                this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                if(redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= this.$moment().format('YYYYMMDD')){
+                  this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+                }else{
+                  this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                }
               } else {
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
               }
             })
-            .catch(err => {
-              this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
+            .catch(err=> {
+              console.log(err);
+              this.$store.dispatch("showSnackbar", {text: (err&&err.response? err.response.data.message:'서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.'), color: "error"});
             });
         })
         .catch(err => {
@@ -155,16 +159,20 @@ export default {
               .then(response => {
                 this.$store.dispatch("profile", response.data);
                 if (redirectTo) {
-                  this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                  if(redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= this.$moment().format('YYYYMMDD')){
+                    this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+                  }else{
+                    this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                  }
                 } else {
                   this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
                 }
               })
-              .catch(err => {
-                this.$store.dispatch("showSnackbar", {text: err.response.data.message, color: "error"});
+              .catch(err=> {
+                this.$store.dispatch("showSnackbar", {text: err&& err.response?err.response.data.message:'서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.', color: "error"});
               });
           })
-          .catch(err => {
+          .catch(err=> {
             this.loading = false;
             if (err.response && err.response.data) {
               if (err.response.data.target && this.$refs[err.response.data.target]) {
