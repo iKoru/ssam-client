@@ -20,9 +20,8 @@
 </template>
 
 <script>
-
 export default {
-  name: "App",
+  name: "Pedagy",
   data: () => ({
     layout: "div"
   }),
@@ -37,12 +36,12 @@ export default {
         this.$store.dispatch("showNextSnackbar");
       }
     }
-  },
-  methods: {
-  },
+  }
 };
 </script>
-
+<style lang="stylus">
+@import 'assets/common.styl';
+</style>
 <style>
 @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 @import url(https://fonts.googleapis.com/css?family=Material+Icons);
