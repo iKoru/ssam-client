@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import eventHub from './eventhub'
+import store from '../store'
 // Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -19,12 +19,12 @@ const _axios = axios.create(config)
 _axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    eventHub.$emit('before-request')
+    console.log(Vue);
+    store.dispatch('showSpinner');
     return config
   },
   function (error) {
     // Do something with request error
-    eventHub.$emit('request-error')
     return Promise.reject(error)
   }
 )
@@ -33,16 +33,16 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function (response) {
     // Do something with response data
-    eventHub.$emit('after-response')
+    store.dispatch('hideSpinner')
     return response
   },
   function (error) {
     // Do something with response error
+    store.dispatch('hideSpinner')
     console.log(error.response)
     if (error.response.status === 401) {
       console.log('need refresh!')
     }
-    eventHub.$emit('response-error', error.response.status)
     return Promise.reject(error)
   }
 )
