@@ -3,7 +3,7 @@ import jwt from 'jwt-decode'
 import store from '../store.js'
 import router from '../router'
 export default (to, from, next) => {
-  if (!store.state.accessToken) {
+  if (!store.getters.accessToken) {
     const token = localStorage.getItem('accessToken')
     if (token) {
       router.app.$axios({
@@ -24,13 +24,18 @@ export default (to, from, next) => {
             .then(response => {
               store.dispatch('profile', response.data);
               if (redirectTo) {
-                next(redirectTo + qs.stringify({ redirectTo: to.path })); // preserve original redirect options
+                if(redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= router.app.$moment().format('YYYYMMDD')){
+                  next();
+                }else{
+                  next(redirectTo + '?' + qs.stringify({ redirectTo: to.path })); // preserve original redirect options
+                }
               } else {
                 next();
               }
             })
             .catch(err => {
-              store.dispatch('showSnackbar', { text: err.response.data.message, color: 'error' });
+              console.log(err);
+              store.dispatch('showSnackbar', { text: err.response?err.response.data.message:'서버와 연결하지 못했습니다. 인터넷 환경을 확인해주세요.', color: 'error' });
               next()
             });
         })
