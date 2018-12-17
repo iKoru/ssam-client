@@ -45,7 +45,7 @@ export default {
 
 <style>
 @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-
+@import url(https://fonts.googleapis.com/css?family=Material+Icons);
 .w-100 {
   width: 100%;
 }
