@@ -1,7 +1,5 @@
 <template>
   <v-container px-0 fluid>
-    <Menu :boards="boards"/>
-    <MenuDrawer :boards="boards"/>
     <v-slide-y-transition mode="out-in">
       <v-layout row wrap align-center>
         <v-flex xs8 offset-xs2>
@@ -27,18 +25,8 @@ export default {
   },
   created() {
     this.$emit("update:layout", MainLayout);
-    this.$axios
-      .get("/board/list")
-      .then(response => {
-        console.log(response);
-        this.boards = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
   },
-  methods: {
-  }
+  methods: {}
 };
 </script>
 

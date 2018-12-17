@@ -25,9 +25,9 @@ export default (to, from, next) => {
             .then(response => {
               store.dispatch('profile', response.data);
               if (redirectTo) {
-                if(redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= router.app.$moment().format('YYYYMMDD')){
+                if (redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= router.app.$moment().format('YYYYMMDD')) {
                   next();
-                }else{
+                } else {
                   next(redirectTo + '?' + qs.stringify({ redirectTo: to.path })); // preserve original redirect options
                 }
               } else {
@@ -35,7 +35,7 @@ export default (to, from, next) => {
               }
             })
             .catch(err => {
-              store.dispatch('showSnackbar', { text: err.response?err.response.data.message:'서버와 연결하지 못했습니다. 인터넷 환경을 확인해주세요.', color: 'error' });
+              store.dispatch('showSnackbar', { text: err.response ? err.response.data.message : '서버와 연결하지 못했습니다. 인터넷 환경을 확인해주세요.', color: 'error' });
               next()
             });
         })

@@ -16,7 +16,8 @@ export default new Vuex.Store({
       waiting: []
     },
     spinner: false,
-    menuDrawer: false
+    menuDrawer: false,
+    boards: []
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -26,13 +27,13 @@ export default new Vuex.Store({
       return userId
     },
     loungeNickName ({ profile }) {
-      return profile?profile.loungeNickName : '';
+      return profile ? profile.loungeNickName : '';
     },
     topicNickName ({ profile }) {
-      return profile?profile.topicNickName : '';
+      return profile ? profile.topicNickName : '';
     },
-    status({profile}){
-      return profile? profile.status : 'NORMAL';
+    status ({ profile }) {
+      return profile ? profile.status : 'NORMAL';
     },
     isLight ({ boardType }) {
       return boardType !== 'T'
@@ -46,11 +47,14 @@ export default new Vuex.Store({
     snackbarQueue ({ snackbar }) {
       return snackbar.waiting
     },
-    spinner({spinner}){
+    spinner ({ spinner }) {
       return spinner
     },
-    menuDrawer({menuDrawer}){
+    menuDrawer ({ menuDrawer }) {
       return menuDrawer
+    },
+    boards ({ boards }) {
+      return boards
     }
   },
   mutations: {
@@ -83,17 +87,20 @@ export default new Vuex.Store({
         state.snackbar.isShowing = true;
       }
     },
-    CLOSE_SNACKBAR(state){
+    CLOSE_SNACKBAR (state) {
       state.snackbar.isShowing = false;
     },
-    SHOW_SPINNER(state){
+    SHOW_SPINNER (state) {
       state.spinner = true
     },
-    HIDE_SPINNER(state){
+    HIDE_SPINNER (state) {
       state.spinner = false
     },
-    TOGGLE_MENUDRAWER(state){
+    TOGGLE_MENUDRAWER (state) {
       state.menuDrawer = !state.menuDrawer
+    },
+    SET_BOARDS (state, boards) {
+      state.boards = boards
     }
   },
   actions: {
@@ -124,17 +131,24 @@ export default new Vuex.Store({
         commit('DEQUEUE_SNACKBAR');
       }
     },
-    closeSnackbar({commit}){
+    closeSnackbar ({ commit }) {
       commit('CLOSE_SNACKBAR')
     },
-    showSpinner({commit}){
+    showSpinner ({ commit }) {
       commit('SHOW_SPINNER')
     },
-    hideSpinner({commit}){
+    hideSpinner ({ commit }) {
       commit('HIDE_SPINNER')
     },
-    toggleMenuDrawer({commit}){
+    toggleMenuDrawer ({ commit }) {
       commit('TOGGLE_MENUDRAWER')
+    },
+    setBoards ({ commit }, boards) {
+      if (Array.isArray(boards)) {
+        commit('SET_BOARDS', boards)
+      } else {
+        commit('SET_BOARDS', [])
+      }
     }
   }
 })
