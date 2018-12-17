@@ -11,7 +11,7 @@
         {{nickName || ''}}
       </v-btn>
       <v-btn icon large slot="activator" v-if="$vuetify.breakpoint.xsOnly">
-        <v-icon>menu</v-icon>
+        <v-icon>person</v-icon>
       </v-btn>
       <v-list class="pa-0">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">

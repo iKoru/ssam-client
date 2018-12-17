@@ -1,3 +1,4 @@
+/* global localStorage */
 import qs from 'querystring'
 import jwt from 'jwt-decode'
 import store from '../store.js'
@@ -34,7 +35,6 @@ export default (to, from, next) => {
               }
             })
             .catch(err => {
-              console.log(err);
               store.dispatch('showSnackbar', { text: err.response?err.response.data.message:'서버와 연결하지 못했습니다. 인터넷 환경을 확인해주세요.', color: 'error' });
               next()
             });

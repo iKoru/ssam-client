@@ -41,9 +41,9 @@ _axios.interceptors.response.use(
   function (error) {
     // Do something with response error
     store.dispatch('hideSpinner')
-    console.log(error.response)
     if (error.response.status === 401) {
       console.log('need refresh!')
+      console.log(error)
       const token = localStorage.getItem('accessToken')
       if (token) {
         _axios({
