@@ -46,18 +46,26 @@ const router = new Router({
         title: '메인'
       }
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    // },
+    {
+      path: '/auth',
+      name: 'auth',
+      component: () => import('@/views/Auth'),
+      meta: {
+        title: '인증'
+      }
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('./views/About.vue'),
+      mets:{
+        title:'pedagy 소개'
+      }
+    },
     {
       path: '/signup',
       name: 'signup',
-      component: () => import('@/pages/SignupPage'),
+      component: () => import('@/views/Signup'),
       meta: {
         title: '회원가입'
       }
