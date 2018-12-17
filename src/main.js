@@ -5,8 +5,8 @@ import router from './router'
 import store from './store'
 import './plugins/vuetify'
 import './plugins/vue-quill-editor'
-import './plugins/axios'
 import './plugins/moment'
+import './plugins/axios'
 import './registerServiceWorker'
 
 Vue.config.productionTip = false
