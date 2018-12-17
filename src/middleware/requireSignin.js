@@ -41,10 +41,10 @@ export default (to, from, next) => {
         })
         .catch(() => {
           localStorage.removeItem('accessToken');
-          return next('/index?' + qs.stringify({ redirectTo: to.path }))
+          return next('/signin?' + qs.stringify({ redirectTo: to.path }))
         });
     } else {
-      return next('/index?' + qs.stringify({ redirectTo: to.path }))
+      return next('/signin?' + qs.stringify({ redirectTo: to.path }))
     }
   } else {
     next()

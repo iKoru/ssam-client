@@ -58,8 +58,8 @@ const router = new Router({
       path: '/about',
       name: 'about',
       component: () => import('./views/About.vue'),
-      mets:{
-        title:'pedagy 소개'
+      mets: {
+        title: 'pedagy 소개'
       }
     },
     {
@@ -68,6 +68,14 @@ const router = new Router({
       component: () => import('@/views/Signup'),
       meta: {
         title: '회원가입'
+      }
+    },
+    {
+      path: '/signin',
+      name: 'signin',
+      component: () => import('@/views/Signin'),
+      meta: {
+        title: '로그인'
       }
     }
   ]
