@@ -23,7 +23,7 @@ const router = new Router({
       children: [{
         path: '/board/:boardId',
         name: 'board',
-        component: () => import('@/pages/Board'),
+        component: () => import('@/views/Board'),
         children: [
           {
             path: '/',
