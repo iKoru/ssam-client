@@ -1,7 +1,7 @@
 <template id="mainToolbar">
   <v-toolbar color="white" :fixed="false" :light="$store.getters.isLight" flat>
-    <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
-    <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
+    <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
+    <v-toolbar-title class="ml-0 pl-3">pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-menu offset-y right :nudge-bottom="10" transition="slide-y-transition">
       <v-btn small flat slot="activator" v-if="$vuetify.breakpoint.smAndUp">
@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     nickName() {
-      return this.$store.getters.loungeNickName;
+      return this.$store.getters.isLight?this.$store.getters.loungeNickName:this.$store.getters.topicNickName;
     }
   },
   methods: {

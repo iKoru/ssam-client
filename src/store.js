@@ -15,7 +15,8 @@ export default new Vuex.Store({
       isShowing: false,
       waiting: []
     },
-    spinner: false
+    spinner: false,
+    menuDrawer: false
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -47,6 +48,9 @@ export default new Vuex.Store({
     },
     spinner({spinner}){
       return spinner
+    },
+    menuDrawer({menuDrawer}){
+      return menuDrawer
     }
   },
   mutations: {
@@ -87,6 +91,9 @@ export default new Vuex.Store({
     },
     HIDE_SPINNER(state){
       state.spinner = false
+    },
+    TOGGLE_MENUDRAWER(state){
+      state.menuDrawer = !state.menuDrawer
     }
   },
   actions: {
@@ -125,6 +132,9 @@ export default new Vuex.Store({
     },
     hideSpinner({commit}){
       commit('HIDE_SPINNER')
+    },
+    toggleMenuDrawer({commit}){
+      commit('TOGGLE_MENUDRAWER')
     }
   }
 })
