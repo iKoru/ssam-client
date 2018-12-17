@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import IndexLayout from "../layouts/IndexLayout";
 export default {
   components: {
     Signin: () => import("@/components/Signin.vue"),
@@ -28,7 +28,7 @@ export default {
   },
   name: "Index",
   created() {
-    this.$emit("update:layout", PublicLayout);
+    this.$emit("update:layout", IndexLayout);
   },
   data() {
     return {

@@ -15,7 +15,14 @@
 </template>
 
 <script>
+import PublicLayout from "../layouts/PublicLayout";
 export default {
+  compoments: {
+    Signin: () => import("@/components/Signin")
+  },
+  created() {
+    this.$emit("update:layout", PublicLayout);
+  },
   data: () => ({
     valid: true,
     userId: "",
