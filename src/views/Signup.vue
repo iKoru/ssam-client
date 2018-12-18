@@ -62,9 +62,11 @@
               </v-layout>
             </v-container>
           </v-card>
-
-          <v-btn color="primary" @click="submit">회원가입</v-btn>
-          <v-btn flat @click="step=1">취소</v-btn>
+          <v-layout row>
+            <v-spacer/>
+            <v-btn flat @click="step=1">취소</v-btn>
+            <v-btn color="primary" @click="submit">회원가입</v-btn>
+          </v-layout>
         </v-stepper-content>
 
         <v-stepper-content step="3">
@@ -97,32 +99,32 @@
               <v-flex>
                 <v-form ref="form" v-model="valid" lazy-validation>
                   <v-layout row xs12 wrap>
-                    <v-flex>
-                      <v-text-field v-model="userId" :rules="userIdRules" maxlength="50" label="아이디" required hint="최대 50자"></v-text-field>
-                    </v-flex>
-                    <v-flex sm6>
-                      <v-text-field v-model="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자"></v-text-field>
-                    </v-flex>
-                    <v-flex sm6>
-                      <v-text-field v-model="rePassword" :rules="passwordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자"></v-text-field>
+                    <v-flex xs12>
+                      <v-text-field v-model="userId" class="dense" :rules="userIdRules" maxlength="50" label="아이디" required hint="최대 50자"></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field v-model="email" :rules="emailRules" maxlength="90" label="이메일" required hint="최대 90자"></v-text-field>
+                      <v-text-field v-model="password" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자"></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-autocomplete v-model="emailHost" :items="emailHostItems" required></v-autocomplete>
+                      <v-text-field v-model="rePassword" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자"></v-text-field>
                     </v-flex>
-                    <v-flex md4>
-                      <v-select v-model="emailHost" :items="regionItems" disabled label="지역" hint="이메일을 입력하면 자동으로 선택됩니다."></v-select>
+                    <v-flex xs6>
+                      <v-text-field v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" required hint="최대 90자"></v-text-field>
                     </v-flex>
-                    <v-flex xs6 md4>
-                      <v-select v-model="major" :items="majorItems" label="전공과목" hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
+                    <v-flex xs6>
+                      <v-autocomplete v-model="emailHost" class="dense" :items="emailHostItems" required dense prepend-icon="alternate_email" label="교육청 메일 뒷자리"></v-autocomplete>
                     </v-flex>
-                    <v-flex xs6 md4>
-                      <v-select v-model="grade" :items="gradeItems" label="학년" hint="학년별 게시판에 글을 쓸 수 있습니다."></v-select>
+                    <v-flex xs4>
+                      <v-select v-model="emailHost" class="dense" :items="regionItems" disabled dense label="지역" placeholder="이메일로 지정"></v-select>
                     </v-flex>
-                    <v-flex>
-                      <v-text-field v-model="inviter" maxlength="10" label="추천인코드"></v-text-field>
+                    <v-flex xs4>
+                      <v-select v-model="major" class="dense" :items="majorItems" label="전공과목" dense hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
+                    </v-flex>
+                    <v-flex xs4>
+                      <v-select v-model="grade" class="dense" :items="gradeItems" label="학년" dense hint="학년별 게시판에 글을 쓸 수 있습니다."></v-select>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field v-model="inviter" class="dense" maxlength="10" label="추천인코드"></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-form>
@@ -130,9 +132,11 @@
             </v-layout>
           </v-container>
         </v-card>
-
-        <v-btn color="primary" @click="submit">회원가입</v-btn>
-        <v-btn flat @click="step=1">취소</v-btn>
+        <v-layout row>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="step=1">취소</v-btn>
+          <v-btn color="primary" @click="submit">회원가입</v-btn>
+        </v-layout>
       </v-stepper-content>
 
       <v-stepper-step step="3">이메일 인증</v-stepper-step>
