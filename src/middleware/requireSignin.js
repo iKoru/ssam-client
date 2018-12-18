@@ -4,6 +4,7 @@ import jwt from 'jwt-decode'
 import store from '../store.js'
 import router from '../router'
 export default (to, from, next) => {
+  console.log(to);
   if (!store.getters.accessToken) {
     const token = localStorage.getItem('accessToken')
     if (token) {
@@ -41,10 +42,10 @@ export default (to, from, next) => {
         })
         .catch(() => {
           localStorage.removeItem('accessToken');
-          return next('/signin?' + qs.stringify({ redirectTo: to.path }))
+          return next((to.path === '/'?'/index?':'/signin?') + qs.stringify({ redirectTo: to.path }))
         });
     } else {
-      return next('/signin?' + qs.stringify({ redirectTo: to.path }))
+      return next((to.path === '/'?'/index?':'/signin?') + qs.stringify({ redirectTo: to.path }))
     }
   } else {
     next()
