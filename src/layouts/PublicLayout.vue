@@ -4,9 +4,7 @@
     <main class="publicLayout__main">
       <slot></slot>
     </main>
-    <footer class="publicLayout__footer">
-      <main-footer></main-footer>
-    </footer>
+    <main-footer class="publicLayout__footer"></main-footer>
   </div>
 </template>
 <script>
@@ -19,3 +17,8 @@ export default {
   }
 };
 </script>
+<style>
+  .publicLayout__main{
+    margin-bottom:100px;
+  }
+</style>
