@@ -1,5 +1,5 @@
 <template>
-  <v-stepper v-model="step" :vertical="$vuetify.breakpoint.xsOnly">
+  <v-stepper v-model="step" :vertical="$vuetify.breakpoint.xsOnly" id="signupStepper">
     <template v-if="$vuetify.breakpoint.smAndUp">
       <v-stepper-header>
         <v-stepper-step :complete="step > 1" step="1">약관 동의</v-stepper-step>
@@ -10,22 +10,55 @@
       </v-stepper-header>
       <v-stepper-items>
         <v-stepper-content step="1">
-          <v-card class="mb-5" color="grey lighten-1" height="200px">
-            이용약관입니다. 동의해주세용.
-          </v-card>
-          <v-checkbox v-model="agreeContract" label="동의" hide-details></v-checkbox>
-          <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+          <div id="contractContents">
+            이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.
+          </div>
+          <v-layout row>
+            <v-spacer></v-spacer>
+            <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-center"></v-checkbox>
+            <v-spacer></v-spacer>
+          </v-layout>
+          <v-layout row>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+          </v-layout>
         </v-stepper-content>
   
         <v-stepper-content step="2">
-          <v-card class="mb-5" color="grey lighten-1" height="200px">
+          <v-card class="mb-5 stepperContents">
             <v-container>
               <v-layout>
                 <v-flex>
-                  <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-text-field v-model="userId" :rules="userIdRules" :counter="10" label="아이디" required></v-text-field>
-                    <v-text-field v-model="password" :rules="passwordRules" label="비밀번호" required></v-text-field>
-                    <v-text-field v-model="email" :rules="emailRules" label="이메일" required></v-text-field>
+                  <v-form ref="form" v-model="valid">
+                    <v-layout row xs12 wrap>
+                      <v-flex sm12>
+                        <v-text-field v-model="userId" :rules="userIdRules" maxlength="50" box label="아이디" required hint="최대 50자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-text-field v-model="password" :rules="passwordRules" maxlength="25" box label="비밀번호" required hint="4~25자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-text-field v-model="rePassword" :rules="passwordRules" maxlength="25" box label="비밀번호 재입력" required hint="4~25자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-text-field v-model="email" :rules="emailRules" maxlength="90" label="이메일" box required hint="최대 90자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-autocomplete v-model="emailHost" :items="emailHostItems" required box dense prepend-icon="alternate_email" label="교육청 메일 뒷자리"></v-autocomplete>
+                      </v-flex>
+                      <v-flex sm4>
+                        <v-select v-model="emailHost" :items="regionItems" disabled box dense label="지역" placeholder="이메일을 입력하면 자동입력됩니다."></v-select>
+                      </v-flex>
+                      <v-flex sm4>
+                        <v-select v-model="major" :items="majorItems" label="전공과목" box dense hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
+                      </v-flex>
+                      <v-flex sm4>
+                        <v-select v-model="grade" :items="gradeItems" label="학년" box dense hint="학년별 게시판에 글을 쓸 수 있습니다."></v-select>
+                      </v-flex>
+                      <v-flex sm4>
+                        <v-text-field v-model="inviter" maxlength="10" box label="추천인코드"></v-text-field>
+                      </v-flex>
+                    </v-layout>
                   </v-form>
                 </v-flex>
               </v-layout>
@@ -37,7 +70,7 @@
         </v-stepper-content>
   
         <v-stepper-content step="3">
-          <v-card class="mb-5" color="grey lighten-1" height="200px">
+          <v-card class="mb-5 stepperContents" >
             회원가입 되었습니다. 이메일을 인증해주세요.
           </v-card>
   
@@ -48,36 +81,69 @@
     <template v-else>
       <v-stepper-step :complete="step > 1" step="1">약관 동의</v-stepper-step>
       <v-stepper-content step="1">
-        <v-card class="mb-5" color="grey lighten-1" height="200px">
-          이용약관입니다. 동의해주세용.
-        </v-card>
-        <v-checkbox v-model="agreeContract" label="동의" hide-details></v-checkbox>
-        <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+        <div id="contractContents">
+          이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.이용약관입니다. 동의해주세용.
+        </div>
+        <v-layout row>
+          <v-spacer></v-spacer>
+          <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-center"></v-checkbox>
+          <v-spacer></v-spacer>
+        </v-layout>
+        <v-layout row>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+        </v-layout>
       </v-stepper-content>
 
       <v-stepper-step :complete="step > 2" step="2">회원정보 입력</v-stepper-step>
       <v-stepper-content step="2">
-        <v-card class="mb-5" color="grey lighten-1" height="200px">
-          <v-container>
-            <v-layout>
-              <v-flex>
-                <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="userId" :rules="userIdRules" :counter="10" label="아이디" required></v-text-field>
-                  <v-text-field v-model="password" :rules="passwordRules" label="비밀번호" required></v-text-field>
-                  <v-text-field v-model="email" :rules="emailRules" label="이메일" required></v-text-field>
-                </v-form>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-
-        <v-btn color="primary" @click="submit">회원가입</v-btn>
-        <v-btn flat @click="step=1">취소</v-btn>
-      </v-stepper-content>
+          <v-card class="mb-5 stepperContents">
+            <v-container>
+              <v-layout>
+                <v-flex>
+                  <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-layout row xs12 wrap>
+                      <v-flex>
+                        <v-text-field v-model="userId" :rules="userIdRules" maxlength="50" label="아이디" required hint="최대 50자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-text-field v-model="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자"></v-text-field>
+                      </v-flex>
+                      <v-flex sm6>
+                        <v-text-field v-model="rePassword" :rules="passwordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자"></v-text-field>
+                      </v-flex>
+                      <v-flex xs6>
+                        <v-text-field v-model="email" :rules="emailRules" maxlength="90" label="이메일" required hint="최대 90자"></v-text-field>
+                      </v-flex>
+                      <v-flex xs6>
+                        <v-autocomplete v-model="emailHost" :items="emailHostItems" required></v-autocomplete>
+                      </v-flex>
+                      <v-flex md4>
+                        <v-select v-model="emailHost" :items="regionItems" disabled label="지역" hint="이메일을 입력하면 자동으로 선택됩니다."></v-select>
+                      </v-flex>
+                      <v-flex xs6 md4>
+                        <v-select v-model="major" :items="majorItems" label="전공과목" hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
+                      </v-flex>
+                      <v-flex xs6 md4>
+                        <v-select v-model="grade" :items="gradeItems" label="학년" hint="학년별 게시판에 글을 쓸 수 있습니다."></v-select>
+                      </v-flex>
+                      <v-flex>
+                        <v-text-field v-model="inviter" maxlength="10" label="추천인코드"></v-text-field>
+                      </v-flex>
+                    </v-layout>
+                  </v-form>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card>
+  
+          <v-btn color="primary" @click="submit">회원가입</v-btn>
+          <v-btn flat @click="step=1">취소</v-btn>
+        </v-stepper-content>
 
       <v-stepper-step step="3">이메일 인증</v-stepper-step>
       <v-stepper-content step="3">
-        <v-card class="mb-5" color="grey lighten-1" height="200px">
+        <v-card class="mb-5 stepperContents">
           회원가입 되었습니다. 이메일을 인증해주세요.
         </v-card>
 
@@ -99,19 +165,26 @@ export default {
     step: 1,
     valid: true,
     userId: "",
-    userIdRules: [v => !!v || "Email is required", v => (v && /(?=.*[a-zA-Z]+)(?=.*[a-zA-Z0-9_!^&*$]{4,50}).*/.test(v)) || "Name must be less than 10 characters"],
     password: "",
-    passwordRules: [v => !!v || "Name is required", v => (v && v.length <= 10) || "Name must be less than 10 characters"],
+    rePassword: "",
     email: "",
-    emailRules: [v => !!v || "E-mail is required", v => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(sen|goe|ice|gwe|cbe|cne|dje|sje|jbe|jne|gen|gbe|gne|use|pen|jje)\.go\.kr\b/.test(v) || "E-mail must be valid"],
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false
+    grade:null,
+    major:null,
+    region:null,
+    emailHost: null,
+    inviter:null,
+    gradeItems:[],
+    majorItems:[],
+    emailHostItems:['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbe.go.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
+    regionItems:[{value:'sen.go.kr', text:'서울'}, {value:'goe.go.kr', text:'경기'}, {value:'ice.go.kr', text:'인천'}, {value:'gwe.go.kr', text:'강원'}, {value:'cbe.go.kr', text:'충북'}, {value:'cne.go.kr', text:'충남'}, {value:'dje.go.kr', text:'대전'}, {value:'sje.go.kr', text:'세종'}, {value:'jbe.go.kr', text:'전북'}, {value:'jne.go.kr', text:'전남'}, {value:'gen.go.kr', text:'광주'}, {value:'gbe.go.kr', text:'경북'}, {value:'gne.go.kr', text:'경남'}, {value:'use.go.kr', text:'울산'}, {value:'pen.go.kr', text:'부산'}, {value:'jje.go.kr', text:'제주'}],
+    userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /(?=.*[a-zA-Z]+)(?=.*[a-zA-Z0-9_!^&*$]{4,50}).*/.test(v)) || "ID는 알파벳을 포함한 4~50자로 입력해주세요."],
+    passwordRules: [v => !!v || "비밀번호를 입력해주세요."],
+    emailRules: [v => !!v || "이메일을 입력해주세요.", v => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일 계정이 올바르지 않습니다."]
   }),
   watch:{
-    el(val){
+    step(val){
       if(val === 3){
-        
+        console.log(val);
       }
     }
   },
@@ -144,10 +217,28 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 div.v-input__slot {
   margin-bottom: 0 !important;
   min-height: unset !important;
   padding: 5px 0 !important;
+}
+#contractContents{
+  height:200px;
+  overflow-y:scroll;
+}
+#signupStepper{
+  max-width:900px;
+  margin:3rem auto auto auto;
+}
+.stepperContents{
+  min-height:300px;
+}
+form .flex{
+  padding-left: .5rem;
+  padding-right:.5rem;
+}
+form .v-icon.v-icon--disabled{
+  display:none;
 }
 </style>
