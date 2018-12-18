@@ -39,9 +39,6 @@ export default {
   }
 };
 </script>
-<style lang="stylus">
-@import 'assets/common.styl';
-</style>
 <style>
 @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 @import url(https://fonts.googleapis.com/css?family=Material+Icons);

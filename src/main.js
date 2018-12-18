@@ -8,6 +8,7 @@ import './plugins/vue-quill-editor'
 import './plugins/moment'
 import './plugins/axios'
 import './registerServiceWorker'
+import './assets/common.styl'
 
 Vue.config.productionTip = false
 
