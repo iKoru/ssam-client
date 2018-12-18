@@ -1,6 +1,5 @@
 <template>
   <v-container px-0 fluid>
-    <Menu :boards="boards"/>
     <v-slide-y-transition mode="out-in">
       <v-layout row wrap align-center>
         <v-flex xs8 offset-xs2>
@@ -16,44 +15,18 @@ import MainLayout from "../layouts/MainLayout";
 export default {
   name: "Home",
   components: {
-    Menu: () => import("@/components/Menu")
+    Menu: () => import("@/components/Menu"),
+    MenuDrawer: () => import("@/components/MenuDrawer")
   },
   data() {
     return {
-      clipped: false,
-      drawer: true,
-      fixed: false,
-      items: [
-        {
-          icon: "mdi-chart-bubble",
-          title: "Inspire"
-        }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: "Vuetify.js",
-      boards: undefined
+      boards: []
     };
   },
   created() {
     this.$emit("update:layout", MainLayout);
-    this.$axios
-      .get("/board/list")
-      .then(response => {
-        console.log(response);
-        this.boards = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
   },
-  methods: {
-    signout() {
-      this.$store.dispatch("signout");
-      this.$router.push("/index");
-    }
-  }
+  methods: {}
 };
 </script>
 

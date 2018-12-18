@@ -26,7 +26,12 @@ import {
   VAvatar,
   VImg,
   VProgressCircular,
+<<<<<<< HEAD
   VLabel,
+=======
+  VStepper,
+  VAutocomplete,
+>>>>>>> origin/user
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -58,7 +63,12 @@ Vue.use(Vuetify, {
     VAvatar,
     VImg,
     VProgressCircular,
+<<<<<<< HEAD
     VLabel,
+=======
+    VStepper,
+    VAutocomplete,
+>>>>>>> origin/user
     transitions
   },
   directives: {
@@ -74,5 +84,5 @@ Vue.use(Vuetify, {
     warning: '#FFC107'
   },
   customProperties: true,
-  iconfont: 'mdi'
+  iconfont: 'md'
 })

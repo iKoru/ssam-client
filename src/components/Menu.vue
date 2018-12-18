@@ -14,7 +14,7 @@
 <script>
 //import axios from 'axios'
 export default {
-  name: "Signin",
+  name: "Menu",
   props: ["boards"]
 };
 </script>

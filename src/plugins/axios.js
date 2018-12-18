@@ -2,7 +2,10 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import eventHub from './eventhub'
+import store from '../store'
+import router from '../router'
+import qs from 'querystring'
+import jwt from 'jwt-decode'
 // Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -19,12 +22,11 @@ const _axios = axios.create(config)
 _axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    eventHub.$emit('before-request')
+    store.dispatch('showSpinner');
     return config
   },
   function (error) {
     // Do something with request error
-    eventHub.$emit('request-error')
     return Promise.reject(error)
   }
 )
@@ -33,16 +35,39 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function (response) {
     // Do something with response data
-    eventHub.$emit('after-response')
+    store.dispatch('hideSpinner')
     return response
   },
   function (error) {
     // Do something with response error
-    console.log(error.response)
+    store.dispatch('hideSpinner')
     if (error.response.status === 401) {
       console.log('need refresh!')
+      console.log(error)
+      const token = localStorage.getItem('accessToken')
+      if (token) {
+        _axios({
+          method: 'POST',
+          url: '/refresh',
+          headers: { 'x-auth': token }
+        })
+          .then(response => {//success to refresh
+            localStorage.setItem('accessToken', response.data.token);
+            _axios.defaults.headers.common['x-auth'] = response.data.token;
+            store.dispatch('signin', {
+              accessToken: response.data.token,
+              userId: jwt(response.data.token).userId
+            });
+            _axios.request(error.config);
+          })
+          .catch(() => {//failed to refresh. redirect to signin page. save original request information only when get request
+            localStorage.removeItem('accessToken');
+            router.push('/index' + (error.config.method === 'get'?'?'+qs.stringify({ redirectTo: error.config.url, params:error.config.params}):''))
+          });
+      } else {//there is no access token saved. redirect to signin page. save original request information only when get request
+        router.push('/index' + (error.config.method === 'get'?'?'+qs.stringify({ redirectTo: error.config.url, params:error.config.params}):''))
+      }
     }
-    eventHub.$emit('response-error', error.response.status)
     return Promise.reject(error)
   }
 )

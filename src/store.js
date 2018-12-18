@@ -8,19 +8,16 @@ export default new Vuex.Store({
     accessToken: null,
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
-    loungeNickName: null,
-    topicNickName: null,
-    status: 'NORMAL',
-    profile: {
-      picturePath: null
-    },
+    profile: {},
     snackbar: {
       color: null,
       text: null,
       isShowing: false,
       waiting: []
-    }
-
+    },
+    spinner: false,
+    menuDrawer: false,
+    boards: []
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -29,11 +26,14 @@ export default new Vuex.Store({
     userId ({ userId }) {
       return userId
     },
-    loungeNickName ({ loungeNickName }) {
-      return loungeNickName
+    loungeNickName ({ profile }) {
+      return profile ? profile.loungeNickName : '';
     },
-    topicNickName ({ topicNickName }) {
-      return topicNickName
+    topicNickName ({ profile }) {
+      return profile ? profile.topicNickName : '';
+    },
+    status ({ profile }) {
+      return profile ? profile.status : 'NORMAL';
     },
     isLight ({ boardType }) {
       return boardType !== 'T'
@@ -46,6 +46,15 @@ export default new Vuex.Store({
     },
     snackbarQueue ({ snackbar }) {
       return snackbar.waiting
+    },
+    spinner ({ spinner }) {
+      return spinner
+    },
+    menuDrawer ({ menuDrawer }) {
+      return menuDrawer
+    },
+    boards ({ boards }) {
+      return boards
     }
   },
   mutations: {
@@ -57,9 +66,6 @@ export default new Vuex.Store({
       state.accessToken = null
     },
     UPDATE_PROFILE (state, profile) {
-      state.loungeNickName = profile.loungeNickName
-      state.topicNickName = profile.topicNickName
-      state.status = profile.status
       state.profile = profile
     },
     SWITCH_BOARD_TYPE (state, { boardType }) {
@@ -80,6 +86,21 @@ export default new Vuex.Store({
         state.snackbar.color = wait.color || 'info'
         state.snackbar.isShowing = true;
       }
+    },
+    CLOSE_SNACKBAR (state) {
+      state.snackbar.isShowing = false;
+    },
+    SHOW_SPINNER (state) {
+      state.spinner = true
+    },
+    HIDE_SPINNER (state) {
+      state.spinner = false
+    },
+    TOGGLE_MENUDRAWER (state) {
+      state.menuDrawer = !state.menuDrawer
+    },
+    SET_BOARDS (state, boards) {
+      state.boards = boards
     }
   },
   actions: {
@@ -108,6 +129,25 @@ export default new Vuex.Store({
     showNextSnackbar ({ getters, commit }) {
       if (getters.snackbarQueue.length > 0) {
         commit('DEQUEUE_SNACKBAR');
+      }
+    },
+    closeSnackbar ({ commit }) {
+      commit('CLOSE_SNACKBAR')
+    },
+    showSpinner ({ commit }) {
+      commit('SHOW_SPINNER')
+    },
+    hideSpinner ({ commit }) {
+      commit('HIDE_SPINNER')
+    },
+    toggleMenuDrawer ({ commit }) {
+      commit('TOGGLE_MENUDRAWER')
+    },
+    setBoards ({ commit }, boards) {
+      if (Array.isArray(boards)) {
+        commit('SET_BOARDS', boards)
+      } else {
+        commit('SET_BOARDS', [])
       }
     }
   }
