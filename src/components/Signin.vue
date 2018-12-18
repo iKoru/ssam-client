@@ -18,7 +18,7 @@
           <p class="text-xs-center" v-show="message">
             <span class="error--text">{{message}}</span>
           </p>
-          <p class="text-xs-center">
+          <p :class="{'text-xs-center':true, 'mt-3':!message}">
             <router-link to="/signup">아직 회원이 아니신가요?</router-link>
           </p>
         </v-form>
@@ -209,9 +209,9 @@ export default {
 .small label {
   font-size: 15px;
 }
-.small.v-input--checkbox{
-  margin-top:0;
-  padding-top:0;
+.small.v-input--checkbox {
+  margin-top: 0;
+  padding-top: 0;
 }
 .small .v-input--selection-controls__input {
   width: 16px;
