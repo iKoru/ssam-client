@@ -81,7 +81,7 @@ export default new Vuex.Store({
     },
     DEQUEUE_SNACKBAR (state) {
       const wait = state.snackbar.waiting.shift();
-      if (wait.text) {
+      if (wait && wait.text) {
         state.snackbar.text = wait.text;
         state.snackbar.color = wait.color || 'info'
         state.snackbar.isShowing = true;
