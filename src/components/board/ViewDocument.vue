@@ -1,16 +1,59 @@
 <template>
-  <!-- bidirectional data binding（双向数据绑定） -->
-  <div>{{content}}</div>
+  <v-layout column v-if="content">
+    <v-flex xs12>
+       <v-card-title primary-title>
+          <div class="w-100">
+            <h3 class="headline mb-0">{{content.title}}</h3>
+            <v-layout row>
+              <v-flex xs6></v-flex>
+              <v-flex xs2>
+                {{content.nickName}}
+              </v-flex>
+              <v-flex xs2>
+                조회수 {{content.viewCount}}
+              </v-flex>
+              <v-flex xs3 text-xs-right>
+                {{$moment(Date(content.writeDateTime)).format('YYYY.MM.DD hh:mm:ss')}}
+              </v-flex>
+            </v-layout>
+          </div>
+        </v-card-title>
+    </v-flex>
+    <v-divider/>
+    <v-flex xs12>
+      <v-card-text>
+          <div v-html="content.contents">
+          </div>
+      </v-card-text>
+      <v-card-text v-if="content.hasSurvey">
+        설문조사
+        <Survey :survey="survey"/>
+        {{survey}}
+      </v-card-text>
+    </v-flex>
+    <v-divider/>
+    <v-flex xs12>
+      <v-card-text>
+        <br>작성자본인{{content.isWriter}}
+        <br >
+      </v-card-text>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
-//import LinkPrevue from '@/components/LinkPrevue'
+// import LinkPrevue from '@/components/LinkPrevue'
+import Survey from '@/components/board/survey/Survey'
 export default {
   props: [],
   data() {
     return {
-      content: null
+      content: null,
+      survey: null
     };
+  },
+  components: {
+    Survey
   },
   mounted() {
     this.content = localStorage.item;
@@ -24,8 +67,10 @@ export default {
         .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
         .then(response => {
           console.log(response);
-        
           this.content = response.data;
+          if(this.content.hasSurvey) {
+            this.survey = this.formatSurvey(this.content.survey)
+          }
         })
         .catch(error => {
           console.log(error);
@@ -37,6 +82,19 @@ export default {
         this.link = href[0].substr(0, href[0].indexOf("<"));
         console.log(this.link);
       }
+    },
+    formatSurvey(survey) {
+      survey.surveyContents.questions.forEach(q => {
+        console.log(q.choices)
+        let objectArray = []
+        q.choices.forEach(choice => {
+          objectArray.push({'text':choice, 'selected':false})
+        })
+        q.choices = objectArray
+      })
+      
+      return survey
+      // return survey.surveyContents.questions.choices.map(choiceString => ({choiceString}))
     }
   }
 };

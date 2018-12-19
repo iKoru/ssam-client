@@ -1,6 +1,6 @@
 <template>
   <v-container fluid v-if="board">
-    <v-card class>
+    <v-card style="box-shadow:none">
       <v-card-title primary-title class="py-2">
         <div class="w-100">
           <h3 class="w-100">
@@ -10,7 +10,7 @@
         </div>
       </v-card-title>
     </v-card>
-    <v-card class="mb-1">
+    <v-card style="box-shadow: none">
       <v-card-title primary-title class="py-2">
         <div class="w-100">
           <v-icon size="medium" color="orange">mdi-lightbulb-outline</v-icon>
@@ -18,6 +18,7 @@
         </div>
       </v-card-title>
     </v-card>
+    <v-divider/>
     <v-card>
       <router-view/>
     </v-card>
@@ -49,7 +50,7 @@ export default {
         });
     },
     writeDocument: function () {
-      this.$router.push(`${this.$route.params.boardId}/writeDocument`)
+      this.$router.push(`/board/${this.$route.params.boardId}/writeDocument`)
     }
   },
   watch: {
@@ -62,3 +63,6 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+</style>

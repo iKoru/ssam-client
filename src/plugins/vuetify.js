@@ -26,12 +26,10 @@ import {
   VAvatar,
   VImg,
   VProgressCircular,
-<<<<<<< HEAD
   VLabel,
-=======
   VStepper,
   VAutocomplete,
->>>>>>> origin/user
+  VBtnToggle,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -63,12 +61,10 @@ Vue.use(Vuetify, {
     VAvatar,
     VImg,
     VProgressCircular,
-<<<<<<< HEAD
     VLabel,
-=======
     VStepper,
     VAutocomplete,
->>>>>>> origin/user
+    VBtnToggle,
     transitions
   },
   directives: {

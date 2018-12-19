@@ -4,7 +4,6 @@
         <div class="ans-cnt">
             <div v-for="(a,index) in calcAnswers" :key="index" :class="{ ans: true, [a.custom_class]: (a.custom_class) }">
                 <template v-if="!finalResults">
-
                     <div v-if="!visibleResults" :class="{ 'ans-no-vote noselect': true, active: a.selected }" @click.prevent="handleVote(a)" >
                         <span class="txt" v-html="a.text"></span>
                     </div>
@@ -168,6 +167,7 @@ export default{
       this.$emit('addvote', obj)
     },
     handleVote (a) { // Callback
+    console.log(a)
       if (!this.selectable) {
         return
       }

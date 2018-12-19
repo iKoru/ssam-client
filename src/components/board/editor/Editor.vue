@@ -141,6 +141,9 @@ export default {
         allowAnonymous: this.allowAnonymous,
         survey: this.survey
       }).then(res => {
+        if(res.status === 200) {
+          this.$router.push(`/board/${this.$route.params.boardId}/${res.data.documentId}`)
+        }
         console.log(res)
       }).catch(err => {
         console.log(err)
