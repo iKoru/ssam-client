@@ -3,14 +3,14 @@
     <component :is="layout">
       <router-view :layout.sync="layout"/>
     </component>
-    <v-dialog v-model="$store.getters.spinner" width="300">
+    <v-dialog :value="$store.getters.spinner" width="300">
       <v-card color="primary" :dark="$store.getters.isLight">
         <v-card-text>
           <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-snackbar :timeout="$store.getters.snackbar.color === 'success'?3000:5000" bottom left :color="$store.getters.snackbar.color" v-model="$store.getters.isShowingSnackbar">
+    <v-snackbar :timeout="$store.getters.snackbar.color === 'success'?3000:5000" bottom left :color="$store.getters.snackbar.color" :value="$store.getters.isShowingSnackbar">
       {{ $store.getters.snackbar.text }}
       <v-btn dark flat @click.native="$store.dispatch('closeSnackbar')" icon>
         <v-icon>close</v-icon>
