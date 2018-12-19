@@ -18,7 +18,7 @@
           </v-layout>
           <v-layout row>
             <v-spacer></v-spacer>
-            <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+            <v-btn color="primary" :disabled="!agreeContract" @click="step = 3">다음</v-btn>
           </v-layout>
         </v-stepper-content>
 
@@ -30,22 +30,22 @@
                   <v-form ref="form" v-model="valid">
                     <v-layout row xs12 wrap>
                       <v-flex sm12>
-                        <v-text-field v-model="userId" class="dense" :rules="userIdRules" maxlength="50" label="아이디" required hint="최대 50자"></v-text-field>
+                        <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error="userIdError" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur autofocus @blur="checkUserId"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-text-field v-model="password" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자"></v-text-field>
+                        <v-text-field v-model="password" class="dense" type="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자" validate-on-blur></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-text-field v-model="rePassword" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자"></v-text-field>
+                        <v-text-field v-model="rePassword" class="dense" type="password" :rules="rePasswordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-text-field v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" required hint="최대 90자"></v-text-field>
+                        <v-text-field v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-autocomplete v-model="emailHost" class="dense" :items="emailHostItems" required dense prepend-icon="alternate_email" label="교육청 메일 뒷자리"></v-autocomplete>
+                        <v-autocomplete v-model="emailHost" class="dense" :items="emailHostItems" dense prepend-icon="alternate_email" label="교육청 메일 뒷자리" validate-on-blur></v-autocomplete>
                       </v-flex>
                       <v-flex sm4>
-                        <v-select v-model="emailHost" class="dense" :items="regionItems" disabled dense label="지역" placeholder="이메일을 입력하면 자동입력됩니다."></v-select>
+                        <v-select v-model="emailHost" class="dense" :items="regionItems" disabled dense label="지역" placeholder="이메일 입력시 자동입력"></v-select>
                       </v-flex>
                       <v-flex sm4>
                         <v-select v-model="major" class="dense" :items="majorItems" label="전공과목" dense hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
@@ -70,9 +70,14 @@
         </v-stepper-content>
 
         <v-stepper-content step="3">
-          <v-card class="mb-5 stepperContents">회원가입 되었습니다. 이메일을 인증해주세요.</v-card>
+          <v-card class="mb-5 stepperContents justify-center align-center text-xs-center">
+            <v-flex>회원가입 되었습니다. 
+              <template v-show="email">인증을 위한 메일을 보냈으니 확인해주세요.</template>
+              <template v-show="!email">인증을 위해서는 이메일을 입력해주시거나, 증명서 등을 <span>webmaster@pedagy.com</span>으로 보내주셔서 수동으로 인증해주세요.</template>
+            </v-flex>
+          </v-card>
 
-          <v-btn color="primary" @click="goMain">메인페이지로 이동</v-btn>
+          <v-btn color="primary" @click="goIndex">로그인</v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </template>
@@ -100,19 +105,19 @@
                 <v-form ref="form" v-model="valid" lazy-validation>
                   <v-layout row xs12 wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="userId" class="dense" :rules="userIdRules" maxlength="50" label="아이디" required hint="최대 50자"></v-text-field>
+                      <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error="userIdError" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur @blur="checkUserId"></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field v-model="password" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자"></v-text-field>
+                      <v-text-field v-model="password" class="dense" type="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자" validate-on-blur></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field v-model="rePassword" class="dense" :rules="passwordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자"></v-text-field>
+                      <v-text-field v-model="rePassword" class="dense" type="password" :rules="rePasswordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" required hint="최대 90자"></v-text-field>
+                      <v-text-field v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-autocomplete v-model="emailHost" class="dense" :items="emailHostItems" required dense prepend-icon="alternate_email" label="교육청 메일 뒷자리"></v-autocomplete>
+                      <v-autocomplete v-model="emailHost" class="dense" :items="emailHostItems" dense prepend-icon="alternate_email" label="교육청 메일 뒷자리" validate-on-blur></v-autocomplete>
                     </v-flex>
                     <v-flex xs4>
                       <v-select v-model="emailHost" class="dense" :items="regionItems" disabled dense label="지역" placeholder="이메일로 지정"></v-select>
@@ -141,9 +146,14 @@
 
       <v-stepper-step step="3">이메일 인증</v-stepper-step>
       <v-stepper-content step="3">
-        <v-card class="mb-5 stepperContents">회원가입 되었습니다. 이메일을 인증해주세요.</v-card>
+        <v-card class="mb-5 stepperContents">
+          <div class="justify-center align-center">회원가입 되었습니다. 
+            <template v-show="email">인증을 위한 메일을 보냈으니 확인해주세요.</template>
+            <template v-show="!email">인증을 위해서는 이메일을 입력해주시거나, 증명서 등을 <span>webmaster@pedagy.com</span>으로 보내주셔서 수동으로 인증해주세요.</template>
+          </div>
+        </v-card>
 
-        <v-btn color="primary" @click="goMain">메인페이지로 이동</v-btn>
+        <v-btn color="primary" @click="goIndex">로그인</v-btn>
       </v-stepper-content>
     </template>
   </v-stepper>
@@ -154,6 +164,14 @@ import PublicLayout from "../layouts/PublicLayout";
 export default {
   created() {
     this.$emit("update:layout", PublicLayout);
+    this.$axios.get('/group', {headers:{silent:true}})
+    .then(response => {
+      this.majorItems = response.data.filter(x=>x.groupType === 'M').map(x=>({text:x.groupName, value:x.groupId}))
+      this.gradeItems = response.data.filter(x=>x.groupType === 'G').map(x=>({text:x.groupName, value:x.groupId}))
+    })
+    .catch(error => {
+      this.$store.dispatch('showSnackbar', {text:`전공, 학년 목록을 가져오지 못했습니다.${error&&error.response&&error.response.data?'['+error.response.data.message+']':''}`})
+    })
   },
   data: () => ({
     agreeContract: false,
@@ -170,16 +188,26 @@ export default {
     inviter: null,
     gradeItems: [],
     majorItems: [],
+    userIdError: false,
+    userIdErrors: [],
     emailHostItems: ["sen.go.kr", "goe.go.kr", "ice.go.kr", "gwe.go.kr", "cbe.go.kr", "cne.go.kr", "dje.go.kr", "sje.go.kr", "jbe.go.kr", "jne.go.kr", "gen.go.kr", "gbe.go.kr", "gne.go.kr", "use.go.kr", "pen.go.kr", "jje.go.kr"],
     regionItems: [{value: "sen.go.kr", text: "서울"}, {value: "goe.go.kr", text: "경기"}, {value: "ice.go.kr", text: "인천"}, {value: "gwe.go.kr", text: "강원"}, {value: "cbe.go.kr", text: "충북"}, {value: "cne.go.kr", text: "충남"}, {value: "dje.go.kr", text: "대전"}, {value: "sje.go.kr", text: "세종"}, {value: "jbe.go.kr", text: "전북"}, {value: "jne.go.kr", text: "전남"}, {value: "gen.go.kr", text: "광주"}, {value: "gbe.go.kr", text: "경북"}, {value: "gne.go.kr", text: "경남"}, {value: "use.go.kr", text: "울산"}, {value: "pen.go.kr", text: "부산"}, {value: "jje.go.kr", text: "제주"}],
-    userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /(?=.*[a-zA-Z]+)(?=.*[a-zA-Z0-9_!^&*$]{4,50}).*/.test(v)) || "ID는 알파벳을 포함한 4~50자로 입력해주세요."],
-    passwordRules: [v => !!v || "비밀번호를 입력해주세요."],
-    emailRules: [v => !!v || "이메일을 입력해주세요.", v => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일 계정이 올바르지 않습니다."]
+    rePasswordRules:[],
+    userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || "알파벳, 숫자, _, ^, &, $만을 포함한 4~50자", v=> (v && /^.*[a-zA-Z]+.*$/.test(v)) || '최소 1글자 이상의 알파벳 포함'],
+    passwordRules: [v => !!v || "비밀번호를 입력해주세요.", v=>(v.length>3 && v.length <26) || '4~25자'],
+    emailRules: [v => !v|| /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일 계정이 올바르지 않습니다."]
   }),
   watch: {
     step(val) {
       if (val === 3) {
         console.log(val);
+      }
+    },
+    rePassword(val){
+      if(val === this.password){
+        this.rePasswordRules = [];
+      }else{
+        this.rePasswordRules = [()=>'두 비밀번호가 일치하지 않습니다.']
       }
     }
   },
@@ -191,23 +219,37 @@ export default {
           .post("/user", {
             userId: this.userId,
             password: this.password,
-            email: this.email
+            email: this.email && this.emailHost? this.email + '@' + this.emailHost : null,
+            major:this.major,
+            grade:this.grade,
+            inviter:this.inviter
           })
           .then(response => {
-            if (alert(response.data.message)) {
-              this.$router.push("/");
-            }
+            this.step = 3;
           })
           .catch(error => {
             console.log(error.response);
+            this.$store.dispatch('showSnackbar', {text:error.response?error.response.data.message:'회원가입을 하지 못했습니다.', color:'error'})
           });
       }
     },
-    clear() {
-      this.$refs.form.reset();
-    },
-    goMain() {
+    goIndex() {
       this.$router.push("/");
+    },
+    checkUserId(){
+      console.log('triggered')
+      if(this.userId && !this.userIdError){
+        this.$axios.get('/userId', {params:{userId:this.userId}, headers:{silent:true}})
+        .then(response => {
+          console.log(response.data)
+          this.userIdErrors = [];
+          //this.userIdError = false;
+        })
+        .catch(error => {
+          this.userIdErrors = [error&& error.response && error.response.data.message]
+          //this.userIdError = true;
+        })
+      }
     }
   }
 };
