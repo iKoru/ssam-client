@@ -22,7 +22,11 @@ const _axios = axios.create(config)
 _axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    store.dispatch('showSpinner');
+    if(config.headers.silent){
+      delete config.headers.silent
+    }else{
+      store.dispatch('showSpinner');
+    }
     return config
   },
   function (error) {
