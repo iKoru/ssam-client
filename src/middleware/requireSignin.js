@@ -4,7 +4,6 @@ import jwt from 'jwt-decode'
 import store from '../store.js'
 import router from '../router'
 export default (to, from, next) => {
-  console.log(to);
   if (!store.getters.accessToken) {
     const token = localStorage.getItem('accessToken')
     if (token) {
