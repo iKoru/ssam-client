@@ -10,9 +10,9 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-snackbar :timeout="$store.getters.snackbar.color === 'success'?3000:5000" bottom left :color="$store.getters.snackbar.color" :value="$store.getters.isShowingSnackbar">
-      {{ $store.getters.snackbar.text }}
-      <v-btn dark flat @click.native="$store.dispatch('closeSnackbar')" icon>
+    <v-snackbar :timeout="snackbar.color === 'success'?3000:5000" bottom left :color="snackbar.color" v-model="showSnackbar">
+      {{ snackbar.text }}
+      <v-btn dark flat @click="showSnackbar = false" icon>
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
@@ -23,17 +23,36 @@
 export default {
   name: "Pedagy",
   data: () => ({
-    layout: "div"
+    layout: "div",
+    showSnackbar: false,
+    snackbar: {text: null, color: "info"}
   }),
   computed: {
-    isShowingSnackbar() {
-      return this.$store.getters.isShowingSnackbar;
+    snackbarList() {
+      return this.$store.state.snackbarList;
+    }
+  },
+  methods: {
+    showNextSnackbar() {
+      const nextSnackbar = this.$store.getters.nextSnackbar;
+      if (nextSnackbar && nextSnackbar.text) {
+        this.snackbar.text = nextSnackbar.text;
+        this.snackbar.color = nextSnackbar.color || "info";
+        this.showSnackbar = true;
+      }
+      this.$store.dispatch("dequeueSnackbar");
     }
   },
   watch: {
-    isShowingSnackbar(val) {
-      if (!val) {
-        this.$store.dispatch("showNextSnackbar");
+    showSnackbar(val) {
+      if (val && !this.snackbarList.length) return;
+      this.$nextTick(() => {
+        this.showNextSnackbar();
+      });
+    },
+    snackbarList() {
+      if (!this.showSnackbar) {
+        this.showNextSnackbar();
       }
     }
   }
