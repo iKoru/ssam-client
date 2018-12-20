@@ -224,6 +224,7 @@ export default {
             inviter: this.inviter
           })
           .then(response => {
+            localStorage.setItem('userId', this.userId)
             this.step = 3;
           })
           .catch(error => {
