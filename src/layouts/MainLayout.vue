@@ -38,3 +38,12 @@ export default {
   }
 };
 </script>
+<style>
+.mainLayout {
+  background-color: white;
+  min-height: 100vh;
+}
+.mainLayout__main {
+  max-width: 1904x;
+}
+</style>
