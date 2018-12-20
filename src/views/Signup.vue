@@ -124,10 +124,10 @@
                     <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :error-messages="rePasswordErrors" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" :error="emailErrors.length > 0" :error-messages="emailErrors" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
+                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" :error-messages="emailErrors" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error="emailHostErrors.length > 0" :error-messages="emailHostErrors" :rules="emailHostRules" dense prepend-icon="alternate_email" label="NEIS 뒷자리" validate-on-blur @blur="checkEmail"></v-autocomplete>
+                    <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error-messages="emailHostErrors" dense prepend-icon="alternate_email" label="NEIS 뒷자리" validate-on-blur @blur="checkEmail"></v-autocomplete>
                   </v-flex>
                   <v-flex xs6>
                     <v-select v-model="major" class="dense" :items="majorItems" label="전공과목" dense hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
