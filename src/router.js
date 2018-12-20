@@ -50,6 +50,7 @@ const router = new Router({
       path: '/auth',
       name: 'auth',
       component: () => import('@/views/Auth'),
+      beforeEnter: requireSignin,
       meta: {
         title: '인증'
       }
