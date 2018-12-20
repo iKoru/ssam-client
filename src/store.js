@@ -9,6 +9,7 @@ export default new Vuex.Store({
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
+    auth: {},
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
@@ -44,6 +45,12 @@ export default new Vuex.Store({
     },
     boards ({ boards }) {
       return boards
+    },
+    profile ({ profile }) {
+      return profile
+    },
+    auth ({ auth }) {
+      return auth
     }
   },
   mutations: {
@@ -57,10 +64,8 @@ export default new Vuex.Store({
     UPDATE_PROFILE (state, profile) {
       state.profile = profile
     },
-    UPDATE_AUTH_INFORMATION (state, auth){
-      Object.keys(auth).forEach(x => {
-        state.profile[x] = auth[x];
-      })
+    UPDATE_AUTH_INFORMATION (state, auth) {
+      state.auth = auth;
     },
     SWITCH_BOARD_TYPE (state, { boardType }) {
       state.boardType = boardType
@@ -91,7 +96,7 @@ export default new Vuex.Store({
       Vue.axios.defaults.headers.common['x-auth'] = accessToken
       commit('SIGNIN', { accessToken, userId })
     },
-    updateAuthInformation({commit}, update){
+    updateAuthInformation ({ commit }, update) {
       commit('UPDATE_AUTH_INFORMATION', update);
     },
     signout ({ commit }) {

@@ -20,6 +20,9 @@ export default (to, from, next) => {
             userId: jwt(response.data.token).userId
           });
           const redirectTo = response.data.redirectTo;
+          if (response.data.imminent || response.data.needEmail) {
+            this.$store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail })
+          }
           router.app.$axios
             .get('/user')
             .then(response => {
