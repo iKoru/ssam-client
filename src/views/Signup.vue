@@ -41,7 +41,7 @@
                         <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :error-messages="rePasswordErrors" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" :error-messages="emailErrors" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
+                        <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" :error-messages="emailErrors" label="이메일" hint="인증 메일을 받을 NEIS이메일주소" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
                         <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error-messages="emailHostErrors" dense prepend-icon="alternate_email" label="NEIS 이메일 뒷자리" validate-on-blur @blur="checkEmail" clearable></v-autocomplete>
@@ -124,7 +124,7 @@
                     <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :error-messages="rePasswordErrors" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" :error-messages="emailErrors" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
+                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" :error-messages="emailErrors" maxlength="90" label="이메일" hint="인증 메일을 받을 NEIS이메일주소" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error-messages="emailHostErrors" dense prepend-icon="alternate_email" label="NEIS 뒷자리" validate-on-blur @blur="checkEmail"></v-autocomplete>
