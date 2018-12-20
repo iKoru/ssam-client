@@ -3,7 +3,7 @@
     <v-layout :column="$vuetify.breakpoint.smAndDown" :reverse="$vuetify.breakpoint.smAndDown">
       <v-flex>
         <div class="text-xs-center text-md-left">
-          <span class="caption">&copy; Pedagy {{ new Date().getFullYear() }}. All rights reserved.</span>
+          <span class="caption">Copyright &copy; {{ new Date().getFullYear() }} Pedagy. All rights reserved.</span>
         </div>
       </v-flex>
       <v-flex text-xs-center text-md-left>
