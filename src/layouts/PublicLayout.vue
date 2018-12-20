@@ -18,7 +18,8 @@ export default {
 };
 </script>
 <style>
-  .publicLayout__main{
-    margin-bottom:100px;
-  }
+.publicLayout__main {
+  margin-bottom: 100px;
+  margin-top: -64px;
+}
 </style>
