@@ -60,6 +60,9 @@ export default {
             userId: jwt(response.data.token).userId
           });
           const redirectTo = response.data.redirectTo;
+          if(response.data.immenent || response.data.needEmail){
+            this.$store.dispatch('updateAuthInformation', {immenent: response.data.immenent, needEmail: response.data.needEmail})
+          }
           this.$axios
             .get("/user")
             .then(response => {

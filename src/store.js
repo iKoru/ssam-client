@@ -57,6 +57,11 @@ export default new Vuex.Store({
     UPDATE_PROFILE (state, profile) {
       state.profile = profile
     },
+    UPDATE_AUTH_INFORMATION (state, auth){
+      Object.keys(auth).forEach(x => {
+        state.profile[x] = auth[x];
+      })
+    },
     SWITCH_BOARD_TYPE (state, { boardType }) {
       state.boardType = boardType
     },
@@ -85,6 +90,9 @@ export default new Vuex.Store({
     signin ({ commit }, { accessToken, userId }) {
       Vue.axios.defaults.headers.common['x-auth'] = accessToken
       commit('SIGNIN', { accessToken, userId })
+    },
+    updateAuthInformation({commit}, update){
+      commit('UPDATE_AUTH_INFORMATION', update);
     },
     signout ({ commit }) {
       localStorage.removeItem('accessToken')
