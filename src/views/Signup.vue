@@ -41,10 +41,10 @@
                         <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :rules="rePasswordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
+                        <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" :error="emailErrors.length > 0" :error-messages="emailErrors" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
-                        <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :rules="emailHostRules" dense prepend-icon="alternate_email" label="NEIS 이메일 뒷자리" validate-on-blur @blur="checkEmailHost"></v-autocomplete>
+                        <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error="emailHostErrors.length > 0" :error-messages="emailHostErrors" :rules="emailHostRules" dense prepend-icon="alternate_email" label="NEIS 이메일 뒷자리" validate-on-blur @blur="checkEmailHost"></v-autocomplete>
                       </v-flex>
                       <v-flex sm4>
                         <v-select v-model="emailHost" class="dense" :items="regionItems" disabled dense label="지역" placeholder="이메일 입력시 자동입력"></v-select>
@@ -124,10 +124,10 @@
                     <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :rules="rePasswordRules" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
+                    <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" :error="emailErrors.length > 0" :error-messages="emailErrors" maxlength="90" label="이메일" hint="최대 90자" validate-on-blur @blur="checkEmail" placeholder="NEIS 이메일"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :rules="emailHostRules" dense prepend-icon="alternate_email" label="NEIS 뒷자리" validate-on-blur @blur="checkEmailHost"></v-autocomplete>
+                    <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error="emailHostErrors.length > 0" :error-messages="emailHostErrors" :rules="emailHostRules" dense prepend-icon="alternate_email" label="NEIS 뒷자리" validate-on-blur @blur="checkEmailHost"></v-autocomplete>
                   </v-flex>
                   <v-flex xs6>
                     <v-select v-model="major" class="dense" :items="majorItems" label="전공과목" dense hint="전공과목별 게시판에 글을 쓸 수 있습니다."></v-select>
@@ -152,15 +152,17 @@
 
       <v-stepper-step step="3">이메일 인증</v-stepper-step>
       <v-stepper-content step="3">
-        <div>회원가입 되었습니다.
-          <br>
-          <span v-show="emailHost && !!email">인증을 위한 메일을 보냈으니 확인해주세요.</span>
-          <template v-show="!emailHost && !email">
-            인증을 위해서는 이메일을 입력해주시거나,
-            <br>증명서 등을
-            <span>webmaster@pedagy.com</span>으로 보내주셔서 수동으로 인증해주세요.
-          </template>
-        </div>
+        <v-layout row justify-center align-center fill-height text-xs-center>
+          <div>회원가입 되었습니다.
+            <br>
+            <span v-show="emailHost && !!email">인증을 위한 메일을 보냈으니 확인해주세요.</span>
+            <template v-show="!emailHost && !email">
+              인증을 위해서는 이메일을 입력해주시거나,
+              <br>증명서 등을
+              <span>webmaster@pedagy.com</span>으로 보내주셔서 수동으로 인증해주세요.
+            </template>
+          </div>
+        </v-layout>
 
         <v-btn color="primary" @click="goIndex">로그인</v-btn>
       </v-stepper-content>
@@ -200,13 +202,16 @@ export default {
     majorItems: [],
     userIdError: false,
     userIdErrors: [],
+    emailErrors: [],
+    emailHostErrors: [],
     emailHostItems: ["sen.go.kr", "goe.go.kr", "ice.go.kr", "gwe.go.kr", "cbe.go.kr", "cne.go.kr", "dje.go.kr", "sje.go.kr", "jbe.go.kr", "jne.go.kr", "gen.go.kr", "gbe.go.kr", "gne.go.kr", "use.go.kr", "pen.go.kr", "jje.go.kr"],
     regionItems: [{value: "sen.go.kr", text: "서울"}, {value: "goe.go.kr", text: "경기"}, {value: "ice.go.kr", text: "인천"}, {value: "gwe.go.kr", text: "강원"}, {value: "cbe.go.kr", text: "충북"}, {value: "cne.go.kr", text: "충남"}, {value: "dje.go.kr", text: "대전"}, {value: "sje.go.kr", text: "세종"}, {value: "jbe.go.kr", text: "전북"}, {value: "jne.go.kr", text: "전남"}, {value: "gen.go.kr", text: "광주"}, {value: "gbe.go.kr", text: "경북"}, {value: "gne.go.kr", text: "경남"}, {value: "use.go.kr", text: "울산"}, {value: "pen.go.kr", text: "부산"}, {value: "jje.go.kr", text: "제주"}],
     rePasswordRules: [],
     userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || "알파벳, 숫자, _, ^, &, $만을 포함한 4~50자", v => (v && /^.*[a-zA-Z]+.*$/.test(v)) || "최소 1글자 이상의 알파벳 포함"],
     passwordRules: [v => !!v || "비밀번호를 입력해주세요.", v => (v && (v.length > 3 && v.length < 26)) || "4~25자"],
     emailRules: [v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일이 올바르지 않습니다."],
-    emailHostRules: []
+    emailHostRules: [],
+    debounce: null
   }),
   methods: {
     submit() {
@@ -251,24 +256,94 @@ export default {
       }
     },
     checkEmail() {
+      console.log('blur email', this.emailRules.length);
       if (!this.email && this.emailHost) {
         this.emailRules.push(() => "이메일을 입력해주세요");
-      } else if (this.emailRules.length === 2) {
-        this.emailRules.splice(1, 1);
+      } 
+      if(this.email && this.email.length > 0 && this.emailHost){
+        this.$axios.get('/email', {params:{email:this.email + '@' + this.emailHost}, headers:{silent:true}})
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.log(error, error.response);
+          if(error && error.response){
+            switch(error.response.data.target){
+              case 'emailHost':
+                this.emailHostErrors = [error.response.data.message];
+                this.emailHostRules = [() => error.response.data.message];
+                break;
+              case 'email':
+              default:
+                this.emailErrors = [error.response.data.message || '이메일을 정확히 입력해주세요.']
+                this.emailRules.push(() => error.response.data.message || '이메일을 정확히 입력해주세요.');
+                break;
+            }
+          }
+        });
       }
     },
     checkEmailHost() {
-      if (this.email && !this.emailHost) {
-        this.emailHostRules = [() => "이메일 뒷자리를 선택해주세요."];
-      } else {
-        this.emailHostRules = [];
+      if (this.debounce) {
+        clearTimeout(this.debounce);
       }
+      this.debounce = setTimeout(()=> {
+        if (this.email && !this.emailHost) {
+          this.emailHostRules = [() => "이메일 뒷자리를 선택해주세요."];
+        } else if(this.email && this.email.length > 0 && this.emailHost){
+          this.$axios.get('/email', {params:{email:this.email + '@' + this.emailHost}, headers:{silent:true}})
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            if(error && error.response){
+              switch(error.response.data.target){
+                case 'emailHost':
+                  this.emailHostErrors = [error.response.data.message];
+                  this.emailHostRules = [() => error.response.data.message];
+                  break;
+                case 'email':
+                default:
+                  this.emailErrors = [error.response.data.message || '이메일을 정확히 입력해주세요.']
+                  this.emailRules.push(() => error.response.data.message || '이메일을 정확히 입력해주세요.');
+                  break;
+              }
+            }
+          });
+        }
+      }, 300);
     },
     checkRePassword() {
       if (this.rePassword === this.password) {
         this.rePasswordRules = [];
       } else {
         this.rePasswordRules = [() => "두 비밀번호가 일치하지 않습니다."];
+      }
+    }
+  },
+  watch:{
+    email(){
+      if(this.emailErrors.length > 0){
+        this.$nextTick(() => (this.emailErrors = []));
+      }
+      if(this.emailRules.length >= 2){
+        this.$nextTick(() => {
+          this.emailRules.shift();
+          this.$refs.email.resetValidation();
+          console.log('reset', this.$refs.email)
+        });
+      }
+    },
+    emailHost(){
+      if(this.emailHostErrors.length > 0){
+        this.$nextTick(() => (this.emailHostErrors = []));
+      }
+      if(this.emailHostRules.length > 0){
+        this.$nextTick(() => {
+          this.emailHostRules = [];
+          this.$refs.emailHost.resetValidation();
+          console.log('reset2')
+        });
       }
     }
   }
