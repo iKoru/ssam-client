@@ -50,9 +50,7 @@ export default {
     this.$emit("update:layout", IndexLayout);
   },
   data() {
-    return {
-      title: "pedagy"
-    };
+    return {};
   },
   methods: {}
 };
