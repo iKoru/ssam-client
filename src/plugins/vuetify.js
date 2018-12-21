@@ -29,6 +29,7 @@ import {
   VStepper,
   VAutocomplete,
   VParallax,
+  VTooltip,
   VBtnToggle,
   transitions
 } from 'vuetify'
@@ -64,6 +65,7 @@ Vue.use(Vuetify, {
     VStepper,
     VAutocomplete,
     VParallax,
+    VTooltip,
     VBtnToggle,
     transitions
   },
