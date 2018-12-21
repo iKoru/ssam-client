@@ -100,8 +100,8 @@ const router = new Router({
       meta: {
         title: '마이페이지'
       }
-    },
-    
+    }
+
   ]
 })
 router.beforeEach((to, from, next) => {
