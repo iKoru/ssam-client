@@ -1,8 +1,8 @@
 <template>
   <div class="mainLayout">
     <main-toolbar class="mainLayout__nav"></main-toolbar>
-    <menu :boards="boards"/>
-    <menu-drawer :boards="boards"/>
+    <menu-bar :boards="$store.getters.boards"/>
+    <menu-drawer :boards="$store.getters.boards"/>
     <main class="mainLayout__main">
       <slot></slot>
     </main>
@@ -12,13 +12,13 @@
 <script>
 import MainToolbar from "../components/MainToolbar";
 import MainFooter from "../components/MainFooter";
-import Menu from "../components/Menu";
+import MenuBar from "../components/MenuBar";
 import MenuDrawer from "../components/MenuDrawer";
 export default {
   components: {
     MainToolbar,
     MainFooter,
-    Menu,
+    MenuBar,
     MenuDrawer
   },
   computed: {

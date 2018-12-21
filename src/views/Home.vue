@@ -15,8 +15,6 @@ import MainLayout from "../layouts/MainLayout";
 export default {
   name: "Home",
   components: {
-    Menu: () => import("@/components/Menu"),
-    MenuDrawer: () => import("@/components/MenuDrawer")
   },
   data() {
     return {
