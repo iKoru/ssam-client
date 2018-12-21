@@ -80,5 +80,22 @@ Vue.use(Vuetify, {
     warning: '#FFC107'
   },
   customProperties: true,
-  iconfont: 'md'
+  iconfont: 'md',
+  lang:{
+    locales:{'ko':{
+      "dataIterator": {
+        "rowsPerPageText": "페이지당 ",
+        "rowsPerPageAll": "전체보기",
+        "pageText": "{0}-{1}, 전체 {2}",
+        "noResultsText": "표시할 항목이 없습니다.",
+        "nextPage": "다음",
+        "prevPage": "이전"
+      },
+      "dataTable": {
+        "rowsPerPageText": "페이지당 "
+      },
+      "noDataText": "표시할 항목이 없습니다."
+    }},
+    current:'ko'
+  }
 })

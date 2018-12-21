@@ -12,7 +12,7 @@ const router = new Router({
       name: 'index',
       component: () => import('@/views/Index'),
       meta: {
-        title: '선생님들의 공간'
+        title: '선생님들의 노다지'
       }
     },
     {
@@ -50,8 +50,9 @@ const router = new Router({
       path: '/auth',
       name: 'auth',
       component: () => import('@/views/Auth'),
+      beforeEnter: requireSignin,
       meta: {
-        title: '인증'
+        title: '교사 인증'
       }
     },
     {
@@ -76,6 +77,14 @@ const router = new Router({
       component: () => import('@/views/Signin'),
       meta: {
         title: '로그인'
+      }
+    },
+    {
+      path: '/resetPassword',
+      name: 'resetPassword',
+      component: () => import('@/views/ResetPassword'),
+      meta: {
+        title: '비밀번호 찾기'
       }
     }
   ]

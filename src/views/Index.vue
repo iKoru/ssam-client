@@ -2,28 +2,23 @@
    <div>
     <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown">
       <v-flex>
-        <v-img id="indexImage" src="@/static/img/index.jpg" lazy-src="@/static/img/index.jpg">
-          <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
-            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+        <div id="indexContents">
+          <v-img id="indexImage" src="@/static/img/index.jpg" lazy-src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp">
+            <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
+              <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+            </v-layout>
+          </v-img>
+          <v-layout v-if="$vuetify.breakpoint.mdAndUp">
+            <div>사이트 소개 글 내용이 들어갈 자리입니당.</div>
           </v-layout>
-        </v-img>
-        <!--<template v-if="$vuetify.breakpoint.smAndDown">
-          <v-card flat>
-            <v-card-title>
-              <div xs12>
-                <span class="headline">Pedagy 로그인</span>
-              </div>
-            </v-card-title>
-            <Signin/>
-          </v-card>
-          <BoardExtractor/>
-        </template>-->
-        <main-footer></main-footer>
+        </div>
+        <main-footer :class="{withAside:$vuetify.breakpoint.mdAndUp}"></main-footer>
       </v-flex>
       <v-flex align-center justify-center text-xs-center id="rightDrawer">
         <div id="signinContainer" class="mx-auto">
-          <v-img src="@/assets/logo.png" height="30" contain class="d-inline-flex" alt="pedagy 로고"></v-img>
-          <span>pedagy</span>
+          <v-img src="@/assets/logo.png" height="30" contain class="d-inline-flex" alt="Pedagy 로고"></v-img>
+          <span v-if="$vuetify.breakpoint.mdAndUp">Pedagy</span>
+          <h1 v-else>Pedagy</h1>
           <Signin/>
           <BoardExtractor/>
         </div>
@@ -55,19 +50,7 @@ export default {
     this.$emit("update:layout", IndexLayout);
   },
   data() {
-    return {
-      clipped: false,
-      drawer: true,
-      items: [
-        {
-          icon: "mdi-chart-bubble",
-          title: "Inspire"
-        }
-      ],
-      miniVariant: false,
-      rightDrawer: true,
-      title: "pedagy"
-    };
+    return {};
   },
   methods: {}
 };
@@ -78,7 +61,18 @@ export default {
   }
   @media(min-width:960px){
     #rightDrawer{
-      max-width:300px;
+      max-width:350px;
+      border-left:1px solid rgba(0,0,0,0.12);
+      position:fixed;
+      right:0;
+      height:100%;
+    }
+    #indexContents{
+      margin-right:350px;
+      margin-bottom:52px;
+    }
+    .withAside{
+      width:calc(100% - 350px);
     }
   }
   @media(max-width:959px){

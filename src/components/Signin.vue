@@ -61,6 +61,9 @@ export default {
           });
           console.log(response.data.token, jwt(response.data.token).userId)
           const redirectTo = response.data.redirectTo;
+          if (response.data.imminent || response.data.needEmail) {
+            this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
+          }
           this.$axios
             .get("/user")
             .then(response => {
@@ -157,6 +160,9 @@ export default {
               userId: this.userId
             });
             const redirectTo = response.data.redirectTo;
+            if (response.data.imminent || response.data.needEmail) {
+              this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
+            }
             this.$axios
               .get("/user")
               .then(response => {

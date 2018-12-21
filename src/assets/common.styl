@@ -2,6 +2,8 @@ html
   overflow-y: auto
 .cursor-pointer
   cursor:pointer
+a
+  text-decoration: none
 // vuetify-related
 .v-btn.plain:hover:before,
 .v-btn.plain:focus:before,
@@ -11,9 +13,14 @@ html
 .v-text-field .v-text-field__details
   margin-top:4px
 
-.v-text-field.dense .v-label, .v-select.dense .v-label
+.v-text-field.dense .v-label, .v-select.dense .v-label, .v-input.dense input
   font-size: 14px
 
 .v-text-field.dense input, .v-select.dense input
   max-height: 28px
   padding-bottom: 0px
+.v-input--has-state.error--text .v-label
+  -webkit-animation: cubic-bezier(0.25, 0.8, 0.5, 1);
+  animation: cubic-bezier(0.25, 0.8, 0.5, 1);
+.v-input.v-select.v-input--is-disabled .v-input__append-inner
+  display:none

@@ -9,12 +9,8 @@ export default new Vuex.Store({
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
-    snackbar: {
-      color: null,
-      text: null,
-      isShowing: false,
-      waiting: []
-    },
+    auth: {},
+    snackbarList: [],
     spinner: false,
     menuDrawer: false,
     boards: []
@@ -38,14 +34,8 @@ export default new Vuex.Store({
     isLight ({ boardType }) {
       return boardType !== 'T'
     },
-    snackbar ({ snackbar }) {
-      return { color: snackbar.color, text: snackbar.text }
-    },
-    isShowingSnackbar ({ snackbar }) {
-      return snackbar.isShowing
-    },
-    snackbarQueue ({ snackbar }) {
-      return snackbar.waiting
+    nextSnackbar ({ snackbarList }) {
+      return snackbarList.length > 0 ? snackbarList[0] : null;
     },
     spinner ({ spinner }) {
       return spinner
@@ -55,6 +45,12 @@ export default new Vuex.Store({
     },
     boards ({ boards }) {
       return boards
+    },
+    profile ({ profile }) {
+      return profile
+    },
+    auth ({ auth }) {
+      return auth
     }
   },
   mutations: {
@@ -68,27 +64,19 @@ export default new Vuex.Store({
     UPDATE_PROFILE (state, profile) {
       state.profile = profile
     },
+    UPDATE_AUTH_INFORMATION (state, auth) {
+      state.auth = auth;
+    },
     SWITCH_BOARD_TYPE (state, { boardType }) {
       state.boardType = boardType
     },
-    SHOW_SNACKBAR (state, { text, color }) {
-      state.snackbar.text = text;
-      state.snackbar.color = color || 'info'
-      state.snackbar.isShowing = true;
-    },
     QUEUE_SNACKBAR (state, target) {
-      state.snackbar.waiting.push(target);
+      state.snackbarList.push(target);
     },
     DEQUEUE_SNACKBAR (state) {
-      const wait = state.snackbar.waiting.shift();
-      if (wait.text) {
-        state.snackbar.text = wait.text;
-        state.snackbar.color = wait.color || 'info'
-        state.snackbar.isShowing = true;
+      if (state.snackbarList.length > 0) {
+        state.snackbarList.shift();
       }
-    },
-    CLOSE_SNACKBAR (state) {
-      state.snackbar.isShowing = false;
     },
     SHOW_SPINNER (state) {
       state.spinner = true
@@ -108,6 +96,9 @@ export default new Vuex.Store({
       Vue.axios.defaults.headers.common['x-auth'] = accessToken
       commit('SIGNIN', { accessToken, userId })
     },
+    updateAuthInformation ({ commit }, update) {
+      commit('UPDATE_AUTH_INFORMATION', update);
+    },
     signout ({ commit }) {
       localStorage.removeItem('accessToken')
       Vue.axios.defaults.headers.common['x-auth'] = null
@@ -119,20 +110,11 @@ export default new Vuex.Store({
     switchBoardType ({ commit }, { boardType }) {
       commit('SWITCH_BOARD_TYPE', { boardType })
     },
-    showSnackbar ({ getters, commit }, { text, color }) {
-      if (!getters.isShowingSnackbar) {
-        commit('SHOW_SNACKBAR', { text: text, color: color || 'info' })
-      } else {
-        commit('QUEUE_SNACKBAR', { text: text, color: color });
-      }
+    showSnackbar ({ getters, commit }, target) {
+      commit('QUEUE_SNACKBAR', target);
     },
-    showNextSnackbar ({ getters, commit }) {
-      if (getters.snackbarQueue.length > 0) {
-        commit('DEQUEUE_SNACKBAR');
-      }
-    },
-    closeSnackbar ({ commit }) {
-      commit('CLOSE_SNACKBAR')
+    dequeueSnackbar ({ getters, commit }) {
+      commit('DEQUEUE_SNACKBAR');
     },
     showSpinner ({ commit }) {
       commit('SHOW_SPINNER')
