@@ -14,7 +14,7 @@
 <script>
 //import axios from 'axios'
 export default {
-  name: "Menu",
+  name: "MenuBar",
   props: ["boards"]
 };
 </script>

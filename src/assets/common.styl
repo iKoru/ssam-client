@@ -4,6 +4,12 @@ html
   cursor:pointer
 a
   text-decoration: none
+span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
+  font-size:14px
+.ellipsis
+  overflow:hidden
+  text-overflow:ellipsis
+  white-space:nowrap
 // vuetify-related
 .v-btn.plain:hover:before,
 .v-btn.plain:focus:before,
@@ -16,6 +22,8 @@ a
 .v-text-field.dense .v-label, .v-select.dense .v-label, .v-input.dense input
   font-size: 14px
 
+.v-text-field.dense .v-input__slot
+  margin-bottom:0
 .v-text-field.dense input, .v-select.dense input
   max-height: 28px
   padding-bottom: 0px
