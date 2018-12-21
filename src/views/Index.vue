@@ -3,11 +3,17 @@
     <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown">
       <v-flex>
         <div id="indexContents">
-          <v-img id="indexImage" src="@/static/img/index.jpg" lazy-src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp">
+          <v-parallax id="indexImage" src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp">
+            <v-layout align-center column justify-center>
+              <h1 class="display-2 font-weight-thin mb-3">Pedagy</h1>
+              <h4 class="subheading">선생님들의 노다지</h4>
+            </v-layout>
+          </v-parallax>
+          <!--<v-img id="indexImage" src="@/static/img/index.jpg" lazy-src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp">
             <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
               <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
             </v-layout>
-          </v-img>
+          </v-img>-->
           <v-layout v-if="$vuetify.breakpoint.mdAndUp">
             <div>사이트 소개 글 내용이 들어갈 자리입니당.</div>
           </v-layout>
@@ -59,9 +65,12 @@ export default {
   #indexImage{
     max-height:calc(100vh - 53px);
   }
+  #rightDrawer{
+      background-color:white;
+  }
   @media(min-width:960px){
     #rightDrawer{
-      max-width:350px;
+      width:350px;
       border-left:1px solid rgba(0,0,0,0.12);
       position:fixed;
       right:0;

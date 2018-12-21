@@ -28,7 +28,8 @@ module.exports = {
           'v-card': 'src',
           'v-card-media': 'src',
           'v-responsive': 'src',
-          'v-carousel-item': 'src'
+          'v-carousel-item': 'src',
+          'v-parallax': 'src'
           // ...
         }
       }))
