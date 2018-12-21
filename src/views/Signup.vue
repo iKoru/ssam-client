@@ -32,7 +32,7 @@
                   <v-form ref="form" v-model="valid">
                     <v-layout row xs12 wrap>
                       <v-flex sm12>
-                        <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error="userIdError" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur autofocus @blur="checkUserId"></v-text-field>
+                        <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur autofocus @blur="checkUserId"></v-text-field>
                       </v-flex>
                       <v-flex sm6>
                         <v-text-field v-model="password" class="dense" type="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자" validate-on-blur></v-text-field>
@@ -115,7 +115,7 @@
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-layout row xs12 wrap>
                   <v-flex xs12>
-                    <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error="userIdError" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur @blur="checkUserId"></v-text-field>
+                    <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur @blur="checkUserId"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="password" class="dense" type="password" :rules="passwordRules" maxlength="25" label="비밀번호" required hint="4~25자" validate-on-blur></v-text-field>
@@ -173,6 +173,7 @@
 <script>
 import PublicLayout from "../layouts/PublicLayout";
 export default {
+  name:'Signup',
   created() {
     this.$emit("update:layout", PublicLayout);
     this.$axios
@@ -200,7 +201,6 @@ export default {
     inviter: decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("inviter").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || null,
     gradeItems: [],
     majorItems: [],
-    userIdError: false,
     userIdErrors: [],
     emailErrors: [],
     emailHostErrors: [],
@@ -242,7 +242,7 @@ export default {
       this.$router.push("/");
     },
     checkUserId() {
-      if (this.userId && !this.userIdError) {
+      if (this.userId && this.userIdErrors.length === 0) {
         this.$axios
           .get("/userId", {params: {userId: this.userId}, headers: {silent: true}})
           .then(response => {

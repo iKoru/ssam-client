@@ -69,6 +69,7 @@ export default {
     }
     #indexContents{
       margin-right:350px;
+      margin-bottom:52px;
     }
     .withAside{
       width:calc(100% - 350px);
