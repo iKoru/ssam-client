@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import requireSignin from './middleware/requireSignin'
+import visitorOnly from './middleware/visitorOnly'
 Vue.use(Router)
 
 const router = new Router({
@@ -11,6 +12,7 @@ const router = new Router({
       path: '/index',
       name: 'index',
       component: () => import('@/views/Index'),
+      beforeEnter: visitorOnly,
       meta: {
         title: '선생님들의 노다지'
       }
@@ -67,6 +69,7 @@ const router = new Router({
       path: '/signup',
       name: 'signup',
       component: () => import('@/views/Signup'),
+      beforeEnter: visitorOnly,
       meta: {
         title: '회원가입'
       }
@@ -75,6 +78,7 @@ const router = new Router({
       path: '/signin',
       name: 'signin',
       component: () => import('@/views/Signin'),
+      beforeEnter: visitorOnly,
       meta: {
         title: '로그인'
       }
@@ -83,10 +87,21 @@ const router = new Router({
       path: '/resetPassword',
       name: 'resetPassword',
       component: () => import('@/views/ResetPassword'),
+      beforeEnter: visitorOnly,
       meta: {
         title: '비밀번호 찾기'
       }
-    }
+    },
+    {
+      path: '/myPage',
+      name: 'myPage',
+      component: () => import('@/views/MyPage'),
+      beforeEnter: requireSignin,
+      meta: {
+        title: '마이페이지'
+      }
+    },
+    
   ]
 })
 router.beforeEach((to, from, next) => {
