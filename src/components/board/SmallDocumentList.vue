@@ -5,7 +5,7 @@
                 표시할 내용이 없습니다.
             </div>
         </template>
-        <v-list v-else>
+        <v-list v-else dense>
             <template v-for="(item, index) in list">
               <v-subheader v-if="item.header" :key="item.header">
                 {{ item.header }}
