@@ -2,7 +2,7 @@
   <v-container px-0 fluid>
     <v-slide-y-transition mode="out-in">
       <v-layout row wrap align-center>
-        <v-flex xs8 offset-xs2>
+        <v-flex xs12 md8 offset-md2>
           <router-view/>
         </v-flex>
       </v-layout>

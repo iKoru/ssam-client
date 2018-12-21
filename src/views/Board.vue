@@ -7,14 +7,10 @@
             {{board.boardName}}
             <v-icon v-if="!$route.path.includes('writeDocument')" class="float-right" color="indigo" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
           </h3>
-        </div>
-      </v-card-title>
-    </v-card>
-    <v-card style="box-shadow: none">
-      <v-card-title primary-title class="py-2">
-        <div class="w-100">
+          <div>
           <v-icon size="medium" color="orange">mdi-lightbulb-outline</v-icon>
           <h5 color="grey" class="w-100 d-inline">{{board.boardDescription}}</h5>
+          </div>
         </div>
       </v-card-title>
     </v-card>
