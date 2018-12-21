@@ -173,7 +173,7 @@
 <script>
 import PublicLayout from "../layouts/PublicLayout";
 export default {
-  name:'Signup',
+  name: "Signup",
   created() {
     this.$emit("update:layout", PublicLayout);
     this.$axios
@@ -340,7 +340,11 @@ export default {
   }
   .publicLayout {
     background-color: white;
+    height: 100%;
   }
+}
+.publicLayout__main {
+  margin-top: 0;
 }
 div.v-input__slot {
   margin-bottom: 0 !important;
