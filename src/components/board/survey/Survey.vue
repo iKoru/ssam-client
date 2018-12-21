@@ -1,16 +1,18 @@
 <template>
-  <v-layout row>
+  <v-layout row style="background-color:#f8f8f8;" py-4 px-2>
     <v-flex v-if="survey">
           <!-- <v-btn @click="doSurvey">시행</v-btn> -->
-
-      <v-btn-toggle v-model="toggleOne" mandatory>
-        <v-btn flat>
-          <v-icon>format_align_left</v-icon>
-        </v-btn>
-        <v-btn flat>
-          <v-icon>format_align_center</v-icon>
-        </v-btn>
-      </v-btn-toggle>
+      <v-layout justify-center>
+        <v-btn-toggle v-if="!survey.participated" v-model="toggleOne">
+          <v-btn dark color="red" @click="showSurveyResult = false">
+            설문
+          </v-btn>
+          <v-btn dark color="orange" @click.stop="completeSurvey">제출</v-btn>
+          <v-btn dark color="success" @click="showSurveyResult = true">
+            결과
+          </v-btn>
+        </v-btn-toggle>
+      </v-layout>
       <template v-for="(item, index) in survey.surveyContents.questions">
         <v-layout row wrap :key="index" style="position:relative">
           <v-flex xs12 mx-3>
@@ -29,7 +31,7 @@
           <v-divider v-if="index + 1 < survey.length" :key="`divider-${index}`"></v-divider>
         </v-layout>
       </template>
-      <v-btn v-if="surveyCompleted" @click="completeSurvey">제출하기</v-btn>
+      
     </v-flex>
   </v-layout>
 </template>
@@ -37,6 +39,7 @@
 <script>
 // import VuePoll from 'vue-poll'
 import VuePoll from "@/components/board/survey/VuePoll";
+import {formatSurvey} from '@/components/mixins/formatSurvey'
 export default {
   props: ["survey"],
   components: {
@@ -48,28 +51,79 @@ export default {
       toggleOne: 0,
       completedQuestionNumber: [],
       surveyCompleted: false,
-      finalResults: false
+      surveyFixed: false,
+      showSurveyResult: false
     };
+  },
+  mixins: [formatSurvey],
+  computed: {
+    finalResults () {
+      if (this.survey.participated) {
+        return true
+      } else {
+        return this.showSurveyResult
+      }
+    }
   },
   methods: {
     // doSurvey() {
     //   this.survey = JSON.parse(this.surveyJSON).survey;
     //   console.log(this.survey);
     // },
+    getAnswerArray (questions) {
+      let answers = [];
+      questions.forEach(q => {
+        if(!q.allowMultipleChoice) {
+          answers.push(q.choices.findIndex(c => c.selected))
+        } else {
+          let answerArray = []
+          q.choices.forEach((c, cIndex) => {
+            if(c.selected) answerArray.push(cIndex)
+          })
+          answers.push(answerArray)
+        }
+      })
+      return answers;
+    },
     completeSurvey() {
-      this.handleSurveyResult();
+      if((this.surveyCompleted && !this.surveyFixed && !this.finalResults)){
+        if(confirm('설문을 제출합니다.')) {
+          this.handleSurveyResult();
+        }
+      }
+      else {
+        setTimeout(()=> {
+          this.toggleOne=0
+        },100)
+        
+        alert('모든 설문을 마쳐주세요')
+      }
     },
     handleSurveyResult() {
       // to server
       console.log(this.completedQuestionNumber)
+      let answer = this.getAnswerArray(this.survey.surveyContents.questions)
+      console.log(answer)
+      console.log(answer)
       this.$axios
         .post(`/survey`, {
           documentId: this.$route.params.documentId,
-          answer: [3,6,8,0,0]
+          answer: answer
         })
         .then(response => {
           console.log(response);
-          this.content = response.data;
+          if(response.status === 200) {
+            this.$axios
+              .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
+              .then(response => {
+                this.survey = this.formatSurvey(response.data.survey, response.data.participatedSurvey)
+                console.log(this.survey)
+                this.showSurveyResult = true
+              })
+              .catch(error => {
+                console.log(error);
+             });
+          }
         })
         .catch(error => {
           console.log(error.response);
@@ -80,7 +134,7 @@ export default {
       //   this.finalResults = false;
       // }
     },
-    addvote(votedObject) {
+    addvote(votedObject) { 
       console.log(votedObject);
     },
     answerSelected(res) {
@@ -111,6 +165,11 @@ export default {
         this.surveyCompleted = false;
       }
       console.log(this.surveyCompleted)
+    },
+    surveyCompleted: function(to) {
+      if(this.surveyCompleted) {
+        this.toggleOne = 1
+      } else this.toggleOne = 0
     }
   }
 };

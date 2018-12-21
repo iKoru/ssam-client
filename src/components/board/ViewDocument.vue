@@ -25,11 +25,15 @@
           <div v-html="content.contents">
           </div>
       </v-card-text>
-      <v-card-text v-if="content.hasSurvey">
-        설문조사
-        <Survey :survey="survey"/>
-        {{survey}}
-      </v-card-text>
+    </v-flex>
+    <v-flex xs12>
+      <v-layout row>
+        <v-flex xs10>    
+          <v-card-text v-if="content.hasSurvey">
+            <Survey :survey="survey"/>
+          </v-card-text>
+        </v-flex>
+      </v-layout>
     </v-flex>
     <v-divider/>
     <v-flex xs12>
@@ -44,6 +48,7 @@
 <script>
 // import LinkPrevue from '@/components/LinkPrevue'
 import Survey from '@/components/board/survey/Survey'
+import { formatSurvey } from '@/components/mixins/formatSurvey'
 export default {
   props: [],
   data() {
@@ -55,6 +60,7 @@ export default {
   components: {
     Survey
   },
+  mixins: [formatSurvey],
   mounted() {
     this.content = localStorage.item;
   },
@@ -69,7 +75,7 @@ export default {
           console.log(response);
           this.content = response.data;
           if(this.content.hasSurvey) {
-            this.survey = this.formatSurvey(this.content.survey)
+            this.survey = this.formatSurvey(this.content.survey, this.content.participatedSurvey)
           }
         })
         .catch(error => {
@@ -83,19 +89,7 @@ export default {
         console.log(this.link);
       }
     },
-    formatSurvey(survey) {
-      survey.surveyContents.questions.forEach(q => {
-        console.log(q.choices)
-        let objectArray = []
-        q.choices.forEach(choice => {
-          objectArray.push({'text':choice, 'selected':false})
-        })
-        q.choices = objectArray
-      })
-      
-      return survey
-      // return survey.surveyContents.questions.choices.map(choiceString => ({choiceString}))
-    }
+    
   }
 };
 </script>

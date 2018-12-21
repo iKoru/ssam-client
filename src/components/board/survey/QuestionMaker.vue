@@ -57,7 +57,7 @@
 
 <script>
 export default {
-  props: ['editingQuestion'],
+  props: ['editingQuestion', 'questionIndex'],
   data () {
     return {
       question: undefined
