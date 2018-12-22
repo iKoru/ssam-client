@@ -37,17 +37,22 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-      <v-card-text>
+
+       <WriteComment/>
+        <ViewComment/>
+    </v-flex>
+    <v-card-text>
         <br>작성자본인{{content.isWriter}}
         <br >
       </v-card-text>
-    </v-flex>
   </v-layout>
 </template>
 
 <script>
 // import LinkPrevue from '@/components/LinkPrevue'
 import Survey from '@/components/board/survey/Survey'
+import WriteComment from '@/components/board/WriteComment'
+import ViewComment from '@/components/board/ViewComment'
 import { formatSurvey } from '@/components/mixins/formatSurvey'
 export default {
   props: [],
@@ -58,7 +63,9 @@ export default {
     };
   },
   components: {
-    Survey
+    Survey,
+    WriteComment,
+    ViewComment
   },
   mixins: [formatSurvey],
   mounted() {

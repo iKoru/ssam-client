@@ -33,6 +33,7 @@ import {
   VTooltip,
   VBtnToggle,
   VSwitch,
+  VTextarea,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -71,6 +72,7 @@ Vue.use(Vuetify, {
     VTooltip,
     VBtnToggle,
     VSwitch,
+    VTextarea,
     transitions
   },
   directives: {
