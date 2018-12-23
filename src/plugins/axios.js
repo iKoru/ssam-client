@@ -59,7 +59,8 @@ _axios.interceptors.response.use(
           .then(response => { // success to refresh
             if (token === response.data.token) {
               localStorage.removeItem('accessToken');
-              return router.push('/signin?' + qs.stringify({ message: '세션이 만료되었습니다.', ...query }));
+              store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
+              return router.push('/signin?' + qs.stringify(query));
             } else {
               localStorage.setItem('accessToken', response.data.token);
               _axios.defaults.headers.common['x-auth'] = response.data.token;
@@ -75,13 +76,15 @@ _axios.interceptors.response.use(
           .catch(error2 => { // failed to refresh. redirect to signin page. save original request information only when get request
             if (isRefreshing) {
               localStorage.removeItem('accessToken');
-              return router.push('/signin?' + qs.stringify({ message: '세션이 만료되었습니다.', ...query }))
+              store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
+              return router.push('/signin?' + qs.stringify(query))
             } else {
               return Promise.reject(error2)
             }
           });
       } else { // there is no access token saved. redirect to signin page. save original request information only when get request
-        return router.push('/signin?' + qs.stringify({ message: '세션이 만료되었습니다.', ...query }))
+        store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
+        return router.push('/signin?' + qs.stringify(query))
       }
     }
     return Promise.reject(error)
