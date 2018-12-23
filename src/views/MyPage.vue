@@ -152,7 +152,6 @@ export default {
       bottomSheet: false,
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
-          console.log(fieldName, file, metadata);
           if (file.size > 200 * 1024) {
             this.$store.dispatch("showSnackbar", {text: "이미지는 200KB 이내만 업로드할 수 있습니다.", color: "error"});
             abort();
@@ -160,7 +159,6 @@ export default {
           }
           const formData = new FormData();
           formData.append("picture", file, file.name);
-          console.log(formData);
           this.$axios
             .post("/user/picture", formData)
             .then(response => {
