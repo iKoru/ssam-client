@@ -45,5 +45,11 @@ export default {
 }
 .mainLayout__main {
   max-width: 1904x;
+  margin-bottom: 53px;
+}
+@media (max-width: 960px) {
+  .mainLayout__main {
+    margin-bottom: 80px;
+  }
 }
 </style>
