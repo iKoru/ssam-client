@@ -13,7 +13,7 @@
       <v-btn icon large slot="activator" v-else>
         <v-icon>more_vert</v-icon>
       </v-btn>
-      <v-list class="pa-0 mt-1">
+      <v-list class="pa-0 mt-2">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
           <v-list-tile-content>
             <v-list-tile-title>{{item.title}}</v-list-tile-title>
@@ -36,6 +36,12 @@ export default {
           title: "내 계정정보",
           click: e => {
             this.$router.push("/myPage");
+          }
+        },
+        {
+          title: "내 게시판",
+          click: e => {
+            this.$router.push("/myBoard");
           }
         },
         {

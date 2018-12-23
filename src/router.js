@@ -100,6 +100,15 @@ const router = new Router({
       meta: {
         title: '마이페이지'
       }
+    },
+    {
+      path: '/myBoard',
+      name: 'myBoard',
+      component: () => import('@/views/MyBoard'),
+      beforeEnter: requireSignin,
+      meta: {
+        title: '내 게시판'
+      }
     }
 
   ]
