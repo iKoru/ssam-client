@@ -9,7 +9,7 @@
               <p>
                 <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="bottomSheet" absolute offset-y>
                   <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" slot="activator" title="클릭하여 이미지 등록 또는 삭제">
-                    <img :src="'https://node2-koru.c9users.io:8081/' + profile.picturePath || require('@/static/img/defaultUser.png')" alt="프로필 이미지">
+                    <img :src="profile.picturePath? webUrl+ profile.picturePath : require('@/static/img/defaultUser.png')" alt="프로필 이미지">
                   </v-avatar>
                   <v-list>
                     <v-list-tile v-if="profile.picturePath" @click="deleteProfilePath">
@@ -84,23 +84,52 @@
           </v-layout>
         </v-card-actions>
       </v-card>
-    <v-layout style="display:none">
-      <file-pond
-          name="test"
-          ref="pond"
-          :server="server"
-      />
-    </v-layout>
+      <v-dialog v-model="dialog" width="500">
+        <v-card>
+          <v-card-title class="headline" primary-title>
+            <span>{{profile.picturePath? '프로필 사진 변경':'프로필 사진 등록'}}</span>
+            <v-spacer/>
+            <v-icon @click="dialog = false">close</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <file-pond name="picture" ref="pond" :server="server" accepted-file-types="image/*"/>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      <v-layout v-show="dialog"></v-layout>
     </v-layout>
   </v-container>
 </template>
 
 <script>
 import MainLayout from "../layouts/MainLayout";
-import vueFilePond from 'vue-filepond'
-
+import vueFilePond, {setOptions} from "vue-filepond";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
 // Create FilePond component
-const FilePond = vueFilePond()
+
+const FilePond = vueFilePond(FilePondPluginFileValidateType);
+setOptions({
+  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.",
+  labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
+  labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
+  labelFileLoading: "이미지를 불러오는 중...",
+  labelFileLoadError: "이미지를 불러오지 못헀습니다.",
+  labelFileProcessing: "서버로 업로드중...",
+  labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
+  labelFileProcessingAborted: "업로드가 취소되었습니다.",
+  labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
+  labelTapToCancel: "취소",
+  labelTapToRetry: "재시도",
+  labelTapToUndo: "되돌리기",
+  labelButtonRemoveItem: "삭제",
+  labelButtonAbortItemLoad: "중지",
+  labelButtonRetryItemLoad: "재시도",
+  labelButtonAbortItemProcessing: "취소",
+  labelButtonUndoItemProcessing: "재시도",
+  labelButtonProcessItem: "업로드",
+  labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
+  fileValidateTypeLabelExpectedTypes: "jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다."
+});
 export default {
   name: "MyPage",
   components: {
@@ -109,6 +138,7 @@ export default {
   data() {
     return {
       loading: false,
+      dialog: false,
       profile: {},
       grade: null,
       major: null,
@@ -121,34 +151,38 @@ export default {
       nickNameRules: [v => (!!v && v !== "") || "닉네임/필명을 입력해주세요.", v => (!!v && v.length > 3 && v.length <= 50) || "4~50자로 입력해주세요."],
       bottomSheet: false,
       server: {
-        process:(fieldName, file, metadata, load, error, progress, abort) => {
-
-              // fieldName is the name of the input field
-              // file is the actual file object to send
-              console.log('process')
-              const formData = new FormData();
-              console.log(fieldName, file, metadata)
-              formData.append('picture', file, file.name);
-              console.log(formData)
-              this.$axios
-                .post("/user/picture", formData)
-                .then(response => {
-                  console.log(response)
-                  this.profile.picturePath = response.data.picturePath;
-                  this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-                })
-                .catch(error => {
-                  console.log(error.response);
-                  this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-                }); 
-              return {
-                  abort: () => {
-                      // Let FilePond know the request has been cancelled
-                      abort();
-                  }
-              };
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          console.log(fieldName, file, metadata);
+          if (file.size > 200 * 1024) {
+            this.$store.dispatch("showSnackbar", {text: "이미지는 200KB 이내만 업로드할 수 있습니다.", color: "error"});
+            abort();
+            return;
           }
-      }
+          const formData = new FormData();
+          formData.append("picture", file, file.name);
+          console.log(formData);
+          this.$axios
+            .post("/user/picture", formData)
+            .then(response => {
+              this.profile.picturePath = response.data.picturePath;
+              this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+              this.dialog = false;
+              load();
+            })
+            .catch(error => {
+              abort();
+              this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+            });
+          return {
+            abort: () => {
+              // Let FilePond know the request has been cancelled
+              this.dialog = false;
+              abort();
+            }
+          };
+        }
+      },
+      labels: {}
     };
   },
   computed: {
@@ -173,6 +207,9 @@ export default {
           .add(1, "months")
           .isBefore(this.$moment())
       );
+    },
+    webUrl() {
+      return process.env.VUE_APP_WEB_URL;
     }
   },
   created() {
@@ -339,9 +376,9 @@ export default {
     uploadProfilePath() {
       //TODO : upload image component
       //max 200KB
-      this.$refs.pond.browse()
+      this.dialog = true;
       this.bottomSheet = false;
-      
+
       // this.$axios
       //   .post("/user/picture", {picture: null})
       //   .then(response => {
