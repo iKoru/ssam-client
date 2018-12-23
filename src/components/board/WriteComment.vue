@@ -7,8 +7,7 @@
             solo
             label="댓글을 입력해주세요"
             auto-grow
-            hide-details
-            
+            hide-details            
             ></v-textarea>
       </v-flex>
       <v-flex xs2>
