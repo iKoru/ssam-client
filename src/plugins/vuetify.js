@@ -32,6 +32,7 @@ import {
   VTooltip,
   VBtnToggle,
   VSwitch,
+  VBottomSheet,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -69,6 +70,7 @@ Vue.use(Vuetify, {
     VTooltip,
     VBtnToggle,
     VSwitch,
+    VBottomSheet,
     transitions
   },
   directives: {
