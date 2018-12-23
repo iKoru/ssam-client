@@ -120,7 +120,6 @@ setOptions({
   labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
   labelTapToCancel: "취소",
   labelTapToRetry: "재시도",
-  labelTapToUndo: "되돌리기",
   labelButtonRemoveItem: "삭제",
   labelButtonAbortItemLoad: "중지",
   labelButtonRetryItemLoad: "재시도",
@@ -364,6 +363,7 @@ export default {
         .put("/user", {picturePath: ""})
         .then(response => {
           this.$store.dispatch("updateProfile", {picturePath: null});
+          this.profile.picturePath = null;
         })
         .catch(error => {
           console.log(error);
