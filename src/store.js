@@ -61,8 +61,13 @@ export default new Vuex.Store({
     SIGNOUT (state) {
       state.accessToken = null
     },
-    UPDATE_PROFILE (state, profile) {
+    PROFILE (state, profile) {
       state.profile = profile
+    },
+    UPDATE_PROFILE (state, profile) {
+      Object.keys(profile).forEach(x => {
+        state.profile[x] = profile[x];
+      })
     },
     UPDATE_AUTH_INFORMATION (state, auth) {
       state.auth = auth;
@@ -105,6 +110,9 @@ export default new Vuex.Store({
       commit('SIGNOUT')
     },
     profile ({ commit }, profile) {
+      commit('PROFILE', profile)
+    },
+    updateProfile ({ commit }, profile) {
       commit('UPDATE_PROFILE', profile)
     },
     switchBoardType ({ commit }, { boardType }) {

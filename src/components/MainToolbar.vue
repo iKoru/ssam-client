@@ -6,7 +6,7 @@
     <v-menu offset-y right open-on-hover>
       <v-btn small flat slot="activator" v-if="$vuetify.breakpoint.smAndUp" class="plain">
         <v-avatar size="30px">
-          <img src="@/static/img/man_1.jpg">
+          <img :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
         </v-avatar>
         &nbsp;{{nickName || ''}}
       </v-btn>

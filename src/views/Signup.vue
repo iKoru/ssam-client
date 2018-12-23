@@ -177,7 +177,7 @@ export default {
   created() {
     this.$emit("update:layout", PublicLayout);
     this.$axios
-      .get("/group", {headers: {silent: true}})
+      .get("/group", {params: {groupType: ["M", "G"]}, headers: {silent: true}})
       .then(response => {
         this.majorItems = response.data.filter(x => x.groupType === "M").map(x => ({text: x.groupName, value: x.groupId}));
         this.gradeItems = response.data.filter(x => x.groupType === "G").map(x => ({text: x.groupName, value: x.groupId}));

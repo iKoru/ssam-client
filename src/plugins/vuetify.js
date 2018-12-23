@@ -34,6 +34,7 @@ import {
   VBtnToggle,
   VSwitch,
   VTextarea,
+  VBottomSheet,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -73,6 +74,7 @@ Vue.use(Vuetify, {
     VBtnToggle,
     VSwitch,
     VTextarea,
+    VBottomSheet,
     transitions
   },
   directives: {
