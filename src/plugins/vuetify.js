@@ -34,6 +34,7 @@ import {
   VBtnToggle,
   VSwitch,
   VTextarea,
+  VTabs,
   VBottomSheet,
   transitions
 } from 'vuetify'
@@ -74,6 +75,7 @@ Vue.use(Vuetify, {
     VBtnToggle,
     VSwitch,
     VTextarea,
+    VTabs,
     VBottomSheet,
     transitions
   },

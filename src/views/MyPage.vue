@@ -1,5 +1,5 @@
  <template>
-  <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'">
+  <v-container>
     <v-layout row justify-center align-center>
       <v-card width="100%" flat>
         <v-card-title primary-title>
@@ -85,7 +85,7 @@
         </v-card-actions>
       </v-card>
     </v-layout>
-  </component>
+  </v-container>
 </template>
 
 <script>

@@ -39,9 +39,9 @@ export default {
           }
         },
         {
-          title: "내 게시판",
+          title: "내 커뮤니티",
           click: e => {
-            this.$router.push("/myBoard");
+            this.$router.push("/myCommunity");
           }
         },
         {

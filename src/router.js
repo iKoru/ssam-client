@@ -102,12 +102,12 @@ const router = new Router({
       }
     },
     {
-      path: '/myBoard',
-      name: 'myBoard',
-      component: () => import('@/views/MyBoard'),
+      path: '/myCommunity',
+      name: 'myCommunity',
+      component: () => import('@/views/MyCommunity'),
       beforeEnter: requireSignin,
       meta: {
-        title: '내 게시판'
+        title: '내 커뮤니티'
       }
     }
 
