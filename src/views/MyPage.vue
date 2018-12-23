@@ -9,7 +9,7 @@
               <p>
                 <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="bottomSheet" absolute offset-y>
                   <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" slot="activator" title="클릭하여 이미지 등록 또는 삭제">
-                    <img :src="profile.picturePath || require('@/static/img/defaultUser.png')" alt="프로필 이미지">
+                    <img :src="'https://node2-koru.c9users.io:8081/' + profile.picturePath || require('@/static/img/defaultUser.png')" alt="프로필 이미지">
                   </v-avatar>
                   <v-list>
                     <v-list-tile v-if="profile.picturePath" @click="deleteProfilePath">
@@ -84,15 +84,28 @@
           </v-layout>
         </v-card-actions>
       </v-card>
+    <v-layout style="display:none">
+      <file-pond
+          name="test"
+          ref="pond"
+          :server="server"
+      />
+    </v-layout>
     </v-layout>
   </v-container>
 </template>
 
 <script>
 import MainLayout from "../layouts/MainLayout";
+import vueFilePond from 'vue-filepond'
+
+// Create FilePond component
+const FilePond = vueFilePond()
 export default {
   name: "MyPage",
-  components: {},
+  components: {
+    FilePond
+  },
   data() {
     return {
       loading: false,
@@ -106,7 +119,36 @@ export default {
       topicNickNameErrors: [],
       passwordRules: [v => !v || (v.length > 3 && v.length < 26) || "4~25자"],
       nickNameRules: [v => (!!v && v !== "") || "닉네임/필명을 입력해주세요.", v => (!!v && v.length > 3 && v.length <= 50) || "4~50자로 입력해주세요."],
-      bottomSheet: false
+      bottomSheet: false,
+      server: {
+        process:(fieldName, file, metadata, load, error, progress, abort) => {
+
+              // fieldName is the name of the input field
+              // file is the actual file object to send
+              console.log('process')
+              const formData = new FormData();
+              console.log(fieldName, file, metadata)
+              formData.append('picture', file, file.name);
+              console.log(formData)
+              this.$axios
+                .post("/user/picture", formData)
+                .then(response => {
+                  console.log(response)
+                  this.profile.picturePath = response.data.picturePath;
+                  this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+                })
+                .catch(error => {
+                  console.log(error.response);
+                  this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+                }); 
+              return {
+                  abort: () => {
+                      // Let FilePond know the request has been cancelled
+                      abort();
+                  }
+              };
+          }
+      }
     };
   },
   computed: {
@@ -297,17 +339,19 @@ export default {
     uploadProfilePath() {
       //TODO : upload image component
       //max 200KB
-      this.$axios
-        .post("/user/picture", {picture: null})
-        .then(response => {
-          this.profile.picturePath = response.data.picturePath;
-          this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-        })
-        .catch(error => {
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-        });
+      this.$refs.pond.browse()
       this.bottomSheet = false;
+      
+      // this.$axios
+      //   .post("/user/picture", {picture: null})
+      //   .then(response => {
+      //     this.profile.picturePath = response.data.picturePath;
+      //     this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //     this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+      //   });
     }
   },
   watch: {
