@@ -19,9 +19,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .menu {
   height: 150px;
   background-color: lightgrey;
+}
+@media(max-width:600px){
+  .menu{
+    height:35px;
+    overflow:auto;
+  }
 }
 </style>

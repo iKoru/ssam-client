@@ -2,6 +2,12 @@ html
   overflow-y: auto
 .cursor-pointer
   cursor:pointer
+.cursor-move
+  cursor:move
+.vertical-center
+  position:relative
+  top:50%
+  transform: translateY(-50%)
 a
   text-decoration: none
 span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
@@ -10,6 +16,7 @@ span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
   overflow:hidden
   text-overflow:ellipsis
   white-space:nowrap
+
 // vuetify-related
 .v-btn.plain:hover:before,
 .v-btn.plain:focus:before,
@@ -33,7 +40,7 @@ span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
 .v-input.v-select.v-input--is-disabled .v-input__append-inner
   display:none
 @media(max-width:600px)
-  .container
+  .container, .v-form > .container, .v-subheader
     padding:0
 
 //file-pond
