@@ -122,23 +122,21 @@ export default {
     createTopic(){
       
     },
-    checkDirty(event){
-      if(this.isDirty()){
-        var confirmationMessage = "\o/"; // eslint-disable-line no-useless-escape
-        event.returnValue = confirmationMessage;
-        return confirmationMessage;
-      }else{
-        return undefined;
-      }
-    }
   },
   mounted(){
     console.log('load topics and lounges...')
-    window.addEventListener('beforeunload', this.checkDirty);
-  },
-  beforeDestroy(){
-    window.removeEventListener('beforeunload', this.checkDirty);
-    console.log('before destroy...')
+    this.$axios.get('/user/board')
+    .then(response => {
+      console.log(response);
+      this.originalTopics = response.data.filter(x=>x.boardType === 'T');
+      this.lounges = response.data.filter(x=>x.boardType !== 'T');
+      this.reset();
+    })
+    .catch(error => {
+      console.log(error);
+      this.$store.dispatch('showSnackbar', {text:error.response?error.response.data.message || '구독 게시판 목록을 불러오지 못했습니다.' : '구독 게시판 목록을 불러오지 못했습니다.', color:'error'})
+    });
+    
   },
   render(h) {
     return h("myBoard", {attrs: {id: "app"}}, this.draggable);
