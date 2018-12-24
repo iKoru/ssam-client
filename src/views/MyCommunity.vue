@@ -7,18 +7,20 @@
           <v-tab key="document">내가 쓴 글</v-tab>
           <v-tab key="comment">내 댓글</v-tab>
           <v-tab key="scrap">내 스크랩</v-tab>
-          <v-tab-item key="board">
-            <my-board></my-board>
-          </v-tab-item>
-          <v-tab-item key="document">
-            <my-document></my-document>
-          </v-tab-item>
-          <v-tab-item key="comment">
-            <my-comment></my-comment>
-          </v-tab-item>
-          <v-tab-item key="scrap">
-            <my-scrap></my-scrap>
-          </v-tab-item>
+          <v-tabs-items touchless>
+            <v-tab-item key="board">
+              <my-board></my-board>
+            </v-tab-item>
+            <v-tab-item key="document" lazy>
+              <my-document></my-document>
+            </v-tab-item>
+            <v-tab-item key="comment" lazy>
+              <my-comment></my-comment>
+            </v-tab-item>
+            <v-tab-item key="scrap" lazy>
+              <my-scrap></my-scrap>
+            </v-tab-item>
+          </v-tabs-items>
         </v-tabs>
       </v-flex>
     </v-layout>
