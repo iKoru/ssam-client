@@ -24,7 +24,7 @@
                   <v-spacer/>
                   <template v-if="!topic.readRestrictDate && !topic.writeRestrictDate">
                     <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click="removeItem(index)">구독해제</v-btn>
-                    <v-btn flat v-else primary small class="mx-0" @click="manageBoard(topic.boardId)">토픽관리</v-btn>
+                    <v-btn flat v-else primary small class="mx-0" @click="manageBoard(topic.boardId)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
                   </template>
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
