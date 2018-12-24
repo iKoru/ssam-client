@@ -2,7 +2,7 @@
   <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'">
     <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
-        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75" max-height="calc(100vh - 535px)"></v-img>
+        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75" :max-height="$vuetify.breakpoint.xsOnly?'200px':'calc(100vh - 535px)'"></v-img>
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">교사 인증</h3>
