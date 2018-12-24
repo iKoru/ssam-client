@@ -5,7 +5,7 @@
         <v-layout row wrap>
           <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true, 'mr-auto':lounges.length === 0}">
             <v-layout row class="titleRow">
-              <span class="title d-inline-block">구독중인 토픽</span><v-spacer/><v-btn small @click="createTopic" color="accent" class="my-0 ml-0" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn><br/>
+              <span class="title d-inline-block">구독중인 토픽</span><v-spacer/><v-btn small @click="openDialog" color="accent" class="my-0 ml-0" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn><br/>
             </v-layout>
             <span class="ellipsis subtitle">드래그하여 순서를 변경할 수 있습니다.</span>
             <v-divider class="my-3"/>
@@ -32,7 +32,7 @@
               아직 구독하고 있는 토픽이 없네요.<br/>새로운 토픽을 구독해보세요!
             </v-layout>
           </v-flex>
-          <v-flex xs12 sm6 lg5 v-if="lounges.length > 0" :class="{'mt-3':$vuetify.breakpoint.xsOnly, 'pl-2':$vuetify.breakpoint.mdAndUp, 'mr-auto':true}">
+          <v-flex xs12 sm6 lg5 v-if="lounges.length > 0" :class="{'mt-5':$vuetify.breakpoint.xsOnly, 'pl-2':$vuetify.breakpoint.mdAndUp, 'mr-auto':true}">
             <v-layout row class="titleRow">
               <span class="title">라운지</span>
             </v-layout>
@@ -57,6 +57,9 @@
           </v-flex>
         </v-layout>
       </v-layout>
+      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" scrollable lazy max-width="700px">
+        <topic-creator @closeDialog="closeDialog"/>
+      </v-dialog>
     </v-card-title>
     <v-card-actions pa-3>
       <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
@@ -69,14 +72,17 @@
 </template>
 <script>
 import draggable from "vuedraggable";
+import TopicCreator from './TopicCreator';
 export default {
   name: "MyBoard",
   components: {
-    draggable: draggable
+    draggable,
+    TopicCreator
   },
   data() {
     return {
       loading: false,
+      dialog: false,
       topics: [{boardId: 1, boardName: "aadddddddddddddddda", readRestrictDate:'20181231'}, {boardId: 2, boardName: "afffffffffffffffdaa", writeRestrictDate:'20191111'}, {boardId: 3, boardName: "afaggggggggggggggga", readRestrictDate:'20180101', writeRestrictDate:'20180301'}, {boardId: 4, boardName: "aasaa"}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}],
       lounges: [{boardId: 1, boardName: "addddddddddddddddddddddaa", readRestrictDate:'20181231'}, {boardId: 2, boardName: "adddddddddddddddddddaa", writeRestrictDate:'20191111'}, {boardId: 3, boardName: "afaaaaaaaaaaaaaaaa"}, {boardId: 4, boardName: "aasaa", readRestrictDate:'20180101', writeRestrictDate:'20180301'}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}],
       originalTopics:[{boardId: 1, boardName: "aaa"}, {boardId: 2, boardName: "adaa"}, {boardId: 3, boardName: "afaa"}, {boardId: 4, boardName: "aasaa"}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}]
@@ -105,23 +111,33 @@ export default {
         return;
       }
       const param = this.topics.map((item, index) => ({orderNumber:index+1, boardId:item.boardId}))
+      this.loading = true;
       this.$axios.put('/user/board', {boards:param})
       .then(responose => {
+        this.loading = false;
         this.originalTopics = param;
         this.reset();
         this.$store.dispatch('showSnackbar', {text:'변경 내용을 반영하였습니다.', color:'success'});
       })
       .catch(error => {
         console.log(error);
+        this.loading = false;
         this.$store.dispatch('showSnackbar', {text:error.response?error.response.data.message || '변경 내용을 반영하지 못했습니다.' : '변경내용을 반영하지 못했습니다.', color:'error'})
       })
     },
     removeItem(index){
       this.topics.splice(index, 1);
     },
-    createTopic(){
-      
+    openDialog(){
+      if(this.$store.getters.profile.status !== 'AUTHORIZED'){
+        this.$store.dispatch('showSnackbar', {text:'인증을 받은 회원만 토픽을 만들 수 있습니다.', color:'error'});
+        return;
+      }
+      this.dialog = true;
     },
+    closeDialog(){
+      this.dialog = false;
+    }
   },
   mounted(){
     console.log('load topics and lounges...')
@@ -136,7 +152,6 @@ export default {
       console.log(error);
       this.$store.dispatch('showSnackbar', {text:error.response?error.response.data.message || '구독 게시판 목록을 불러오지 못했습니다.' : '구독 게시판 목록을 불러오지 못했습니다.', color:'error'})
     });
-    
   },
   render(h) {
     return h("myBoard", {attrs: {id: "app"}}, this.draggable);
