@@ -2,7 +2,7 @@
   <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'">
     <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
-        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75"></v-img>
+        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75" max-height="calc(100vh - 535px)"></v-img>
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">교사 인증</h3>
@@ -36,7 +36,7 @@
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
             <v-btn @click="notToday" class="mt-2">오늘 더이상 보지 않기</v-btn>
             <div v-if="$vuetify.breakpoint.xsOnly"></div>
-            <v-btn @click="goMain" class="mt-2">메인 페이지로 가기</v-btn>
+            <v-btn @click="goNext" class="mt-2">다음에 인증하기</v-btn>
             <v-spacer></v-spacer>
             <v-btn @click="sendAuth" color="primary" :loading="loading" class="mt-2">{{$store.getters.auth.needEmail?'이메일 등록 및 ':''}}인증메일 보내기</v-btn>
           </v-layout>
@@ -65,14 +65,13 @@ export default {
     };
   },
   methods: {
-    goMain() {
-      this.$router.push("/");
-    },
-    notToday() {
-      console.log(this, this.$moment);
-      localStorage.setItem("authRequirement", this.$moment(new Date()).format("YYYYMMDD"));
+    goNext() {
       const redirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
       this.$router.push(redirectTo && redirectTo !== "/auth" ? redirectTo : "/");
+    },
+    notToday() {
+      localStorage.setItem("authRequirement", this.$moment(new Date()).format("YYYYMMDD"));
+      this.goNext();
     },
     sendAuth() {
       this.loading = true;
