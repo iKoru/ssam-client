@@ -16,10 +16,16 @@
               <transition-group>
                 <v-layout class="cursor-move" row v-for="(topic, index) in topics" :key="topic.boardId">
                   <v-flex class="ellipsis">
-                    <div class="vertical-center ellipsis">{{topic.boardName}}</div>
+                    <div class="vertical-center ellipsis">
+                      {{topic.boardName}}
+                      <v-icon v-if="topic.isOwner" title="토픽지기">person</v-icon>
+                    </div>
                   </v-flex>
                   <v-spacer/>
-                  <v-btn v-if="!topic.readRestrictDate && !topic.writeRestrictDate" flat primary small class="mx-0" @click="removeItem(index)">구독해제</v-btn>
+                  <template v-if="!topic.readRestrictDate && !topic.writeRestrictDate">
+                    <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click="removeItem(index)">구독해제</v-btn>
+                    <v-btn flat v-else primary small class="mx-0" @click="manageBoard(topic.boardId)">토픽관리</v-btn>
+                  </template>
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
                       <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
@@ -47,7 +53,10 @@
               <v-list-tile v-for="lounge in lounges" :key="lounge.boardId">
                 <v-layout row>
                   <v-flex class="ellipsis">
-                    <div class="vertical-center ellipsis">{{lounge.boardName}}</div>
+                    <div class="vertical-center ellipsis">
+                      {{lounge.boardName}}
+                      <v-icon v-if="lounge.isOwner" title="라운지지기">person</v-icon>
+                    </div>
                   </v-flex>
                   <v-spacer/>
                   <v-tooltip v-if="lounge.writeRestrictDate" bottom>
@@ -158,6 +167,9 @@ export default {
           console.log(error);
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 게시판 목록을 불러오지 못했습니다." : "구독 게시판 목록을 불러오지 못했습니다.", color: "error"});
         });
+    },
+    manageBoard(boardId) {
+      this.$router.push("/board/" + boardId);
     }
   },
   mounted() {
