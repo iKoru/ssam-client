@@ -5,7 +5,7 @@
         <v-layout row wrap>
           <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true, 'mr-auto':lounges.length === 0}">
             <v-layout row class="titleRow">
-              <span class="title d-inline-block">구독중인 토픽</span><v-spacer/><v-btn small @click="openDialog" color="accent" class="my-0 ml-0" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn><br/>
+              <span class="title d-inline-block">구독중인 토픽</span><v-spacer/><v-btn id="createTopic" small @click="openDialog" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn><br/>
             </v-layout>
             <span class="ellipsis subtitle">드래그하여 순서를 변경할 수 있습니다.</span>
             <v-divider class="my-3"/>
@@ -171,5 +171,8 @@ export default {
   }
   .titleRow{
     height:24px;
+  }
+  #createTopic{
+    top:-4px;
   }
 </style>
