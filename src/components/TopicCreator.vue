@@ -6,7 +6,7 @@
       </v-btn>
       <v-toolbar-title>새로운 토픽 만들기</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items>
+      <v-toolbar-items v-if="$vuetify.breakpoint.xsOnly">
         <v-btn flat @click="save" :loading="loading">등록</v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -53,7 +53,13 @@
           </v-flex>
         </v-layout>
         <v-divider class="mt-4 mb-2"/>
-        <v-btn flat @click="reset">초기화</v-btn>
+        <v-layout row>
+          <v-btn flat @click="reset">초기화</v-btn>
+          <template v-if="$vuetify.breakpoint.smAndUp">
+            <v-spacer/>
+            <v-btn color="primary" @click="save" :loading="loading">등록</v-btn>
+          </template>
+        </v-layout>
       </v-form>
     </v-card-text>
   </v-card>
@@ -123,6 +129,8 @@ export default {
               event.call(this);
             }
           });
+      } else if (typeof event === "function") {
+        event.call(this);
       }
     },
     save() {
@@ -134,16 +142,18 @@ export default {
               boardId: this.boardId,
               boardName: this.boardName,
               boardType: "T",
-              boardDescription: this.boardDescription,
+              boardDescription: this.boardDescription || undefined,
               allGroupAuth: this.allGroupAuth,
               allowAnonymous: this.allowAnonymous,
-              allowedGroups: this.allowedGroups,
+              allowedGroups: this.allowedGroups.map(x => ({groupId: x, authType: "READWRITE"})),
               useCategory: this.useCategory
             })
             .then(response => {
               this.loading = false;
               this.$emit("resetBoard");
               this.$emit("closeDialog");
+              this.reset();
+              this.$store.dispatch("showSnackbar", {text: "새로운 토픽을 만들었습니다.", color: "success"});
             })
             .catch(error => {
               console.log(error.response);
