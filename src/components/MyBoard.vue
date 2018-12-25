@@ -4,8 +4,8 @@
       <v-layout column>
         <v-layout row wrap>
           <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true, 'mr-auto':lounges.length === 0}">
-            <v-layout row class="titleRow">
-              <span class="title d-inline-block">구독중인 토픽</span>
+            <v-layout row :class="{'titleRow':true, 'mb-2':lounges.length === 0}">
+              <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">구독중인 토픽</span>
               <v-spacer/>
               <v-btn id="createTopic" small @click="openDialog" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
               <br>
