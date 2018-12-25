@@ -99,9 +99,9 @@ export default {
     return {
       loading: false,
       dialog: false,
-      topics: [{boardId: 1, boardName: "aadddddddddddddddda", readRestrictDate: "20181231"}, {boardId: 2, boardName: "afffffffffffffffdaa", writeRestrictDate: "20191111"}, {boardId: 3, boardName: "afaggggggggggggggga", readRestrictDate: "20180101", writeRestrictDate: "20180301"}, {boardId: 4, boardName: "aasaa"}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}],
-      lounges: [{boardId: 1, boardName: "addddddddddddddddddddddaa", readRestrictDate: "20181231"}, {boardId: 2, boardName: "adddddddddddddddddddaa", writeRestrictDate: "20191111"}, {boardId: 3, boardName: "afaaaaaaaaaaaaaaaa"}, {boardId: 4, boardName: "aasaa", readRestrictDate: "20180101", writeRestrictDate: "20180301"}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}],
-      originalTopics: [{boardId: 1, boardName: "aaa"}, {boardId: 2, boardName: "adaa"}, {boardId: 3, boardName: "afaa"}, {boardId: 4, boardName: "aasaa"}, {boardId: 5, boardName: "agdgaa"}, {boardId: 6, boardName: "aagga"}, {boardId: 7, boardName: "azzzaa"}, {boardId: 8, boardName: "aeeeaa"}, {boardId: 9, boardName: "azzzzzzaab"}]
+      topics: [],
+      lounges: [],
+      originalTopics: []
     };
   },
   methods: {
