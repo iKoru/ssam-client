@@ -130,7 +130,8 @@ setOptions({
   labelButtonUndoItemProcessing: "재시도",
   labelButtonProcessItem: "업로드",
   labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
-  fileValidateTypeLabelExpectedTypes: "jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다."
+  fileValidateTypeLabelExpectedTypes: "jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다.",
+  allowRevert: false
 });
 export default {
   name: "MyPage",
