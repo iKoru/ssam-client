@@ -7,9 +7,9 @@
         </div>
       </v-flex>
       <v-flex text-xs-center>
-        <router-link to="/about" class="caption mr-1">Pedagy 소개</router-link>|
-        <router-link to="/privacy" class="caption mx-1">개인정보 처리방침</router-link>|
-        <router-link to="/contract" class="caption ml-1">이용약관</router-link>
+        <router-link to="/about" class="caption mr-1 primary--text">Pedagy 소개</router-link>|
+        <router-link to="/privacy" class="caption mx-1 primary--text">개인정보 처리방침</router-link>|
+        <router-link to="/contract" class="caption ml-1 primary--text">이용약관</router-link>
       </v-flex>
     </v-layout>
   </v-footer>
@@ -21,9 +21,9 @@ export default {
 };
 </script>
 <style>
-@media(min-width:960px){
-  .copyright{
-    position:absolute;
+@media (min-width: 960px) {
+  .copyright {
+    position: absolute;
   }
 }
 </style>
