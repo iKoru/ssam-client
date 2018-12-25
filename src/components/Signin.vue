@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container :class="{'pa-3':$vuetify.breakpoint.xsOnly}">
     <v-layout>
       <v-flex>
         <v-form ref="form" lazy-validation>
@@ -19,7 +19,9 @@
             <span class="error--text">{{message}}</span>
           </p>
           <p :class="{'text-xs-center':true, 'mt-3':!message}">
-            <router-link to="/signup">아직 회원이 아니신가요?</router-link>
+            <small>
+              <router-link to="/signup">아직 회원이 아니신가요?</router-link>
+            </small>
           </p>
         </v-form>
       </v-flex>
@@ -59,7 +61,7 @@ export default {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
           });
-          console.log(response.data.token, jwt(response.data.token).userId)
+          console.log(response.data.token, jwt(response.data.token).userId);
           const redirectTo = response.data.redirectTo;
           if (response.data.imminent || response.data.needEmail) {
             this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
@@ -75,7 +77,8 @@ export default {
                   this.$router.push(redirectTo + window.location.search); //preserve original redirect options
                 }
               } else {
-                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+                const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
               }
             })
             .catch(err => {
@@ -86,20 +89,6 @@ export default {
         .catch(err => {
           this.loading = false;
           if (err.response && err.response.data) {
-            if (err.response.data.target && this.$refs[err.response.data.target]) {
-              switch (err.response.data.target) {
-                case "userId":
-                  this.userIdError = true;
-                  this.$refs.userId.focus();
-                  break;
-                case "password":
-                  this.passwordError = true;
-                  this.$refs.password.focus();
-                  break;
-                default:
-                  break;
-              }
-            }
             this.message = err.response.data.message;
           } else {
             this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
@@ -174,7 +163,8 @@ export default {
                     this.$router.push(redirectTo + window.location.search); //preserve original redirect options
                   }
                 } else {
-                  this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+                  const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
                 }
               })
               .catch(err => {
