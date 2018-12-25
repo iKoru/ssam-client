@@ -15,7 +15,7 @@
                     <v-list-tile @click="deleteProfilePath">
                       <v-list-tile-title>프로필 사진 삭제</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="uploadProfilePath">
+                    <v-list-tile @click="bottomSheet = false;dialog=true">
                       <v-list-tile-title>프로필 사진 변경</v-list-tile-title>
                     </v-list-tile>
                   </v-list>
@@ -108,11 +108,10 @@
 import MainLayout from "../layouts/MainLayout";
 import vueFilePond, {setOptions} from "vue-filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
-// Create FilePond component
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
 setOptions({
-  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.",
+  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.(200KB 이내)",
   labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
   labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
   labelFileLoading: "이미지를 불러오는 중...",
@@ -121,8 +120,9 @@ setOptions({
   labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
   labelFileProcessingAborted: "업로드가 취소되었습니다.",
   labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
-  labelTapToCancel: "취소",
+  labelTapToCancel: "",
   labelTapToRetry: "재시도",
+  labelTapToUndo: "",
   labelButtonRemoveItem: "삭제",
   labelButtonAbortItemLoad: "중지",
   labelButtonRetryItemLoad: "재시도",
@@ -165,21 +165,15 @@ export default {
             .post("/user/picture", formData)
             .then(response => {
               this.profile.picturePath = response.data.picturePath;
-              this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
               this.dialog = false;
+              this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
               load();
             })
             .catch(error => {
               abort();
               this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
             });
-          return {
-            abort: () => {
-              // Let FilePond know the request has been cancelled
-              this.dialog = false;
-              abort();
-            }
-          };
+          return {load, error, progress, abort};
         }
       },
       labels: {}
@@ -373,30 +367,6 @@ export default {
           this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 삭제하지 못했습니다."}`, color: "error"});
         });
       this.bottomSheet = false;
-    },
-    uploadProfilePath() {
-      //TODO : upload image component
-      //max 200KB
-      this.dialog = true;
-      this.bottomSheet = false;
-
-      // this.$axios
-      //   .post("/user/picture", {picture: null})
-      //   .then(response => {
-      //     this.profile.picturePath = response.data.picturePath;
-      //     this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-      //   });
-    },
-    clickAvatar() {
-      if (this.profile.picturePath) {
-        this.bottomSheet = true;
-      } else {
-        this.dialog = true;
-      }
     }
   },
   watch: {
