@@ -7,19 +7,22 @@
             <h3 class="headline mb-0">내 계정 정보</h3>
             <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
               <p>
-                <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="bottomSheet" absolute offset-y>
-                  <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" slot="activator" title="클릭하여 이미지 등록 또는 삭제">
-                    <img :src="profile.picturePath? webUrl+ profile.picturePath : require('@/static/img/defaultUser.png')" alt="프로필 이미지">
+                <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="bottomSheet" absolute offset-y v-if="profile.picturePath">
+                  <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" slot="activator" title="클릭하여 이미지 변경 또는 삭제">
+                    <img :src="webUrl+ profile.picturePath" alt="프로필 이미지">
                   </v-avatar>
                   <v-list>
-                    <v-list-tile v-if="profile.picturePath" @click="deleteProfilePath">
+                    <v-list-tile @click="deleteProfilePath">
                       <v-list-tile-title>프로필 사진 삭제</v-list-tile-title>
                     </v-list-tile>
                     <v-list-tile @click="uploadProfilePath">
-                      <v-list-tile-title>{{profile.picturePath? '프로필 사진 변경':'프로필 사진 등록'}}</v-list-tile-title>
+                      <v-list-tile-title>프로필 사진 변경</v-list-tile-title>
                     </v-list-tile>
                   </v-list>
                 </component>
+                <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="dialog = true" title="클릭하여 이미지 등록" v-else>
+                  <img :src="require('@/static/img/defaultUser.png')" alt="기본 프로필 이미지">
+                </v-avatar>
               </p>
               <v-form ref="form" lazy-validation>
                 <v-container fluid grid-list-xs>
@@ -387,6 +390,13 @@ export default {
       //     console.log(error);
       //     this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
       //   });
+    },
+    clickAvatar() {
+      if (this.profile.picturePath) {
+        this.bottomSheet = true;
+      } else {
+        this.dialog = true;
+      }
     }
   },
   watch: {
