@@ -9,8 +9,11 @@
           <v-flex xs12>
             <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination">
               <template slot="items" slot-scope="props">
-                <tr>
-                  <td class="text-xs-left" v-if="$vuetify.breakpoint.mdAndUp">{{ boardItems.find(x=>x.boardId === props.item.boardId).boardName }}</td>
+                <tr @click="selected = (selected===props.index?null:props.index)">
+                  <td>
+                    <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
+                  </td>
+                  <td class="text-xs-left" v-if="$vuetify.breakpoint.mdAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
                   <td class="text-xs-left ellipsis cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
                     <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
                       {{ getShortContents(props.item.contents) }}
@@ -25,6 +28,10 @@
                 {{this.noresult}}
                 <v-btn color="primary" @click="getMyComments">새로고침</v-btn>
               </template>
+              <template slot="actions-prepend">
+                <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
+                <v-spacer></v-spacer>
+              </template>
             </v-data-table>
           </v-flex>
         </v-flex>
@@ -37,6 +44,7 @@ export default {
   name: "MyComment",
   data() {
     return {
+      selected: null,
       userComments: [],
       loading: false,
       totalUserComments: 0,
@@ -51,7 +59,7 @@ export default {
       return this.loading ? "작성한 댓글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 작성한 댓글이 없으시군요!";
     },
     headers() {
-      return this.$vuetify.breakpoint.smAndDown ? [{text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+      return this.$vuetify.breakpoint.smAndDown ? [{text:'', sortable:false, value:''}, {text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text:'', sortable:false, value:''}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
     }
   },
   methods: {
@@ -91,6 +99,24 @@ export default {
       } else {
         return contents.length > 30 ? contents.substring(0, 30) + "..." : contents;
       }
+    },
+    deleteRow(){
+      if(this.selected){
+        this.$axios.put('/comment', {commentId:this.userComments[this.selected].commentId, isDeleted:true})
+        .then(response => {
+          if(this.userComments.length === 1 && this.pagination.page > 1){
+            this.pagination.page --;
+          }
+          this.getMyComments();
+          this.selected = null;
+          this.$store.dispatch('showSnackbar', {text:'댓글을 삭제하였습니다.', color:'success'});
+        })
+        .catch(error => {
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "댓글을 삭제하지 못했습니다." : "댓글을 삭제하지 못했습니다.", color: "error"});
+        })
+      }else{
+        this.$store.dispatch('showSnackbar', {text:'삭제할 댓글을 선택해주세요.', color:'error'})
+      }
     }
   },
   watch: {
@@ -109,5 +135,8 @@ export default {
 <style>
 td {
   white-space: nowrap;
+}
+.v-datatable__actions {
+  justify-content: space-between;
 }
 </style>
