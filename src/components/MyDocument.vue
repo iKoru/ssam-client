@@ -21,7 +21,7 @@
                     </a>
                   </td>
                   <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
                 </tr>
               </template>
               <template slot="no-data">
@@ -44,7 +44,7 @@ export default {
   name: "MyDocument",
   data() {
     return {
-      selected:null,
+      selected: null,
       userDocuments: [],
       loading: false,
       totalUserDocuments: 0,
@@ -59,7 +59,7 @@ export default {
       return this.loading ? "작성한 글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 작성한 글이 없으시군요!";
     },
     headers() {
-      return this.$vuetify.breakpoint.xsOnly ? [{text:'', sortable:false, value:''}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text:'', sortable:false, value:''}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+      return this.$vuetify.breakpoint.xsOnly ? [{text: "", sortable: false, value: ""}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
     }
   },
   methods: {
@@ -91,31 +91,32 @@ export default {
       if (this.$vuetify.breakpoint.xsOnly) {
         return contents.length > 15 ? contents.substring(0, 15) + "..." : contents;
       } else if (this.$vuetify.breakpoint.smOnly) {
-        return contents.length > 8 ? contents.substring(0, 8) + "..." : contents;
+        return contents.length > 14 ? contents.substring(0, 14) + "..." : contents;
       } else if (this.$vuetify.breakpoint.mdOnly) {
-        return contents.length > 19 ? contents.substring(0, 19) + "..." : contents;
+        return contents.length > 25 ? contents.substring(0, 25) + "..." : contents;
       } else if (this.$vuetify.breakpoint.lgOnly) {
-        return contents.length > 23 ? contents.substring(0, 23) + "..." : contents;
+        return contents.length > 30 ? contents.substring(0, 30) + "..." : contents;
       } else {
-        return contents.length > 32 ? contents.substring(0, 32) + "..." : contents;
+        return contents.length > 36 ? contents.substring(0, 36) + "..." : contents;
       }
     },
-    deleteRow(){
-      if(this.selected){
-        this.$axios.put('/document', {documentId:this.userDocuments[this.selected].documentId, isDeleted:true})
-        .then(response => {
-          if(this.userDocuments.length === 1 && this.pagination.page > 1){
-            this.pagination.page --;
-          }
-          this.getMyDocuments();
-          this.selected = null;
-          this.$store.dispatch('showSnackbar', {text:'글을 삭제하였습니다.', color:'success'});
-        })
-        .catch(error => {
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 삭제하지 못했습니다." : "글을 삭제하지 못했습니다.", color: "error"});
-        })
-      }else{
-        this.$store.dispatch('showSnackbar', {text:'삭제할 글을 선택해주세요.', color:'error'})
+    deleteRow() {
+      if (this.selected) {
+        this.$axios
+          .put("/document", {documentId: this.userDocuments[this.selected].documentId, isDeleted: true})
+          .then(response => {
+            if (this.userDocuments.length === 1 && this.pagination.page > 1) {
+              this.pagination.page--;
+            }
+            this.getMyDocuments();
+            this.selected = null;
+            this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
+          })
+          .catch(error => {
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 삭제하지 못했습니다." : "글을 삭제하지 못했습니다.", color: "error"});
+          });
+      } else {
+        this.$store.dispatch("showSnackbar", {text: "삭제할 글을 선택해주세요.", color: "error"});
       }
     }
   },
@@ -135,6 +136,22 @@ export default {
 <style>
 td {
   white-space: nowrap;
+}
+table.v-table thead td:not(:nth-child(1)),
+table.v-table tbody td:not(:nth-child(1)),
+table.v-table thead th:not(:nth-child(1)),
+table.v-table tbody th:not(:nth-child(1)),
+table.v-table thead td:first-child,
+table.v-table tbody td:first-child,
+table.v-table thead th:first-child,
+table.v-table tbody th:first-child {
+  padding: 0 12px;
+}
+td:first-child {
+  padding: 0 12px;
+}
+td:first-child .v-input--selection-controls__input {
+  margin-right: 0;
 }
 .v-datatable__actions {
   justify-content: space-between;
