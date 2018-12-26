@@ -74,7 +74,6 @@ export default {
   #signinContainer {
     max-width: 400px;
     margin-bottom: 5rem;
-    margin-top: 2rem;
   }
 }
 </style>

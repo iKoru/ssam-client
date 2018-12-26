@@ -19,9 +19,9 @@
             <span class="error--text">{{message}}</span>
           </p>
           <p :class="{'text-xs-center':true, 'mt-3':!message}">
-            <small>
+            <component :is="$vuetify.breakpoint.xsOnly?'span':'small'">
               <router-link to="/signup">아직 회원이 아니신가요?</router-link>
-            </small>
+            </component>
           </p>
         </v-form>
       </v-flex>

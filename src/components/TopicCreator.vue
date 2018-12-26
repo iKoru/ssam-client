@@ -40,7 +40,7 @@
             </v-layout>
           </v-flex>
           <v-flex xs12>
-            <v-autocomplete name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독허용 그룹" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint>
+            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독허용 그룹" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:true}">
               <template slot="selection" slot-scope="props">
                 <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, allowedGroups)">{{props.item.text}}</v-chip>
               </template>
@@ -49,7 +49,7 @@
                   <v-list-tile-title v-html="data.item.text"></v-list-tile-title>
                 </v-list-tile-content>
               </template>
-            </v-autocomplete>
+            </component>
           </v-flex>
         </v-layout>
         <v-divider class="mt-4 mb-2"/>
@@ -207,5 +207,8 @@ export default {
 form .flex {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+.v-list .v-subheader{
+  padding-left:.5rem;
 }
 </style>
