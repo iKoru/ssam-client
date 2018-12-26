@@ -13,8 +13,7 @@
         <quill-editor v-model="content"
                     ref="editor"
                     :options="editorOption"
-                    @ready="onEditorReady($event)"> 
-
+                    @ready="onEditorReady($event)">
                     <!-- @blur="onEditorBlur($event)"
                     @focus="onEditorFocus($event)"-->
           <div id="toolbar" slot="toolbar">
@@ -58,7 +57,7 @@
         @removefile="handleFilePondRemoveFile"
         v-on:init="handleFilePondInit"
         />
-        <button @click="manualUpload">수동업로드</button>
+        <!-- <button @click="manualUpload">수동업로드</button> -->
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
@@ -96,9 +95,8 @@
 import Survey from '@/components/board/survey/Survey'
 import SurveyMaker from '@/components/board/survey/SurveyMaker'
 import Attachment from '@/components/board/editor/Attachment'
-import BoardMixins from '@/components/mixins/BoardMixins'
 
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
@@ -106,7 +104,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filep
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
 setOptions({
-  labelIdle: "파일을 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.",
+  labelIdle: '파일을 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.',
   // labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
   // labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
   // labelFileLoading: "이미지를 불러오는 중...",
@@ -123,9 +121,9 @@ setOptions({
   // labelButtonRetryItemLoad: "재시도",
   // labelButtonAbortItemProcessing: "취소",
   // labelButtonUndoItemProcessing: "재시도",
-  labelButtonProcessItem: "업로드",
-  labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
-  fileValidateTypeLabelExpectedTypes: "(어떤ㄷ 종류의) 파일만 업로드 가능합니다.",
+  labelButtonProcessItem: '업로드',
+  labelFileTypeNotAllowed: '허용된 파일 형식이 아닙니다.',
+  fileValidateTypeLabelExpectedTypes: '(어떤ㄷ 종류의) 파일만 업로드 가능합니다.',
   allowRevert: false
 });
 export default {
@@ -136,7 +134,6 @@ export default {
     Survey,
     FilePond
   },
-  mixins: [ BoardMixins ],
   data () {
     return {
       savedContent: undefined,
@@ -157,29 +154,49 @@ export default {
       allowAnonymous: true,
       attachedFilenames: [],
       attachedFiles: [],
+      attachedImages: [],
+      formData: undefined,
+      attachedFileNumber: 0,
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
-          const formData = new FormData();
-          // formdata 는 계속 append
-          formData.append("picture", file, file.name);
-          console.log(file)
-          
-          console.log(this.attachedFiles)
-          // this.$axios
-          //   .post("/user/picture", formData)
-          //   .then(response => {
-          //     // this.profile.picturePath = response.data.picturePath;
-          //     // this.dialog = false;
-          //     // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-          //     console.log(response)
-          //     load();
-          //   })
-          //   .catch(error => {
-          //     abort();
-          //     console.log(error)
-          //     // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-          //   });
-          return {load, error, progress, abort};
+          // const formData = new FormData();
+          // // formdata 는 계속 append
+          // console.log(this.attachedImages, this.attachedFilenames)
+          // console.log(file.filename)
+          if (!this.formData) this.formData = new FormData()
+          if (this.attachedImages.includes(file.name)) {
+            this.formData.append('image', file, file.name);
+            this.attachedFileNumber += 1;
+          } else if (this.attachedFilenames.includes(file.name)) {
+            this.formData.append('attachment', file, file.name);
+            this.attachedFileNumber += 1;
+          }
+          if (this.attachedFileNumber === this.attachedFilenames.length) {
+            this.formData.append('boardId', this.$route.params.boardId)
+            this.formData.append('title', this.title)
+            this.formData.append('contents', this.content) // to delta
+            this.formData.append('isAnonymous', this.isAnonymous)
+            this.formData.append('allowAnonymous', this.allowAnonymous)
+            this.formData.append('survey', this.survey)
+
+            this.$axios
+              .post('/document', this.formData)
+              .then(response => {
+                // this.profile.picturePath = response.data.picturePath;
+                // this.dialog = false;
+                // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+                console.log(response)
+                load();
+              })
+              .catch(error => {
+                delete this.formData
+                this.attachedFileNumber = 0
+                abort();
+                console.log(error.response)
+                // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+              });
+          }
+          return { load, error, progress, abort };
         }
       }
     }
@@ -192,18 +209,43 @@ export default {
     // onEditorFocus (quill) {
     //   console.log('editor focus!', quill)
     // },
-    // onEditorReady (quill) {
-    //   console.log('editor ready!', quill)
-    // },
+    onEditorReady (quill) {
+      console.log('editor ready!', quill)
+    },
     onEditorChange ({ quill, html, text }) {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
     post () {
+      // manually add images as file
       this.attachImage()
-      console.log(this.$route.params.boardId)
-      this.postDocument(this.$route.params.boardId, this.title, this.content, this.isAnonymous, this.allowAnonymous, this.survey)
-      // post with saved imagefiles / files
+        .then(files => {
+          this.attachedImages = files.map(file => file.filename)
+          // console.log(this.$refs.editor.quill.editor.delta.ops)
+          if (this.attachedImages.length === 0 && this.attachedFilenames.length === 0) {
+            this.$axios.post('/document', {
+              boardId: this.$route.params.boardId,
+              title: this.title,
+              contents: this.content, // delta
+              isAnonymous: this.isAnonymous,
+              allowAnonymous: this.allowAnonymous,
+              survey: this.survey
+            }).then(res => {
+              if (res.status === 200) {
+                this.$router.push(`/board/${this.$route.params.boardId}/${res.data.documentId}`)
+              }
+              console.log(res)
+            }).catch(err => {
+              console.log(err.response)
+            })
+          } else {
+            this.handleProcessFile()
+          }
+        })
+        .catch(err => {
+          // failed in parse images to attached files
+          console.log(err)
+        })
     },
 
     handleFilePondInit: function () {
@@ -215,65 +257,32 @@ export default {
     handleFilePondAddFile: function (error, file) {
       console.log(error)
       this.attachedFilenames.push(file.filename)
-      console.log(this.attachedFiles)
     },
-    handleFilePondRemoveFile: function (error, file) {
-      console.log(error)
-      this.attachedFilenames = this.attachedFilenames.filter(filename => filename!==file.filename)
-      console.log(this.attachedFiles)
+    handleFilePondRemoveFile: function (file) {
+      this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename)
     },
     handleProcessFile: function () {
-      this.$refs.pond.processFiles().then(files => {
-        console.log(files)
-      }).catch(err=> console.log(err.response))
-    },
-    manualUpload: function () {
-      this.handleProcessFile()
+      this.$refs.pond.processFiles()
+        .then(files => {
+          // go to read
+        })
+        .catch(err =>
+          console.log(err.response)
+        )
     },
     attachImage () {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty('image')).length
+      let imageSrc = []
       this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty('image')) {
-          console.log(item)
-          let src = item.insert.image
-          this.$refs.attachment.addImage(src).then(file => {
-            this.embedImage(item, src)
-          }).catch(err => {
-            console.log(err)
-          })
+          // random generated uuid should given here
+          let imgSrc = item.insert.image
+          item.insert.image = 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif'
+          imageSrc.push(imgSrc)
         }
       })
+      return this.$refs.pond.addFiles(imageSrc)
     },
-    imageAttached () {
-      this.embedImages()
-      console.log(this.$refs.editor.quill.editor.delta)
-      // this.preprocessUpload.attachImages = true
-    },
-    embedImage (deltaOps, src) {
-      console.log(deltaOps)
-      deltaOps.insert.image = 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif'
-      this.$refs.editor.quill.setContents([deltaOps])
-      let newDeltaOps = []
-      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
-        newDeltaOps.push(item)
-      })
-      this.$refs.editor.quill.setContents(newDeltaOps)
-      console.log(this.$refs.editor.quill.editor.delta.ops)
-    },
-    embedImages () {
-      // console.log(this.$refs.editor.quill.editor)
-      // this.$refs.imageAttachment.addImage(fileImages)
-      // const range = this.$refs.editor.quill.getSelection(true)
-      // fileImages.forEach(image => {
-      //   console.log(image)
-      //   image.src = ''
-      //   this.$refs.editor.quill.enable(true)
-      //   this.$refs.editor.quill.editor.insertEmbed(range.index, 'image', 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif')
-      //   this.$refs.editor.quill.setSelection(range.index + 1, Quill.sources.SILENT)
-      //   console.log(this.$refs.editor.quill.editor.delta)
-      // })
-    },
-    
     surveyButtonClick () {
       if (this.currentSurvey.questions.length === 0) {
         this.currentSurvey.questions.push(
@@ -287,7 +296,7 @@ export default {
       this.surveyDialog = true
     },
     attachButtonClick () {
-      this.$refs.attachment.browseFile()
+      this.$refs.pond.browse()
     },
     extractSurvey (survey) {
       this.survey = survey
@@ -298,8 +307,7 @@ export default {
       this.surveyDialog = false
     },
     deleteSurvey () {
-      if(confirm('설문을 삭제합니다.'))
-        this.survey = undefined
+      if (confirm('설문을 삭제합니다.')) { this.survey = undefined }
     }
   },
   computed: {
@@ -318,7 +326,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .filepond--root {
   height: 150px;
 }
@@ -328,10 +336,10 @@ export default {
 #attach-button {
   width: 28px;
 }
-/* .ql-container {
-  height: 400px;
-} */
 .ql-editor {
-  height:400px;
+  height:400px !important;
+}
+.ql-container {
+  height: 400px;
 }
 </style>
