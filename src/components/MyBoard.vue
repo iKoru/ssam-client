@@ -5,7 +5,7 @@
         <v-layout row wrap>
           <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true, 'mr-auto':lounges.length === 0}">
             <v-layout row :class="{'titleRow':true, 'mb-2':lounges.length === 0}">
-              <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">구독중인 토픽</span>
+              <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">토픽</span>
               <v-spacer/>
               <v-btn id="createTopic" small @click="openDialog" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
               <br>
@@ -73,7 +73,7 @@
           </v-flex>
         </v-layout>
       </v-layout>
-      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" scrollable lazy max-width="700px">
+      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
         <topic-creator @closeDialog="closeDialog" @resetBoard="resetBoard"/>
       </v-dialog>
     </v-card-title>
@@ -149,9 +149,11 @@ export default {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }
+      document.body.style.position = 'fixed';
       this.dialog = true;
     },
     closeDialog() {
+      document.body.style.position = 'initial';
       this.dialog = false;
     },
     resetBoard() {
