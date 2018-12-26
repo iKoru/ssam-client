@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-      <v-flex row fill-width>
+      <v-flex row>
         <Editor/>
       </v-flex>
     </v-layout>

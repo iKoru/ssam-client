@@ -30,7 +30,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 textarea {
     height: 80px!important;
 }

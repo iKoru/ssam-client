@@ -1,15 +1,14 @@
 <template>
   <div id="app">
     <file-pond
-        name="test"
+        name="attachment"
         ref="pond"
-        class-name="my-pond"
-        label-idle="클릭하거나 파일을 끌어다 놓으세요"
-        allow-multiple="true"
-        v-bind:files="files"
         instantUpload="false"
-        accepted-file-types="image/jpeg, image/png, image/jpg"
+        allow-multiple="true"
+        accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg"
         :server="server"
+        @addfile="handleFilePondAddFile"
+        @removefile="handleFilePondRemoveFile"
         v-on:init="handleFilePondInit"/>
     <button @click="manualUpload">수동업로드</button>
   </div>
@@ -17,7 +16,7 @@
 
 <script>
 // Import FilePond
-import vueFilePond from 'vue-filepond'
+import vueFilePond, {setOptions} from 'vue-filepond'
 
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
@@ -25,73 +24,55 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filep
 
 // Create FilePond component
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
+setOptions({
+  labelIdle: "파일을 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.",
+  // labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
+  // labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
+  // labelFileLoading: "이미지를 불러오는 중...",
+  // labelFileLoadError: "이미지를 불러오지 못헀습니다.",
+  // labelFileProcessing: "서버로 업로드중...",
+  // labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
+  // labelFileProcessingAborted: "업로드가 취소되었습니다.",
+  // labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
+  // labelTapToCancel: "",
+  // labelTapToRetry: "재시도",
+  // labelTapToUndo: "",
+  // labelButtonRemoveItem: "삭제",
+  // labelButtonAbortItemLoad: "중지",
+  // labelButtonRetryItemLoad: "재시도",
+  // labelButtonAbortItemProcessing: "취소",
+  // labelButtonUndoItemProcessing: "재시도",
+  labelButtonProcessItem: "업로드",
+  labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
+  fileValidateTypeLabelExpectedTypes: "(어떤ㄷ 종류의) 파일만 업로드 가능합니다.",
+  allowRevert: false
+});
 
 export default {
   name: 'Attachment',
   data: function () {
-    return { files: [],
-      server: {
+    return {
+      files: [],
+       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
-            console.log('process')
-            // fieldName is the name of the input field
-            // file is the actual file object to send
-            const formData = new FormData();
-            formData.append(fieldName, file, file.name);
-
-            // const request = new XMLHttpRequest();
-            console.log(this.$axios.defaults.baseURL)
-            // request.open('POST', '/document');
-            this.$axios.post('/document', {
-              boardId: this.$route.params.boardId,
-              title: "attachment test",
-              contents: "please go",
-              isAnonymous: true,
-              allowAnonymous: true,
-              attachment: {
-                attachId: 'test', 
-                attachType: 'image',
-                attacyPath: 'test',
-                attachName: 'no'
-              }
-            }).then(res => {
-              console.log(res)
-            }).catch(err => {
-              console.log(err)
-              console.log(err.response)
+          const formData = new FormData();
+          formData.append("picture", file, file.name);
+          this.$axios
+            .post("/user/picture", formData)
+            .then(response => {
+              // this.profile.picturePath = response.data.picturePath;
+              // this.dialog = false;
+              // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+              console.log(response)
+              load();
             })
-            // Should call the progress method to update the progress to 100% before calling load
-            // Setting computable to false switches the loading indicator to infinite mode
-            // request.upload.onprogress = (e) => {
-            //     progress(e.lengthComputable, e.loaded, e.total);
-            // };
-
-            // // Should call the load method when done and pass the returned server file id
-            // // this server file id is then used later on when reverting or restoring a file
-            // // so your server knows which file to return without exposing that info to the client
-            // request.onload = function() {
-            //     if (request.status >= 200 && request.status < 300) {
-            //         // the load method accepts either a string (id) or an object
-            //         load(request.responseText);
-            //     }
-            //     else {
-            //         // Can call the error method if something is wrong, should exit after
-            //         error('oh no');
-            //     }
-            // };
-
-            // request.send(formData);
-            
-            // Should expose an abort method so the request can be cancelled
-            return {
-                abort: () => {
-                    // This function is entered if the user has tapped the cancel button
-                    // request.abort();
-
-                    // Let FilePond know the request has been cancelled
-                    abort();
-                }
-            };
-        }   
+            .catch(error => {
+              abort();
+              console.log(error)
+              // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+            });
+          return {load, error, progress, abort};
+        }
       }
     }
   },
@@ -102,19 +83,18 @@ export default {
       // example of instance method call on pond reference
       this.$refs.pond.getFiles()
     },
+    handleFilePondAddFile: function (error, file) {
+      console.log(error)
+      this.$emit('fileAttached', file.filename)
+    },
+    handleFilePondRemoveFile: function (error, file) {
+      console.log(error)
+      this.$emit('fileRemoved', file.filename)
+    },
     handleProcessFile: function () {
       this.$refs.pond.processFiles().then(files => {
         console.log(files)
-      })
-    },
-    handleProcessFileStart: function () {
-
-    },
-    handleProcessFileAbort: function () {
-
-    },
-    handleProcessFileUndo: function () {
-
+      }).catch(err=> console.log(err))
     },
     manualUpload: function () {
       this.handleProcessFile()
@@ -131,6 +111,11 @@ export default {
   },
   components: {
     FilePond
+  },
+  created () {
+    this.$refs.pond.addEventListener('FilePond:addfile', e => {
+      console.log('File added', e.detail);
+    });
   }
 }
 </script>

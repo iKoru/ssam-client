@@ -39,12 +39,13 @@
 <script>
 // import VuePoll from 'vue-poll'
 import VuePoll from "@/components/board/survey/VuePoll";
-import {formatSurvey} from '@/components/mixins/formatSurvey'
+import BoardMixins from '@/components/mixins/BoardMixins'
 export default {
   props: ["survey"],
   components: {
     VuePoll
   },
+  mixins: [ BoardMixins ],
   data() {
     return {
       // survey: undefined,
@@ -55,7 +56,6 @@ export default {
       showSurveyResult: false
     };
   },
-  mixins: [formatSurvey],
   computed: {
     finalResults () {
       if (this.survey.participated) {

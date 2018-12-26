@@ -53,7 +53,7 @@
 import Survey from '@/components/board/survey/Survey'
 import WriteComment from '@/components/board/WriteComment'
 import ViewComment from '@/components/board/ViewComment'
-import { formatSurvey } from '@/components/mixins/formatSurvey'
+import BoardMixins from '@/components/mixins/BoardMixins'
 export default {
   props: [],
   data() {
@@ -67,7 +67,7 @@ export default {
     WriteComment,
     ViewComment
   },
-  mixins: [formatSurvey],
+  mixins: [ BoardMixins ],
   mounted() {
     this.content = localStorage.item;
   },

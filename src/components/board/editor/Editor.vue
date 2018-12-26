@@ -13,9 +13,10 @@
         <quill-editor v-model="content"
                     ref="editor"
                     :options="editorOption"
-                    @blur="onEditorBlur($event)"
-                    @focus="onEditorFocus($event)"
-                    @ready="onEditorReady($event)">
+                    @ready="onEditorReady($event)"> 
+
+                    <!-- @blur="onEditorBlur($event)"
+                    @focus="onEditorFocus($event)"-->
           <div id="toolbar" slot="toolbar">
             <!-- Add a bold button -->
             <button class="ql-bold">Bold</button>
@@ -45,8 +46,19 @@
         </div>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
-        <Attachment ref="attachment" @imageAttached="imageAttached"/>
-
+        <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
+        <file-pond
+        name="attachment"
+        ref="pond"
+        instantUpload="false"
+        allow-multiple="true"
+        accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg"
+        :server="server"
+        @addfile="handleFilePondAddFile"
+        @removefile="handleFilePondRemoveFile"
+        v-on:init="handleFilePondInit"
+        />
+        <button @click="manualUpload">수동업로드</button>
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
@@ -84,14 +96,47 @@
 import Survey from '@/components/board/survey/Survey'
 import SurveyMaker from '@/components/board/survey/SurveyMaker'
 import Attachment from '@/components/board/editor/Attachment'
-// Create FilePond component
+import BoardMixins from '@/components/mixins/BoardMixins'
+
+import vueFilePond, {setOptions} from 'vue-filepond'
+
+// Import plugins
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
+
+const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
+setOptions({
+  labelIdle: "파일을 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.",
+  // labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
+  // labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
+  // labelFileLoading: "이미지를 불러오는 중...",
+  // labelFileLoadError: "이미지를 불러오지 못헀습니다.",
+  // labelFileProcessing: "서버로 업로드중...",
+  // labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
+  // labelFileProcessingAborted: "업로드가 취소되었습니다.",
+  // labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
+  // labelTapToCancel: "",
+  // labelTapToRetry: "재시도",
+  // labelTapToUndo: "",
+  // labelButtonRemoveItem: "삭제",
+  // labelButtonAbortItemLoad: "중지",
+  // labelButtonRetryItemLoad: "재시도",
+  // labelButtonAbortItemProcessing: "취소",
+  // labelButtonUndoItemProcessing: "재시도",
+  labelButtonProcessItem: "업로드",
+  labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
+  fileValidateTypeLabelExpectedTypes: "(어떤ㄷ 종류의) 파일만 업로드 가능합니다.",
+  allowRevert: false
+});
 export default {
   name: 'Editor',
   components: {
     Attachment,
     SurveyMaker,
-    Survey
+    Survey,
+    FilePond
   },
+  mixins: [ BoardMixins ],
   data () {
     return {
       savedContent: undefined,
@@ -109,47 +154,81 @@ export default {
         }
       },
       isAnonymous: false,
-      allowAnonymous: true
+      allowAnonymous: true,
+      attachedFilenames: [],
+      attachedFiles: [],
+      server: {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          const formData = new FormData();
+          // formdata 는 계속 append
+          formData.append("picture", file, file.name);
+          console.log(file)
+          
+          console.log(this.attachedFiles)
+          // this.$axios
+          //   .post("/user/picture", formData)
+          //   .then(response => {
+          //     // this.profile.picturePath = response.data.picturePath;
+          //     // this.dialog = false;
+          //     // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+          //     console.log(response)
+          //     load();
+          //   })
+          //   .catch(error => {
+          //     abort();
+          //     console.log(error)
+          //     // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+          //   });
+          return {load, error, progress, abort};
+        }
+      }
     }
   },
   // manually control the data synchronization
   methods: {
-    onEditorBlur (quill) {
-      console.log('editor blur!', quill)
-    },
-    onEditorFocus (quill) {
-      console.log('editor focus!', quill)
-    },
-    onEditorReady (quill) {
-      console.log('editor ready!', quill)
-    },
+    // onEditorBlur (quill) {
+    //   console.log('editor blur!', quill)
+    // },
+    // onEditorFocus (quill) {
+    //   console.log('editor focus!', quill)
+    // },
+    // onEditorReady (quill) {
+    //   console.log('editor ready!', quill)
+    // },
     onEditorChange ({ quill, html, text }) {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
     post () {
-      this.savedContent = localStorage.item = this.content
       this.attachImage()
       console.log(this.$route.params.boardId)
-      console.log('post document')
-
-      this.$axios.post('/document', {
-        boardId: this.$route.params.boardId,
-        title: this.title,
-        contents: this.content,
-        isAnonymous: this.isAnonymous,
-        allowAnonymous: this.allowAnonymous,
-        survey: this.survey
-      }).then(res => {
-        if(res.status === 200) {
-          this.$router.push(`/board/${this.$route.params.boardId}/${res.data.documentId}`)
-        }
-        console.log(res)
-      }).catch(err => {
-        console.log(err)
-        console.log(err.response)
-      })
+      this.postDocument(this.$route.params.boardId, this.title, this.content, this.isAnonymous, this.allowAnonymous, this.survey)
       // post with saved imagefiles / files
+    },
+
+    handleFilePondInit: function () {
+      console.log('FilePond has initialized')
+
+      // example of instance method call on pond reference
+      this.$refs.pond.getFiles()
+    },
+    handleFilePondAddFile: function (error, file) {
+      console.log(error)
+      this.attachedFilenames.push(file.filename)
+      console.log(this.attachedFiles)
+    },
+    handleFilePondRemoveFile: function (error, file) {
+      console.log(error)
+      this.attachedFilenames = this.attachedFilenames.filter(filename => filename!==file.filename)
+      console.log(this.attachedFiles)
+    },
+    handleProcessFile: function () {
+      this.$refs.pond.processFiles().then(files => {
+        console.log(files)
+      }).catch(err=> console.log(err.response))
+    },
+    manualUpload: function () {
+      this.handleProcessFile()
     },
     attachImage () {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty('image')).length
@@ -236,22 +315,23 @@ export default {
     }
   },
   mounted () {
-    document.addEventListener('FilePond:loaded', e => {
-      console.log('FilePond ready for use', e.detail)
-    })
   }
 }
 </script>
-<style>
-
+<style scoped>
+.filepond--root {
+  height: 150px;
+}
 #survey-button {
   width: 28px;
 }
 #attach-button {
   width: 28px;
 }
-.ql-container {
+/* .ql-container {
   height: 400px;
+} */
+.ql-editor {
+  height:400px;
 }
-
 </style>
