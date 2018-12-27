@@ -3,20 +3,30 @@
     <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3 cursor-pointer" @click="goMain" title="pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-menu offset-y right open-on-hover>
-      <v-btn small flat slot="activator" v-if="$vuetify.breakpoint.smAndUp" class="plain notificationActivator">
+    <v-menu offset-y right open-on-hover v-model="menu">
+      <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1">
           <img :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
         </v-avatar>
-        {{nickName || ''}}
+        <v-badge color="error" :value="totalNotifications>0 && !menu && !notification">
+          <span>{{nickName || ''}}</span>
+          <span slot="badge">{{totalNotifications}}</span>
+        </v-badge>
       </v-btn>
-      <v-btn icon large slot="activator" v-else class="notificationActivator">
-        <v-icon>more_vert</v-icon>
+      <v-btn icon large class="notificationActivator" v-else slot="activator">
+        <v-badge color="error" :value="totalNotifications>0 && !menu && !notification">
+          <v-icon>more_vert</v-icon>
+          <span slot="badge">{{totalNotifications}}</span>
+        </v-badge>
       </v-btn>
       <v-list class="pa-0 mt-2" v-if="!notification">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
           <v-list-tile-content>
-            <v-list-tile-title>{{item.title}}</v-list-tile-title>
+            <v-badge color="error" :value="totalNotifications > 0 && menu" v-if="item.badge">
+              <v-list-tile-title>{{item.title}}</v-list-tile-title>
+              <span slot="badge">{{totalNotifications}}</span>
+            </v-badge>
+            <v-list-tile-title v-else>{{item.title}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -50,6 +60,7 @@ export default {
         },
         {
           title: "알림내역",
+          badge: true,
           click: e => {
             this.notification = true;
             return true;
@@ -70,6 +81,12 @@ export default {
   computed: {
     nickName() {
       return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
+    },
+    totalNotifications() {
+      return this.$store.getters.totalNotifications;
+    },
+    showNotificationBadge() {
+      return this.totalNotifications > 0;
     }
   },
   methods: {
@@ -86,6 +103,16 @@ export default {
     closeDialog() {
       this.notification = false;
     }
+  },
+  mounted() {
+    this.$axios
+      .get("/notification")
+      .then(response => {
+        this.$store.dispatch("setNotifications", response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 };
 </script>

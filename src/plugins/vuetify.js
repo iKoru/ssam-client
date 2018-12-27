@@ -36,6 +36,7 @@ import {
   VTextarea,
   VTabs,
   VBottomSheet,
+  VBadge,
   transitions
 } from 'vuetify'
 import 'vuetify/src/stylus/app.styl'
@@ -77,6 +78,7 @@ Vue.use(Vuetify, {
     VTextarea,
     VTabs,
     VBottomSheet,
+    VBadge,
     transitions
   },
   directives: {
