@@ -160,7 +160,6 @@ export default {
       this.$axios
         .get("/user/board")
         .then(response => {
-          console.log(response);
           this.originalTopics = response.data.filter(x => x.boardType === "T");
           this.lounges = response.data.filter(x => x.boardType !== "T");
           this.reset();
@@ -175,19 +174,7 @@ export default {
     }
   },
   mounted() {
-    console.log("load topics and lounges...");
-    this.$axios
-      .get("/user/board")
-      .then(response => {
-        console.log(response);
-        this.originalTopics = response.data.filter(x => x.boardType === "T");
-        this.lounges = response.data.filter(x => x.boardType !== "T");
-        this.reset();
-      })
-      .catch(error => {
-        console.log(error);
-        this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 게시판 목록을 불러오지 못했습니다." : "구독 게시판 목록을 불러오지 못했습니다.", color: "error"});
-      });
+    this.resetBoard();
   },
   render(h) {
     return h("myBoard", {attrs: {id: "app"}}, this.draggable);
