@@ -13,7 +13,8 @@ export default new Vuex.Store({
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
-    boards: []
+    boards: [],
+    notifications: []
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -51,6 +52,13 @@ export default new Vuex.Store({
     },
     auth ({ auth }) {
       return auth
+    },
+    notifications ({ notifications }) {
+      return notifications
+    },
+    totalNotifications ({ notifications }) {
+      console.log(notifications);
+      return notifications.length === 0 ? 0 : notifications[0].totalCount
     }
   },
   mutations: {
@@ -94,6 +102,17 @@ export default new Vuex.Store({
     },
     SET_BOARDS (state, boards) {
       state.boards = boards
+    },
+    SET_NOTIFICATIONS (state, notifications) {
+      state.notifications = notifications
+    },
+    MARK_NOTIFICATION (state, notificationId) {
+      if (state.notifications.some(x => x.notificationId === notificationId)) {
+        state.notifications = state.notifications.filter(x => x.notificationId !== notificationId)
+        state.notifications.forEach(x => {
+          x.totalCount--;
+        })
+      }
     }
   },
   actions: {
@@ -118,10 +137,10 @@ export default new Vuex.Store({
     switchBoardType ({ commit }, { boardType }) {
       commit('SWITCH_BOARD_TYPE', { boardType })
     },
-    showSnackbar ({ getters, commit }, target) {
+    showSnackbar ({ commit }, target) {
       commit('QUEUE_SNACKBAR', target);
     },
-    dequeueSnackbar ({ getters, commit }) {
+    dequeueSnackbar ({ commit }) {
       commit('DEQUEUE_SNACKBAR');
     },
     showSpinner ({ commit }) {
@@ -139,6 +158,12 @@ export default new Vuex.Store({
       } else {
         commit('SET_BOARDS', [])
       }
+    },
+    setNotifications ({ commit }, notifications) {
+      commit('SET_NOTIFICATIONS', notifications)
+    },
+    markNotification ({ commit }, notificationId) {
+      commit('MARK_NOTIFICATION', notificationId)
     }
   }
 })

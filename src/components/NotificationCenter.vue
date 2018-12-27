@@ -1,127 +1,135 @@
 <template>
   <v-card>
-    <v-list>
-      <v-list-tile avatar>
-        <v-list-tile-avatar>
-          <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John">
-        </v-list-tile-avatar>
-
-        <v-list-tile-content>
-          <v-list-tile-title>John Leider</v-list-tile-title>
-          <v-list-tile-sub-title>Founder of Vuetify.js</v-list-tile-sub-title>
-        </v-list-tile-content>
-
-        <v-list-tile-action>
-          <v-btn class="red--text" icon >
-            <v-icon>favorite</v-icon>
-          </v-btn>
-        </v-list-tile-action>
+    <v-list dense>
+      <template v-if="notifications.length > 0">
+        <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
+          <v-list-tile-title>{{notification.message}}</v-list-tile-title>
+          <v-list-tile-sub-title>
+            <timeago :datetime="notification.createdDateTime"></timeago>
+          </v-list-tile-sub-title>
+        </v-list-tile>
+        <v-list-tile @click="moreNotification" v-if="notifications.length < notifications[0].totalCount">
+          <v-list-tile-title class="text-xs-center">더보기</v-list-tile-title>
+        </v-list-tile>
+      </template>
+      <v-list-tile v-else>
+        <v-list-tile-title>새로운 알림이 없습니다.</v-list-tile-title>
       </v-list-tile>
     </v-list>
-
-    <v-divider></v-divider>
-
-    <v-list>
-      <v-list-tile>
-        <v-list-tile-action>
-          <v-switch color="purple"></v-switch>
-        </v-list-tile-action>
-        <v-list-tile-title>Enable messages</v-list-tile-title>
-      </v-list-tile>
-
-      <v-list-tile>
-        <v-list-tile-action>
-          <v-switch color="purple"></v-switch>
-        </v-list-tile-action>
-        <v-list-tile-title>Enable hints</v-list-tile-title>
-      </v-list-tile>
-    </v-list>
-
+    <v-divider/>
     <v-card-actions>
+      <v-btn :disabled="notifications.length === 0" @click="clearNotification">모두 삭제</v-btn>
       <v-spacer></v-spacer>
-
-      <v-btn flat>Cancel</v-btn>
-      <v-btn color="primary" flat>Save</v-btn>
+      <v-btn flat color="primary" @click="closeDialog">닫기</v-btn>
     </v-card-actions>
   </v-card>
-  <!--
-  <v-card tile>
-    <v-toolbar card color="primary">
-      <v-btn icon @click="$emit('closeDialog', null)">
-        <v-icon>close</v-icon>
-      </v-btn>
-      <v-toolbar-title>스크랩 그룹 관리</v-toolbar-title>
-      <v-spacer/>
-      <v-toolbar-items v-if="$vuetify.breakpoint.xsOnly">
-        <v-btn flat @click="save" :loading="loading">저장</v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-    <v-card-text>
-      <v-subheader>스크랩 그룹을 추가, 변경, 삭제할 수 있습니다.</v-subheader>
-      <v-layout row>
-        <v-flex xs12>
-          <v-data-table hide-headers :items="tempScrapGroups" :rows-per-page-items="[-1]" class="mx-auto" :custom-filter="filterItem" :search="search">
-            <template slot="items" slot-scope="props">
-              <td class="cursor-pointer">
-                <v-edit-dialog :return-value.sync="props.item.scrapGroupName" lazy large cancel-text="취소" save-text="확인">
-                  {{props.item.scrapGroupName}}
-                  <v-icon small class="ml-1">edit</v-icon>
-                  <v-text-field slot="input" v-model="props.item.scrapGroupName" :rules="scrapGroupNameRules" label="스크랩 그룹 이름" single-line></v-text-field>
-                </v-edit-dialog>
-              </td>
-              <td class="justify-center layout px-0">
-                <v-icon small @click="deleteItem(props.index)">delete</v-icon>
-              </td>
-            </template>
-            <template slot="actions-prepend">
-              <v-btn class="short" v-if="$vuetify.breakpoint.xsOnly" :color="showCreateField?null:'primary'" small @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
-              <v-spacer></v-spacer>
-            </template>
-          </v-data-table>
-          <v-layout row v-if="$vuetify.breakpoint.smAndUp">
-            <v-btn id="largeCreateBtn" class="mb-3" @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
-            <template v-if="showCreateField">
-              <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter.stop="addNewRow"></v-text-field>
-              <v-btn flat color="primary" class="short" @click="addNewRow">등록</v-btn>
-            </template>
-            <v-spacer/>
-            <v-btn color="primary" @click="save" :loading="loading">저장</v-btn>
-          </v-layout>
-          <v-layout row v-show="showCreateField" v-else>
-            <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter.stop="addNewRow"></v-text-field>
-            <v-btn small flat color="primary" @click="addNewRow">등록</v-btn>
-          </v-layout>
-        </v-flex>
-      </v-layout>
-    </v-card-text>
-  </v-card>-->
 </template>
 <script>
 export default {
   name: "NotificationCenter",
-  props: ['dialog'],
+  props: ["dialog"],
   data() {
     return {};
   },
   methods: {
-    showNotification(item){
-      
+    notificationClicked(item) {
+      console.log(item);
+      this.$axios
+        .delete("/notification/" + item.notificationId)
+        .then(response => {
+          console.log(response);
+          this.$store.dispatch("clearNotification", item.notificationId);
+          this.$emit("closeDialog", null);
+          if (item.href) {
+            this.$router.push(item.href);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.$emit("closeDialog", null);
+          if (item.href) {
+            this.$router.push(item.href);
+          }
+        });
     },
-    closeDialog(){
-      this.$emit('closeDialog', null);
+    moreNotification() {
+      console.log("more!");
+    },
+    closeDialog() {
+      this.$emit("closeDialog", null);
+    },
+    clearNotification() {
+      this.$axios
+        .put("/notification", {clearNotification: true})
+        .then(response => {
+          this.$store.dispatch("setNotification", []);
+          this.$emit("closeDialog", null);
+        })
+        .catch(error => {
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "알림을 읽음 표시하지 못했습니다."}`, color: "error"});
+        });
     }
   },
-  computed:{
-    notifications(){
-      return this.$store.getters.notifications
-    }
-  },
-  watch:{
-    dialog(val){
-      if(val){
-        this.showNotification();
-      }
+  computed: {
+    notifications() {
+      return this.$store.getters.notifications.map(x => ({...x, createdDateTime: this.$moment(x.createdDateTime, "YYYYMMDDHHmmss").toDate()}));
     }
   }
 };
 </script>
+<style>
+.v_time_ago_a {
+  color: #657786;
+  cursor: pointer;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  text-decoration: none;
+}
+.v_time_ago_a:active,
+.v_time_ago_a:focus,
+.v_time_ago_a:hover {
+  color: #1b95e0;
+  text-decoration: underline;
+}
+.v_time_ago_span {
+  letter-spacing: 0.1px;
+  line-height: 20px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+}
+.tooltip {
+  display: inline-block;
+  position: relative;
+}
+.tooltip .tooltiptext {
+  background-color: #555;
+  border-radius: 6px;
+  bottom: 125%;
+  color: #fff;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  padding: 5px 0;
+  position: absolute;
+  text-align: center;
+  transition: opacity 0.3s;
+  transition-delay: 0.5s;
+  visibility: hidden;
+  width: 150px;
+  z-index: 1;
+}
+.tooltip .tooltiptext:after {
+  border: 5px solid transparent;
+  border-top-color: #555;
+  content: "";
+  left: 50%;
+  margin-left: -5px;
+  position: absolute;
+  top: 100%;
+}
+.tooltip:hover .tooltiptext {
+  opacity: 1;
+  visibility: visible;
+}
+</style>
