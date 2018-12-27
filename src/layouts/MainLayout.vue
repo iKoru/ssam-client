@@ -44,8 +44,10 @@ export default {
   min-height: 100vh;
 }
 .mainLayout__main {
-  max-width: 1904x;
+  max-width: 1904px;
   margin-bottom: 53px;
+  margin-left: auto;
+  margin-right: auto;
 }
 @media (max-width: 960px) {
   .mainLayout__main {
