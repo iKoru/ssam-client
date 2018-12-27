@@ -6,13 +6,13 @@
           <v-layout row>
             <h3 class="headline">내 스크랩 목록</h3>
             <v-spacer/>
-            <v-select id="selectScrapGroup" v-model="scrapGroupId" :items="scrapGroups" label="스크랩 그룹" hide-details dense item-text="scrapGroupName" item-value="scrapGroupId" append-outer-icon="settings" :append-outer-icon-cb="openDialog"></v-select>
+            <v-select class="selectScrapGroup" v-model="scrapGroupId" :items="scrapGroups" label="그룹 선택" hide-details dense item-text="scrapGroupName" item-value="scrapGroupId" append-outer-icon="settings" @click:append-outer="openDialog"></v-select>
             <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
-              <scrap-group-manager :scrapGroups="scrapGroups" @closeDialog="closeDialog" @resetScrapGroup="getScrapGroups"/>
+              <scrap-group-manager :scrapGroups="scrapGroups" :dialog="dialog" @closeDialog="closeDialog" @updateScrapGroup="getScrapGroups"/>
             </v-dialog>
           </v-layout>
           <v-flex xs12>
-            <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination">
+            <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination">
               <template slot="items" slot-scope="props">
                 <tr @click="selected = (selected===props.index?null:props.index)">
                   <td>
@@ -116,9 +116,6 @@ export default {
         this.$axios
           .delete(`/scrap/${this.scrapGroupId}/${this.userScraps[this.selected].scrapId}`)
           .then(response => {
-            if (this.userScraps.length === 1 && this.pagination.page > 1) {
-              this.pagination.page--;
-            }
             this.getMyScraps();
             this.selected = null;
             this.$store.dispatch("showSnackbar", {text: "스크랩을 삭제하였습니다.", color: "success"});
@@ -135,8 +132,11 @@ export default {
         .get("/scrap/group", {headers: {silent: true}})
         .then(response => {
           this.scrapGroups = response.data;
-          this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
-          this.getMyScraps();
+          if(this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1){
+            this.pagination.page = 1;
+            this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
+            this.getMyScraps();
+          }
         })
         .catch(error => {
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
@@ -153,7 +153,7 @@ export default {
   },
   watch: {
     pagination: {
-      handler() {
+      handler(val) {
         if (this.scrapGroupId) {
           this.getMyScraps();
         }
@@ -161,8 +161,9 @@ export default {
       deep: true
     },
     scrapGroupId(val) {
-      this.pagination.page = 1;
-      this.getMyScraps();
+      this.$nextTick(()=>{
+        this.pagination.page = 1;
+      this.getMyScraps();});
     },
     dialog(val) {}
   },
@@ -194,7 +195,10 @@ td:first-child .v-input--selection-controls__input {
 .v-datatable__actions {
   justify-content: space-between;
 }
-#selectScrapGroup {
-  display: none;
+.selectScrapGroup {
+  width:0;
+}
+.selectScrapGroup input[type="text"]{
+  display:none;
 }
 </style>
