@@ -11,7 +11,7 @@
           </div>
         </v-list-tile>
         <v-list-tile @click="moreNotification" v-if="notifications.length < notifications[0].totalCount">
-          <v-list-tile-title class="text-xs-center">더보기</v-list-tile-title>
+          <v-btn block flat :loading="loading">더보기</v-btn>
         </v-list-tile>
       </template>
       <v-list-tile v-else>
@@ -31,27 +31,36 @@ export default {
   name: "NotificationCenter",
   props: ["dialog"],
   data() {
-    return {};
+    return {
+      loading:false
+    };
   },
   methods: {
     notificationClicked(item) {
-      console.log(item);
       this.$axios
         .delete("/notification/" + item.notificationId, {headers:{silent:true}})
         .then(response => {
-          console.log(response);
           this.$store.dispatch("markNotification", item.notificationId);
         })
         .catch(error => {
           console.log(error);
         });
-      this.$emit("closeDialog", null);
       if (item.href) {
         this.$router.push(item.href);
       }
+      this.$emit("closeDialog", null);
     },
     moreNotification() {
-      console.log("more!");
+      this.loading = true;
+      this.$axios.get('/notification', {params:{dateTimeBefore:this.$moment(this.notifications[this.notifications.length - 1].createdDateTime).format('YYYYMMDDHHmmss')}, headers:{silent:true}})
+      .then(response => {
+        this.loading = false;
+        this.$store.dispatch('addNotifications', response.data);
+      })
+      .catch(error => {
+        this.loading = false;
+        this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "새로운 알림을 불러오지 못했습니다."}`, color: "error"});
+      })
     },
     closeDialog() {
       this.$emit("closeDialog", null);

@@ -112,7 +112,7 @@ export default {
     this.$axios
       .get("/notification")
       .then(response => {
-        this.$store.dispatch("setNotifications", response.data);
+        this.$store.dispatch("addNotifications", response.data);
       })
       .catch(error => {
         console.log(error);

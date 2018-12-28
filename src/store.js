@@ -103,9 +103,6 @@ export default new Vuex.Store({
     SET_BOARDS (state, boards) {
       state.boards = boards
     },
-    SET_NOTIFICATIONS (state, notifications) {
-      state.notifications = notifications
-    },
     MARK_NOTIFICATION (state, notificationId) {
       if (state.notifications.some(x => x.notificationId === notificationId)) {
         state.notifications = state.notifications.filter(x => x.notificationId !== notificationId)
@@ -113,6 +110,9 @@ export default new Vuex.Store({
           x.totalCount--;
         })
       }
+    },
+    ADD_NOTIFICATIONS(state, notifications){
+      state.notifications = state.notifications.concat(notifications)
     }
   },
   actions: {
@@ -159,11 +159,11 @@ export default new Vuex.Store({
         commit('SET_BOARDS', [])
       }
     },
-    setNotifications ({ commit }, notifications) {
-      commit('SET_NOTIFICATIONS', notifications)
-    },
     markNotification ({ commit }, notificationId) {
       commit('MARK_NOTIFICATION', notificationId)
+    },
+    addNotifications ({commit}, notifications){
+      commit('ADD_NOTIFICATIONS', notifications)
     }
   }
 })
