@@ -1,29 +1,41 @@
 <template>
   <v-card>
-    <v-list dense>
-      <template v-if="notifications.length > 0">
-        <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
-          <v-list-tile-title>{{notification.message}}</v-list-tile-title>
-          <div class="timeago">
-            <v-list-tile-sub-title>
-              <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
-            </v-list-tile-sub-title>
-          </div>
-        </v-list-tile>
-        <v-list-tile @click="moreNotification" v-if="notifications.length < notifications[0].totalCount">
-          <v-btn block flat :loading="loading">더보기</v-btn>
-        </v-list-tile>
-      </template>
-      <v-list-tile v-else>
-        <v-list-tile-title>새로운 알림이 없습니다.</v-list-tile-title>
-      </v-list-tile>
-    </v-list>
-    <v-divider/>
-    <v-card-actions>
-      <v-btn :disabled="notifications.length === 0" @click="clearNotification">모두 삭제</v-btn>
+    <v-toolbar card dark color="primary" v-if="$vuetify.breakpoint.xsOnly">
+      <v-btn icon dark @click="closeDialog">
+        <v-icon>close</v-icon>
+      </v-btn>
+      <v-toolbar-title>알림내역</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat color="primary" @click="closeDialog">닫기</v-btn>
-    </v-card-actions>
+    </v-toolbar>
+      <v-list dense>
+        <template v-if="notifications.length > 0">
+          <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
+            <v-list-tile-title>{{notification.message}}</v-list-tile-title>
+            <div class="timeago">
+              <v-list-tile-sub-title>
+                <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
+              </v-list-tile-sub-title>
+            </div>
+          </v-list-tile>
+          <v-list-tile>
+            <v-layout row>
+              <v-btn block :disabled="notifications.length === 0" v-if="$vuetify.breakpoint.xsOnly" @click="clearNotification" :class="{'mr-1':notifications.length < notifications[0].totalCount}">모두 삭제</v-btn>
+              <v-btn block flat :loading="loading" @click="moreNotification" v-if="notifications.length < notifications[0].totalCount" :class="{'ml-1':$vuetify.breakpoint.xsOnly}">더보기</v-btn>
+            </v-layout>
+          </v-list-tile>
+        </template>
+        <v-list-tile v-else>
+          <v-list-tile-title>새로운 알림이 없습니다.</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    <template v-if="$vuetify.breakpoint.smAndUp">
+      <v-divider/>
+      <v-card-actions>
+        <v-btn :disabled="notifications.length === 0" @click="clearNotification">모두 삭제</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn flat color="primary" @click="closeDialog">닫기</v-btn>
+      </v-card-actions>
+    </template>
   </v-card>
 </template>
 <script>
