@@ -21,8 +21,8 @@
       </v-btn>
       <v-list class="py-0" v-if="!notification">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
-          <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0 && menu?'18px':'initial'}">
-            <v-badge color="error" :value="totalNotifications > 0 && menu">
+          <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0?'18px':'initial'}">
+            <v-badge color="error" :value="totalNotifications > 0">
               <v-list-tile-content>
                   <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
               </v-list-tile-content>

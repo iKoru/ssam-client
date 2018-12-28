@@ -4,9 +4,11 @@
       <template v-if="notifications.length > 0">
         <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
           <v-list-tile-title>{{notification.message}}</v-list-tile-title>
-          <v-list-tile-sub-title>
-            <timeago :datetime="notification.createdDateTime"></timeago>
-          </v-list-tile-sub-title>
+          <div class="timeago">
+            <v-list-tile-sub-title>
+              <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
+            </v-list-tile-sub-title>
+          </div>
         </v-list-tile>
         <v-list-tile @click="moreNotification" v-if="notifications.length < notifications[0].totalCount">
           <v-list-tile-title class="text-xs-center">더보기</v-list-tile-title>
@@ -35,22 +37,18 @@ export default {
     notificationClicked(item) {
       console.log(item);
       this.$axios
-        .delete("/notification/" + item.notificationId)
+        .delete("/notification/" + item.notificationId, {headers:{silent:true}})
         .then(response => {
           console.log(response);
-          this.$store.dispatch("clearNotification", item.notificationId);
-          this.$emit("closeDialog", null);
-          if (item.href) {
-            this.$router.push(item.href);
-          }
+          this.$store.dispatch("markNotification", item.notificationId);
         })
         .catch(error => {
           console.log(error);
-          this.$emit("closeDialog", null);
-          if (item.href) {
-            this.$router.push(item.href);
-          }
         });
+      this.$emit("closeDialog", null);
+      if (item.href) {
+        this.$router.push(item.href);
+      }
     },
     moreNotification() {
       console.log("more!");
@@ -62,7 +60,7 @@ export default {
       this.$axios
         .put("/notification", {clearNotification: true})
         .then(response => {
-          this.$store.dispatch("setNotification", []);
+          this.$store.dispatch("setNotifications", []);
           this.$emit("closeDialog", null);
         })
         .catch(error => {
@@ -81,7 +79,6 @@ export default {
 .v_time_ago_a {
   color: #657786;
   cursor: pointer;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 14px;
   text-decoration: none;
 }
@@ -131,5 +128,8 @@ export default {
 .tooltip:hover .tooltiptext {
   opacity: 1;
   visibility: visible;
+}
+.timeago{
+  white-space:nowrap;
 }
 </style>
