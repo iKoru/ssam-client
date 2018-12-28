@@ -160,7 +160,7 @@ export default {
       this.$axios
         .get("/user/board")
         .then(response => {
-          this.originalTopics = response.data.filter(x => x.boardType === "T").map(x=>{
+          let filtered = response.data.map(x=>{
             if(!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
               delete x.readRestrictDate
             }
@@ -169,15 +169,8 @@ export default {
             }
             return x;
           });
-          this.lounges = response.data.filter(x => x.boardType !== "T").map(x=>{
-            if(!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
-              delete x.readRestrictDate
-            }
-            if(!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
-              delete x.writeRestrictDate
-            }
-            return x;
-          }).filter(x=>x.writeRestrictDate || x.readRestrictDate);
+          this.originalTopics = filtered.filter(x => x.boardType === "T")
+          this.lounges = filtered.filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
           this.reset();
         })
         .catch(error => {
