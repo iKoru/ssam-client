@@ -49,10 +49,6 @@ export default {
       .catch(error => {
         this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "구독한 토픽 목록을 불러오지 못했습니다."}`, color: "error"});
       });
-  },
-  mounted(){
-    console.log(this.lounges);
-    console.log(this.topics);
   }
 };
 </script>

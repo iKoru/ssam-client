@@ -18,7 +18,7 @@
               <v-list-tile-title><b>라운지</b></v-list-tile-title>
             </v-list-tile>
             
-            <v-list-tile @click="menuClicked({})">
+            <v-list-tile @click="menuClicked({boardId:'loungeBest'})">
               <v-list-tile-title>라운지 베스트</v-list-tile-title>
             </v-list-tile>
             <v-list-tile v-for="(lounge, i) in lounges" :key="i" @click="menuClicked(lounge)">
@@ -30,11 +30,14 @@
               <v-list-tile-title><b>토픽</b></v-list-tile-title>
             </v-list-tile>
   
-            <v-list-tile @click="menuClicked({})">
+            <v-list-tile @click="menuClicked({boardId:'topicBest'})">
               <v-list-tile-title>핫토픽</v-list-tile-title>
             </v-list-tile>
-            <v-list-tile v-for="(topic, i) in topics" :key="i" @click="menuClicked(topic)">
-              <v-list-tile-title v-text="topic.boardName"></v-list-tile-title>
+            <v-list-tile v-for="(topic, i) in topics" :key="i" @click="menuClicked(topic)" :class="{recommand:topic.notJoined}">
+              <v-layout column>
+                <v-list-tile-title v-text="topic.boardName"></v-list-tile-title>
+                <small v-if="topic.notJoined">추천 토픽</small>
+              </v-layout>
             </v-list-tile>
           </v-list-group>
         </v-list>
@@ -90,5 +93,8 @@ export default {
 <style>
 #menuDrawer .v-list__group__items--no-action .v-list__tile{
   padding-left:40px;
+}
+.recommand a div{
+  color:rgba(0,0,0,0.54);
 }
 </style>
