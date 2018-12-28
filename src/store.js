@@ -13,8 +13,9 @@ export default new Vuex.Store({
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
+    menuBar: false,
     boards: [],
-    userBoards:[],
+    userBoards: [],
     notifications: []
   },
   getters: {
@@ -45,10 +46,13 @@ export default new Vuex.Store({
     menuDrawer ({ menuDrawer }) {
       return menuDrawer
     },
+    menuBar ({ menuBar }) {
+      return menuBar
+    },
     boards ({ boards }) {
       return boards
     },
-    userBoards({userBoards}){
+    userBoards ({ userBoards }) {
       return userBoards
     },
     profile ({ profile }) {
@@ -84,7 +88,7 @@ export default new Vuex.Store({
     UPDATE_AUTH_INFORMATION (state, auth) {
       state.auth = auth;
     },
-    SWITCH_BOARD_TYPE (state, { boardType }) {
+    SWITCH_BOARD_TYPE (state, boardType) {
       state.boardType = boardType
     },
     QUEUE_SNACKBAR (state, target) {
@@ -104,6 +108,9 @@ export default new Vuex.Store({
     TOGGLE_MENUDRAWER (state) {
       state.menuDrawer = !state.menuDrawer
     },
+    SET_MENUBAR (state, menuBar) {
+      state.menuBar = menuBar
+    },
     SET_BOARDS (state, boards) {
       state.boards = boards
     },
@@ -118,7 +125,7 @@ export default new Vuex.Store({
         })
       }
     },
-    ADD_NOTIFICATIONS(state, notifications){
+    ADD_NOTIFICATIONS (state, notifications) {
       state.notifications = state.notifications.concat(notifications)
     }
   },
@@ -141,8 +148,8 @@ export default new Vuex.Store({
     updateProfile ({ commit }, profile) {
       commit('UPDATE_PROFILE', profile)
     },
-    switchBoardType ({ commit }, { boardType }) {
-      commit('SWITCH_BOARD_TYPE', { boardType })
+    switchBoardType ({ commit }, boardType) {
+      commit('SWITCH_BOARD_TYPE', boardType)
     },
     showSnackbar ({ commit }, target) {
       commit('QUEUE_SNACKBAR', target);
@@ -158,6 +165,9 @@ export default new Vuex.Store({
     },
     toggleMenuDrawer ({ commit }) {
       commit('TOGGLE_MENUDRAWER')
+    },
+    setMenuBar ({ commit }, menuBar) {
+      commit('SET_MENUBAR', menuBar)
     },
     setBoards ({ commit }, boards) {
       if (Array.isArray(boards)) {
@@ -176,7 +186,7 @@ export default new Vuex.Store({
     markNotification ({ commit }, notificationId) {
       commit('MARK_NOTIFICATION', notificationId)
     },
-    addNotifications ({commit}, notifications){
+    addNotifications ({ commit }, notifications) {
       commit('ADD_NOTIFICATIONS', notifications)
     }
   }
