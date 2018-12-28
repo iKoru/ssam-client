@@ -3,7 +3,7 @@
     <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3 cursor-pointer" @click="goMain" title="pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-menu offset-y right open-on-hover v-model="menu">
+    <v-menu offset-y right nudge-bottom="5px" open-on-hover v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1">
           <img :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
@@ -19,14 +19,18 @@
           <span slot="badge">{{totalNotifications}}</span>
         </v-badge>
       </v-btn>
-      <v-list class="pa-0 mt-2" v-if="!notification">
+      <v-list class="py-0" v-if="!notification">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
-          <v-list-tile-content>
-            <v-badge color="error" :value="totalNotifications > 0 && menu" v-if="item.badge">
-              <v-list-tile-title>{{item.title}}</v-list-tile-title>
+          <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0 && menu?'18px':'initial'}">
+            <v-badge color="error" :value="totalNotifications > 0 && menu">
+              <v-list-tile-content>
+                  <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
+              </v-list-tile-content>
               <span slot="badge">{{totalNotifications}}</span>
             </v-badge>
-            <v-list-tile-title v-else>{{item.title}}</v-list-tile-title>
+          </div>
+          <v-list-tile-content v-else>
+            <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
