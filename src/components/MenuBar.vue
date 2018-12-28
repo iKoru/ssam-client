@@ -3,7 +3,7 @@
     <v-layout class="menu">
       <v-flex p-2>
         <v-chip>게시판 목록</v-chip>
-        <v-btn :key="index" v-for="(board, index) in boards">
+        <v-btn :key="index" v-for="(board, index) in lounges">
           <router-link :to="{path:`/board/${board.boardId}`}" exact>{{board.boardName}}</router-link>
         </v-btn>
       </v-flex>
@@ -15,7 +15,7 @@
 //import axios from 'axios'
 export default {
   name: "MenuBar",
-  props: ["boards"]
+  props: ["lounges", "topics"]
 };
 </script>
 

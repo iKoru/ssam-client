@@ -14,6 +14,7 @@ export default new Vuex.Store({
     spinner: false,
     menuDrawer: false,
     boards: [],
+    userBoards:[],
     notifications: []
   },
   getters: {
@@ -46,6 +47,9 @@ export default new Vuex.Store({
     },
     boards ({ boards }) {
       return boards
+    },
+    userBoards({userBoards}){
+      return userBoards
     },
     profile ({ profile }) {
       return profile
@@ -103,6 +107,9 @@ export default new Vuex.Store({
     SET_BOARDS (state, boards) {
       state.boards = boards
     },
+    SET_USERBOARDS (state, userBoards) {
+      state.userBoards = userBoards
+    },
     MARK_NOTIFICATION (state, notificationId) {
       if (state.notifications.some(x => x.notificationId === notificationId)) {
         state.notifications = state.notifications.filter(x => x.notificationId !== notificationId)
@@ -157,6 +164,13 @@ export default new Vuex.Store({
         commit('SET_BOARDS', boards)
       } else {
         commit('SET_BOARDS', [])
+      }
+    },
+    setUserBoards ({ commit }, userBoards) {
+      if (Array.isArray(userBoards)) {
+        commit('SET_USERBOARDS', userBoards)
+      } else {
+        commit('SET_USERBOARDS', [])
       }
     },
     markNotification ({ commit }, notificationId) {
