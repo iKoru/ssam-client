@@ -116,6 +116,11 @@ export default {
   flex-direction: row;
   -webkit-flex-direction: row;
   overflow-y: scroll;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+}
+.scrollContainer::-webkit-scrollbar {
+  width: 0 !important;
 }
 .menuColumn {
   margin: 20px;
