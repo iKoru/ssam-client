@@ -3,9 +3,37 @@
     <v-card-title primary-title>
       <v-layout column>
         <v-layout row wrap>
-          <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true, 'mr-auto':lounges.length === 0}">
+          <v-flex xs12 sm6 lg5 v-if="lounges.length > 0" :class="{'mt-5':$vuetify.breakpoint.xsOnly, 'pr-2':$vuetify.breakpoint.mdAndUp, 'ml-auto':true}">
             <v-layout row class="titleRow">
-              <span class="title d-inline-block">구독중인 토픽</span>
+              <span class="title">라운지</span>
+            </v-layout>
+            <span class="ellipsis subtitle">신고로 인해 쓰기/읽기가 제한된 라운지만 보여집니다.</span>
+            <v-divider class="my-3"/>
+            <v-list dense>
+              <v-list-tile v-for="lounge in lounges" :key="lounge.boardId">
+                <v-layout row>
+                  <v-flex class="ellipsis">
+                    <div class="vertical-center ellipsis">
+                      {{lounge.boardName}}
+                      <v-icon v-if="lounge.isOwner" title="라운지지기">person</v-icon>
+                    </div>
+                  </v-flex>
+                  <v-spacer/>
+                  <v-tooltip v-if="lounge.writeRestrictDate" bottom>
+                    <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
+                    <span>{{$moment(lounge.writeRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="lounge.readRestrictDate" bottom>
+                    <v-chip slot="activator" color="red" text-color="white" small>읽기제한</v-chip>
+                    <span>{{$moment(lounge.readRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                  </v-tooltip>
+                </v-layout>
+              </v-list-tile>
+            </v-list>
+          </v-flex>
+          <v-flex xs12 :sm6="lounges.length > 0" :sm9="lounges.length === 0" :lg5="lounges.length > 0" :lg8="lounges.length === 0" :class="{'pl-2':$vuetify.breakpoint.mdAndUp, 'mr-auto':true, 'ml-auto':lounges.length === 0}">
+            <v-layout row :class="{'titleRow':true, 'mb-2':lounges.length === 0}">
+              <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">토픽</span>
               <v-spacer/>
               <v-btn id="createTopic" small @click="openDialog" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
               <br>
@@ -43,37 +71,9 @@
               <br>새로운 토픽을 구독해보세요!
             </v-layout>
           </v-flex>
-          <v-flex xs12 sm6 lg5 v-if="lounges.length > 0" :class="{'mt-5':$vuetify.breakpoint.xsOnly, 'pl-2':$vuetify.breakpoint.mdAndUp, 'mr-auto':true}">
-            <v-layout row class="titleRow">
-              <span class="title">라운지</span>
-            </v-layout>
-            <span class="ellipsis subtitle">신고로 인해 쓰기/읽기가 제한된 라운지만 보여집니다.</span>
-            <v-divider class="my-3"/>
-            <v-list dense>
-              <v-list-tile v-for="lounge in lounges" :key="lounge.boardId">
-                <v-layout row>
-                  <v-flex class="ellipsis">
-                    <div class="vertical-center ellipsis">
-                      {{lounge.boardName}}
-                      <v-icon v-if="lounge.isOwner" title="라운지지기">person</v-icon>
-                    </div>
-                  </v-flex>
-                  <v-spacer/>
-                  <v-tooltip v-if="lounge.writeRestrictDate" bottom>
-                    <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
-                    <span>{{$moment(lounge.writeRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
-                  </v-tooltip>
-                  <v-tooltip v-if="lounge.readRestrictDate" bottom>
-                    <v-chip slot="activator" color="red" text-color="white" small>읽기제한</v-chip>
-                    <span>{{$moment(lounge.readRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
-                  </v-tooltip>
-                </v-layout>
-              </v-list-tile>
-            </v-list>
-          </v-flex>
         </v-layout>
       </v-layout>
-      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" scrollable lazy max-width="700px">
+      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
         <topic-creator @closeDialog="closeDialog" @resetBoard="resetBoard"/>
       </v-dialog>
     </v-card-title>
@@ -149,43 +149,45 @@ export default {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }
+      document.body.style.position = "fixed";
       this.dialog = true;
     },
     closeDialog() {
+      document.body.style.position = "initial";
       this.dialog = false;
     },
     resetBoard() {
       this.$axios
         .get("/user/board")
         .then(response => {
-          console.log(response);
-          this.originalTopics = response.data.filter(x => x.boardType === "T");
-          this.lounges = response.data.filter(x => x.boardType !== "T");
-          this.reset();
+          this.initBoard(response.data);
+          this.$store.dispatch('setUserBoards', response.data);
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 게시판 목록을 불러오지 못했습니다." : "구독 게시판 목록을 불러오지 못했습니다.", color: "error"});
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 토픽 목록을 불러오지 못했습니다." : "구독 토픽 목록을 불러오지 못했습니다.", color: "error"});
         });
+    },
+    initBoard(userBoards){
+      let filtered = userBoards.map(x=>{
+        if(!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
+          delete x.readRestrictDate
+        }
+        if(!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
+          delete x.writeRestrictDate
+        }
+        return x;
+      });
+      this.originalTopics = filtered.filter(x => x.boardType === "T")
+      this.lounges = filtered.filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
+      this.reset();
     },
     manageBoard(boardId) {
       this.$router.push("/board/" + boardId);
     }
   },
   mounted() {
-    console.log("load topics and lounges...");
-    this.$axios
-      .get("/user/board")
-      .then(response => {
-        console.log(response);
-        this.originalTopics = response.data.filter(x => x.boardType === "T");
-        this.lounges = response.data.filter(x => x.boardType !== "T");
-        this.reset();
-      })
-      .catch(error => {
-        console.log(error);
-        this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 게시판 목록을 불러오지 못했습니다." : "구독 게시판 목록을 불러오지 못했습니다.", color: "error"});
-      });
+    this.initBoard(this.$store.getters.userBoards);
   },
   render(h) {
     return h("myBoard", {attrs: {id: "app"}}, this.draggable);

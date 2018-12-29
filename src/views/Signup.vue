@@ -333,16 +333,6 @@ export default {
 };
 </script>
 <style>
-@media (max-width: 600px) {
-  #signupStepper {
-    -webkit-box-shadow: none;
-    box-shadow: none;
-  }
-  .publicLayout {
-    background-color: white;
-    height: 100%;
-  }
-}
 .publicLayout__main {
   margin-top: 0;
 }
@@ -357,10 +347,21 @@ div.v-input__slot {
 }
 #signupStepper {
   max-width: 900px;
-  margin: 3rem auto auto auto;
+  margin: 3rem auto 74px auto;
 }
 .stepperContents {
   min-height: 200px;
+}
+@media (max-width: 600px) {
+  #signupStepper {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    margin-top: auto;
+  }
+  .publicLayout {
+    background-color: white;
+    height: 100%;
+  }
 }
 form .flex {
   padding-left: 0.5rem;

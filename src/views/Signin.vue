@@ -36,5 +36,6 @@ export default {
 }
 .publicLayout__main {
   height: 100%;
+  margin-bottom: 0;
 }
 </style>

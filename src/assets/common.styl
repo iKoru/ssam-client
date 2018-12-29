@@ -1,5 +1,7 @@
 html
   overflow-y: auto
+body
+  width:100%
 .cursor-pointer
   cursor:pointer
 .cursor-move
@@ -40,7 +42,8 @@ span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
 @media(max-width:600px)
   .container, .v-form > .container, .v-subheader
     padding:0
-
+.v-btn.short
+  min-width: 50px
 //file-pond
 .filepond--drop-label label
   cursor:pointer

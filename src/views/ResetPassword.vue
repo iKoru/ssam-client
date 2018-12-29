@@ -7,9 +7,9 @@
           <v-flex xs12>
             <h3 class="headline mb-0">비밀번호 찾기</h3>
             <div class="text-xs-center justify-center align-center pa-3">
-              <p>
-                임시 비밀번호를 만들기 위한 계정의 ID와 이메일 주소를 입력해주세요.<br>
-                자격증을 통하여 인증하셨다면, 이용하셨던 메일로 <span>webmaster@pedagy.com</span>에 문의해주세요.
+              <p>임시 비밀번호를 만들기 위한 계정의 ID와 이메일 주소를 입력해주세요.
+                <br>자격증을 통하여 인증하셨다면, 이용하셨던 메일로
+                <span>webmaster@pedagy.com</span>에 문의해주세요.
               </p>
               <v-form ref="form" lazy-validation id="resetPasswordForm" class="mx-auto">
                 <v-layout row xs12 wrap>
@@ -57,7 +57,7 @@ export default {
       emailHostItems: ["sen.go.kr", "goe.go.kr", "ice.go.kr", "gwe.go.kr", "cbe.go.kr", "cne.go.kr", "dje.go.kr", "sje.go.kr", "jbe.go.kr", "jne.go.kr", "gen.go.kr", "gbe.go.kr", "gne.go.kr", "use.go.kr", "pen.go.kr", "jje.go.kr"],
       emailRules: [v => !!v || "이메일을 입력해주세요", v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일이 올바르지 않습니다."],
       userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || "알파벳, 숫자, _, ^, &, $만을 포함한 4~50자", v => (v && /^.*[a-zA-Z]+.*$/.test(v)) || "최소 1글자 이상의 알파벳 포함"],
-      emailHostRules: [v=> !!v || 'NEIS 이메일 뒷자리를 선택해주세요.']
+      emailHostRules: [v => !!v || "NEIS 이메일 뒷자리를 선택해주세요."]
     };
   },
   methods: {
@@ -72,7 +72,7 @@ export default {
         return;
       }
       this.$axios
-        .post("/resetPassword", {userId:this.userId, email: this.email + "@" + this.emailHost}, {headers: {silent: true}})
+        .post("/resetPassword", {userId: this.userId, email: this.email + "@" + this.emailHost}, {headers: {silent: true}})
         .then(response => {
           this.$store.dispatch("showSnackbar", {text: "등록된 메일주소로 임시 비밀번호를 보냈습니다. 메일을 확인해주세요.", color: "info"});
           this.$router.push("/signin");
@@ -80,30 +80,30 @@ export default {
         .catch(error => {
           this.loading = false;
           if (error.response) {
-            switch(error.response.data.target){
-              case 'userId':
+            switch (error.response.data.target) {
+              case "userId":
                 this.userIdErrors = [error.response.data.message];
                 return;
-              case 'email':
+              case "email":
                 this.emailErrors = [error.response.data.message];
                 return;
             }
             this.$store.dispatch("showSnackbar", {text: error.response.data.message || "임시 비밀번호 메일을 보내지 못했습니다.", color: "error"});
-          }else{
+          } else {
             console.log(error);
             this.$store.dispatch("showSnackbar", {text: "임시 비밀번호 메일을 보내지 못했습니다.", color: "error"});
           }
         });
     }
   },
-  watch:{
-    userId(){
-      if(this.userIdErrors.length > 0){
+  watch: {
+    userId() {
+      if (this.userIdErrors.length > 0) {
         this.userIdErrors = [];
       }
     },
-    email(){
-      if(this.emailErrors.length > 0){
+    email() {
+      if (this.emailErrors.length > 0) {
         this.emailErrors = [];
       }
     }
@@ -120,10 +120,10 @@ form .flex {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
-#resetPasswordForm{
-  max-width:800px;
+#resetPasswordForm {
+  max-width: 800px;
 }
-#resetPasswordLayout{
+/* #resetPasswordLayout{
   margin-top:64px;
-}
+} */
 </style>

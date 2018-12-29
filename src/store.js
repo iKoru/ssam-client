@@ -13,7 +13,10 @@ export default new Vuex.Store({
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
-    boards: []
+    menuBar: false,
+    boards: [],
+    userBoards: [],
+    notifications: []
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -43,14 +46,27 @@ export default new Vuex.Store({
     menuDrawer ({ menuDrawer }) {
       return menuDrawer
     },
+    menuBar ({ menuBar }) {
+      return menuBar
+    },
     boards ({ boards }) {
       return boards
+    },
+    userBoards ({ userBoards }) {
+      return userBoards
     },
     profile ({ profile }) {
       return profile
     },
     auth ({ auth }) {
       return auth
+    },
+    notifications ({ notifications }) {
+      return notifications
+    },
+    totalNotifications ({ notifications }) {
+      console.log(notifications);
+      return notifications.length === 0 ? 0 : notifications[0].totalCount
     }
   },
   mutations: {
@@ -72,7 +88,7 @@ export default new Vuex.Store({
     UPDATE_AUTH_INFORMATION (state, auth) {
       state.auth = auth;
     },
-    SWITCH_BOARD_TYPE (state, { boardType }) {
+    SWITCH_BOARD_TYPE (state, boardType) {
       state.boardType = boardType
     },
     QUEUE_SNACKBAR (state, target) {
@@ -92,8 +108,25 @@ export default new Vuex.Store({
     TOGGLE_MENUDRAWER (state) {
       state.menuDrawer = !state.menuDrawer
     },
+    SET_MENUBAR (state, menuBar) {
+      state.menuBar = menuBar
+    },
     SET_BOARDS (state, boards) {
       state.boards = boards
+    },
+    SET_USERBOARDS (state, userBoards) {
+      state.userBoards = userBoards
+    },
+    MARK_NOTIFICATION (state, notificationId) {
+      if (state.notifications.some(x => x.notificationId === notificationId)) {
+        state.notifications = state.notifications.filter(x => x.notificationId !== notificationId)
+        state.notifications.forEach(x => {
+          x.totalCount--;
+        })
+      }
+    },
+    ADD_NOTIFICATIONS (state, notifications) {
+      state.notifications = state.notifications.concat(notifications)
     }
   },
   actions: {
@@ -115,13 +148,13 @@ export default new Vuex.Store({
     updateProfile ({ commit }, profile) {
       commit('UPDATE_PROFILE', profile)
     },
-    switchBoardType ({ commit }, { boardType }) {
-      commit('SWITCH_BOARD_TYPE', { boardType })
+    switchBoardType ({ commit }, boardType) {
+      commit('SWITCH_BOARD_TYPE', boardType)
     },
-    showSnackbar ({ getters, commit }, target) {
+    showSnackbar ({ commit }, target) {
       commit('QUEUE_SNACKBAR', target);
     },
-    dequeueSnackbar ({ getters, commit }) {
+    dequeueSnackbar ({ commit }) {
       commit('DEQUEUE_SNACKBAR');
     },
     showSpinner ({ commit }) {
@@ -133,12 +166,28 @@ export default new Vuex.Store({
     toggleMenuDrawer ({ commit }) {
       commit('TOGGLE_MENUDRAWER')
     },
+    setMenuBar ({ commit }, menuBar) {
+      commit('SET_MENUBAR', menuBar)
+    },
     setBoards ({ commit }, boards) {
       if (Array.isArray(boards)) {
         commit('SET_BOARDS', boards)
       } else {
         commit('SET_BOARDS', [])
       }
+    },
+    setUserBoards ({ commit }, userBoards) {
+      if (Array.isArray(userBoards)) {
+        commit('SET_USERBOARDS', userBoards)
+      } else {
+        commit('SET_USERBOARDS', [])
+      }
+    },
+    markNotification ({ commit }, notificationId) {
+      commit('MARK_NOTIFICATION', notificationId)
+    },
+    addNotifications ({ commit }, notifications) {
+      commit('ADD_NOTIFICATIONS', notifications)
     }
   }
 })
