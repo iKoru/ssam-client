@@ -22,7 +22,7 @@
       <v-list class="py-0" v-if="!notification">
         <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
           <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0?'18px':'initial'}">
-            <v-badge color="error" :value="totalNotifications > 0">
+            <v-badge color="error" class="d-inline-flex" :value="totalNotifications > 0">
               <v-list-tile-content>
                   <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
               </v-list-tile-content>
@@ -44,7 +44,7 @@
 export default {
   template: "#mainToolbar",
   name: "mainToolbar",
-  components: {NotificationCenter: () => import("./NotificationCenter")},
+  components: { NotificationCenter: () => import("./NotificationCenter") },
   data() {
     return {
       items: [
@@ -84,7 +84,9 @@ export default {
   },
   computed: {
     nickName() {
-      return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
+      return this.$store.getters.isLight
+        ? this.$store.getters.loungeNickName
+        : this.$store.getters.topicNickName;
     },
     totalNotifications() {
       return this.$store.getters.totalNotifications;
