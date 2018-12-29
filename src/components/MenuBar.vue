@@ -2,9 +2,9 @@
   <v-container px-0 py-0 fluid>
     <v-tabs :dark="menu!==undefined?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32">
       <v-tab :key="0" class="loungeTab" @click="toggleMenuBar('lounge')">라운지</v-tab>
-      <v-spacer class="tapSpacer" :style="{'padding':(menu!==undefined?(menu===1?'4%':'40%'):($store.getters.isLight?'40%':'4%'))}"/>
+      <v-spacer :class="{tapSpacer:true, dark:menu!==undefined?menu===1:!$store.getters.isLight}"/>
       <v-tab :key="1" class="topicTab" @click="toggleMenuBar('topic')">토픽</v-tab>
-      <v-tabs-items v-if="$store.getters.menuBar" touchless>
+      <v-tabs-items v-if="$store.getters.menuBar" touchless :dark="menu!==undefined?menu===1:!$store.getters.isLight">
         <v-tab-item :key="0">
           <v-list>라운지 리스트</v-list>
         </v-tab-item>
@@ -70,6 +70,9 @@ export default {
 }
 .tapSpacer {
   background-color: white;
-  background-image: -webkit-linear-gradient(135deg, #424242 50%, white 50%);
+  background-image: -webkit-linear-gradient(45deg, white 95%, #424242 5%);
+}
+.tapSpacer.dark {
+  background-image: -webkit-linear-gradient(135deg, #424242 95%, white 5%);
 }
 </style>
