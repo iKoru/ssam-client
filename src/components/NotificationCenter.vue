@@ -7,27 +7,27 @@
       <v-toolbar-title>알림내역</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
-      <v-list dense>
-        <template v-if="notifications.length > 0">
-          <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
-            <v-list-tile-title>{{notification.message}}</v-list-tile-title>
-            <div class="timeago">
-              <v-list-tile-sub-title>
-                <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
-              </v-list-tile-sub-title>
-            </div>
-          </v-list-tile>
-          <v-list-tile>
-            <v-layout row>
-              <v-btn block :disabled="notifications.length === 0" v-if="$vuetify.breakpoint.xsOnly" @click="clearNotification" :class="{'mr-1':notifications.length < notifications[0].totalCount}">모두 삭제</v-btn>
-              <v-btn block flat :loading="loading" @click="moreNotification" v-if="notifications.length < notifications[0].totalCount" :class="{'ml-1':$vuetify.breakpoint.xsOnly}">더보기</v-btn>
-            </v-layout>
-          </v-list-tile>
-        </template>
-        <v-list-tile v-else>
-          <v-list-tile-title>새로운 알림이 없습니다.</v-list-tile-title>
+    <v-list dense>
+      <template v-if="notifications.length > 0">
+        <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
+          <v-list-tile-title>{{notification.message}}</v-list-tile-title>
+          <div class="timeago">
+            <v-list-tile-sub-title>
+              <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
+            </v-list-tile-sub-title>
+          </div>
         </v-list-tile>
-      </v-list>
+        <v-list-tile v-if="$vuetify.breakpoint.xsOnly || notifications.length < notifications[0].totalCount">
+          <v-layout row>
+            <v-btn block :disabled="notifications.length === 0" v-if="$vuetify.breakpoint.xsOnly" @click="clearNotification" :class="{'mr-1':notifications.length < notifications[0].totalCount}">모두 삭제</v-btn>
+            <v-btn block flat :loading="loading" @click="moreNotification" v-if="notifications.length < notifications[0].totalCount" :class="{'ml-1':$vuetify.breakpoint.xsOnly}">더보기</v-btn>
+          </v-layout>
+        </v-list-tile>
+      </template>
+      <v-list-tile v-else>
+        <v-list-tile-title>새로운 알림이 없습니다.</v-list-tile-title>
+      </v-list-tile>
+    </v-list>
     <template v-if="$vuetify.breakpoint.smAndUp">
       <v-divider/>
       <v-card-actions>
@@ -44,13 +44,13 @@ export default {
   props: ["dialog"],
   data() {
     return {
-      loading:false
+      loading: false
     };
   },
   methods: {
     notificationClicked(item) {
       this.$axios
-        .delete("/notification/" + item.notificationId, {headers:{silent:true}})
+        .delete("/notification/" + item.notificationId, {headers: {silent: true}})
         .then(response => {
           this.$store.dispatch("markNotification", item.notificationId);
         })
@@ -64,15 +64,16 @@ export default {
     },
     moreNotification() {
       this.loading = true;
-      this.$axios.get('/notification', {params:{dateTimeBefore:this.$moment(this.notifications[this.notifications.length - 1].createdDateTime).format('YYYYMMDDHHmmss')}, headers:{silent:true}})
-      .then(response => {
-        this.loading = false;
-        this.$store.dispatch('addNotifications', response.data);
-      })
-      .catch(error => {
-        this.loading = false;
-        this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "새로운 알림을 불러오지 못했습니다."}`, color: "error"});
-      })
+      this.$axios
+        .get("/notification", {params: {dateTimeBefore: this.$moment(this.notifications[this.notifications.length - 1].createdDateTime).format("YYYYMMDDHHmmss")}, headers: {silent: true}})
+        .then(response => {
+          this.loading = false;
+          this.$store.dispatch("addNotifications", response.data);
+        })
+        .catch(error => {
+          this.loading = false;
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "새로운 알림을 불러오지 못했습니다."}`, color: "error"});
+        });
     },
     closeDialog() {
       this.$emit("closeDialog", null);
@@ -150,7 +151,7 @@ export default {
   opacity: 1;
   visibility: visible;
 }
-.timeago{
-  white-space:nowrap;
+.timeago {
+  white-space: nowrap;
 }
 </style>
