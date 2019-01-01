@@ -54,6 +54,7 @@
                     <v-icon small>add</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>
+                <v-flex v-if="topics.length % 3 === 1">&nbsp;</v-flex>
               </v-layout>
             </v-flex>
             <v-flex class="menuColumn" xs4 sm2 v-else>
@@ -63,6 +64,8 @@
                     <v-icon small>add</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>
+                <v-flex>&nbsp;</v-flex>
+                <v-flex>&nbsp;</v-flex>
               </v-layout>
             </v-flex>
           </v-flex>
@@ -139,20 +142,31 @@ export default {
   background-image: -webkit-linear-gradient(135deg, #424242 95%, white 5%);
   background-image: linear-gradient(135deg, white 5%, #424242 5%);
 }
+@media (max-width: 600px) {
+  .tapSpacer {
+    background-image: -webkit-linear-gradient(45deg, white 85%, #424242 15%);
+    background-image: linear-gradient(45deg, white 85%, #424242 15%);
+  }
+  .tapSpacer.dark {
+    background-image: -webkit-linear-gradient(135deg, #424242 85%, white 15%);
+    background-image: linear-gradient(135deg, white 15%, #424242 15%);
+  }
+}
 .scrollContainer {
   white-space: nowrap;
   display: flex;
   flex-direction: row;
   -webkit-flex-direction: row;
-  overflow-y: scroll;
-  -ms-overflow-style: none;
-  overflow: -moz-scrollbars-none;
+  overflow-x: auto;
+  /* -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none; */
+  height: 120px;
 }
-.scrollContainer::-webkit-scrollbar {
+/* .scrollContainer::-webkit-scrollbar {
   width: 0 !important;
-}
+} */
 .menuColumn {
-  margin: 20px;
+  margin: auto 20px;
   min-width: 100px;
 }
 </style>
