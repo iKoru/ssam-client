@@ -9,30 +9,46 @@
           <v-flex class="scrollContainer">
             <v-flex class="menuColumn" xs4 sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
               <v-layout column>
-                <v-flex>{{lounges[n*3].boardName}}</v-flex>
-                <v-flex>{{lounges[(n*3)+1].boardName}}</v-flex>
-                <v-flex>{{lounges[(n*3)+2].boardName}}</v-flex>
+                <v-flex>
+                  <router-link :to="'/'+lounges[(n-1)*3].boardId">{{lounges[(n-1)*3].boardName}}</router-link>
+                </v-flex>
+                <v-flex>
+                  <router-link :to="'/'+lounges[((n-1)*3)+1].boardId">{{lounges[((n-1)*3)+1].boardName}}</router-link>
+                </v-flex>
+                <v-flex>
+                  <router-link :to="'/'+lounges[((n-1)*3)+2].boardId">{{lounges[((n-1)*3)+2].boardName}}</router-link>
+                </v-flex>
               </v-layout>
             </v-flex>
             <v-flex class="menuColumn" xs4 sm2 v-if="lounges.length % 3 !== 0">
               <v-layout column>
-                <v-flex v-for="n in (lounges.length % 3) - 1" :key="n">{{(lounges[lounges.length - (lounges.length % 3) + n])?(lounges[lounges.length - (lounges.length % 3) + n]).boardName:(lounges[lounges.length - (lounges.length % 3) + n])}}</v-flex>
+                <v-flex v-for="n in (lounges.length % 3)" :key="n">
+                  <router-link :to="'/'+lounges[lounges.length - (lounges.length % 3) + n - 1].boardId">{{(lounges[lounges.length - (lounges.length % 3) + (n-1)]).boardName}}</router-link>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-flex>
         </v-tab-item>
-        <v-tab-item :key="1">
+        <v-tab-item :key="1" class="secondary white--text">
           <v-flex class="scrollContainer">
-            <v-flex class="menuColumn" xs4 sm2 v-for="n in Math.floor(topics.length / 3)" :key="n">
+            <v-flex class="menuColumn" xs4 sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
               <v-layout column>
-                <v-flex>topics[n*3].boardName</v-flex>
-                <v-flex>topics[(n*3)+1].boardName</v-flex>
-                <v-flex>topics[(n*3)+2].boardName</v-flex>
+                <v-flex>
+                  <router-link class="white--text" :to="'/'+topics[(n-1)*3].boardId">{{topics[(n-1)*3].boardName}}</router-link>
+                </v-flex>
+                <v-flex>
+                  <router-link class="white--text" :to="'/'+topics[((n-1)*3)+1].boardId">{{topics[((n-1)*3)+1].boardName}}</router-link>
+                </v-flex>
+                <v-flex>
+                  <router-link class="white--text" :to="'/'+topics[((n-1)*3)+2].boardId">{{topics[((n-1)*3)+2].boardName}}</router-link>
+                </v-flex>
               </v-layout>
             </v-flex>
             <v-flex class="menuColumn" xs4 sm2 v-if="topics.length % 3 !== 0">
               <v-layout column>
-                <v-flex v-for="n in (topics.length % 3) - 1" :key="n">{{(topics[topics.length - (topics.length % 3) + n])?(topics[topics.length - (topics.length % 3) + n]).boardName:(topics[topics.length - (topics.length % 3) + n])}}</v-flex>
+                <v-flex v-for="n in topics.length % 3" :key="n">
+                  <router-link class="white--text" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-flex>
