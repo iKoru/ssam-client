@@ -1,6 +1,5 @@
 <template id="mainToolbar">
   <v-toolbar color="white" :fixed="false" :light="$store.getters.isLight" flat>
-    <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3 cursor-pointer" @click="goMain" title="pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-menu offset-y right nudge-bottom="5px" open-on-hover v-model="menu">
@@ -24,7 +23,7 @@
           <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0?'18px':'initial'}">
             <v-badge color="error" class="d-inline-flex" :value="totalNotifications > 0">
               <v-list-tile-content>
-                  <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
+                <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
               </v-list-tile-content>
               <span slot="badge">{{totalNotifications}}</span>
             </v-badge>
@@ -44,7 +43,7 @@
 export default {
   template: "#mainToolbar",
   name: "mainToolbar",
-  components: { NotificationCenter: () => import("./NotificationCenter") },
+  components: {NotificationCenter: () => import("./NotificationCenter")},
   data() {
     return {
       items: [
@@ -84,9 +83,7 @@ export default {
   },
   computed: {
     nickName() {
-      return this.$store.getters.isLight
-        ? this.$store.getters.loungeNickName
-        : this.$store.getters.topicNickName;
+      return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
     totalNotifications() {
       return this.$store.getters.totalNotifications;

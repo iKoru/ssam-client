@@ -2,7 +2,6 @@
   <div class="mainLayout">
     <main-toolbar class="mainLayout__nav"></main-toolbar>
     <menu-bar :lounges="lounges" :topics="topics"/>
-    <menu-drawer :lounges="lounges" :topics="topics"/>
     <main class="mainLayout__main">
       <slot></slot>
     </main>
@@ -13,13 +12,11 @@
 import MainToolbar from "../components/MainToolbar";
 import MainFooter from "../components/MainFooter";
 import MenuBar from "../components/MenuBar";
-import MenuDrawer from "../components/MenuDrawer";
 export default {
   components: {
     MainToolbar,
     MainFooter,
-    MenuBar,
-    MenuDrawer
+    MenuBar
   },
   computed: {
     lounges() {
