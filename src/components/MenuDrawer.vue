@@ -18,9 +18,6 @@
               </v-list-tile-title>
             </v-list-tile>
 
-            <v-list-tile @click="drawerChanged(false)" to="/loungeBest">
-              <v-list-tile-title>라운지 베스트</v-list-tile-title>
-            </v-list-tile>
             <v-list-tile v-for="(lounge, i) in lounges" :key="i" @click="drawerChanged(false)" :to="`/${lounge.boardId}`">
               <v-list-tile-title v-text="lounge.boardName"></v-list-tile-title>
             </v-list-tile>
@@ -32,9 +29,6 @@
               </v-list-tile-title>
             </v-list-tile>
 
-            <v-list-tile @click="drawerChanged(false)">
-              <v-list-tile-title>핫토픽</v-list-tile-title>
-            </v-list-tile>
             <v-list-tile v-for="(topic, i) in topics" :key="i" @click="drawerChanged(false)" :to="`/${topic.boardId}`" :class="{recommand:topic.notJoined}">
               <v-layout column>
                 <v-list-tile-title v-text="topic.boardName"></v-list-tile-title>

@@ -23,18 +23,28 @@ export default {
   },
   computed: {
     lounges() {
-      return this.$store.getters.boards.filter(x=>x.boardType === 'L')
+      const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T");
+      lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
+      return lounges;
     },
-    topics(){
+    topics() {
       const userBoards = this.$store.getters.userBoards;
       const boards = this.$store.getters.boards;
-      return userBoards.filter(x => x.boardType === "T")
-      .concat(boards.filter(x=>x.boardType === 'T' && x.allGroupAuth !== 'NONE' && !userBoards.some(y=>y.boardId === x.boardId)).slice(0, 10).map(x=>({...x, notJoined:true})))
+      const topics = userBoards
+        .filter(x => x.boardType === "T")
+        .concat(
+          boards
+            .filter(x => x.boardType === "T" && x.allGroupAuth !== "NONE" && !userBoards.some(y => y.boardId === x.boardId))
+            .slice(0, 10)
+            .map(x => ({...x, notJoined: true}))
+        );
+      topics.splice(0, 0, {boardName: "핫 토픽", boardId: "topicBest"});
+      return topics;
     }
   },
   created() {
     this.$axios
-      .get("/board/list", {headers:{silent:true}})
+      .get("/board/list", {headers: {silent: true}})
       .then(response => {
         this.$store.dispatch("setBoards", response.data);
       })
@@ -42,7 +52,7 @@ export default {
         this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "게시판 목록을 불러오지 못했습니다."}`, color: "error"});
       });
     this.$axios
-      .get("/user/board", {headers:{silent:true}})
+      .get("/user/board", {headers: {silent: true}})
       .then(response => {
         this.$store.dispatch("setUserBoards", response.data);
       })
