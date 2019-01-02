@@ -50,7 +50,7 @@
                   <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
                 </v-flex>
                 <v-flex>
-                  <router-link class="white--text" to="/searchTopic">
+                  <router-link class="white--text" to="/searchBoard">
                     <v-icon small>add</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>
@@ -60,7 +60,7 @@
             <v-flex class="menuColumn" sm2 v-else>
               <v-layout column>
                 <v-flex>
-                  <router-link class="white--text" to="/searchTopic">
+                  <router-link class="white--text" to="/searchBoard">
                     <v-icon small>add</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>

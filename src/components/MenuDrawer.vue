@@ -1,5 +1,5 @@
 <template>
-  <v-container px-0 py-0 fluid v-if="$vuetify.breakpoint.xsOnly">
+  <v-container px-0 py-0 fluid>
     <v-layout>
       <v-navigation-drawer :value="$store.getters.menuDrawer" @input="drawerChanged" app id="menuDrawer">
         <v-toolbar flat>
@@ -35,6 +35,14 @@
                 <small v-if="topic.notJoined">추천 토픽</small>
               </v-layout>
             </v-list-tile>
+
+            <v-list-tile @click="drawerChanged(false)" to="/searchBoard">
+              <v-layout column>
+                <v-list-tile-title>
+                  <v-icon small>add</v-icon>다른 토픽 찾기
+                </v-list-tile-title>
+              </v-layout>
+            </v-list-tile>
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
@@ -49,6 +57,7 @@ export default {
   methods: {
     myPage() {
       this.$router.push("/myPage");
+      this.drawerChanged(false);
     },
     drawerChanged(val) {
       if (val !== this.$store.getters.menuDrawer) {
