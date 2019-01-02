@@ -20,18 +20,27 @@
         </v-badge>
       </v-btn>
       <v-list class="py-0" v-if="!notification">
-        <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
-          <div v-if="item.badge" class="ml-auto" :style="{'margin-right':totalNotifications > 0?'18px':'initial'}">
-            <v-badge color="error" class="d-inline-flex" :value="totalNotifications > 0">
+        <v-list-tile to="/myPage" ripple="ripple">
+          <v-list-tile-content class="align-end">내 계정정보</v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile to="/myCommunity" ripple="ripple">
+          <v-list-tile-content class="align-end">내 커뮤니티</v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="notification = true" v-if="totalNotifications > 0">
+          <div class="ml-auto" style="margin-right:18px;">
+            <v-badge color="error" class="d-inline-flex">
               <v-list-tile-content>
-                  <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
+                <v-list-tile-title>알림내역</v-list-tile-title>
               </v-list-tile-content>
               <span slot="badge">{{totalNotifications}}</span>
             </v-badge>
           </div>
-          <v-list-tile-content v-else>
-            <v-list-tile-title class="text-xs-right">{{item.title}}</v-list-tile-title>
-          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile to="/chat" ripple="ripple">
+          <v-list-tile-content class="align-end">채팅</v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="signout">
+          <v-list-tile-content class="align-end">로그아웃</v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-menu>
@@ -44,49 +53,16 @@
 export default {
   template: "#mainToolbar",
   name: "mainToolbar",
-  components: { NotificationCenter: () => import("./NotificationCenter") },
+  components: {NotificationCenter: () => import("./NotificationCenter")},
   data() {
     return {
-      items: [
-        {
-          title: "내 계정정보",
-          click: e => {
-            this.$router.push("/myPage");
-            return true;
-          }
-        },
-        {
-          title: "내 커뮤니티",
-          click: e => {
-            this.$router.push("/myCommunity");
-            return true;
-          }
-        },
-        {
-          title: "알림내역",
-          badge: true,
-          click: e => {
-            this.notification = true;
-            return true;
-          }
-        },
-        {
-          title: "로그아웃",
-          click: () => {
-            this.signout();
-            return true;
-          }
-        }
-      ],
       notification: false,
       menu: false
     };
   },
   computed: {
     nickName() {
-      return this.$store.getters.isLight
-        ? this.$store.getters.loungeNickName
-        : this.$store.getters.topicNickName;
+      return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
     totalNotifications() {
       return this.$store.getters.totalNotifications;
