@@ -1,8 +1,8 @@
 <template>
   <div class="mainLayout">
     <main-toolbar class="mainLayout__nav"></main-toolbar>
-    <menu-bar :lounges="lounges" :topics="topics"/>
-    <menu-drawer :lounges="lounges" :topics="topics"/>
+    <menu-bar :lounges="lounges" :topics="topics" v-if="$vuetify.breakpoint.smAndUp"/>
+    <menu-drawer :lounges="lounges" :topics="topics" v-else/>
     <main class="mainLayout__main">
       <slot></slot>
     </main>

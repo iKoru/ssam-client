@@ -7,7 +7,7 @@
       <v-tabs-items touchless :dark="menu!==undefined?menu===1:!$store.getters.isLight" :class="{'d-none':!menuBar}">
         <v-tab-item :key="0">
           <v-flex class="scrollContainer">
-            <v-flex class="menuColumn" xs4 sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
+            <v-flex class="menuColumn" sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
               <v-layout column>
                 <v-flex>
                   <router-link :to="'/'+lounges[(n-1)*3].boardId" :title="lounges[(n-1)*3].boardName">{{lounges[(n-1)*3].boardName}}</router-link>
@@ -20,7 +20,7 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex class="menuColumn" xs4 sm2 v-if="lounges.length % 3 !== 0">
+            <v-flex class="menuColumn" sm2 v-if="lounges.length % 3 !== 0">
               <v-layout column>
                 <v-flex v-for="n in (lounges.length % 3)" :key="n">
                   <router-link :to="'/'+lounges[lounges.length - (lounges.length % 3) + n - 1].boardId" :title="lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName">{{lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName}}</router-link>
@@ -31,7 +31,7 @@
         </v-tab-item>
         <v-tab-item :key="1" class="secondary white--text">
           <v-flex class="scrollContainer">
-            <v-flex class="menuColumn" xs4 sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
+            <v-flex class="menuColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
               <v-layout column>
                 <v-flex>
                   <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">{{topics[(n-1)*3].boardName}}</router-link>
@@ -44,7 +44,7 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex class="menuColumn" xs4 sm2 v-if="topics.length % 3 !== 0">
+            <v-flex class="menuColumn" sm2 v-if="topics.length % 3 !== 0">
               <v-layout column>
                 <v-flex v-for="n in topics.length % 3" :key="n">
                   <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
@@ -57,7 +57,7 @@
                 <v-flex v-if="topics.length % 3 === 1">&nbsp;</v-flex>
               </v-layout>
             </v-flex>
-            <v-flex class="menuColumn" xs4 sm2 v-else>
+            <v-flex class="menuColumn" sm2 v-else>
               <v-layout column>
                 <v-flex>
                   <router-link class="white--text" to="/searchTopic">
