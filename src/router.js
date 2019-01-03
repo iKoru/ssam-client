@@ -109,6 +109,15 @@ const router = new Router({
       meta: {
         title: '내 커뮤니티'
       }
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: () => import('@/views/Chat'),
+      beforeEnter: requireSignin,
+      meta: {
+        title: '채팅'
+      }
     }
 
   ]
