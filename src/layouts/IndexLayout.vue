@@ -6,7 +6,10 @@
   </div>
 </template>
 <script>
-export default {
-  
-};
+export default {};
 </script>
+<style>
+.application--wrap {
+  background-color: white;
+}
+</style>

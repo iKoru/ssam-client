@@ -114,9 +114,9 @@ export default {
 </script>
 
 <style>
-#menuBarTabs{
-  border-top:1px solid rgba(0,0,0,0.12);
-  border-bottom:1px solid rgba(0,0,0,0.12);
+#menuBarTabs {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 .menu {
   height: 150px;
@@ -138,23 +138,13 @@ export default {
   color: white;
 }
 .tapSpacer {
-  background-image: -webkit-linear-gradient(45deg, white 95%, #424242 5%);
-  background-image: linear-gradient(45deg, white 95%, #424242 5%);
-  margin:-1px;
+  background-image: -webkit-linear-gradient(45deg, white 92%, #424242 8%);
+  background-image: linear-gradient(45deg, white 92%, #424242 8%);
+  margin: -1px;
 }
 .tapSpacer.dark {
-  background-image: -webkit-linear-gradient(135deg, #424242 95%, white 5%);
-  background-image: linear-gradient(135deg, white 6%, #424242 6%);
-}
-@media (max-width: 600px) {
-  .tapSpacer {
-    background-image: -webkit-linear-gradient(45deg, white 85%, #424242 15%);
-    background-image: linear-gradient(45deg, white 85%, #424242 15%);
-  }
-  .tapSpacer.dark {
-    background-image: -webkit-linear-gradient(135deg, #424242 85%, white 15%);
-    background-image: linear-gradient(135deg, white 15%, #424242 15%);
-  }
+  background-image: -webkit-linear-gradient(135deg, #424242 92%, white 8%);
+  background-image: linear-gradient(135deg, white 8%, #424242 8%);
 }
 .scrollContainer {
   white-space: nowrap;

@@ -1,8 +1,9 @@
 <template id="mainToolbar">
   <v-toolbar color="white" :fixed="false" :light="$store.getters.isLight" flat>
+    <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3 cursor-pointer" @click="goMain" title="pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-menu offset-y right nudge-bottom="5px" open-on-hover v-model="menu">
+    <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1">
           <img :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
@@ -13,7 +14,7 @@
         </v-badge>
       </v-btn>
       <v-btn icon large class="notificationActivator" v-else slot="activator">
-        <v-badge color="error" :value="totalNotifications>0 && !menu && !notification">
+        <v-badge color="error" :value="totalNotifications>0 && !menu && !notification" overlap>
           <v-icon>more_vert</v-icon>
           <span slot="badge">{{totalNotifications}}</span>
         </v-badge>
@@ -35,8 +36,8 @@
             </v-badge>
           </div>
         </v-list-tile>
-        <v-list-tile to="/chat" ripple="ripple">
-          <v-list-tile-content class="align-end">채팅</v-list-tile-content>
+        <v-list-tile to="/message" ripple="ripple">
+          <v-list-tile-content class="align-end">메세지</v-list-tile-content>
         </v-list-tile>
         <v-list-tile @click="signout">
           <v-list-tile-content class="align-end">로그아웃</v-list-tile-content>

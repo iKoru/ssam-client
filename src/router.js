@@ -111,12 +111,12 @@ const router = new Router({
       }
     },
     {
-      path: '/chat',
-      name: 'chat',
-      component: () => import('@/views/Chat'),
+      path: '/message',
+      name: 'message',
+      component: () => import('@/views/Message'),
       beforeEnter: requireSignin,
       meta: {
-        title: '채팅'
+        title: '메세지'
       }
     }
 
