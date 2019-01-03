@@ -1,6 +1,6 @@
 <template>
   <v-container px-0 py-0 fluid>
-    <v-tabs :dark="menu!==undefined?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32">
+    <v-tabs :dark="menu!==undefined?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32" id="menuBarTabs">
       <v-tab :key="0" class="loungeTab" @click="toggleMenuBar('lounge')">라운지</v-tab>
       <v-spacer :class="{tapSpacer:true, dark:menu!==undefined?menu===1:!$store.getters.isLight}"/>
       <v-tab :key="1" class="topicTab" @click="toggleMenuBar('topic')">토픽</v-tab>
@@ -114,6 +114,10 @@ export default {
 </script>
 
 <style>
+#menuBarTabs{
+  border-top:1px solid rgba(0,0,0,0.12);
+  border-bottom:1px solid rgba(0,0,0,0.12);
+}
 .menu {
   height: 150px;
   background-color: lightgrey;
