@@ -25,6 +25,9 @@
                       <td class="text-xs-right">
                         <timeago :datetime="props.item.lastSendTimestamp" :autoUpdate="true"></timeago>
                       </td>
+                      <td>
+                        <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">나가기</v-btn>
+                      </td>
                     </tr>
                   </template>
                   <template slot="no-data">
@@ -35,6 +38,12 @@
               </v-flex>
             </v-flex>
           </v-layout>
+          <component :is="$vuetify.breakpoint.xsOnly?'v-dialog':'div'" full-screen v-model="isChatOpen">
+            <beautiful-chat :participants="participants" :onMessageWasSent="onMessageWasSent" :messageList="messageList" 
+              :newMessagesCount="newMessagesCount" :isOpen="isChatOpen" :close="closeChat" :open="openChat" :showEmoji="false" 
+              :showFile="false" :colors="colors" :alwaysScrollToBottom="true" :showLauncher="false" :messageStyling="false" :title="title" :disabled="disabled">
+            </beautiful-chat>
+          </component>
         </v-card-title>
       </v-card>
     </v-layout>
@@ -51,7 +60,41 @@ export default {
       loading: true,
       chats:[],
       totalChats:0,
-      pagination:{}
+      pagination:{},
+      participants:[{
+          id: 'user1',
+          name: 'Matteo',
+          imageUrl: 'https://avatars3.githubusercontent.com/u/1915989?s=230&v=4'
+        }],
+      messageList:[],
+      newMessagesCount:0,
+      isChatOpen:false,
+      colors: {
+        header: {
+          bg: '#4e8cff',
+          text: '#ffffff'
+        },
+        launcher: {
+          bg: '#4e8cff'
+        },
+        messageList: {
+          bg: '#ffffff'
+        },
+        sentMessage: {
+          bg: '#4e8cff',
+          text: '#ffffff'
+        },
+        receivedMessage: {
+          bg: '#eaeaea',
+          text: '#222222'
+        },
+        userInput: {
+          bg: '#f4f7f9',
+          text: '#565867'
+        }
+      },
+      title:'',
+      disabled:false
     }
   },
   computed: {
@@ -79,6 +122,35 @@ export default {
           this.$store.dispatch("showSnackbar", {text: `채팅 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
           this.loading = false;
         });
+    },
+    sendMessage (text) {
+      if (text.length > 0) {
+        this.newMessagesCount = this.isChatOpen ? this.newMessagesCount : this.newMessagesCount + 1
+        this.onMessageWasSent({ author: 'support', type: 'text', data: { text } })
+      }
+    },
+    onMessageWasSent (message) {
+      console.log(message)
+      // called when the user sends a message
+      this.messageList = [ ...this.messageList, message ]
+    },
+    openChat () {
+      // called when the user clicks on the fab button to open the chat
+      this.isChatOpen = true
+      this.newMessagesCount = 0
+    },
+    closeChat () {
+      // called when the user clicks on the botton to close the chat
+      this.isChatOpen = false
+    },
+    getChat(item){
+      console.log(item);
+      this.title = item.otherNickName + '님과의 대화'
+      this.disabled = false;
+      this.isChatOpen = true;
+    },
+    deleteChat(item){
+      console.log(item);
     }
   }
 };
