@@ -47,7 +47,7 @@
             <v-flex class="menuColumn" sm2 v-if="topics.length % 3 !== 0">
               <v-layout column>
                 <v-flex v-for="n in topics.length % 3" :key="n">
-                  <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
+                  <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
                 </v-flex>
                 <v-flex>
                   <router-link class="white--text" to="/searchBoard">
@@ -134,13 +134,13 @@ export default {
   color: white;
 }
 .tapSpacer {
-  background-color: white;
   background-image: -webkit-linear-gradient(45deg, white 95%, #424242 5%);
   background-image: linear-gradient(45deg, white 95%, #424242 5%);
+  margin:-1px;
 }
 .tapSpacer.dark {
   background-image: -webkit-linear-gradient(135deg, #424242 95%, white 5%);
-  background-image: linear-gradient(135deg, white 5%, #424242 5%);
+  background-image: linear-gradient(135deg, white 6%, #424242 6%);
 }
 @media (max-width: 600px) {
   .tapSpacer {
