@@ -118,6 +118,15 @@ const router = new Router({
       meta: {
         title: '메세지'
       }
+    },
+    {
+      path: '/searchBoard',
+      name: 'searchBoard',
+      component: () => import('@/views/SearchBoard'),
+      beforeEnter: requireSignin,
+      meta: {
+        title: '게시판 검색'
+      }
     }
 
   ]
