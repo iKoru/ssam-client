@@ -117,6 +117,9 @@ export default new Vuex.Store({
     SET_USERBOARDS (state, userBoards) {
       state.userBoards = userBoards
     },
+    ADD_USERBOARD(state, userBoard){
+      state.userBoards.push(userBoard);
+    },
     MARK_NOTIFICATION (state, notificationId) {
       if (state.notifications.some(x => x.notificationId === notificationId)) {
         state.notifications = state.notifications.filter(x => x.notificationId !== notificationId)
@@ -182,6 +185,9 @@ export default new Vuex.Store({
       } else {
         commit('SET_USERBOARDS', [])
       }
+    },
+    addUserBoards({commit}, userBoard){
+      commit('ADD_USERBOARD', userBoard)
     },
     markNotification ({ commit }, notificationId) {
       commit('MARK_NOTIFICATION', notificationId)
