@@ -6,7 +6,7 @@
           <v-layout row>
             <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
               <v-layout row>
-                <h3 class="headline">메세지 목록</h3>
+                <h3 class="headline">채팅 목록</h3>
               </v-layout>
               <v-flex xs12>
                 <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination">
@@ -15,7 +15,7 @@
                       <td>
                         <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
                           <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.png')">
-                          <span v-else class="white--text headline">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
+                          <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
                         </v-avatar>
                       </td>
                       <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.otherNickName }}</td>
@@ -30,14 +30,17 @@
                   </template>
                   <template slot="no-data">
                     {{this.noresult}}
-                    <v-btn color="primary" @click="getChatList">새로고침</v-btn>
+                  </template>
+                  <template slot="actions-prepend">
+                    <v-btn color="primary" @click="getChatList" :loading="loading">새로고침</v-btn>
+                    <v-spacer></v-spacer>
                   </template>
                 </v-data-table>
               </v-flex>
             </v-flex>
           </v-layout>
           <component :is="$vuetify.breakpoint.xsOnly?'v-dialog':'div'" full-screen v-model="isChatOpen">
-            <beautiful-chat :participants="participants" :onMessageWasSent="sendMessage" :messageList="messageList" :newMessagesCount="newMessagesCount" :isOpen="isChatOpen" :close="closeChat" :open="openChat" placeholder="대화 내용을 입력해주세요." :showEmoji="false" :has-user-list="false" :showFile="false" :colors="colors" :alwaysScrollToBottom="true" :showLauncher="false" :messageStyling="false" :title="title" :disabled="disabled"></beautiful-chat>
+            <beautiful-chat :participants="participants" :onMessageWasSent="sendMessage" :loadPreviousMessages="loadPreviousMessages" :loadNewMessages="loadNewMessages" :loading="loadingMessages" :messageList="messageList" :newMessagesCount="newMessagesCount" :isOpen="isChatOpen" :close="closeChat" :open="openChat" placeholder="대화 내용을 입력해주세요." :showEmoji="false" :has-user-list="false" :showFile="false" :colors="colors" :alwaysScrollToBottom="scrollToBottom" :showLauncher="false" :messageStyling="false" :title="title" :disabled="disabled"></beautiful-chat>
           </component>
         </v-card-title>
       </v-card>
@@ -91,7 +94,11 @@ export default {
         }
       },
       title: "",
-      disabled: false
+      disabled: false,
+      chatId:null,
+      noPreviousMessage:false,
+      scrollToBottom:true,
+      loadingMessages:false
     };
   },
   computed: {
@@ -118,14 +125,30 @@ export default {
           this.$store.dispatch("showSnackbar", {text: `채팅 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
           this.loading = false;
         });
+      this.closeChat();
     },
     sendMessage(message) {
-      let that = this;
       (message => {
-        if (message.data.text.length > 0) {
-          that.newMessagesCount = that.isChatOpen ? that.newMessagesCount : that.newMessagesCount + 1;
-          message.data.meta = that.$moment().format("YYYY.M.D hh:mm:ss a");
-          that.onMessageWasSent(message);
+        if (message.data.text.trim().length > 0) {
+          message.data.text = message.data.text.trim();
+          const chat = this.chats.find(x=>x.chatId === this.chatId);
+          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format('YYYYMMDDHHmmss')
+          this.$axios.post('/message', {chatId:this.chatId, contents:message.data.text, lastSendTimestamp}, {headers:{silent:true}})
+          .then(response => {
+            if(Array.isArray(response.data.messageList)){
+              response.data.messageList.reverse();
+              console.log(response.data.messageList);
+              this.messageList = this.messageList.concat(response.data.messageList.filter(x=>x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat?chat.otherNickName:'(알 수 없음)', type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})))
+              if(response.data.messageList.length > 0){
+                chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, 'YYYYMMDDHHmmss').toDate();
+                chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents
+              }
+            }
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.$store.dispatch("showSnackbar", {text: `메시지를 보내지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+          })
         }
       })(message);
     },
@@ -143,15 +166,17 @@ export default {
       this.isChatOpen = false;
     },
     getChat(item) {
-      console.log(item);
       this.disabled = item.otherStatus === "DELETED";
       this.axios
         .get("/message", {params: {chatId: item.chatId}})
         .then(response => {
           this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}}));
+          this.messageList.reverse();
           if (this.disabled) {
             this.messageList.push({type: "system", data: {text: `${item.otherNickName} 님이 채팅을 나갔습니다.`}});
           }
+          this.noPreviousMessage = this.messageList.length < 15
+          
           this.participants = [
             {
               id: item.otherNickName,
@@ -159,6 +184,7 @@ export default {
               imageUrl: item.chatType === "T" ? "" : item.picturePath || require("@/static/img/defaultUser.png")
             }
           ];
+          this.chatId = item.chatId;
           this.isChatOpen = true;
         })
         .catch(error => {
@@ -168,7 +194,8 @@ export default {
       this.title = item.otherNickName + "님과의 대화";
     },
     deleteChat(item) {
-      if (confirm("이 채팅방을 삭제하면 대화 내용이 모두 사라집니다.\n정말 삭제하시겠어요?")) {
+      if (confirm("이 채팅을 삭제하면 대화 내용이 모두 사라집니다.\n정말 삭제하시겠어요?")) {
+        this.closeChat();
         this.$axios
           .delete("/message/" + item.chatId)
           .then(response => {
@@ -177,9 +204,58 @@ export default {
           })
           .catch(error => {
             console.log(error.response);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "채팅을 삭제하지 못했습니다.", color: "error"});
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || '채팅을 삭제하지 못했습니다.': "채팅을 삭제하지 못했습니다.", color: "error"});
           });
       }
+    },
+    loadPreviousMessages(){
+      (() => {
+        if(!this.noPreviousMessage){
+          this.scrollToBottom = false;
+          this.loadingMessages = true;
+          this.axios
+            .get("/message", {params: {chatId: this.chatId, timestampBefore:this.messageList[0]?this.$moment(this.messageList[0].data.meta, "YYYY.M.D hh:mm:ss a").format('YYYYMMDDHHmmss'):this.$moment().format('YYYYMMDDHHmmss')}, headers:{silent:true}})
+            .then(response => {
+              if(Array.isArray(response.data)){
+                if(response.data.length < 15){
+                  this.noPreviousMessage = true;
+                }
+                response.data.reverse();
+                const chat = this.chats.find(x=>x.chatId === this.chatId);
+                this.messageList = response.data.map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})).concat(this.messageList)
+                this.loadingMessages = false;
+                this.$nextTick(() => {
+                  this.scrollToBottom = true;
+                })
+              }
+            })
+            .catch(error => {
+              console.log(error.response);
+              this.scrollToBottom = true;
+              this.loadingMessages = false;
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "메시지를 불러오지 못했습니다.", color: "error"});
+            });
+        }
+      })();
+    },
+    loadNewMessages(){
+      (()=>{
+        this.loadingMessages = true;
+        const lastSendTimestamp = this.messageList.length>0?this.$moment(this.messageList[this.messageList.length - 1].data.meta, "YYYY.M.D hh:mm:ss a").format('YYYYMMDDHHmmss'):undefined;
+        this.axios
+          .get("/message", {params: {chatId: this.chatId, timestampAfter:lastSendTimestamp}, headers:{silent:true}})
+          .then(response => {
+            const chat = this.chats.find(x=>x.chatId === this.chatId);
+            response.data.reverse();
+            this.messageList = this.messageList.concat(response.data.filter(x=>!lastSendTimestamp || x.sendTimestamp>lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
+            this.loadingMessages = false;
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.loadingMessages = false;
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "메시지를 불러오지 못했습니다.", color: "error"});
+          });
+      })();
     }
   },
   watch: {
@@ -218,5 +294,8 @@ table.v-table tbody th:first-child {
 }
 td:first-child {
   padding: 0 12px;
+}
+.v-datatable__actions {
+  justify-content: space-between;
 }
 </style>
