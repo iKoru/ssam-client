@@ -82,6 +82,7 @@
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
             <v-btn @click="reset" class="mt-2" flat>초기화</v-btn>
+            <v-subheader class="mt-2"><v-btn @click="exit" class="short" flat><small>탈퇴</small></v-btn></v-subheader>
             <v-spacer></v-spacer>
             <v-btn @click="submit" color="primary" :loading="loading" class="mt-2">저장</v-btn>
           </v-layout>
@@ -368,6 +369,20 @@ export default {
           this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 삭제하지 못했습니다."}`, color: "error"});
         });
       this.bottomSheet = false;
+    },
+    exit(){
+      if(confirm('정말 탈퇴하시겠습니까?\n등록한 이메일로의 재가입은 불가능합니다.')){
+        this.$axios.put('/user', {status:'DELETED'})
+        .then(response => {
+          this.$store.dispatch("showSnackbar", {text: "정상적으로 탈퇴처리되었습니다. 이용해주셔서 감사합니다."});
+          this.$store.dispatch("signout");
+          this.$router.push("/index");
+        })
+        .catch(error => {
+          console.log(error);
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "탈퇴하지 못했습니다. 관리자에게 문의해주세요."}`, color: "error"});
+        })
+      }
     }
   },
   watch: {
