@@ -24,7 +24,7 @@
                         <timeago :datetime="props.item.lastSendTimestamp" :autoUpdate="true"></timeago>
                       </td>
                       <td>
-                        <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">나가기</v-btn>
+                        <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
                       </td>
                     </tr>
                   </template>
