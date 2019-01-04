@@ -228,7 +228,7 @@ export default {
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+        this.$store.dispatch("showSnackbar", {text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color:'error'});
       });
   },
   methods: {

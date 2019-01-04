@@ -66,8 +66,9 @@ export default {
           if (response.data.imminent || response.data.needEmail) {
             this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
           }
+
           this.$axios
-            .get("/user")
+            .get("/user", {headers:{silent:true}})
             .then(response => {
               this.$store.dispatch("profile", response.data);
               if (redirectTo) {

@@ -37,7 +37,7 @@
           </div>
         </v-list-tile>
         <v-list-tile to="/message" ripple="ripple">
-          <v-list-tile-content class="align-end">메세지</v-list-tile-content>
+          <v-list-tile-content class="align-end">메시지</v-list-tile-content>
         </v-list-tile>
         <v-list-tile @click="signout">
           <v-list-tile-content class="align-end">로그아웃</v-list-tile-content>
