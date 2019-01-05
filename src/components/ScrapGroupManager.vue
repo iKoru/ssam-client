@@ -35,14 +35,14 @@
           <v-layout row v-if="$vuetify.breakpoint.smAndUp">
             <v-btn id="largeCreateBtn" class="mb-3" @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
             <template v-if="showCreateField">
-              <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter.stop="addNewRow"></v-text-field>
+              <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter="addNewRow"></v-text-field>
               <v-btn flat color="primary" class="short" @click="addNewRow">등록</v-btn>
             </template>
             <v-spacer/>
             <v-btn color="primary" @click="save" :loading="loading">저장</v-btn>
           </v-layout>
           <v-layout row v-show="showCreateField" v-else>
-            <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter.stop="addNewRow"></v-text-field>
+            <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter="addNewRow"></v-text-field>
             <v-btn small flat color="primary" @click="addNewRow">등록</v-btn>
           </v-layout>
         </v-flex>

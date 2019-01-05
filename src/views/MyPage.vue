@@ -15,7 +15,7 @@
                     <v-list-tile @click="deleteProfilePath">
                       <v-list-tile-title>프로필 사진 삭제</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="bottomSheet = false;dialog=true">
+                    <v-list-tile @click="bottomSheet = false;openDialog()">
                       <v-list-tile-title>프로필 사진 변경</v-list-tile-title>
                     </v-list-tile>
                   </v-list>
@@ -98,7 +98,7 @@
           </v-layout>
         </v-card-actions>
       </v-card>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog v-model="dialog" width="500" lazy>
         <v-card>
           <v-card-title class="headline" primary-title>
             <span>{{profile.picturePath? '프로필 사진 변경':'프로필 사진 등록'}}</span>
@@ -393,6 +393,20 @@ export default {
             console.log(error);
             this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "탈퇴하지 못했습니다. 관리자에게 문의해주세요."}`, color: "error"});
           });
+      }
+    },
+    openDialog(){
+      this.dialog = true;
+      if(this.$refs.pond){
+        this.$refs.pond.browse();
+      }else{
+        let check = setInterval(
+        () => {
+          if(this.$refs.pond){
+            clearInterval(check);
+            this.$refs.pond.browse()
+          }
+        }, 100)
       }
     }
   },
