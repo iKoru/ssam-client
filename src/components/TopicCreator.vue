@@ -82,7 +82,7 @@ export default {
       allowedGroups: [],
       allGroupAuthItems: [{value: "READWRITE", text: "전체구독허용"}, {value: "READONLY", text: "읽기공개"}, {value: "NONE", text: "비공개"}],
       groupItems: [],
-      boardIdRules: [v => !!v || "토픽ID를 입력해주세요.", v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => (v && v.length > 3 && v.length < 16) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, [_, -] 이외의 특수문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
+      boardIdRules: [v => !!v || "토픽ID를 입력해주세요.", v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => (v && v.length > 3 && v.length < 16) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, 알파벳이 아닌 문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
       boardNameRules: [v => !!v || "토픽 이름을 입력해주세요."],
       boardIdErrors: []
     };
@@ -150,6 +150,22 @@ export default {
             })
             .then(response => {
               this.loading = false;
+              this.$store.dispatch("addBoard", {
+                boardId: this.boardId,
+                boardName: this.boardName,
+                boardType: "T",
+                boardDescription: this.boardDescription || undefined,
+                allGroupAuth: this.allGroupAuth,
+                allowAnonymous: this.allowAnonymous
+              });
+              this.$store.dispatch("addUserBoard", {
+                boardId: this.boardId,
+                boardName: this.boardName,
+                boardType: "T",
+                boardDescription: this.boardDescription || undefined,
+                allGroupAuth: this.allGroupAuth,
+                allowAnonymous: this.allowAnonymous
+              });
               this.$emit("resetBoard");
               this.$emit("closeDialog");
               this.reset();
@@ -208,7 +224,7 @@ form .flex {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
-.v-list .v-subheader{
-  padding-left:.5rem;
+.v-list .v-subheader {
+  padding-left: 0.5rem;
 }
 </style>
