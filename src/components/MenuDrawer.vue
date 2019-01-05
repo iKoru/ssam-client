@@ -39,7 +39,7 @@
             <v-list-tile @click="drawerChanged(false)" to="/searchBoard">
               <v-layout column>
                 <v-list-tile-title>
-                  <v-icon small>add</v-icon>다른 토픽 찾기
+                  <v-icon small>search</v-icon>다른 토픽 찾기
                 </v-list-tile-title>
               </v-layout>
             </v-list-tile>
