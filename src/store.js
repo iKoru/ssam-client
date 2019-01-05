@@ -114,11 +114,19 @@ export default new Vuex.Store({
     SET_BOARDS (state, boards) {
       state.boards = boards
     },
+    ADD_BOARD (state, board) {
+      state.boards.push(board)
+    },
     SET_USERBOARDS (state, userBoards) {
       state.userBoards = userBoards
     },
-    ADD_USERBOARD(state, userBoard){
+    ADD_USERBOARD (state, userBoard) {
       state.userBoards.push(userBoard);
+    },
+    REMOVE_USERBOARD (state, boardId) {
+      if (state.userBoards.some(x => x.boardId === boardId)) {
+        state.userBoards.splice(state.userBoards.findIndex(x => x.boardId === boardId), 1)
+      }
     },
     MARK_NOTIFICATION (state, notificationId) {
       if (state.notifications.some(x => x.notificationId === notificationId)) {
@@ -179,6 +187,9 @@ export default new Vuex.Store({
         commit('SET_BOARDS', [])
       }
     },
+    addBoard ({ commit }, board) {
+      commit('ADD_BOARD', board)
+    },
     setUserBoards ({ commit }, userBoards) {
       if (Array.isArray(userBoards)) {
         commit('SET_USERBOARDS', userBoards)
@@ -186,8 +197,11 @@ export default new Vuex.Store({
         commit('SET_USERBOARDS', [])
       }
     },
-    addUserBoards({commit}, userBoard){
+    addUserBoard ({ commit }, userBoard) {
       commit('ADD_USERBOARD', userBoard)
+    },
+    removeUserBoard ({ commit }, boardId) {
+      commit('REMOVE_USERBOARD', boardId)
     },
     markNotification ({ commit }, notificationId) {
       commit('MARK_NOTIFICATION', notificationId)
