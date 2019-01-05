@@ -80,11 +80,21 @@
           </v-flex>
         </v-card-title>
         <v-card-actions pa-3>
-          <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
-            <v-btn @click="reset" class="mt-2" flat>초기화</v-btn>
-            <v-subheader class="mt-2"><v-btn @click="exit" class="short" flat><small>탈퇴</small></v-btn></v-subheader>
-            <v-spacer></v-spacer>
-            <v-btn @click="submit" color="primary" :loading="loading" class="mt-2">저장</v-btn>
+          <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" text-xs-right>
+            <v-btn @click="reset" flat :block="$vuetify.breakpoint.xsOnly" class="mt-2">초기화</v-btn>
+            <v-flex order-xs3 order-sm2 class="mt-2">
+              <v-subheader>
+                <v-btn @click="exit" class="short" flat>
+                  <small>탈퇴</small>
+                </v-btn>
+              </v-subheader>
+            </v-flex>
+            <v-flex v-if="$vuetify.breakpoint.smAndUp" order-sm3>
+              <v-spacer></v-spacer>
+            </v-flex>
+            <v-flex order-xs2 order-sm4 class="mt-2">
+              <v-btn @click="submit" color="primary" :loading="loading" :block="$vuetify.breakpoint.xsOnly">저장</v-btn>
+            </v-flex>
           </v-layout>
         </v-card-actions>
       </v-card>
@@ -228,7 +238,7 @@ export default {
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color:'error'});
+        this.$store.dispatch("showSnackbar", {text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
       });
   },
   methods: {
@@ -370,18 +380,19 @@ export default {
         });
       this.bottomSheet = false;
     },
-    exit(){
-      if(confirm('정말 탈퇴하시겠습니까?\n등록한 이메일로의 재가입은 불가능합니다.')){
-        this.$axios.put('/user', {status:'DELETED'})
-        .then(response => {
-          this.$store.dispatch("showSnackbar", {text: "정상적으로 탈퇴처리되었습니다. 이용해주셔서 감사합니다."});
-          this.$store.dispatch("signout");
-          this.$router.push("/index");
-        })
-        .catch(error => {
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "탈퇴하지 못했습니다. 관리자에게 문의해주세요."}`, color: "error"});
-        })
+    exit() {
+      if (confirm("정말 탈퇴하시겠습니까?\n등록한 이메일로의 재가입은 불가능합니다.")) {
+        this.$axios
+          .put("/user", {status: "DELETED"})
+          .then(response => {
+            this.$store.dispatch("showSnackbar", {text: "정상적으로 탈퇴처리되었습니다. 이용해주셔서 감사합니다."});
+            this.$store.dispatch("signout");
+            this.$router.push("/index");
+          })
+          .catch(error => {
+            console.log(error);
+            this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "탈퇴하지 못했습니다. 관리자에게 문의해주세요."}`, color: "error"});
+          });
       }
     }
   },
