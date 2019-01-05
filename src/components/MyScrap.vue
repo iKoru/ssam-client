@@ -12,7 +12,7 @@
             </v-dialog>
           </v-layout>
           <v-flex xs12>
-            <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination">
+            <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination" class="customAction">
               <template slot="items" slot-scope="props">
                 <tr @click="selected = (selected===props.index?null:props.index)">
                   <td>
@@ -132,7 +132,7 @@ export default {
         .get("/scrap/group", {headers: {silent: true}})
         .then(response => {
           this.scrapGroups = response.data;
-          if(this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1){
+          if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
             this.pagination.page = 1;
             this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
             this.getMyScraps();
@@ -161,9 +161,10 @@ export default {
       deep: true
     },
     scrapGroupId(val) {
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.pagination.page = 1;
-      this.getMyScraps();});
+        this.getMyScraps();
+      });
     },
     dialog(val) {}
   },
@@ -192,13 +193,10 @@ td:first-child {
 td:first-child .v-input--selection-controls__input {
   margin-right: 0;
 }
-.v-datatable__actions {
-  justify-content: space-between;
-}
 .selectScrapGroup {
-  width:0;
+  width: 0;
 }
-.selectScrapGroup input[type="text"]{
-  display:none;
+.selectScrapGroup input[type="text"] {
+  display: none;
 }
 </style>

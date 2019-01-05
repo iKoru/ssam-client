@@ -7,7 +7,7 @@
             <h3 class="headline">내가 쓴 댓글 목록</h3>
           </v-layout>
           <v-flex xs12>
-            <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination">
+            <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination" class="customAction">
               <template slot="items" slot-scope="props">
                 <tr @click="selected = (selected===props.index?null:props.index)">
                   <td>
@@ -152,8 +152,5 @@ td:first-child {
 }
 td:first-child .v-input--selection-controls__input {
   margin-right: 0;
-}
-.v-datatable__actions {
-  justify-content: space-between;
 }
 </style>

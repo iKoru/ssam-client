@@ -9,7 +9,7 @@
                 <h3 class="headline">채팅 목록</h3>
               </v-layout>
               <v-flex xs12>
-                <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination">
+                <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" class="customAction">
                   <template slot="items" slot-scope="props">
                     <tr class="cursor-pointer" @click="getChat(props.item)">
                       <td>
@@ -28,9 +28,7 @@
                       </td>
                     </tr>
                   </template>
-                  <template slot="no-data">
-                    {{this.noresult}}
-                  </template>
+                  <template slot="no-data">{{this.noresult}}</template>
                   <template slot="actions-prepend">
                     <v-btn color="primary" @click="getChatList" :loading="loading">새로고침</v-btn>
                     <v-spacer></v-spacer>
@@ -95,10 +93,10 @@ export default {
       },
       title: "",
       disabled: false,
-      chatId:null,
-      noPreviousMessage:false,
-      scrollToBottom:true,
-      loadingMessages:false
+      chatId: null,
+      noPreviousMessage: false,
+      scrollToBottom: true,
+      loadingMessages: false
     };
   },
   computed: {
@@ -131,24 +129,25 @@ export default {
       (message => {
         if (message.data.text.trim().length > 0) {
           message.data.text = message.data.text.trim();
-          const chat = this.chats.find(x=>x.chatId === this.chatId);
-          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format('YYYYMMDDHHmmss')
-          this.$axios.post('/message', {chatId:this.chatId, contents:message.data.text, lastSendTimestamp}, {headers:{silent:true}})
-          .then(response => {
-            if(Array.isArray(response.data.messageList)){
-              response.data.messageList.reverse();
-              console.log(response.data.messageList);
-              this.messageList = this.messageList.concat(response.data.messageList.filter(x=>x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat?chat.otherNickName:'(알 수 없음)', type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})))
-              if(response.data.messageList.length > 0){
-                chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, 'YYYYMMDDHHmmss').toDate();
-                chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents
+          const chat = this.chats.find(x => x.chatId === this.chatId);
+          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format("YYYYMMDDHHmmss");
+          this.$axios
+            .post("/message", {chatId: this.chatId, contents: message.data.text, lastSendTimestamp}, {headers: {silent: true}})
+            .then(response => {
+              if (Array.isArray(response.data.messageList)) {
+                response.data.messageList.reverse();
+                console.log(response.data.messageList);
+                this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
+                if (response.data.messageList.length > 0) {
+                  chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss").toDate();
+                  chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents;
+                }
               }
-            }
-          })
-          .catch(error => {
-            console.log(error.response);
-            this.$store.dispatch("showSnackbar", {text: `메시지를 보내지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
-          })
+            })
+            .catch(error => {
+              console.log(error.response);
+              this.$store.dispatch("showSnackbar", {text: `메시지를 보내지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+            });
         }
       })(message);
     },
@@ -175,8 +174,8 @@ export default {
           if (this.disabled) {
             this.messageList.push({type: "system", data: {text: `${item.otherNickName} 님이 채팅을 나갔습니다.`}});
           }
-          this.noPreviousMessage = this.messageList.length < 15
-          
+          this.noPreviousMessage = this.messageList.length < 15;
+
           this.participants = [
             {
               id: item.otherNickName,
@@ -204,29 +203,29 @@ export default {
           })
           .catch(error => {
             console.log(error.response);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || '채팅을 삭제하지 못했습니다.': "채팅을 삭제하지 못했습니다.", color: "error"});
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "채팅을 삭제하지 못했습니다." : "채팅을 삭제하지 못했습니다.", color: "error"});
           });
       }
     },
-    loadPreviousMessages(){
+    loadPreviousMessages() {
       (() => {
-        if(!this.noPreviousMessage){
+        if (!this.noPreviousMessage) {
           this.scrollToBottom = false;
           this.loadingMessages = true;
           this.axios
-            .get("/message", {params: {chatId: this.chatId, timestampBefore:this.messageList[0]?this.$moment(this.messageList[0].data.meta, "YYYY.M.D hh:mm:ss a").format('YYYYMMDDHHmmss'):this.$moment().format('YYYYMMDDHHmmss')}, headers:{silent:true}})
+            .get("/message", {params: {chatId: this.chatId, timestampBefore: this.messageList[0] ? this.$moment(this.messageList[0].data.meta, "YYYY.M.D hh:mm:ss a").format("YYYYMMDDHHmmss") : this.$moment().format("YYYYMMDDHHmmss")}, headers: {silent: true}})
             .then(response => {
-              if(Array.isArray(response.data)){
-                if(response.data.length < 15){
+              if (Array.isArray(response.data)) {
+                if (response.data.length < 15) {
                   this.noPreviousMessage = true;
                 }
                 response.data.reverse();
-                const chat = this.chats.find(x=>x.chatId === this.chatId);
-                this.messageList = response.data.map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})).concat(this.messageList)
+                const chat = this.chats.find(x => x.chatId === this.chatId);
+                this.messageList = response.data.map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})).concat(this.messageList);
                 this.loadingMessages = false;
                 this.$nextTick(() => {
                   this.scrollToBottom = true;
-                })
+                });
               }
             })
             .catch(error => {
@@ -238,16 +237,16 @@ export default {
         }
       })();
     },
-    loadNewMessages(){
-      (()=>{
+    loadNewMessages() {
+      (() => {
         this.loadingMessages = true;
-        const lastSendTimestamp = this.messageList.length>0?this.$moment(this.messageList[this.messageList.length - 1].data.meta, "YYYY.M.D hh:mm:ss a").format('YYYYMMDDHHmmss'):undefined;
+        const lastSendTimestamp = this.messageList.length > 0 ? this.$moment(this.messageList[this.messageList.length - 1].data.meta, "YYYY.M.D hh:mm:ss a").format("YYYYMMDDHHmmss") : undefined;
         this.axios
-          .get("/message", {params: {chatId: this.chatId, timestampAfter:lastSendTimestamp}, headers:{silent:true}})
+          .get("/message", {params: {chatId: this.chatId, timestampAfter: lastSendTimestamp}, headers: {silent: true}})
           .then(response => {
-            const chat = this.chats.find(x=>x.chatId === this.chatId);
+            const chat = this.chats.find(x => x.chatId === this.chatId);
             response.data.reverse();
-            this.messageList = this.messageList.concat(response.data.filter(x=>!lastSendTimestamp || x.sendTimestamp>lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
+            this.messageList = this.messageList.concat(response.data.filter(x => !lastSendTimestamp || x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
             this.loadingMessages = false;
           })
           .catch(error => {
@@ -294,8 +293,5 @@ table.v-table tbody th:first-child {
 }
 td:first-child {
   padding: 0 12px;
-}
-.v-datatable__actions {
-  justify-content: space-between;
 }
 </style>
