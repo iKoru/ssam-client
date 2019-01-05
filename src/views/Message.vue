@@ -19,7 +19,7 @@
                         </v-avatar>
                       </td>
                       <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.otherNickName }}</td>
-                      <td class="text-xs-left ellipsis">{{props.item.lastContents}}</td>
+                      <td class="text-xs-left multi-row">{{getShortContents(props.item.lastContents)}}</td>
                       <td class="text-xs-right">
                         <timeago :datetime="props.item.lastSendTimestamp" :autoUpdate="true"></timeago>
                       </td>
@@ -255,6 +255,9 @@ export default {
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "메시지를 불러오지 못했습니다.", color: "error"});
           });
       })();
+    },
+    getShortContents(contents) {
+      return contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
     }
   },
   watch: {
@@ -267,20 +270,7 @@ export default {
   }
 };
 </script>
-<style>
-@media (max-width: 599px) {
-  td:not(:nth-child(4)) {
-    white-space: nowrap;
-  }
-}
-@media (min-width: 600px) {
-  td:not(:nth-child(3)) {
-    white-space: nowrap;
-  }
-}
-td.ellipsis {
-  width: 100%;
-}
+<style scoped>
 table.v-table thead td:not(:nth-child(1)),
 table.v-table tbody td:not(:nth-child(1)),
 table.v-table thead th:not(:nth-child(1)),

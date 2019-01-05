@@ -19,9 +19,9 @@
                     <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
                   </td>
                   <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
-                  <td class="text-xs-left ellipsis cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.scrapId}`)">
+                  <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.scrapId}`)">
                     <a :href="`/${props.item.boardId}/${props.item.scrapId}`" target="_blank">
-                      {{ getShortContents(props.item.title) }}
+                      {{ props.item.title }}
                       <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                     </a>
                   </td>
@@ -98,19 +98,6 @@ export default {
       const routeData = this.$router.resolve({path: path});
       window.open(routeData.href, "_blank");
     },
-    getShortContents(contents) {
-      if (this.$vuetify.breakpoint.xsOnly) {
-        return contents.length > 15 ? contents.substring(0, 15) + "..." : contents;
-      } else if (this.$vuetify.breakpoint.smOnly) {
-        return contents.length > 14 ? contents.substring(0, 14) + "..." : contents;
-      } else if (this.$vuetify.breakpoint.mdOnly) {
-        return contents.length > 25 ? contents.substring(0, 25) + "..." : contents;
-      } else if (this.$vuetify.breakpoint.lgOnly) {
-        return contents.length > 30 ? contents.substring(0, 30) + "..." : contents;
-      } else {
-        return contents.length > 36 ? contents.substring(0, 36) + "..." : contents;
-      }
-    },
     deleteRow() {
       if (this.selected) {
         this.$axios
@@ -174,9 +161,6 @@ export default {
 };
 </script>
 <style>
-td {
-  white-space: nowrap;
-}
 table.v-table thead td:not(:nth-child(1)),
 table.v-table tbody td:not(:nth-child(1)),
 table.v-table thead th:not(:nth-child(1)),

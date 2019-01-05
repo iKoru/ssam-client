@@ -24,7 +24,7 @@
                       <v-flex xs12>
                         <span>{{props.item.boardName}}</span>
                       </v-flex>
-                      <v-flex xs12>
+                      <v-flex xs12 class="ellipsis">
                         <small>{{props.item.boardDescription}}</small>
                       </v-flex>
                     </v-layout>
@@ -241,9 +241,6 @@ export default {
 <style>
 .v-subheader {
   height: 32px;
-}
-td {
-  white-space: nowrap;
 }
 td.ellipsis {
   width: 100%;
