@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     lounges() {
-      const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T");
+      const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T" && !x.parentBoardId);
       lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
       return lounges;
     },

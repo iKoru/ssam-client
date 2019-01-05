@@ -162,7 +162,8 @@ export default {
   },
   computed: {
     boards() {
-      return this.$store.getters.boards;
+      const original = this.$store.getters.boards;
+      return original.filter(x => x.parentBoardId || !original.some(y => y.parentBoardId === x.boardId));
     },
     userBoards() {
       return this.$store.getters.userBoards;
