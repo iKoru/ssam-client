@@ -108,7 +108,13 @@ const router = new Router({
       beforeEnter: requireSignin,
       meta: {
         title: '내 커뮤니티'
-      }
+      },
+      children: [
+        { path: '/myBoard', name: 'MyBoard', component: () => import('@/components/MyBoard'), meta: { title: '내 게시판' } },
+        { path: '/myDocument', name: 'MyDocument', component: () => import('@/components/MyDocument'), meta: { title: '내가 쓴 글' } },
+        { path: '/myComment', name: 'MyComment', component: () => import('@/components/MyComment'), meta: { title: '내 댓글' } },
+        { path: '/myScrap', name: 'MyScrap', component: () => import('@/components/MyScrap'), meta: { title: '내 스크랩' } }
+      ]
     },
     {
       path: '/message',
@@ -120,13 +126,17 @@ const router = new Router({
       }
     },
     {
-      path: '/searchBoard',
-      name: 'searchBoard',
-      component: () => import('@/views/SearchBoard'),
+      path: '/search',
+      name: 'search',
+      component: () => import('@/views/Search'),
       beforeEnter: requireSignin,
       meta: {
-        title: '게시판 검색'
-      }
+        title: '검색'
+      },
+      children: [
+        { path: '/searchBoard', name: 'SearchBoard', component: () => import('@/components/SearchBoard'), meta: { title: '게시판 검색' } },
+        { path: '/searchDocument', name: 'SearchDocument', component: () => import('@/components/SearchDocument'), meta: { title: '게시물 검색' } }
+      ]
     }
 
   ]

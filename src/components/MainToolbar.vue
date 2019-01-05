@@ -3,6 +3,9 @@
     <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3 cursor-pointer" @click="goMain" title="pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
+    <router-link to="/search">
+      <v-icon>search</v-icon>
+    </router-link>
     <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1">

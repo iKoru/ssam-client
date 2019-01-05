@@ -5,7 +5,7 @@
         <v-card-title primary-title class="px-0">
           <v-flex xs12 sm11 md10 lg9 class="mx-auto px-3 pb-2">
             <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
-              <v-container fluid grid-list-xs>
+              <v-container fluid grid-list-xs>asdfasdfasdf
                 <v-layout row>
                   <v-flex py-0>
                     <v-text-field ref="searchQuery" append-icon="search" placeholder="검색할 라운지/토픽/아카이브 이름" v-model="searchQuery" class="mt-0 pt-0 dense" hint="각각의 주소, 이름, 설명으로 검색할 수 있습니다."></v-text-field>
@@ -136,8 +136,6 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
-
 export default {
   name: "SearchBoard",
   components: {
@@ -177,7 +175,6 @@ export default {
     }
   },
   created() {
-    this.$emit("update:layout", MainLayout);
     this.$axios
       .get("/group", {params: {groupType: ["N", "R", "M", "G"]}, headers: {silent: true}})
       .then(response => {

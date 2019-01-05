@@ -53,7 +53,7 @@
                 </v-flex>
                 <v-flex>
                   <router-link class="white--text" to="/searchBoard">
-                    <v-icon small>add</v-icon>다른 토픽 찾기
+                    <v-icon small>search</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>
                 <v-flex v-if="topics.length % 3 === 1">&nbsp;</v-flex>
@@ -63,7 +63,7 @@
               <v-layout column>
                 <v-flex>
                   <router-link class="white--text" to="/searchBoard">
-                    <v-icon small>add</v-icon>다른 토픽 찾기
+                    <v-icon small>search</v-icon>다른 토픽 찾기
                   </router-link>
                 </v-flex>
                 <v-flex>&nbsp;</v-flex>
