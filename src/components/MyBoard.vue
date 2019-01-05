@@ -68,7 +68,8 @@
               </transition-group>
             </draggable>
             <v-layout v-else>아직 구독하고 있는 토픽이 없네요.
-              <br>새로운 토픽을 구독해보세요!
+              <br>
+              <router-link to="/searchBoard" class="primary--text">새로운 토픽</router-link>을 구독해보세요!
             </v-layout>
           </v-flex>
         </v-layout>
@@ -142,7 +143,20 @@ export default {
         });
     },
     removeItem(index) {
-      this.topics.splice(index, 1);
+      const topic = this.topics[index];
+      if (topic) {
+        this.$axios
+          .delete("/user/board/" + topic.boardId)
+          .then(response => {
+            this.$store.dispatch("removeUserBoard", topic.boardId);
+            this.topics.splice(index, 1);
+            this.$store.dispatch("showSnackbar", {text: "토픽을 구독 해제하였습니다.", color: "success"});
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽을 구독 해제하지 못했습니다." : "토픽을 구독 해제하지 못했습니다.", color: "error"});
+          });
+      }
     },
     openDialog() {
       if (this.$store.getters.profile.status !== "AUTHORIZED") {
@@ -161,24 +175,24 @@ export default {
         .get("/user/board")
         .then(response => {
           this.initBoard(response.data);
-          this.$store.dispatch('setUserBoards', response.data);
+          this.$store.dispatch("setUserBoards", response.data);
         })
         .catch(error => {
           console.log(error);
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 토픽 목록을 불러오지 못했습니다." : "구독 토픽 목록을 불러오지 못했습니다.", color: "error"});
         });
     },
-    initBoard(userBoards){
-      let filtered = userBoards.map(x=>{
-        if(!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
-          delete x.readRestrictDate
+    initBoard(userBoards) {
+      let filtered = userBoards.map(x => {
+        if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          delete x.readRestrictDate;
         }
-        if(!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment()) ){
-          delete x.writeRestrictDate
+        if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          delete x.writeRestrictDate;
         }
         return x;
       });
-      this.originalTopics = filtered.filter(x => x.boardType === "T")
+      this.originalTopics = filtered.filter(x => x.boardType === "T");
       this.lounges = filtered.filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
       this.reset();
     },
