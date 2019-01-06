@@ -4,7 +4,35 @@
       <v-tab :key="0" class="loungeTab" @click="toggleMenuBar('lounge')">라운지</v-tab>
       <v-spacer :class="{tapSpacer:true, dark:menu!==undefined?menu===1:!$store.getters.isLight}"/>
       <v-tab :key="1" class="topicTab" @click="toggleMenuBar('topic')">토픽</v-tab>
-      <v-tabs-items touchless :dark="menu!==undefined?menu===1:!$store.getters.isLight" :class="{'d-none':!menuBar}">
+    </v-tabs>
+    <v-layout row>
+      <v-flex sm2 v-if="menu === 0">
+        <v-layout column>
+          <template v-if="lounges.length > 2">
+            <v-flex v-for="n in 3" :key="n">
+              <router-link :to="lounges[n-1].boardId">{{lounges[n-1].boardName}}</router-link>
+            </v-flex>
+          </template>
+          <template v-else>
+            <template v-if="lounges.length === 0">
+            <v-flex>nbsp;</v-flex>
+            <v-flex>nbsp;</v-flex>
+            <v-flex>nbsp;</v-flex>
+            </template>
+            <template v-else-if="lounges.length === 1">
+              <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+              <v-flex>nbsp;</v-flex>
+              <v-flex>nbsp;</v-flex>
+            </template> 
+            <template v-else>
+              <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+              <router-link :to="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+              <v-flex>nbsp;</v-flex>
+            </template>
+          </template>
+        </v-layout>
+      </v-flex>
+      <v-tabs-items touchless v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :class="{'d-none':!menuBar}">
         <v-tab-item :key="0">
           <v-flex class="scrollContainer">
             <v-flex class="menuColumn" sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
@@ -73,7 +101,7 @@
           </v-flex>
         </v-tab-item>
       </v-tabs-items>
-    </v-tabs>
+      </v-layout>
   </v-container>
 </template>
 
