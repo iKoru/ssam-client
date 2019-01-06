@@ -65,16 +65,24 @@
             <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
           </v-flex>
           <v-flex pl-4>
-            <v-btn size="small" @click="attachButtonClick">파일업로드</v-btn>
-            <span>{{attachedFilenames}}</span>
+            <v-layout row>
+              <v-flex xs2>
+                <v-btn size="small" @click="attachButtonClick">파일업로드</v-btn>
+              </v-flex>
+              <v-flex xs10>
+                <v-chip v-if="attachedFilenames.length > 0" @click="show=!show" color="grey lighten-1">{{attachedFilenames[0]}} <span v-if="attachedFilenames.length>1">외 {{attachedFilenames.length-1}} 개 파일</span></v-chip>
+                <v-tooltip v-model="show" right>
+                  <span slot="activator"></span>
+                  <v-list style="background-color:#616161">
+                    <v-list-tile color="white" :key="index" v-for="(item, index) in attachedFilenames">
+                      {{item}} <v-icon color="white" @click="removeFile(item)">mdi-close</v-icon>
+                    </v-list-tile>
+                  </v-list>
+                </v-tooltip>
+              </v-flex>
+            </v-layout>
           </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex v-if="survey">
-            <v-btn class="float-right" size="small" @click="deleteSurvey">삭제하기</v-btn>
-          </v-flex>
-        </v-layout>
-        <v-dialog>
-          <file-pond
+           <file-pond
             name="attachment"
             ref="pond"
             instantUpload="false"
@@ -85,20 +93,20 @@
             @removefile="handleFilePondRemoveFile"
             v-on:init="handleFilePondInit"
           />
-        </v-dialog>
-        <!-- <button @click="manualUpload">수동업로드</button> -->
-        <v-layout ref="isAnonymous" row class="ml-3 mr-3" align-center>
-          <v-flex xs-4>
+        </v-layout>
+        <v-layout pt-1 justify-center>
+          <v-flex my-auto xs12 sm1 text-xs-right>
+            <v-icon id="anonymous-slot" size="large" color="black">mdi-guy-fawkes-mask</v-icon>익명선택
+          </v-flex>
+          <v-flex pl-4 ml-1 xs1>
             <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
             </v-checkbox>
           </v-flex>
-          <v-flex xs-4>
+          <v-flex xs3>
             <v-checkbox v-if="!isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
             </v-checkbox>
           </v-flex>
-          <v-flex xs-12 md-4 text-xs-right>
-            
-          </v-flex>
+          <v-spacer></v-spacer>
         </v-layout>
         <v-btn class="success" @click="post()">업로드</v-btn>
         <!-- <div>viewer
@@ -123,7 +131,9 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/d
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType)
 setOptions({
-  labelIdle: ''
+  labelIdle: '',
+  stylePanelLayout: 'integrated',
+  stylePanelAspectRatio: 0.0001
 });
 export default {
   name: 'Editor',
@@ -148,6 +158,7 @@ export default {
           imageResize: true
         }
       },
+      show: false,
       isAnonymous: false,
       allowAnonymous: true,
       attachedFilenames: [],
@@ -155,6 +166,7 @@ export default {
       attachedImages: [],
       formData: undefined,
       attachedFileNumber: 0,
+      selectedFile: undefined,
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
           // const formData = new FormData();
@@ -175,10 +187,7 @@ export default {
             this.formData.append('contents', this.content) // to delta
             this.formData.append('isAnonymous', this.isAnonymous)
             this.formData.append('allowAnonymous', this.allowAnonymous)
-            if(this.survey) {
-              this.formData.append('survey', this.survey)
-            }
-
+            this.formData.append('survey', JSON.stringify(this.survey))
             this.$axios
               .post('/document', this.formData)
               .then(response => {
@@ -186,13 +195,17 @@ export default {
                 // this.dialog = false;
                 // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
                 console.log(response)
+
+                if (response.status === 200) {
+                  this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
+                }
                 load();
               })
               .catch(error => {
                 delete this.formData
                 this.attachedFileNumber = 0
-                abort();
                 console.log(error.response)
+                
                 // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
               });
           }
@@ -231,6 +244,7 @@ export default {
               allowAnonymous: this.allowAnonymous,
               survey: this.survey
             }).then(res => {
+              console.log(res)
               if (res.status === 200) {
                 this.$router.push(`/${this.$route.params.boardId}/${res.data.documentId}`)
               }
@@ -247,7 +261,6 @@ export default {
           console.log(err)
         })
     },
-
     handleFilePondInit: function () {
       console.log('FilePond has initialized')
 
@@ -258,6 +271,11 @@ export default {
       console.log(error)
       this.attachedFilenames.push(file.filename)
       console.log(this.attachedFilenames)
+    },
+    removeFile(filename) {
+      let fileid = this.$refs.pond.getFiles().find(file=>file.filename === filename).id
+      this.$refs.pond.removeFile(fileid)
+      this.show = false
     },
     handleFilePondRemoveFile: function (file) {
       this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename)
@@ -332,6 +350,9 @@ export default {
   width: 28px;
 }
 #attach-button {
+  width: 28px;
+}
+#anonymous-slot {
   width: 28px;
 }
 .ql-editor {

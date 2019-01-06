@@ -27,27 +27,6 @@ const router = new Router({
       }
     },
     {
-      path: '/:boardId',
-      component: () => import('@/views/Board'),
-      children: [
-        {
-          path: '/',
-          name: 'boardList',
-          component: () => import('@/components/board/BoardList')
-        },
-        {
-          path: 'writeDocument',
-          name: 'writeDocument',
-          component: () => import('@/components/board/WriteDocument')
-        },
-        {
-          path: ':documentId',
-          name: 'viewDocument',
-          component: () => import('@/components/board/ViewDocument')
-        }
-      ]
-    },
-    {
       path: '/auth',
       name: 'auth',
       component: () => import('@/views/Auth'),
@@ -126,7 +105,28 @@ const router = new Router({
       meta: {
         title: '게시판 검색'
       }
-    }
+    },
+    { // should be placed at the last of array
+      path: '/:boardId',
+      component: () => import('@/views/Board'),
+      children: [
+        {
+          path: '/',
+          name: 'boardList',
+          component: () => import('@/components/board/BoardList')
+        },
+        {
+          path: 'writeDocument',
+          name: 'writeDocument',
+          component: () => import('@/components/board/WriteDocument')
+        },
+        {
+          path: ':documentId',
+          name: 'viewDocument',
+          component: () => import('@/components/board/ViewDocument')
+        }
+      ]
+    },
 
   ]
 })
