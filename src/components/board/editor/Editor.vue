@@ -28,11 +28,9 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <v-layout class="float-right" align-center justify-end>
-              <button class="ql-image" value="image"></button>
-              <v-icon id="attach-button" size="large" color="black" @click="attachButtonClick">mdi-content-save-outline</v-icon>
+            <v-layout align-center justify-end>
+              <button class="ql-image" value="image"></button>사진
               <!-- You can also add your own -->
-              <v-icon id="survey-button" size="large" color="black" @click="surveyButtonClick">mdi-poll-box</v-icon>
             </v-layout>
           </div>
         </quill-editor>
@@ -46,21 +44,49 @@
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
         <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
-        <file-pond
-        name="attachment"
-        ref="pond"
-        instantUpload="false"
-        allow-multiple="true"
-        accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg"
-        :server="server"
-        @addfile="handleFilePondAddFile"
-        @removefile="handleFilePondRemoveFile"
-        v-on:init="handleFilePondInit"
-        />
-        <!-- <button @click="manualUpload">수동업로드</button> -->
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
           <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
+        <v-layout pt-1 justify-center>
+          <v-flex my-auto xs12 sm1 text-xs-right>
+            <v-icon id="survey-button" size="large" color="black">mdi-poll-box</v-icon>설문조사
+          </v-flex>
+          <v-flex pl-4>
+            <v-btn size="small" @click="surveyButtonClick">{{survey?'확인/수정':'추가하기'}}</v-btn>
+            <span v-if="survey">설문조사가 추가되었습니다.</span>
+          </v-flex>
+          <v-spacer></v-spacer>
+          <v-flex v-if="survey">
+            <v-btn class="float-right" size="small" @click="deleteSurvey">삭제하기</v-btn>
+          </v-flex>
+        </v-layout>
+        <v-layout pt-1 justify-center>
+          <v-flex my-auto xs12 sm1 text-xs-right>
+            <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
+          </v-flex>
+          <v-flex pl-4>
+            <v-btn size="small" @click="attachButtonClick">파일업로드</v-btn>
+            <span>{{attachedFilenames}}</span>
+          </v-flex>
+          <v-spacer></v-spacer>
+          <v-flex v-if="survey">
+            <v-btn class="float-right" size="small" @click="deleteSurvey">삭제하기</v-btn>
+          </v-flex>
+        </v-layout>
+        <v-dialog>
+          <file-pond
+            name="attachment"
+            ref="pond"
+            instantUpload="false"
+            allow-multiple="true"
+            accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg"
+            :server="server"
+            @addfile="handleFilePondAddFile"
+            @removefile="handleFilePondRemoveFile"
+            v-on:init="handleFilePondInit"
+          />
+        </v-dialog>
+        <!-- <button @click="manualUpload">수동업로드</button> -->
         <v-layout ref="isAnonymous" row class="ml-3 mr-3" align-center>
           <v-flex xs-4>
             <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
@@ -71,12 +97,7 @@
             </v-checkbox>
           </v-flex>
           <v-flex xs-12 md-4 text-xs-right>
-            <v-layout v-if="survey" align-center justify-end>
-              <v-chip label color="pink" @click="surveyButtonClick">
-                <v-icon left>mdi-poll-box</v-icon><span style="color:white">설문</span>
-              </v-chip>
-              <v-icon @click="deleteSurvey">mdi-close</v-icon>
-            </v-layout>
+            
           </v-flex>
         </v-layout>
         <v-btn class="success" @click="post()">업로드</v-btn>
@@ -94,42 +115,19 @@
 // Import plugins
 import Survey from '@/components/board/survey/Survey'
 import SurveyMaker from '@/components/board/survey/SurveyMaker'
-import Attachment from '@/components/board/editor/Attachment'
 
 import vueFilePond, { setOptions } from 'vue-filepond'
 
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js'
 
-const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
+const FilePond = vueFilePond(FilePondPluginFileValidateType)
 setOptions({
-  labelIdle: '파일을 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.',
-  // labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
-  // labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
-  // labelFileLoading: "이미지를 불러오는 중...",
-  // labelFileLoadError: "이미지를 불러오지 못헀습니다.",
-  // labelFileProcessing: "서버로 업로드중...",
-  // labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
-  // labelFileProcessingAborted: "업로드가 취소되었습니다.",
-  // labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
-  // labelTapToCancel: "",
-  // labelTapToRetry: "재시도",
-  // labelTapToUndo: "",
-  // labelButtonRemoveItem: "삭제",
-  // labelButtonAbortItemLoad: "중지",
-  // labelButtonRetryItemLoad: "재시도",
-  // labelButtonAbortItemProcessing: "취소",
-  // labelButtonUndoItemProcessing: "재시도",
-  labelButtonProcessItem: '업로드',
-  labelFileTypeNotAllowed: '허용된 파일 형식이 아닙니다.',
-  fileValidateTypeLabelExpectedTypes: '(어떤ㄷ 종류의) 파일만 업로드 가능합니다.',
-  allowRevert: false
+  labelIdle: ''
 });
 export default {
   name: 'Editor',
   components: {
-    Attachment,
     SurveyMaker,
     Survey,
     FilePond
@@ -165,10 +163,10 @@ export default {
           // console.log(file.filename)
           if (!this.formData) this.formData = new FormData()
           if (this.attachedImages.includes(file.name)) {
-            this.formData.append('image', file, file.name);
+            this.formData.append('attach', file, file.name);
             this.attachedFileNumber += 1;
           } else if (this.attachedFilenames.includes(file.name)) {
-            this.formData.append('attachment', file, file.name);
+            this.formData.append('attach', file, file.name);
             this.attachedFileNumber += 1;
           }
           if (this.attachedFileNumber === this.attachedFilenames.length) {
@@ -177,7 +175,9 @@ export default {
             this.formData.append('contents', this.content) // to delta
             this.formData.append('isAnonymous', this.isAnonymous)
             this.formData.append('allowAnonymous', this.allowAnonymous)
-            this.formData.append('survey', this.survey)
+            if(this.survey) {
+              this.formData.append('survey', this.survey)
+            }
 
             this.$axios
               .post('/document', this.formData)
@@ -232,7 +232,7 @@ export default {
               survey: this.survey
             }).then(res => {
               if (res.status === 200) {
-                this.$router.push(`/board/${this.$route.params.boardId}/${res.data.documentId}`)
+                this.$router.push(`/${this.$route.params.boardId}/${res.data.documentId}`)
               }
               console.log(res)
             }).catch(err => {
@@ -257,6 +257,7 @@ export default {
     handleFilePondAddFile: function (error, file) {
       console.log(error)
       this.attachedFilenames.push(file.filename)
+      console.log(this.attachedFilenames)
     },
     handleFilePondRemoveFile: function (file) {
       this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename)
@@ -327,9 +328,6 @@ export default {
 }
 </script>
 <style>
-.filepond--root {
-  height: 150px;
-}
 #survey-button {
   width: 28px;
 }

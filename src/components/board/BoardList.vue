@@ -41,13 +41,11 @@ export default {
   }),
   components: {
   },
-  created () {
-    this.getList()
-  },
   methods: {
-    getList () {
-      this.$axios.get(`/${this.$route.params.boardId}`)
+    getList (boardId) {
+      this.$axios.get(`/${boardId}`)
         .then(response => {
+          console.log(response)
           this.list = response.data
         })
         .catch(error => {
@@ -58,13 +56,12 @@ export default {
       this.$router.push(`${this.$route.params.boardId}/${item.documentId}`)
     }
   },
-  watch: {
-    '$route': {
-      handler () {
-        console.log('watch')
-       this.getList();
-      }
-    }
+  created () {
+    this.getList(this.$route.params.boardId)
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.getList(to.path.replace('/',''))
+    next()
   }
 }
 </script>

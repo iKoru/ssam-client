@@ -22,31 +22,30 @@ const router = new Router({
       name: 'home',
       component: () => import('@/views/Home'),
       beforeEnter: requireSignin,
-      children: [{
-        path: '/board/:boardId',
-        name: 'board',
-        component: () => import('@/views/Board'),
-        children: [
-          {
-            path: '/',
-            name: 'boardList',
-            component: () => import('@/components/board/BoardList')
-          },
-          {
-            path: 'writeDocument',
-            name: 'writeDocument',
-            component: () => import('@/components/board/WriteDocument')
-          },
-          {
-            path: ':documentId',
-            name: 'viewDocument',
-            component: () => import('@/components/board/ViewDocument')
-          }
-        ]
-      }],
       meta: {
         title: '메인'
       }
+    },
+    {
+      path: '/:boardId',
+      component: () => import('@/views/Board'),
+      children: [
+        {
+          path: '/',
+          name: 'boardList',
+          component: () => import('@/components/board/BoardList')
+        },
+        {
+          path: 'writeDocument',
+          name: 'writeDocument',
+          component: () => import('@/components/board/WriteDocument')
+        },
+        {
+          path: ':documentId',
+          name: 'viewDocument',
+          component: () => import('@/components/board/ViewDocument')
+        }
+      ]
     },
     {
       path: '/auth',

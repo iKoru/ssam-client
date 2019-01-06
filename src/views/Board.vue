@@ -29,12 +29,10 @@ export default {
     writeButton: true
   }),
   components: {},
-  created() {
-    this.getBoard();
-  },
   methods: {
-    getBoard: function() {
-      let boardId = this.$route.params.boardId;
+    getBoard: function(boardId) {
+      // let boardId = this.$route.params.boardId;
+      console.log(boardId)
       this.$axios
         .get(`/board?boardId=${boardId}`)
         .then(response => {
@@ -46,16 +44,15 @@ export default {
         });
     },
     writeDocument: function () {
-      this.$router.push(`/board/${this.$route.params.boardId}/writeDocument`)
+      this.$router.push(`/${this.$route.params.boardId}/writeDocument`)
     }
   },
-  watch: {
-    $route: {
-      handler(to, from) {
-        console.log("watchroute");
-        if (to.params.boardId !== from.params.boardId) this.getBoard();
-      }
-    }
+  created () {
+    this.getBoard(this.$route.params.boardId)
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.getBoard(to.path.split('/')[1])
+    next()
   }
 };
 </script>

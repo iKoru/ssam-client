@@ -24,6 +24,7 @@
       <v-card-text>
           <div v-html="content.contents">
           </div>
+            {{content}}
       </v-card-text>
     </v-flex>
     <v-flex xs12>
