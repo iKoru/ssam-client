@@ -2,16 +2,23 @@
   <v-container fluid v-if="board">
     <v-card style="box-shadow:none">
       <v-card-title primary-title class="py-2">
-        <div class="w-100">
-          <h3 class="w-100">
-            {{board.boardName}}
-            <v-icon v-if="!$route.path.includes('writeDocument')" class="float-right" color="indigo" @click.stop="writeDocument">mdi-lead-pencil</v-icon>
-          </h3>
-          <div>
-          <v-icon size="medium" color="orange">mdi-lightbulb-outline</v-icon>
-          <h5 color="grey" class="w-100 d-inline">{{board.boardDescription}}</h5>
-          </div>
-        </div>
+        <v-layout column>
+          <v-flex>
+            <v-layout row>
+              <v-flex>
+                <span class="title">{{board.boardName}}</span>
+              </v-flex>
+              <v-spacer/>
+              <router-link :to="`/${this.boardId}/writeDocument`" v-if="!$route.path.endsWith('writeDocument')">
+                <v-icon color="indigo">edit</v-icon>
+              </router-link>
+            </v-layout>
+          </v-flex>
+          <v-flex>
+            <v-icon color="primary" small>outlined_flag</v-icon>
+            <span class="body-1">{{board.boardDescription}}</span>
+          </v-flex>
+        </v-layout>
       </v-card-title>
     </v-card>
     <v-divider/>
@@ -23,43 +30,61 @@
 
 <script>
 import MainLayout from "../layouts/MainLayout";
+import router from "../router";
 export default {
   name: "Board",
   data: () => ({
     board: undefined,
+    boardId: null,
     writeButton: true
   }),
   components: {},
   methods: {
-    getBoard: function(boardId) {
-      // let boardId = this.$route.params.boardId;
-      console.log(boardId)
-      this.$axios
-        .get(`/board?boardId=${boardId}`)
-        .then(response => {
-          console.log(response);
-          this.board = response.data;
-          document.title = response.data.boardName ? response.data.boardName + ' - Pedagy' : 'Pedagy'
-          this.$store.dispatch('switchBoardType', this.board.boardType === 'T'?'T':'L')
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    async getBoard(boardId) {
+      let response;
+      try {
+        response = await this.$axios.get(`/board?boardId=${boardId}`);
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+      this.setBoard(response.data);
+      return true;
     },
-    writeDocument: function () {
-      this.$router.push(`/${this.$route.params.boardId}/writeDocument`)
+    writeDocument() {
+      this.$router.push(`/${this.$route.params.boardId}/writeDocument`);
+    },
+    setBoard(board) {
+      this.board = board;
+      this.boardId = board.boardId;
+      this.$store.dispatch("switchBoardType", this.board.boardType === "T" ? "T" : "L");
     }
   },
-  created () {
+  created() {
     this.$emit("update:layout", MainLayout);
-    this.getBoard(this.$route.params.boardId)
   },
-  beforeRouteUpdate (to, from, next) {
-    this.getBoard(to.path.split('/')[1])
-    next()
+  async beforeRouteUpdate(to, from, next) {
+    if (await this.getBoard(to.path.split("/")[1])) {
+      //TODO : get notifications request
+      next();
+    } else {
+      next(false); //TODO : redirect to common 404 error page
+    }
+  },
+  async beforeRouteEnter(to, from, next) {
+    let board;
+    try {
+      board = await router.app.$axios.get("/board", {params: {boardId: to.path.replace("/", "")}});
+    } catch (error) {
+      console.log(from);
+      console.log(error);
+      console.log("fail!!!");
+      next(false); //TODO : redirect to common 404 error page
+      return;
+    }
+    next(vm => {
+      vm.setBoard(board.data);
+    });
   }
 };
 </script>
-
-<style scoped>
-</style>
