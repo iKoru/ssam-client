@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <v-flex
-            style="margin-botom: 0; padding-bottom: 0;">
+            style="margin-bottom: 0; padding-bottom: 0;">
           <v-text-field
             label="Solo"
             placeholder="제목"
@@ -10,7 +10,8 @@
             hide-details
           ></v-text-field>
         </v-flex>
-        <quill-editor v-model="content"
+        <quill-editor
+                    v-model="content"
                     ref="editor"
                     :options="editorOption"
                     @ready="onEditorReady($event)">
@@ -34,13 +35,6 @@
             </v-layout>
           </div>
         </quill-editor>
-        <div>
-            <div id="boardView" v-if="savedContent" v-html="savedContent">
-            </div>
-            {{link}}
-            <link-prevue v-if="link" :linkUrl="link">
-            </link-prevue>
-        </div>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
         <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
@@ -71,11 +65,11 @@
               </v-flex>
               <v-flex xs10>
                 <v-chip v-if="attachedFilenames.length > 0" @click="show=!show" color="grey lighten-1">{{attachedFilenames[0]}} <span v-if="attachedFilenames.length>1">외 {{attachedFilenames.length-1}} 개 파일</span></v-chip>
-                <v-tooltip v-model="show" right>
+                <v-tooltip v-model="show" top>
                   <span slot="activator"></span>
                   <v-list style="background-color:#616161">
                     <v-list-tile color="white" :key="index" v-for="(item, index) in attachedFilenames">
-                      {{item}} <v-icon color="white" @click="removeFile(item)">mdi-close</v-icon>
+                      {{item}} <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
                     </v-list-tile>
                   </v-list>
                 </v-tooltip>
@@ -98,7 +92,7 @@
           <v-flex my-auto xs12 sm1 text-xs-right>
             <v-icon id="anonymous-slot" size="large" color="black">mdi-guy-fawkes-mask</v-icon>익명선택
           </v-flex>
-          <v-flex pl-4 ml-1 xs1>
+          <v-flex pl-4 ml-1 xs2>
             <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
             </v-checkbox>
           </v-flex>
@@ -108,7 +102,7 @@
           </v-flex>
           <v-spacer></v-spacer>
         </v-layout>
-        <v-btn class="success" @click="post()">업로드</v-btn>
+        <v-btn class="success" @click="post()">글쓰기</v-btn>
         <!-- <div>viewer
           {{surveyJSON}}
           <survey :surveyJSON="surveyJSON"/>
@@ -182,32 +176,7 @@ export default {
             this.attachedFileNumber += 1;
           }
           if (this.attachedFileNumber === this.attachedFilenames.length) {
-            this.formData.append('boardId', this.$route.params.boardId)
-            this.formData.append('title', this.title)
-            this.formData.append('contents', this.content) // to delta
-            this.formData.append('isAnonymous', this.isAnonymous)
-            this.formData.append('allowAnonymous', this.allowAnonymous)
-            this.formData.append('survey', JSON.stringify(this.survey))
-            this.$axios
-              .post('/document', this.formData)
-              .then(response => {
-                // this.profile.picturePath = response.data.picturePath;
-                // this.dialog = false;
-                // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-                console.log(response)
-
-                if (response.status === 200) {
-                  this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
-                }
-                load();
-              })
-              .catch(error => {
-                delete this.formData
-                this.attachedFileNumber = 0
-                console.log(error.response)
-                
-                // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-              });
+            this.uploadDocument()
           }
           return { load, error, progress, abort };
         }
@@ -229,6 +198,29 @@ export default {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
+    uploadDocument() {
+      if (!this.formData) this.formData = new FormData()
+      this.formData.append('boardId', this.$route.params.boardId)
+      this.formData.append('title', this.title)
+      this.formData.append('contents', this.content) // to delta
+      this.formData.append('isAnonymous', this.isAnonymous)
+      this.formData.append('allowAnonymous', this.allowAnonymous)
+      if(this.survey) {
+        this.formData.append('survey', JSON.stringify(this.survey))
+      }
+      return this.$axios
+        .post('/document', this.formData)
+        .then(response => {
+          if (response.status === 200) {
+            this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
+          }
+        })
+        .catch(error => {
+          delete this.formData
+          this.attachedFileNumber = 0
+          console.log(error.response)
+        });
+    },
     post () {
       // manually add images as file
       this.attachImage()
@@ -236,22 +228,7 @@ export default {
           this.attachedImages = files.map(file => file.filename)
           // console.log(this.$refs.editor.quill.editor.delta.ops)
           if (this.attachedImages.length === 0 && this.attachedFilenames.length === 0) {
-            this.$axios.post('/document', {
-              boardId: this.$route.params.boardId,
-              title: this.title,
-              contents: this.content, // delta
-              isAnonymous: this.isAnonymous,
-              allowAnonymous: this.allowAnonymous,
-              survey: this.survey
-            }).then(res => {
-              console.log(res)
-              if (res.status === 200) {
-                this.$router.push(`/${this.$route.params.boardId}/${res.data.documentId}`)
-              }
-              console.log(res)
-            }).catch(err => {
-              console.log(err.response)
-            })
+            this.uploadDocument()
           } else {
             this.handleProcessFile()
           }
