@@ -39,6 +39,7 @@ export default {
         .then(response => {
           console.log(response);
           this.board = response.data;
+          document.title = response.data.boardName ? response.data.boardName + ' - Pedagy' : 'Pedagy'
           this.$store.dispatch('switchBoardType', this.board.boardType === 'T'?'T':'L')
         })
         .catch(error => {
