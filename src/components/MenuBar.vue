@@ -1,12 +1,12 @@
 <template>
-  <v-container px-0 py-0 fluid>
-    <v-tabs :dark="menu!==null?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32" id="menuBarTabs">
+  <v-container px-0 py-0 fluid id="menubarContainer">
+    <v-tabs :dark="menu!==null?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32" class="menubar">
       <v-tab :key="0" class="loungeTab menubarTab flex sm2 xl1" @click="toggleMenuBar('lounge')">라운지</v-tab>
-      <v-spacer :class="{tapSpacer:true, dark:menu!==null?menu===1:!$store.getters.isLight}" v-if="menu === 0"/>
+      <v-spacer :class="{tapSpacer:true, dark:menu!==null?menu===1:!$store.getters.isLight}"/>
       <v-tab :key="1" class="topicTab menubarTab flex sm2 xl1" @click="toggleMenuBar('topic')">토픽</v-tab>
     </v-tabs>
-    <v-layout row :class="{'d-none':!menuBar, 'menubar-border-bottom':true}">
-      <v-flex sm2 xl1 v-show="menu === 1" class="scrollContainer" order-sm1 @click="toggleMenuBar('lounge')">
+    <v-layout row :class="{'d-none':!menuBar, 'menubar':true}">
+      <v-flex sm2 xl1 v-show="menu === 1" class="scrollContainer overflow-hidden" order-sm1 @click="toggleMenuBar('lounge')">
         <v-flex class="menuColumn position-relative">
           <v-layout column>
             <template v-if="lounges.length > 2">
@@ -26,7 +26,7 @@
                 </v-flex>
                 <v-flex>nbsp;</v-flex>
                 <v-flex>nbsp;</v-flex>
-              </template> 
+              </template>
               <template v-else>
                 <v-flex class="ellipsis">
                   <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
@@ -43,7 +43,7 @@
           </v-layout>
         </v-flex>
       </v-flex>
-      <v-flex sm2 xl1 v-show="menu === 0" class="topicTab scrollContainer" order-sm3 @click="toggleMenuBar('topic')">
+      <v-flex sm2 xl1 v-show="menu === 0" class="topicTab scrollContainer overflow-hidden" order-sm3 @click="toggleMenuBar('topic')">
         <v-flex class="my-auto menuColumn position-relative">
           <v-layout column class="ml-2">
             <div class="switchTabIcon switchToLounge cursor-pointer">
@@ -66,7 +66,7 @@
                 </v-flex>
                 <v-flex>nbsp;</v-flex>
                 <v-flex>nbsp;</v-flex>
-              </template> 
+              </template>
               <template v-else>
                 <v-flex class="ellipsis">
                   <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
@@ -81,7 +81,7 @@
         </v-flex>
       </v-flex>
       <v-flex order-sm2>
-        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight"  :mandatory="false">
+        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false">
           <v-tab-item :key="0">
             <v-flex class="scrollContainer">
               <v-flex class="menuColumn" sm2 xl1 v-for="n in Math.floor(lounges.length / 3)" :key="n">
@@ -194,10 +194,13 @@ export default {
 </script>
 
 <style>
-#menuBarTabs {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+.menubar {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.menubar-border-bottom{
+#menubarContainer {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 .menu {
@@ -210,39 +213,47 @@ export default {
     overflow: auto;
   }
 }
-.menubarTab a{
-  position:absolute !important;
-  width:100%;
+.menubarTab a {
+  position: absolute !important;
+  width: 100%;
 }
 .loungeTab {
   background-color: white;
 }
 .topicTab {
   background-color: #424242;
-  margin-left:auto;
+  margin-left: auto;
 }
-.topicTab a, .topicTab .flex {
+.topicTab a,
+.topicTab .flex {
   color: white;
 }
-.topicTab .v-tabs__item{
-  opacity:1;
+.topicTab .v-tabs__item {
+  opacity: 1;
 }
 .tapSpacer {
-  background-color:white;
+  /* background-color: white; */
+  background: linear-gradient(to right, white 50%, #424242 50%);
+  background-size: 200% 100%;
+  background-position: left bottom;
+  transition: background-position 0.3s cubic-bezier(0.27, 0.3, 0.53, 0.91);
+  margin-right: -1px;
 }
 .tapSpacer.dark {
-  background-color:#424242;
+  background-position: right bottom;
+  /* background-color: #424242; */
+  /* transition: background-color 1000ms linear; */
 }
-.switchTabIcon{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
+.switchTabIcon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
-.switchTabIcon.switchToTopic{
-  right:-20px;
+.switchTabIcon.switchToTopic {
+  right: -20px;
 }
-.switchTabIcon.switchToLounge{
-  left:-20px;
+.switchTabIcon.switchToLounge {
+  left: -20px;
 }
 .scrollContainer {
   white-space: nowrap;
@@ -251,6 +262,9 @@ export default {
   -webkit-flex-direction: row;
   overflow-x: auto;
   height: 120px;
+}
+.scrollContainer.overflow-hidden {
+  overflow-x: hidden;
 }
 .menuColumn {
   margin: auto 20px;
