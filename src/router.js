@@ -22,28 +22,6 @@ const router = new Router({
       name: 'home',
       component: () => import('@/views/Home'),
       beforeEnter: requireSignin,
-      children: [{
-        path: '/board/:boardId',
-        name: 'board',
-        component: () => import('@/views/Board'),
-        children: [
-          {
-            path: '/',
-            name: 'boardList',
-            component: () => import('@/components/board/BoardList')
-          },
-          {
-            path: 'writeDocument',
-            name: 'writeDocument',
-            component: () => import('@/components/board/WriteDocument')
-          },
-          {
-            path: ':documentId',
-            name: 'viewDocument',
-            component: () => import('@/components/board/ViewDocument')
-          }
-        ]
-      }],
       meta: {
         title: '메인'
       }
@@ -137,7 +115,29 @@ const router = new Router({
         { path: '/searchBoard', name: 'SearchBoard', component: () => import('@/components/SearchBoard'), meta: { title: '게시판 검색' } },
         { path: '/searchDocument', name: 'SearchDocument', component: () => import('@/components/SearchDocument'), meta: { title: '게시물 검색' } }
       ]
-    }
+    },
+    { // should be placed at the last of array
+      path: '/:boardId',
+      component: () => import('@/views/Board'),
+      children: [
+        {
+          path: '/',
+          name: 'boardList',
+          component: () => import('@/components/board/BoardList')
+        },
+        {
+          path: 'writeDocument',
+          name: 'writeDocument',
+          component: () => import('@/components/board/WriteDocument')
+        },
+        {
+          path: ':documentId',
+          name: 'viewDocument',
+          component: () => import('@/components/board/ViewDocument')
+        }
+      ]
+    },
+
 
   ]
 })
