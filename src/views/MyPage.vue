@@ -122,7 +122,7 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/d
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
 setOptions({
-  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 클릭하여 올려주세요.(200KB 이내)",
+  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(200KB 이내)",
   labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
   labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
   labelFileLoading: "이미지를 불러오는 중...",
