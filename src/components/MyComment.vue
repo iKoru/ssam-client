@@ -6,37 +6,39 @@
           <v-layout row>
             <h3 class="headline">내가 쓴 댓글 목록</h3>
           </v-layout>
-          <v-flex xs12>
-            <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination" class="customAction">
-              <template slot="items" slot-scope="props">
-                <tr @click="selected = (selected===props.index?null:props.index)">
-                  <td>
-                    <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
-                  </td>
-                  <td class="text-xs-left" v-if="$vuetify.breakpoint.mdAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
-                  <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
-                    <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
-                      {{ getShortContents(props.item.contents) }}
-                      <span class="primary--text" title="대댓글 수">{{props.item.childCount > 0?'['+props.item.childCount+']':''}}</span>
-                    </a>
-                  </td>
-                  <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getMyComments">새로고침</v-btn>
-              </template>
-              <template slot="actions-prepend">
-                <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
-                <v-spacer></v-spacer>
-              </template>
-            </v-data-table>
-          </v-flex>
         </v-flex>
       </v-layout>
     </v-card-title>
+    <v-layout row>
+      <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
+        <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination" class="customAction">
+          <template slot="items" slot-scope="props">
+            <tr @click="selected = (selected===props.index?null:props.index)">
+              <td>
+                <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
+              </td>
+              <td class="text-xs-left" v-if="$vuetify.breakpoint.mdAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
+              <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
+                <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
+                  {{ getShortContents(props.item.contents) }}
+                  <span class="primary--text" title="대댓글 수">{{props.item.childCount > 0?'['+props.item.childCount+']':''}}</span>
+                </a>
+              </td>
+              <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
+            </tr>
+          </template>
+          <template slot="no-data">
+            {{this.noresult}}
+            <v-btn color="primary" @click="getMyComments">새로고침</v-btn>
+          </template>
+          <template slot="actions-prepend">
+            <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
+            <v-spacer></v-spacer>
+          </template>
+        </v-data-table>
+      </v-flex>
+    </v-layout>
   </v-card>
 </template>
 <script>
@@ -124,20 +126,20 @@ export default {
 };
 </script>
 <style>
-table.v-table thead td:not(:nth-child(1)),
-table.v-table tbody td:not(:nth-child(1)),
-table.v-table thead th:not(:nth-child(1)),
-table.v-table tbody th:not(:nth-child(1)),
-table.v-table thead td:first-child,
-table.v-table tbody td:first-child,
-table.v-table thead th:first-child,
-table.v-table tbody th:first-child {
+#userCommentTable.v-table thead td:not(:nth-child(1)),
+#userCommentTable.v-table tbody td:not(:nth-child(1)),
+#userCommentTable.v-table thead th:not(:nth-child(1)),
+#userCommentTable.v-table tbody th:not(:nth-child(1)),
+#userCommentTable.v-table thead td:first-child,
+#userCommentTable.v-table tbody td:first-child,
+#userCommentTable.v-table thead th:first-child,
+#userCommentTable.v-table tbody th:first-child {
   padding: 0 12px;
 }
-td:first-child {
+#userCommentTable td:first-child {
   padding: 0 12px;
 }
-td:first-child .v-input--selection-controls__input {
+#userCommentTable td:first-child .v-input--selection-controls__input {
   margin-right: 0;
 }
 </style>

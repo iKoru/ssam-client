@@ -11,37 +11,39 @@
               <scrap-group-manager :scrapGroups="scrapGroups" :dialog="dialog" @closeDialog="closeDialog" @updateScrapGroup="getScrapGroups"/>
             </v-dialog>
           </v-layout>
-          <v-flex xs12>
-            <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination" class="customAction">
-              <template slot="items" slot-scope="props">
-                <tr @click="selected = (selected===props.index?null:props.index)">
-                  <td>
-                    <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
-                  </td>
-                  <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
-                  <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.scrapId}`)">
-                    <a :href="`/${props.item.boardId}/${props.item.scrapId}`" target="_blank">
-                      {{ props.item.title }}
-                      <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
-                    </a>
-                  </td>
-                  <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getMyScraps">새로고침</v-btn>
-              </template>
-              <template slot="actions-prepend">
-                <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
-                <v-spacer></v-spacer>
-              </template>
-            </v-data-table>
-          </v-flex>
         </v-flex>
       </v-layout>
     </v-card-title>
+    <v-layout>
+      <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
+        <v-data-table :headers="headers" xs12 :items="userScraps" id="userScrapTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUserScraps" :pagination.sync="pagination" class="customAction">
+          <template slot="items" slot-scope="props">
+            <tr @click="selected = (selected===props.index?null:props.index)">
+              <td>
+                <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
+              </td>
+              <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
+              <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.scrapId}`)">
+                <a :href="`/${props.item.boardId}/${props.item.scrapId}`" target="_blank">
+                  {{ props.item.title }}
+                  <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+                </a>
+              </td>
+              <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
+            </tr>
+          </template>
+          <template slot="no-data">
+            {{this.noresult}}
+            <v-btn color="primary" @click="getMyScraps">새로고침</v-btn>
+          </template>
+          <template slot="actions-prepend">
+            <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
+            <v-spacer></v-spacer>
+          </template>
+        </v-data-table>
+      </v-flex>
+    </v-layout>
   </v-card>
 </template>
 <script>
