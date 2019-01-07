@@ -5,8 +5,11 @@ export default async (to, from, next) => {
   console.log('middleware!!!')
   const result = await checkSignin(to, from, router.app, store);
   if (typeof result === 'boolean' && result) {
-    console.log(to, 'aaaa');
-    next();
+    if (store.getters.profile.status === 'AUTHORIZED') {
+      next();
+    } else {
+      next(false);// TODO : redirect to unauthorized access page (need auth)
+    }
   } else if (typeof result === 'string') {
     console.log(to, 'aaaa');
     next(result);
