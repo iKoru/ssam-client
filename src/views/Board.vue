@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import MainLayout from "../layouts/MainLayout";
 export default {
   name: "Board",
   data: () => ({
@@ -48,6 +49,7 @@ export default {
     }
   },
   created () {
+    this.$emit("update:layout", MainLayout);
     this.getBoard(this.$route.params.boardId)
   },
   beforeRouteUpdate (to, from, next) {
