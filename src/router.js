@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import requireSignin from './middleware/requireSignin'
+import checkBoard from './middleware/checkBoard'
 import visitorOnly from './middleware/visitorOnly'
 Vue.use(Router)
 
@@ -116,10 +117,15 @@ const router = new Router({
         { path: '/searchDocument', name: 'SearchDocument', component: () => import('@/components/SearchDocument'), meta: { title: '게시물 검색' } }
       ]
     },
-    { // should be placed at the last of array
-      path: '/:boardId',
+    /*{ // should be placed at the last of array //\(?![a-zA-Z0-9_-]*\(?:\/|[ㄱ-ㅎ가-힣]\)\)[a-zA-Z0-9_-]*
+      path: '/:boardId/:documentId(\\d+)', // eslint-disable-line no-useless-escape
       component: () => import('@/views/Board'),
-      beforeEnter: requireSignin,
+      beforeEnter: checkBoard
+    },*/
+    { // should be placed at the last of array //\(?![a-zA-Z0-9_-]*\(?:\/|[ㄱ-ㅎ가-힣]\)\)[a-zA-Z0-9_-]*
+      path: '/:boardId', // eslint-disable-line no-useless-escape
+      component: () => import('@/views/Board'),
+      beforeEnter: checkBoard,
       children: [
         {
           path: '/',
@@ -141,7 +147,7 @@ const router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? to.meta.title + ' - pedagy' : 'pedagy'
+  document.title = to.meta.title ? to.meta.title + ' - Pedagy' : 'Pedagy'
   next()
 })
 
