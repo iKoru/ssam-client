@@ -1,12 +1,12 @@
 <template>
   <v-container px-0 py-0 fluid>
-    <v-tabs :dark="menu!==undefined?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32" id="menuBarTabs">
+    <v-tabs :dark="menu!==null?menu===1:!$store.getters.isLight" hide-slider v-model="menu" :mandatory="false" height="32" id="menuBarTabs">
       <v-tab :key="0" class="loungeTab menubarTab flex sm2" @click="toggleMenuBar('lounge')">라운지</v-tab>
-      <v-spacer :class="{tapSpacer:true, dark:menu!==undefined?menu===1:!$store.getters.isLight}" v-if="menu === 0"/>
+      <v-spacer :class="{tapSpacer:true, dark:menu!==null?menu===1:!$store.getters.isLight}" v-if="menu === 0"/>
       <v-tab :key="1" class="topicTab menubarTab flex sm2" @click="toggleMenuBar('topic')">토픽</v-tab>
     </v-tabs>
     <v-layout row :class="{'d-none':!menuBar, 'menubar-border-bottom':true}">
-      <v-flex sm2 v-if="menu === 1" class="scrollContainer" order-sm1>
+      <v-flex sm2 v-if="menu === 1" class="scrollContainer" order-sm1 @click="menu = 0; toggleMenuBar('lounge')">
         <v-flex class="menuColumn">
           <v-layout column>
             <template v-if="lounges.length > 2">
@@ -34,7 +34,7 @@
           </v-layout>
         </v-flex>
       </v-flex>
-      <v-flex sm2 v-if="menu === 0" class="topicTab scrollContainer" order-sm3>
+      <v-flex sm2 v-if="menu === 0" class="topicTab scrollContainer" order-sm3 @click="menu = 1;toggleMenuBar('topic')">
         <v-flex class="my-auto menuColumn">
           <v-layout column>
             <template v-if="topics.length > 2">
@@ -63,7 +63,7 @@
         </v-flex>
       </v-flex>
       <v-flex order-sm2>
-        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight">
+        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight"  :mandatory="false">
           <v-tab-item :key="0">
             <v-flex class="scrollContainer">
               <v-flex class="menuColumn" sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
@@ -143,7 +143,7 @@ export default {
   props: ["lounges", "topics"],
   data() {
     return {
-      menu: 0
+      menu: null
     };
   },
   computed: {
@@ -156,7 +156,8 @@ export default {
       if (menu === "lounge") {
         if (this.$store.getters.isLight && this.menuBar) {
           this.$store.dispatch("setMenuBar", false);
-          this.menu = 0;
+        }else if(this.menuBar){
+          this.$store.dispatch("switchBoardType", "L");
         } else {
           this.$store.dispatch("setMenuBar", true);
           this.$store.dispatch("switchBoardType", "L");
@@ -166,8 +167,8 @@ export default {
           this.$store.dispatch("setMenuBar", true);
           this.$store.dispatch("switchBoardType", "T");
         } else {
+          this.menu = null;
           this.$store.dispatch("setMenuBar", false);
-          //this.menu = this.$store.getters.isLight ? 0 : 1;
         }
       }
     }
@@ -198,7 +199,6 @@ export default {
 }
 .loungeTab {
   background-color: white;
-  margin-right:1px;
 }
 .topicTab {
   background-color: #424242;
@@ -207,16 +207,14 @@ export default {
 .topicTab a {
   color: white;
 }
+.topicTab .v-tabs__item{
+  opacity:1;
+}
 .tapSpacer {
-  /*background-image: -webkit-linear-gradient(45deg, white 92%, #424242 8%);
-  background-image: linear-gradient(45deg, white 92%, #424242 8%);*/
   background-color:white;
-  margin: -1px;
 }
 .tapSpacer.dark {
   background-color:#424242;
-  /*background-image: -webkit-linear-gradient(135deg, #424242 92%, white 8%);
-  background-image: linear-gradient(135deg, white 8%, #424242 8%);*/
 }
 .scrollContainer {
   white-space: nowrap;
