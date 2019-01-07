@@ -39,6 +39,7 @@ export default {
         .then(response => {
           console.log(response);
           this.board = response.data;
+          this.$store.dispatch('switchBoardType', this.board.boardType === 'T'?'T':'L')
         })
         .catch(error => {
           console.log(error);
