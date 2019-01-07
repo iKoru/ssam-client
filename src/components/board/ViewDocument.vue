@@ -13,28 +13,13 @@
                 조회수 {{content.viewCount}}
               </v-flex>
               <v-flex xs3 text-xs-right>
-                {{$moment(Date(content.writeDateTime)).format('YYYY.MM.DD hh:mm:ss')}}
+                {{$moment(content.writeDateTime, "YYYYMMDDHHmmss").format("YYYY.MM.DD HH:mm:ss")}}
               </v-flex>
             </v-layout>
           </div>
         </v-card-title>
     </v-flex>
     <v-divider/>
-    <v-flex xs12 v-if="content.attach" text-xs-right>
-      <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "contents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
-      <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{content.attach.length}}개 확인</v-chip>
-            <v-tooltip v-model="showAttach" bottom>
-              <span slot="activator"></span>
-              <v-list style="background-color:#616161">
-                <v-list-tile color="white" :key="index" v-for="(item, index) in content.attach">
-                  {{item.attachName}}
-                  <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
-                    <v-btn type="submit" icon color="white" circle small><v-icon small>mdi-arrow-down</v-icon></v-btn>
-                  </a>
-                </v-list-tile>
-              </v-list>
-            </v-tooltip> 
-    </v-flex>
     <v-flex xs12>
       <v-card-text>
           <div v-html="content.contents">
@@ -50,6 +35,36 @@
           </v-card-text>
         </v-flex>
       </v-layout>
+    </v-flex>
+    <v-flex xs12>
+      <v-layout row>
+        <v-flex sm12 md4>
+        </v-flex>
+        <v-flex sm12 md4 text-xs-center>
+          <v-chip color="indigo" text-color="white">
+            <v-avatar>
+              <v-icon color="white" small>thumb_up</v-icon>
+            </v-avatar>
+            {{content.voteUpCount}}
+            </v-chip>
+        </v-flex>
+        <v-flex sm12 md4 text-sm-right v-if="content.attach">
+           <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{content.attach.length}}개</v-chip>
+            <v-tooltip v-model="showAttach" top>
+              <span slot="activator"></span>
+              <v-list style="background-color:#616161">
+                <v-list-tile color="white" :key="index" v-for="(item, index) in content.attach">
+                  {{item.attachName}}
+                  <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
+                    <v-btn type="submit" icon color="white" circle small><v-icon small>mdi-arrow-down</v-icon></v-btn>
+                  </a>
+                </v-list-tile>
+              </v-list>
+            </v-tooltip> 
+        </v-flex>
+      </v-layout>
+      <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "contents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
+     
     </v-flex>
     <v-divider/>
     <v-flex xs12>

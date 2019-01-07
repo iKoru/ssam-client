@@ -29,53 +29,60 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <v-layout align-center justify-end>
-              <button class="ql-image" value="image"></button>사진
-              <!-- You can also add your own -->
-            </v-layout>
+            <button ref="imageAttach" class="ql-image" value="image"></button>
           </div>
         </quill-editor>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
         <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
-          <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
+          <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
+        
         <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="survey-button" size="large" color="black">mdi-poll-box</v-icon>설문조사
+          <v-flex xs4 sm2 px-1 text-xs-center>
+            <v-btn size="small" block @click="surveyButtonClick" :color="survey?'indigo':'default'">
+              <v-icon id="survey-button" size="large" color="black">mdi-poll-box</v-icon>설문조사
+            </v-btn>
           </v-flex>
-          <v-flex pl-4>
-            <v-btn size="small" @click="surveyButtonClick">{{survey?'확인/수정':'추가하기'}}</v-btn>
-            <span v-if="survey">설문조사가 추가되었습니다.</span>
+          <v-flex xs4 sm2 px-1>
+            <v-btn size="small" block @click="$refs.imageAttach.click()">
+             <v-icon id="attach-button" size="large" color="black">mdi-image</v-icon>이미지
+            </v-btn>
           </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex v-if="survey">
-            <v-btn class="float-right" size="small" @click="deleteSurvey">삭제하기</v-btn>
+          <v-flex xs4 sm2 px-1>
+            <v-btn size="small" block @click="attachButtonClick">
+             <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
+            </v-btn>
           </v-flex>
+          <v-spacer/>
         </v-layout>
-        <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
-          </v-flex>
-          <v-flex pl-4>
-            <v-layout row>
-              <v-flex xs2>
-                <v-btn size="small" @click="attachButtonClick">파일업로드</v-btn>
-              </v-flex>
-              <v-flex xs10>
-                <v-chip v-if="attachedFilenames.length > 0" @click="show=!show" color="grey lighten-1">{{attachedFilenames[0]}} <span v-if="attachedFilenames.length>1">외 {{attachedFilenames.length-1}} 개 파일</span></v-chip>
-                <v-tooltip v-model="show" top>
-                  <span slot="activator"></span>
-                  <v-list style="background-color:#616161">
-                    <v-list-tile color="white" :key="index" v-for="(item, index) in attachedFilenames">
-                      {{item}} <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
-                    </v-list-tile>
-                  </v-list>
-                </v-tooltip>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+        <v-layout>
+        <v-flex xs12 sm6>
+           <v-list v-if="attachedFilenames.length>0">
+            <template v-for="(item, index) in attachedFilenames">
+              <v-list-tile :key="index">
+                <v-list-tile-content>
+                  <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
+                </v-list-tile-action>
+              </v-list-tile>
+            </template>
+        </v-list>
+          <!-- <v-list v-if="attachedFilenames.length>0">
+            <v-list-tile :key="index" v-for="(item, index) in attachedFilenames">
+              <v-list-tile-content>
+                <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list> -->
+        </v-flex>
+        </v-layout>
            <file-pond
             name="attachment"
             ref="pond"
@@ -87,16 +94,12 @@
             @removefile="handleFilePondRemoveFile"
             v-on:init="handleFilePondInit"
           />
-        </v-layout>
-        <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="anonymous-slot" size="large" color="black">mdi-guy-fawkes-mask</v-icon>익명선택
-          </v-flex>
-          <v-flex pl-4 ml-1 xs2>
+        <v-layout py-2 justify-center>
+          <v-flex pl-4 ml-1 xs4 sm2>
             <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
             </v-checkbox>
           </v-flex>
-          <v-flex xs3>
+          <v-flex xs8 sm4>
             <v-checkbox v-if="!isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
             </v-checkbox>
           </v-flex>
@@ -280,6 +283,7 @@ export default {
       return this.$refs.pond.addFiles(imageSrc)
     },
     surveyButtonClick () {
+      console.log(this.currentSurvey, this.survey)
       if (this.currentSurvey.questions.length === 0) {
         this.currentSurvey.questions.push(
           {
@@ -303,7 +307,11 @@ export default {
       this.surveyDialog = false
     },
     deleteSurvey () {
-      if (confirm('설문을 삭제합니다.')) { this.survey = undefined }
+      if (confirm('설문을 삭제합니다.')) {
+        this.surveyDialog = false
+        this.currentSurvey.questions = []
+        this.survey = undefined 
+      }
     }
   },
   computed: {
