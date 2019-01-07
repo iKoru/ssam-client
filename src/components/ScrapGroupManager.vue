@@ -14,7 +14,7 @@
       <v-subheader>스크랩 그룹을 추가, 변경, 삭제할 수 있습니다.</v-subheader>
       <v-layout row>
         <v-flex xs12>
-          <v-data-table id="scrapGroupTable" hide-headers :items="tempScrapGroups" :rows-per-page-items="[-1]" class="mx-auto" :custom-filter="filterItem" :search="search">
+          <v-data-table id="scrapGroupTable" hide-headers :items="tempScrapGroups" :rows-per-page-items="[-1]" class="mx-auto customAction" :custom-filter="filterItem" :search="search">
             <template slot="items" slot-scope="props">
               <td class="cursor-pointer wrap">
                 <v-edit-dialog :return-value.sync="props.item.scrapGroupName" lazy large cancel-text="취소" save-text="확인">

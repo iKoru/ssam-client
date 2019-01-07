@@ -3,10 +3,10 @@
     <v-card-title>
       <v-layout row>
         <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
-          <v-layout row>
+          <v-layout row align-center>
             <h3 class="headline">내 스크랩 목록</h3>
-            <v-spacer/>
-            <v-select class="selectScrapGroup" v-model="scrapGroupId" :items="scrapGroups" label="그룹 선택" hide-details dense item-text="scrapGroupName" item-value="scrapGroupId" append-outer-icon="settings" @click:append-outer="openDialog"></v-select>
+            <v-spacer v-if="$vuetify.breakpoint.smAndUp"/>
+            <v-select class="selectScrapGroup" v-model="scrapGroupId" :items="scrapGroups" label="그룹 선택" hide-details dense item-text="scrapGroupName" item-value="scrapGroupId" append-outer-icon="settings" @click:append-outer="openDialog" id="selectScrapGroup"></v-select>
             <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
               <scrap-group-manager :scrapGroups="scrapGroups" :dialog="dialog" @closeDialog="closeDialog" @updateScrapGroup="getScrapGroups"/>
             </v-dialog>
@@ -177,10 +177,26 @@ td:first-child {
 td:first-child .v-input--selection-controls__input {
   margin-right: 0;
 }
-.selectScrapGroup {
-  width: 0;
+@media(max-width:599px){
+  .selectScrapGroup {
+    max-width:130px;
+    margin-left:auto;
+    /*margin-right:34px;*/
+  }
+  .selectScrapGroup .v-input__slot{
+    max-width:100px;
+  }
+  .selectScrapGroup .v-select__slot, .selectScrapGroup .v-select__selections, .selectScrapGroup .v-select__selection.v-select__selection--comma{
+    max-width:72px;
+    min-width:72px;
+  }
+  .selectScrapGroup .v-select__selection.v-select__selection--comma{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 }
-.selectScrapGroup input[type="text"] {
-  display: none;
+.selectScrapGroup input[type=text]{
+  display:none;
 }
 </style>
