@@ -119,6 +119,7 @@ const router = new Router({
     { // should be placed at the last of array
       path: '/:boardId',
       component: () => import('@/views/Board'),
+      beforeEnter: requireSignin,
       children: [
         {
           path: '/',
@@ -136,9 +137,7 @@ const router = new Router({
           component: () => import('@/components/board/ViewDocument')
         }
       ]
-    },
-
-
+    }
   ]
 })
 router.beforeEach((to, from, next) => {
