@@ -68,7 +68,7 @@ export default {
   min-height: 100vh;
 }
 .mainLayout__main {
-  max-width: 1904px;
+  max-width: 1200px;
   margin-bottom: 53px;
   margin-left: auto;
   margin-right: auto;
@@ -77,5 +77,10 @@ export default {
   .mainLayout__main {
     margin-bottom: 80px;
   }
+}
+.mainLayout__nav {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
