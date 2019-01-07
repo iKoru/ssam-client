@@ -1,5 +1,5 @@
 <template id="mainFooter">
-  <v-footer height="auto" class="white pa-3 app--footer" absolute inset>
+  <v-footer height="auto" class="pa-3 app--footer" absolute inset>
     <v-layout :column="$vuetify.breakpoint.smAndDown" :reverse="$vuetify.breakpoint.smAndDown">
       <v-flex class="copyright">
         <div class="text-xs-center text-md-left">

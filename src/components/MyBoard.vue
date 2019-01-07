@@ -67,9 +67,12 @@
                 </v-layout>
               </transition-group>
             </draggable>
-            <v-layout v-else>아직 구독하고 있는 토픽이 없네요.
-              <br>
-              <router-link to="/searchBoard" class="primary--text">새로운 토픽</router-link>을 구독해보세요!
+            <v-layout v-else>
+              <span>
+                아직 구독하고 있는 토픽이 없네요.
+                <br>
+                <router-link to="/searchBoard" class="primary--text">새로운 토픽</router-link>을 구독해보세요!
+              </span>
             </v-layout>
           </v-flex>
         </v-layout>
