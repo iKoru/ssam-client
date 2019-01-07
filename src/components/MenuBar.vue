@@ -6,56 +6,74 @@
       <v-tab :key="1" class="topicTab menubarTab flex sm2" @click="toggleMenuBar('topic')">토픽</v-tab>
     </v-tabs>
     <v-layout row :class="{'d-none':!menuBar, 'menubar-border-bottom':true}">
-      <v-flex sm2 v-if="menu === 1" class="scrollContainer" order-sm1 @click="menu = 0; toggleMenuBar('lounge')">
-        <v-flex class="menuColumn">
+      <v-flex sm2 v-show="menu === 1" class="scrollContainer" order-sm1 @click="toggleMenuBar('lounge')">
+        <v-flex class="menuColumn position-relative">
           <v-layout column>
             <template v-if="lounges.length > 2">
-              <v-flex v-for="n in 3" :key="n">
+              <v-flex v-for="n in 3" :key="n" class="ellipsis">
                 <router-link :to="lounges[n-1].boardId">{{lounges[n-1].boardName}}</router-link>
               </v-flex>
             </template>
             <template v-else>
               <template v-if="lounges.length === 0">
-              <v-flex>nbsp;</v-flex>
-              <v-flex>nbsp;</v-flex>
-              <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
               </template>
               <template v-else-if="lounges.length === 1">
-                <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                </v-flex>
                 <v-flex>nbsp;</v-flex>
                 <v-flex>nbsp;</v-flex>
               </template> 
               <template v-else>
-                <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
-                <router-link :to="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                </v-flex>
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+                </v-flex>
                 <v-flex>nbsp;</v-flex>
               </template>
             </template>
+            <div class="switchTabIcon switchToTopic cursor-pointer">
+              <v-icon>navigate_next</v-icon>
+            </div>
           </v-layout>
         </v-flex>
       </v-flex>
-      <v-flex sm2 v-if="menu === 0" class="topicTab scrollContainer" order-sm3 @click="menu = 1;toggleMenuBar('topic')">
-        <v-flex class="my-auto menuColumn">
-          <v-layout column>
+      <v-flex sm2 v-show="menu === 0" class="topicTab scrollContainer" order-sm3 @click="toggleMenuBar('topic')">
+        <v-flex class="my-auto menuColumn position-relative">
+          <v-layout column class="ml-2">
+            <div class="switchTabIcon switchToLounge cursor-pointer">
+              <v-icon class="white--text">navigate_before</v-icon>
+            </div>
             <template v-if="topics.length > 2">
-              <v-flex v-for="n in 3" :key="n">
+              <v-flex v-for="n in 3" :key="n" class="ellipsis">
                 <router-link :to="topics[n-1].boardId">{{topics[n-1].boardName}}</router-link>
               </v-flex>
             </template>
             <template v-else>
               <template v-if="topics.length === 0">
-              <v-flex>nbsp;</v-flex>
-              <v-flex>nbsp;</v-flex>
-              <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
+                <v-flex>nbsp;</v-flex>
               </template>
               <template v-else-if="topics.length === 1">
-                <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
+                <v-flex class="ellipsis">
+                  <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
+                </v-flex>
                 <v-flex>nbsp;</v-flex>
                 <v-flex>nbsp;</v-flex>
               </template> 
               <template v-else>
-                <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
-                <router-link :to="topics[1].boardId">{{topics[1].boardName}}</router-link>
+                <v-flex class="ellipsis">
+                  <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
+                </v-flex>
+                <v-flex class="ellipsis">
+                  <router-link :to="topics[1].boardId">{{topics[1].boardName}}</router-link>
+                </v-flex>
                 <v-flex>nbsp;</v-flex>
               </template>
             </template>
@@ -68,20 +86,20 @@
             <v-flex class="scrollContainer">
               <v-flex class="menuColumn" sm2 v-for="n in Math.floor(lounges.length / 3)" :key="n">
                 <v-layout column>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :to="'/'+lounges[(n-1)*3].boardId" :title="lounges[(n-1)*3].boardName">{{lounges[(n-1)*3].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :to="'/'+lounges[((n-1)*3)+1].boardId" :title="lounges[((n-1)*3)+1].boardName">{{lounges[((n-1)*3)+1].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :to="'/'+lounges[((n-1)*3)+2].boardId" :title="lounges[((n-1)*3)+2].boardName">{{lounges[((n-1)*3)+2].boardName}}</router-link>
                   </v-flex>
                 </v-layout>
               </v-flex>
               <v-flex class="menuColumn" sm2 v-if="lounges.length % 3 !== 0">
                 <v-layout column>
-                  <v-flex v-for="n in (lounges.length % 3)" :key="n">
+                  <v-flex v-for="n in (lounges.length % 3)" :key="n" class="ellipsis">
                     <router-link :to="'/'+lounges[lounges.length - (lounges.length % 3) + n - 1].boardId" :title="lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName">{{lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName}}</router-link>
                   </v-flex>
                   <v-flex>&nbsp;</v-flex>
@@ -94,23 +112,23 @@
             <v-flex class="scrollContainer">
               <v-flex class="menuColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
                 <v-layout column>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">{{topics[(n-1)*3].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 1].notJoined}" :title="topics[((n-1)*3) + 1].notJoined?'추천 토픽':topics[((n-1)*3) + 1].boardName" :to="'/'+topics[((n-1)*3)+1].boardId">{{topics[((n-1)*3)+1].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 2].notJoined}" :title="topics[((n-1)*3) + 2].notJoined?'추천 토픽':topics[((n-1)*3) + 2].boardName" :to="'/'+topics[((n-1)*3)+2].boardId">{{topics[((n-1)*3)+2].boardName}}</router-link>
                   </v-flex>
                 </v-layout>
               </v-flex>
               <v-flex class="menuColumn" sm2 v-if="topics.length % 3 !== 0">
                 <v-layout column>
-                  <v-flex v-for="n in topics.length % 3" :key="n">
+                  <v-flex v-for="n in topics.length % 3" :key="n" class="ellipsis">
                     <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
                   </v-flex>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link class="white--text" to="/searchBoard">
                       <v-icon small>search</v-icon>다른 토픽 찾기
                     </router-link>
@@ -120,7 +138,7 @@
               </v-flex>
               <v-flex class="menuColumn" sm2 v-else>
                 <v-layout column>
-                  <v-flex>
+                  <v-flex class="ellipsis">
                     <router-link class="white--text" to="/searchBoard">
                       <v-icon small>search</v-icon>다른 토픽 찾기
                     </router-link>
@@ -154,21 +172,20 @@ export default {
   methods: {
     toggleMenuBar(menu) {
       if (menu === "lounge") {
-        if (this.$store.getters.isLight && this.menuBar) {
+        if (this.menu === 0 && this.menuBar) {
           this.$store.dispatch("setMenuBar", false);
-        }else if(this.menuBar){
-          this.$store.dispatch("switchBoardType", "L");
+          this.menu = null;
         } else {
           this.$store.dispatch("setMenuBar", true);
-          this.$store.dispatch("switchBoardType", "L");
+          this.menu = 0;
         }
       } else if (menu === "topic") {
-        if (this.$store.getters.isLight || !this.menuBar) {
-          this.$store.dispatch("setMenuBar", true);
-          this.$store.dispatch("switchBoardType", "T");
-        } else {
-          this.menu = null;
+        if (this.menu === 1 && this.menuBar) {
           this.$store.dispatch("setMenuBar", false);
+          this.menu = null;
+        } else {
+          this.$store.dispatch("setMenuBar", true);
+          this.menu = 1;
         }
       }
     }
@@ -204,7 +221,7 @@ export default {
   background-color: #424242;
   margin-left:auto;
 }
-.topicTab a {
+.topicTab a, .topicTab .flex {
   color: white;
 }
 .topicTab .v-tabs__item{
@@ -216,19 +233,25 @@ export default {
 .tapSpacer.dark {
   background-color:#424242;
 }
+.switchTabIcon{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+}
+.switchTabIcon.switchToTopic{
+  right:-20px;
+}
+.switchTabIcon.switchToLounge{
+  left:-20px;
+}
 .scrollContainer {
   white-space: nowrap;
   display: flex;
   flex-direction: row;
   -webkit-flex-direction: row;
   overflow-x: auto;
-  /* -ms-overflow-style: none;
-  overflow: -moz-scrollbars-none; */
   height: 120px;
 }
-/* .scrollContainer::-webkit-scrollbar {
-  width: 0 !important;
-} */
 .menuColumn {
   margin: auto 20px;
   min-width: 100px;
