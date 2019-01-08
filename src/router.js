@@ -20,8 +20,8 @@ const router = new Router({
     },
     {
       path: '',
-      name: 'home',
-      component: () => import('@/views/Home'),
+      name: 'main',
+      component: () => import('@/views/Main'),
       beforeEnter: requireSignin,
       meta: {
         title: '메인'
