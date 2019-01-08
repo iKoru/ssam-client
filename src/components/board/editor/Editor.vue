@@ -159,7 +159,6 @@ export default {
       isAnonymous: false,
       allowAnonymous: true,
       attachedFilenames: [],
-      attachedFiles: [],
       attachedImages: [],
       formData: undefined,
       attachedFileNumber: 0,
@@ -171,10 +170,7 @@ export default {
           // console.log(this.attachedImages, this.attachedFilenames)
           // console.log(file.filename)
           if (!this.formData) this.formData = new FormData()
-          if (this.attachedImages.includes(file.name)) {
-            this.formData.append('attach', file, file.name);
-            this.attachedFileNumber += 1;
-          } else if (this.attachedFilenames.includes(file.name)) {
+          if (this.attachedFilenames.includes(file.name)) {
             this.formData.append('attach', file, file.name);
             this.attachedFileNumber += 1;
           }
@@ -201,15 +197,19 @@ export default {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
-    uploadDocument() {
+    async uploadDocument() {
       if (!this.formData) this.formData = new FormData()
+      await this.attachImages()
       this.formData.append('boardId', this.$route.params.boardId)
       this.formData.append('title', this.title)
-      this.formData.append('contents', this.content) // to delta
+      this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta))
       this.formData.append('isAnonymous', this.isAnonymous)
       this.formData.append('allowAnonymous', this.allowAnonymous)
       if(this.survey) {
         this.formData.append('survey', JSON.stringify(this.survey))
+      }
+      for (var pair of this.formData.entries()) {
+          console.log(pair[0]+ ', ' + pair[1]); 
       }
       return this.$axios
         .post('/document', this.formData)
@@ -224,22 +224,10 @@ export default {
           console.log(error.response)
         });
     },
-    post () {
+    async post () {
       // manually add images as file
-      this.attachImage()
-        .then(files => {
-          this.attachedImages = files.map(file => file.filename)
-          // console.log(this.$refs.editor.quill.editor.delta.ops)
-          if (this.attachedImages.length === 0 && this.attachedFilenames.length === 0) {
-            this.uploadDocument()
-          } else {
-            this.handleProcessFile()
-          }
-        })
-        .catch(err => {
-          // failed in parse images to attached files
-          console.log(err)
-        })
+      await this.handleProcessFile()
+      await this.uploadDocument()
     },
     handleFilePondInit: function () {
       console.log('FilePond has initialized')
@@ -250,7 +238,6 @@ export default {
     handleFilePondAddFile: function (error, file) {
       console.log(error)
       this.attachedFilenames.push(file.filename)
-      console.log(this.attachedFilenames)
     },
     removeFile(filename) {
       let fileid = this.$refs.pond.getFiles().find(file=>file.filename === filename).id
@@ -261,27 +248,46 @@ export default {
       this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename)
     },
     handleProcessFile: function () {
-      this.$refs.pond.processFiles()
-        .then(files => {
-          // go to read
-        })
-        .catch(err =>
-          console.log(err.response)
-        )
+      return this.$refs.pond.processFiles()
+        .then(res=> console.log(res))
+        .catch(err=>console.error(err))
     },
-    attachImage () {
+    uuid() {
+      let partialUUID = () => {
+          return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+      };
+      return partialUUID() + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + partialUUID() + partialUUID()
+    },
+    attachImages () {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty('image')).length
-      let imageSrc = []
-      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
+      return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty('image')) {
           // random generated uuid should given here
           let imgSrc = item.insert.image
-          item.insert.image = 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif'
-          imageSrc.push(imgSrc)
+          let imageName = this.uuid() + '.' + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"))
+          item.insert.image = imageName;
+          this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName)
         }
       })
-      return this.$refs.pond.addFiles(imageSrc)
     },
+    dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+      var byteString;
+      if (dataURI.split(',')[0].indexOf('base64') >= 0)
+          byteString = atob(dataURI.split(',')[1]);
+      else
+          byteString = unescape(dataURI.split(',')[1]);
+
+      // separate out the mime component
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+      // write the bytes of the string to a typed array
+      var ia = new Uint8Array(byteString.length);
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ia], {type:mimeString});
+  },
     surveyButtonClick () {
       console.log(this.currentSurvey, this.survey)
       if (this.currentSurvey.questions.length === 0) {
