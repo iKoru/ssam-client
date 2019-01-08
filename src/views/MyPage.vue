@@ -39,10 +39,18 @@
                     <v-flex sm4 xs8 py-0>
                       <v-text-field ref="topicNickName" placeholder="토픽 닉네임" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('topicNickName')" v-model="profile.topicNickName" :error-messages="topicNickNameErrors" :readonly="!checkTopicNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkTopicNickNameUpdatable?'토픽에서 사용되는 닉네임입니다.':'마지막 수정 후 1개월 뒤에 다시 바꿀 수 있습니다.'"></v-text-field>
                     </v-flex>
-                    <v-flex xs4 py-0>
-                      <v-subheader @click="focus('password')">비밀번호 변경</v-subheader>
+                    <v-flex sm2 xs4 py-0>
+                      <v-subheader :style="{'padding-bottom':$vuetify.breakpoint.xsOnly?'12px':false}">계정 상태</v-subheader>
                     </v-flex>
-                    <v-flex xs8 py-0>
+                    <v-flex sm4 xs8 py-0 text-xs-left>
+                      <div class="d-inline-flex align-center fill-height" style="padding-bottom:12px;">
+                        <span>{{userStatusItems[profile.status]}}</span><small v-if="profile.emailVerifiedDate && profile.status === 'AUTHORIZED'">{{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('YYYY.M.D')}}</small>
+                      </div>
+                    </v-flex>
+                    <v-flex sm2 xs4 py-0>
+                      <v-subheader class="pr-0" @click="focus('password')">비밀번호 변경</v-subheader>
+                    </v-flex>
+                    <v-flex sm4 xs8 py-0>
                       <v-text-field ref="password" dense placeholder="변경할 비밀번호" type="password" @keydown.enter.stop="submit" :rules="passwordRules" v-model="password" hint="비워두면 현재 비밀번호가 유지됩니다." class="my-0 pt-0 dense"></v-text-field>
                     </v-flex>
                   </v-layout>
@@ -144,6 +152,7 @@ setOptions({
   fileValidateTypeLabelExpectedTypes: "jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다.",
   allowRevert: false
 });
+
 export default {
   name: "MyPage",
   components: {
@@ -188,7 +197,12 @@ export default {
           return {load, error, progress, abort};
         }
       },
-      labels: {}
+      labels: {},
+      userStatusItems : {
+        'NORMAL':'미인증',
+        'AUTHORIZED':'인증',
+        'BLOCKED':'차단'
+      }
     };
   },
   computed: {
