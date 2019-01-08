@@ -194,6 +194,9 @@ export default {
 </script>
 
 <style>
+.v-tabs.menubar{
+  margin-top:1px;
+}
 .menubar {
   max-width: 1200px;
   margin-left: auto;
@@ -232,17 +235,14 @@ export default {
   opacity: 1;
 }
 .tapSpacer {
-  /* background-color: white; */
   background: linear-gradient(to right, white 50%, #424242 50%);
   background-size: 200% 100%;
   background-position: left bottom;
   transition: background-position 0.3s cubic-bezier(0.27, 0.3, 0.53, 0.91);
-  margin-right: -1px;
+  border-right-color:#424242;
 }
 .tapSpacer.dark {
   background-position: right bottom;
-  /* background-color: #424242; */
-  /* transition: background-color 1000ms linear; */
 }
 .switchTabIcon {
   position: absolute;
