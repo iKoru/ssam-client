@@ -44,7 +44,7 @@
                     </v-flex>
                     <v-flex sm4 xs8 py-0 text-xs-left>
                       <div class="d-inline-flex align-center fill-height" style="padding-bottom:12px;">
-                        <span>{{userStatusItems[profile.status]}}</span><small v-if="profile.emailVerifiedDate && profile.status === 'AUTHORIZED'">{{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('YYYY.M.D')}}</small>
+                        <span>{{userStatusItems[profile.status]}}</span><small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.status === 'AUTHORIZED'">{{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('YYYY.M.D')}}</small>
                       </div>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>

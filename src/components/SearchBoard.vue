@@ -15,7 +15,7 @@
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table hide-headers :headers="headers" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :loading="loading" class="customAction">
+            <v-data-table hide-headers :headers="headers" id="searchBoardTable" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :loading="loading" class="customAction">
               <template slot="items" slot-scope="props">
                 <tr @click="openDialog(props.item)" class="cursor-pointer">
                   <td>{{boardTypeItems[props.item.boardType]}}</td>
@@ -38,7 +38,7 @@
                 </tr>
               </template>
               <template slot="actions-prepend">
-                <v-btn color="primary" flat @click="topicCreator = true">토픽 만들기</v-btn>
+                <v-btn color="primary" flat @click="openTopicDialog">토픽 만들기</v-btn>
                 <v-spacer></v-spacer>
               </template>
             </v-data-table>
@@ -230,7 +230,16 @@ export default {
         });
     },
     closeTopicDialog() {
+      document.body.style.position = "initial";
       this.topicCreator = false;
+    },
+    openTopicDialog() {
+      if (this.$store.getters.profile.status !== "AUTHORIZED") {
+        this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
+        return;
+      }
+      document.body.style.position = "fixed";
+      this.topicCreator = true;
     },
     resetBoard() {}
   }
@@ -240,18 +249,14 @@ export default {
 .v-subheader {
   height: 32px;
 }
-td.ellipsis {
-  width: 100%;
-  max-width: 0;
-}
-table.v-table thead td:not(:nth-child(1)),
-table.v-table tbody td:not(:nth-child(1)),
-table.v-table thead th:not(:nth-child(1)),
-table.v-table tbody th:not(:nth-child(1)),
-table.v-table thead td:first-child,
-table.v-table tbody td:first-child,
-table.v-table thead th:first-child,
-table.v-table tbody th:first-child {
+#searchBoardTable.v-table thead td:not(:nth-child(1)),
+#searchBoardTable.v-table tbody td:not(:nth-child(1)),
+#searchBoardTable.v-table thead th:not(:nth-child(1)),
+#searchBoardTable.v-table tbody th:not(:nth-child(1)),
+#searchBoardTable.v-table thead td:first-child,
+#searchBoardTable.v-table tbody td:first-child,
+#searchBoardTable.v-table thead th:first-child,
+#searchBoardTable.v-table tbody th:first-child {
   padding: 0 12px;
 }
 </style>
