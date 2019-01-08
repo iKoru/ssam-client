@@ -77,7 +77,7 @@
           </v-flex>
         </v-layout>
       </v-layout>
-      <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
+      <v-dialog v-model="dialog" id="topicCreatorDialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
         <topic-creator @closeDialog="closeDialog" @resetBoard="resetBoard"/>
       </v-dialog>
     </v-card-title>
@@ -227,5 +227,8 @@ export default {
 }
 #createTopic {
   top: -4px;
+}
+#topicCreatorDialog{
+  -webkit-overflow-scrolling: touch;
 }
 </style>
