@@ -7,9 +7,16 @@
       <v-flex xs12 sm6 md4>
         <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
       </v-flex>
-      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
-        <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}">
-          <div class="pt-3 position-relative">{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</div>
+      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index">
+        <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
+          <div class="pt-3 position-relative">
+            <template v-if="recent.hot">
+              최근 인기 토픽 - {{recent.boardName}}
+            </template>
+            <template v-else>
+              {{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}
+            </template>
+          </div>
           <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0" :showDateTime="true"></small-document-list>
           <div v-else class="d-flex cover-title">
             <div class="my-auto flex">
