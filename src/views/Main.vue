@@ -2,15 +2,15 @@
   <v-container px-0 fluid>
     <v-layout row wrap align-center>
       <v-flex xs12 sm6 md4 offset-md2>
-        <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" class="elevation-1 ma-2"></board-extractor>
+        <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
       </v-flex>
       <v-flex xs12 sm6 md4>
-        <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" class="elevation-1 ma-2"></board-extractor>
+        <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
       </v-flex>
-      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :key="index" :style="{height:$vuetify.breakpoint.xsOnly?'240px':'480px'}">
-        <div class="elevation-1 ma-2 text-xs-center fill-height position-relative">
+      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
+        <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}">
           <div class="pt-3 position-relative">{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</div>
-          <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0"></small-document-list>
+          <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0" :showDateTime="true"></small-document-list>
           <div v-else class="d-flex cover-title">
             <div class="my-auto flex">
               표시할 내용이 없습니다.
@@ -41,6 +41,13 @@ export default {
   mounted(){
     this.$axios.get('/recent', {headers:{silent:true}})
     .then(response => {
+      response.data.forEach(x=>{
+        x.documents.forEach(y=>{
+          if(y.writeDateTime){
+            y.writeDateTime = this.$moment(y.writeDateTime, 'YYYYMMDDHHmmss').toDate()
+          }
+        })
+      })
       this.recents = response.data
     })
     .catch(error => {
