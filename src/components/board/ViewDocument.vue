@@ -95,8 +95,7 @@ export default {
       document: null,
       documentHTML: null,
       survey: null,
-      showAttach: false,
-      webUrl:'https://node2-koru.c9users.io:8081/'
+      showAttach: false
     };
   },
   components: {
@@ -110,6 +109,11 @@ export default {
   },
   created() {
     this.getDocument();
+  },
+  computed:{
+    webUrl() {
+      return process.env.VUE_APP_WEB_URL;
+    }
   },
   methods: {
     getDocument: function() {
@@ -142,7 +146,7 @@ export default {
     getImagePath(imagePath) {
       let attach = this.document.attach
       this.document.attach = this.document.attach.filter(item=>item.attachName!==imagePath)
-      return 'https://node2-koru.c9users.io:8080/'+ attach.find(item=>item.attachName === imagePath).attachPath
+      return this.webUrl + attach.find(item=>item.attachName === imagePath).attachPath
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);
