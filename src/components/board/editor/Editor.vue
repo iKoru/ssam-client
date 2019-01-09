@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <v-flex
-            style="margin-botom: 0; padding-bottom: 0;">
+            style="margin-bottom: 0; padding-bottom: 0;">
           <v-text-field
             label="Solo"
             placeholder="제목"
@@ -10,7 +10,8 @@
             hide-details
           ></v-text-field>
         </v-flex>
-        <quill-editor v-model="content"
+        <quill-editor
+                    v-model="content"
                     ref="editor"
                     :options="editorOption"
                     @ready="onEditorReady($event)">
@@ -28,60 +29,60 @@
               <option value="large"></option>
               <option value="huge"></option>
             </select>
-            <v-layout align-center justify-end>
-              <button class="ql-image" value="image"></button>사진
-              <!-- You can also add your own -->
-            </v-layout>
+            <button ref="imageAttach" class="ql-image" value="image"></button>
           </div>
         </quill-editor>
-        <div>
-            <div id="boardView" v-if="savedContent" v-html="savedContent">
-            </div>
-            {{link}}
-            <link-prevue v-if="link" :linkUrl="link">
-            </link-prevue>
-        </div>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
         <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
         <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
-          <survey-maker @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
+          <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
         </v-dialog>
+        
         <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="survey-button" size="large" color="black">mdi-poll-box</v-icon>설문조사
+          <v-flex xs4 sm2 px-1 text-xs-center>
+            <v-btn size="small" block @click="surveyButtonClick" :color="survey?'indigo':'default'">
+              <v-icon id="survey-button" size="large" color="black">mdi-poll-box</v-icon>설문조사
+            </v-btn>
           </v-flex>
-          <v-flex pl-4>
-            <v-btn size="small" @click="surveyButtonClick">{{survey?'확인/수정':'추가하기'}}</v-btn>
-            <span v-if="survey">설문조사가 추가되었습니다.</span>
+          <v-flex xs4 sm2 px-1>
+            <v-btn size="small" block @click="$refs.imageAttach.click()">
+             <v-icon id="attach-button" size="large" color="black">mdi-image</v-icon>이미지
+            </v-btn>
           </v-flex>
-          <v-spacer></v-spacer>
-          <v-flex v-if="survey">
-            <v-btn class="float-right" size="small" @click="deleteSurvey">삭제하기</v-btn>
+          <v-flex xs4 sm2 px-1>
+            <v-btn size="small" block @click="attachButtonClick">
+             <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
+            </v-btn>
           </v-flex>
+          <v-spacer/>
         </v-layout>
-        <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="attach-button" size="large" color="black">mdi-content-save-outline</v-icon>파일첨부
-          </v-flex>
-          <v-flex pl-4>
-            <v-layout row>
-              <v-flex xs2>
-                <v-btn size="small" @click="attachButtonClick">파일업로드</v-btn>
-              </v-flex>
-              <v-flex xs10>
-                <v-chip v-if="attachedFilenames.length > 0" @click="show=!show" color="grey lighten-1">{{attachedFilenames[0]}} <span v-if="attachedFilenames.length>1">외 {{attachedFilenames.length-1}} 개 파일</span></v-chip>
-                <v-tooltip v-model="show" right>
-                  <span slot="activator"></span>
-                  <v-list style="background-color:#616161">
-                    <v-list-tile color="white" :key="index" v-for="(item, index) in attachedFilenames">
-                      {{item}} <v-icon color="white" @click="removeFile(item)">mdi-close</v-icon>
-                    </v-list-tile>
-                  </v-list>
-                </v-tooltip>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+        <v-layout>
+        <v-flex xs12 sm6>
+           <v-list v-if="attachedFilenames.length>0">
+            <template v-for="(item, index) in attachedFilenames">
+              <v-list-tile :key="index">
+                <v-list-tile-content>
+                  <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
+                </v-list-tile-action>
+              </v-list-tile>
+            </template>
+        </v-list>
+          <!-- <v-list v-if="attachedFilenames.length>0">
+            <v-list-tile :key="index" v-for="(item, index) in attachedFilenames">
+              <v-list-tile-content>
+                <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list> -->
+        </v-flex>
+        </v-layout>
            <file-pond
             name="attachment"
             ref="pond"
@@ -93,22 +94,18 @@
             @removefile="handleFilePondRemoveFile"
             v-on:init="handleFilePondInit"
           />
-        </v-layout>
-        <v-layout pt-1 justify-center>
-          <v-flex my-auto xs12 sm1 text-xs-right>
-            <v-icon id="anonymous-slot" size="large" color="black">mdi-guy-fawkes-mask</v-icon>익명선택
-          </v-flex>
-          <v-flex pl-4 ml-1 xs1>
+        <v-layout py-2 justify-center>
+          <v-flex pl-4 ml-1 xs4 sm2>
             <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명">
             </v-checkbox>
           </v-flex>
-          <v-flex xs3>
+          <v-flex xs8 sm4>
             <v-checkbox v-if="!isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="allowAnonymous" label="익명댓글허용">
             </v-checkbox>
           </v-flex>
           <v-spacer></v-spacer>
         </v-layout>
-        <v-btn class="success" @click="post()">업로드</v-btn>
+        <v-btn class="success" @click="post()">글쓰기</v-btn>
         <!-- <div>viewer
           {{surveyJSON}}
           <survey :surveyJSON="surveyJSON"/>
@@ -162,7 +159,6 @@ export default {
       isAnonymous: false,
       allowAnonymous: true,
       attachedFilenames: [],
-      attachedFiles: [],
       attachedImages: [],
       formData: undefined,
       attachedFileNumber: 0,
@@ -174,40 +170,12 @@ export default {
           // console.log(this.attachedImages, this.attachedFilenames)
           // console.log(file.filename)
           if (!this.formData) this.formData = new FormData()
-          if (this.attachedImages.includes(file.name)) {
-            this.formData.append('attach', file, file.name);
-            this.attachedFileNumber += 1;
-          } else if (this.attachedFilenames.includes(file.name)) {
+          if (this.attachedFilenames.includes(file.name)) {
             this.formData.append('attach', file, file.name);
             this.attachedFileNumber += 1;
           }
           if (this.attachedFileNumber === this.attachedFilenames.length) {
-            this.formData.append('boardId', this.$route.params.boardId)
-            this.formData.append('title', this.title)
-            this.formData.append('contents', this.content) // to delta
-            this.formData.append('isAnonymous', this.isAnonymous)
-            this.formData.append('allowAnonymous', this.allowAnonymous)
-            this.formData.append('survey', JSON.stringify(this.survey))
-            this.$axios
-              .post('/document', this.formData)
-              .then(response => {
-                // this.profile.picturePath = response.data.picturePath;
-                // this.dialog = false;
-                // this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
-                console.log(response)
-
-                if (response.status === 200) {
-                  this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
-                }
-                load();
-              })
-              .catch(error => {
-                delete this.formData
-                this.attachedFileNumber = 0
-                console.log(error.response)
-                
-                // this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
-              });
+            this.uploadDocument()
           }
           return { load, error, progress, abort };
         }
@@ -229,37 +197,37 @@ export default {
       console.log('editor change!', quill, html, text)
       this.content = html
     },
-    post () {
-      // manually add images as file
-      this.attachImage()
-        .then(files => {
-          this.attachedImages = files.map(file => file.filename)
-          // console.log(this.$refs.editor.quill.editor.delta.ops)
-          if (this.attachedImages.length === 0 && this.attachedFilenames.length === 0) {
-            this.$axios.post('/document', {
-              boardId: this.$route.params.boardId,
-              title: this.title,
-              contents: this.content, // delta
-              isAnonymous: this.isAnonymous,
-              allowAnonymous: this.allowAnonymous,
-              survey: this.survey
-            }).then(res => {
-              console.log(res)
-              if (res.status === 200) {
-                this.$router.push(`/${this.$route.params.boardId}/${res.data.documentId}`)
-              }
-              console.log(res)
-            }).catch(err => {
-              console.log(err.response)
-            })
-          } else {
-            this.handleProcessFile()
+    async uploadDocument() {
+      if (!this.formData) this.formData = new FormData()
+      await this.attachImages()
+      this.formData.append('boardId', this.$route.params.boardId)
+      this.formData.append('title', this.title)
+      this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta))
+      this.formData.append('isAnonymous', this.isAnonymous)
+      this.formData.append('allowAnonymous', this.allowAnonymous)
+      if(this.survey) {
+        this.formData.append('survey', JSON.stringify(this.survey))
+      }
+      for (var pair of this.formData.entries()) {
+          console.log(pair[0]+ ', ' + pair[1]); 
+      }
+      return this.$axios
+        .post('/document', this.formData)
+        .then(response => {
+          if (response.status === 200) {
+            this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
           }
         })
-        .catch(err => {
-          // failed in parse images to attached files
-          console.log(err)
-        })
+        .catch(error => {
+          delete this.formData
+          this.attachedFileNumber = 0
+          console.log(error.response)
+        });
+    },
+    async post () {
+      // manually add images as file
+      await this.handleProcessFile()
+      await this.uploadDocument()
     },
     handleFilePondInit: function () {
       console.log('FilePond has initialized')
@@ -270,7 +238,6 @@ export default {
     handleFilePondAddFile: function (error, file) {
       console.log(error)
       this.attachedFilenames.push(file.filename)
-      console.log(this.attachedFilenames)
     },
     removeFile(filename) {
       let fileid = this.$refs.pond.getFiles().find(file=>file.filename === filename).id
@@ -281,28 +248,48 @@ export default {
       this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename)
     },
     handleProcessFile: function () {
-      this.$refs.pond.processFiles()
-        .then(files => {
-          // go to read
-        })
-        .catch(err =>
-          console.log(err.response)
-        )
+      return this.$refs.pond.processFiles()
+        .then(res=> console.log(res))
+        .catch(err=>console.error(err))
     },
-    attachImage () {
+    uuid() {
+      let partialUUID = () => {
+          return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+      };
+      return partialUUID() + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + partialUUID() + partialUUID()
+    },
+    attachImages () {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty('image')).length
-      let imageSrc = []
-      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
+      return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty('image')) {
           // random generated uuid should given here
           let imgSrc = item.insert.image
-          item.insert.image = 'https://snulife.com/layouts/sejin7940_layout_snulife/images/main_logo_static.gif'
-          imageSrc.push(imgSrc)
+          let imageName = this.uuid() + '.' + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"))
+          item.insert.image = imageName;
+          this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName)
         }
       })
-      return this.$refs.pond.addFiles(imageSrc)
     },
+    dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+      var byteString;
+      if (dataURI.split(',')[0].indexOf('base64') >= 0)
+          byteString = atob(dataURI.split(',')[1]);
+      else
+          byteString = unescape(dataURI.split(',')[1]);
+
+      // separate out the mime component
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+      // write the bytes of the string to a typed array
+      var ia = new Uint8Array(byteString.length);
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ia], {type:mimeString});
+  },
     surveyButtonClick () {
+      console.log(this.currentSurvey, this.survey)
       if (this.currentSurvey.questions.length === 0) {
         this.currentSurvey.questions.push(
           {
@@ -326,7 +313,11 @@ export default {
       this.surveyDialog = false
     },
     deleteSurvey () {
-      if (confirm('설문을 삭제합니다.')) { this.survey = undefined }
+      if (confirm('설문을 삭제합니다.')) {
+        this.surveyDialog = false
+        this.currentSurvey.questions = []
+        this.survey = undefined 
+      }
     }
   },
   computed: {

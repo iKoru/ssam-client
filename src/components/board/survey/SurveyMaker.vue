@@ -4,6 +4,7 @@
     <v-toolbar-title>설문조사 생성</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
+      <v-btn color="alert" dark @click="deleteSurvey">설문삭제</v-btn>
       <v-btn color="success" dark @click="extractSurvey">설문완성</v-btn>
       <v-btn class="toolbar-btn-last" dark flat @click.native="$emit('closeSurvey')">닫기</v-btn>
     </v-toolbar-items>
@@ -49,10 +50,12 @@ export default {
   data () {
     return {
       dialog: false,
-      questions: this.currentSurvey.questions,
       editingQuestion: undefined,
       modifyingIndex: null
     }
+  },
+  computed: {
+    questions: function () { return this.currentSurvey.questions }
   },
   methods: {
     addQuestion (question) {
@@ -71,26 +74,9 @@ export default {
         }
       )
     },
-    // initQuestion () {
-    //   this.editingQuestion = {
-    //     questionNumber: '',
-    //     question: '',
-    //     answers: [
-    //       { text: '', selected: false },
-    //       { text: '', selected: false },
-    //       { text: '', selected: false }
-    //     ],
-    //     allowMultiple: false
-    //   }
-    //   this.questions.push(this.editingQuestion)
-    // },
-    // modifyQuestion (index) {
-    //   let newEditingQuestion = {}
-    //   Object.assign(newEditingQuestion, this.questions[index])
-    //   this.editingQuestion = newEditingQuestion
-    //   this.modifyingIndex = index
-    //   this.dialog = true
-    // },
+    deleteSurvey() {
+      this.$emit('deleteSurvey')
+    },
     deleteQuestion (index) {
       if(this.questions.length < 2) {
         alert('최소 하나의 질문을 입력해주세요')
