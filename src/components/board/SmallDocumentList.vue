@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-3">
     <template v-if="!list || list.length === 0">
       <div>표시할 내용이 없습니다.</div>
     </template>

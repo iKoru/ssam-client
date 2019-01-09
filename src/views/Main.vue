@@ -2,10 +2,21 @@
   <v-container px-0 fluid>
     <v-layout row wrap align-center>
       <v-flex xs12 sm6 md4 offset-md2>
-        <board-extractor boardType="L" :maxCount="5" class="elevation-1 ma-2"></board-extractor>
+        <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" class="elevation-1 ma-2"></board-extractor>
       </v-flex>
       <v-flex xs12 sm6 md4>
-        <board-extractor boardType="T" :maxCount="5" class="elevation-1 ma-2"></board-extractor>
+        <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" class="elevation-1 ma-2"></board-extractor>
+      </v-flex>
+      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :key="index" :style="{height:$vuetify.breakpoint.xsOnly?'240px':'480px'}">
+        <div class="elevation-1 ma-2 text-xs-center fill-height position-relative">
+          <div class="pt-3 position-relative">{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</div>
+          <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0"></small-document-list>
+          <div v-else class="d-flex cover-title">
+            <div class="my-auto flex">
+              표시할 내용이 없습니다.
+            </div>
+          </div>
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -16,16 +27,36 @@ import MainLayout from "../layouts/MainLayout";
 export default {
   name: "Main",
   components: {
-    BoardExtractor: () => import("@/components/board/BoardExtractor.vue")
+    BoardExtractor: () => import("@/components/board/BoardExtractor.vue"),
+    SmallDocumentList: () => import('@/components/board/SmallDocumentList.vue')
   },
   data() {
     return {
-      
+      recents:[]
     };
   },
   created() {
     this.$emit("update:layout", MainLayout);
   },
+  mounted(){
+    this.$axios.get('/recent', {headers:{silent:true}})
+    .then(response => {
+      this.recents = response.data
+    })
+    .catch(error => {
+      console.log(error);
+        this.$store.dispatch("showSnackbar", {text: `최근 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+    })
+  },
   methods: {}
 };
 </script>
+<style>
+.cover-title{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+}
+</style>

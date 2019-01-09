@@ -1,16 +1,31 @@
 
 <template>
-  <div class="text-xs-center">
-    <div class="pt-3">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}의 {{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
-    <v-carousel cycle hide-delimiters hide-controls v-model="period" class="mt-3 periodBestCarousel" :interval="10000" :height="(maxCount || 10)*50">
+  <div class="text-xs-center position-relative">
+    <div class="pt-3 position-relative">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}의 {{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
+    <v-carousel cycle hide-delimiters hide-controls v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*48 - 36">
       <v-carousel-item transition="fade-transition">
-        <small-document-list :list="items.daily" :maxCount="maxCount"></small-document-list>
+        <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0"></small-document-list>
+        <div v-else class="d-flex cover-title">
+          <div class="my-auto flex">
+            표시할 내용이 없습니다.
+          </div>
+        </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition">
-        <small-document-list :list="items.weekly" :maxCount="maxCount"></small-document-list>
+        <small-document-list :list="items.weekly" :maxCount="maxCount" v-if="items.weekly && items.weekly.length > 0"></small-document-list>
+        <div v-else class="d-flex cover-title">
+          <div class="my-auto flex">
+            표시할 내용이 없습니다.
+          </div>
+        </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition">
-        <small-document-list :list="items.monthly" :maxCount="maxCount"></small-document-list>
+        <small-document-list :list="items.monthly" :maxCount="maxCount" v-if="items.monthly && items.monthly.length > 0"></small-document-list>
+        <div v-else class="d-flex cover-title">
+          <div class="my-auto flex">
+            표시할 내용이 없습니다.
+          </div>
+        </div>
       </v-carousel-item>
     </v-carousel>
   </div>
