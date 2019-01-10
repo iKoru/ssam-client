@@ -103,7 +103,7 @@
                     <router-link :to="'/'+lounges[lounges.length - (lounges.length % 3) + n - 1].boardId" :title="lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName">{{lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName}}</router-link>
                   </v-flex>
                   <v-flex>&nbsp;</v-flex>
-                  <v-flex v-if="topics.length % 3 === 1">&nbsp;</v-flex>
+                  <v-flex v-if="lounges.length % 3 === 1">&nbsp;</v-flex>
                 </v-layout>
               </v-flex>
             </v-flex>
