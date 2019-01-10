@@ -40,11 +40,12 @@
                       <v-text-field ref="topicNickName" placeholder="토픽 닉네임" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('topicNickName')" v-model="profile.topicNickName" :error-messages="topicNickNameErrors" :readonly="!checkTopicNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkTopicNickNameUpdatable?'토픽에서 사용되는 닉네임입니다.':'마지막 수정 후 1개월 뒤에 다시 바꿀 수 있습니다.'"></v-text-field>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
-                      <v-subheader :style="{'padding-bottom':$vuetify.breakpoint.xsOnly?'12px':false}">계정 상태</v-subheader>
+                      <v-subheader :style="{'padding-bottom':$vuetify.breakpoint.xsOnly?'12px':false}">인증상태</v-subheader>
                     </v-flex>
                     <v-flex sm4 xs8 py-0 text-xs-left>
                       <div class="d-inline-flex align-center fill-height" style="padding-bottom:12px;">
-                        <span>{{userStatusItems[profile.status]}}</span><small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.status === 'AUTHORIZED'">({{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('YYYY.M.D')}})</small>
+                        <span>{{userAuthItems[profile.auth || 'NORMAL']}}</span>
+                        <small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.auth === 'AUTHORIZED'">({{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('Y.M.D')}})</small>
                       </div>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
@@ -198,10 +199,11 @@ export default {
         }
       },
       labels: {},
-      userStatusItems : {
-        'NORMAL':'미인증',
-        'AUTHORIZED':'인증',
-        'BLOCKED':'차단'
+      userAuthItems: {
+        NORMAL: "미인증(예비교사)",
+        AUTHORIZED: "인증",
+        EXPIRED: "인증만료(전직교사)",
+        DENIED: "인증제한"
       }
     };
   },
@@ -353,15 +355,15 @@ export default {
                     this.loading = false;
                     this.$store.dispatch("showSnackbar", {text: "내 정보를 변경하였습니다.", color: "success"});
                     if (params.major !== undefined || params.grade !== undefined) {
-                      params.infoModifiedDate = this.$moment().format("YYYYMMDD");
+                      params.infoModifiedDate = this.$moment().format("YMMDD");
                       this.profile.infoModifiedDate = params.infoModifiedDate;
                     }
                     if (params.topicNickName) {
-                      params.topicNickNameModifiedDate = this.$moment().format("YYYYMMDD");
+                      params.topicNickNameModifiedDate = this.$moment().format("YMMDD");
                       this.profile.topicNickNameModifiedDate = params.topicNickNameModifiedDate;
                     }
                     if (params.loungeNickName) {
-                      params.loungeNickNameModifiedDate = this.$moment().format("YYYYMMDD");
+                      params.loungeNickNameModifiedDate = this.$moment().format("YMMDD");
                       this.profile.loungeNickNameModifiedDate = params.loungeNickNameModifiedDate;
                     }
                     this.$store.dispatch("updateProfile", params);
@@ -409,18 +411,17 @@ export default {
           });
       }
     },
-    openDialog(){
+    openDialog() {
       this.dialog = true;
-      if(this.$refs.pond){
+      if (this.$refs.pond) {
         this.$refs.pond.browse();
-      }else{
-        let check = setInterval(
-        () => {
-          if(this.$refs.pond){
+      } else {
+        let check = setInterval(() => {
+          if (this.$refs.pond) {
             clearInterval(check);
-            this.$refs.pond.browse()
+            this.$refs.pond.browse();
           }
-        }, 100)
+        }, 100);
       }
     }
   },
