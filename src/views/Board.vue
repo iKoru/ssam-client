@@ -68,7 +68,7 @@ export default {
       //TODO : get notifications request
       next();
     } else {
-      next(false); //TODO : redirect to common 404 error page
+      next('/error?error=404');
     }
   },
   async beforeRouteEnter(to, from, next) {
@@ -79,7 +79,7 @@ export default {
       console.log(from);
       console.log(error);
       console.log("fail!!!");
-      next(false); //TODO : redirect to common 404 error page
+      next('/error?error=404');
       return;
     }
     next(vm => {

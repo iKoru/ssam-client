@@ -8,7 +8,7 @@ export default async (to, from, next) => {
     if (store.getters.profile.status === 'AUTHORIZED') {
       next();
     } else {
-      next(false);// TODO : redirect to unauthorized access page (need auth)
+      next('/error?error=403');
     }
   } else if (typeof result === 'string') {
     console.log(to, 'aaaa');

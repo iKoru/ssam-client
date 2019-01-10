@@ -117,6 +117,14 @@ const router = new Router({
         { path: '/searchDocument', name: 'SearchDocument', component: () => import('@/components/SearchDocument'), meta: { title: '게시물 검색' } }
       ]
     },
+    {
+      path:'/error',
+      component: () => import('@/views/Error'),
+      props: (route) => ({ error: route.query.error }),
+      meta:{
+        title: '에러'
+      }
+    },
     { // should be placed at the last of array
       path: '/:boardId', // eslint-disable-line no-useless-escape
       component: () => import('@/views/Board'),
