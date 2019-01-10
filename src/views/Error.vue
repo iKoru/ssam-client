@@ -15,6 +15,9 @@
               <h2 class="my-3 headline" v-else>요청을 처리하던 도중 에러가 발생하였습니다.</h2>
               <div>
                 <v-btn @click="$router.go(-1)">이전 페이지로 가기</v-btn>
+                <router-link to="/auth" v-if="errorCode === 403">
+                  <v-btn>인증 페이지로 가기</v-btn>
+                </router-link>
                 <router-link to="/">
                   <v-btn color="primary">메인 페이지로 가기</v-btn>
                 </router-link>
@@ -30,13 +33,13 @@
 <script>
 import PublicLayout from "../layouts/PublicLayout";
 export default {
-  props: ['error'],
+  props: ["error"],
   created() {
     this.$emit("update:layout", PublicLayout);
   },
-  computed:{
-    errorCode(){
-      return this.error?this.error*1:500;
+  computed: {
+    errorCode() {
+      return this.error ? this.error * 1 : 500;
     }
   }
 };
