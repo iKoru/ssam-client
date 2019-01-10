@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import requireSignin from './middleware/requireSignin'
-import requireAuth from './middleware/requreAuth'
+import requireAuth from './middleware/requireAuth'
 import visitorOnly from './middleware/visitorOnly'
 Vue.use(Router)
 
@@ -118,10 +118,10 @@ const router = new Router({
       ]
     },
     {
-      path:'/error',
+      path: '/error',
       component: () => import('@/views/Error'),
       props: (route) => ({ error: route.query.error }),
-      meta:{
+      meta: {
         title: '에러'
       }
     },

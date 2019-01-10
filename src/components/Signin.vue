@@ -68,11 +68,11 @@ export default {
           }
 
           this.$axios
-            .get("/user", {headers:{silent:true}})
+            .get("/user", {headers: {silent: true}})
             .then(response => {
               this.$store.dispatch("profile", response.data);
               if (redirectTo) {
-                if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YYYYMMDD")) {
+                if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
                   this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
                 } else {
                   this.$router.push(redirectTo + window.location.search); //preserve original redirect options
@@ -158,7 +158,7 @@ export default {
               .then(response => {
                 this.$store.dispatch("profile", response.data);
                 if (redirectTo) {
-                  if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YYYYMMDD")) {
+                  if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
                     this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
                   } else {
                     this.$router.push(redirectTo + window.location.search); //preserve original redirect options

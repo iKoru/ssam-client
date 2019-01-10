@@ -21,11 +21,11 @@
                   <v-spacer/>
                   <v-tooltip v-if="lounge.writeRestrictDate" bottom>
                     <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
-                    <span>{{$moment(lounge.writeRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                    <span>{{$moment(lounge.writeRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                   </v-tooltip>
                   <v-tooltip v-if="lounge.readRestrictDate" bottom>
                     <v-chip slot="activator" color="red" text-color="white" small>읽기제한</v-chip>
-                    <span>{{$moment(lounge.readRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                    <span>{{$moment(lounge.readRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                   </v-tooltip>
                 </v-layout>
               </v-list-tile>
@@ -57,19 +57,18 @@
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
                       <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
-                      <span>{{$moment(topic.writeRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                      <span>{{$moment(topic.writeRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                     <v-tooltip v-if="topic.readRestrictDate" bottom>
                       <v-chip slot="activator" color="red" text-color="white" small>읽기제한</v-chip>
-                      <span>{{$moment(topic.readRestrictDate, 'YYYYMMDD').format('YYYY년 M월 D일까지')}}</span>
+                      <span>{{$moment(topic.readRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                   </template>
                 </v-layout>
               </transition-group>
             </draggable>
             <v-layout v-else>
-              <span>
-                아직 구독하고 있는 토픽이 없네요.
+              <span>아직 구독하고 있는 토픽이 없네요.
                 <br>
                 <router-link to="/searchBoard" class="primary--text">새로운 토픽</router-link>을 구독해보세요!
               </span>
@@ -162,7 +161,7 @@ export default {
       }
     },
     openDialog() {
-      if (this.$store.getters.profile.status !== "AUTHORIZED") {
+      if (this.$store.getters.profile.auth !== "AUTHORIZED") {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }
@@ -228,7 +227,7 @@ export default {
 #createTopic {
   top: -4px;
 }
-#topicCreatorDialog{
+#topicCreatorDialog {
   -webkit-overflow-scrolling: touch;
 }
 </style>

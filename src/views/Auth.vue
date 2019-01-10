@@ -70,7 +70,7 @@ export default {
       this.$router.push(redirectTo && redirectTo !== "/auth" ? redirectTo : "/");
     },
     notToday() {
-      localStorage.setItem("authRequirement", this.$moment(new Date()).format("YYYYMMDD"));
+      localStorage.setItem("authRequirement", this.$moment(new Date()).format("YMMDD"));
       this.goNext();
     },
     sendAuth() {

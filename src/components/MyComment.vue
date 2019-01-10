@@ -25,7 +25,7 @@
                 </a>
               </td>
               <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD') }}</td>
             </tr>
           </template>
           <template slot="no-data">

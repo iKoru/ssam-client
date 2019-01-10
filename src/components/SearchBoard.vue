@@ -234,7 +234,7 @@ export default {
       this.topicCreator = false;
     },
     openTopicDialog() {
-      if (this.$store.getters.profile.status !== "AUTHORIZED") {
+      if (this.$store.getters.profile.auth !== "AUTHORIZED") {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }

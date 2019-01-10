@@ -130,14 +130,14 @@ export default {
         if (message.data.text.trim().length > 0) {
           message.data.text = message.data.text.trim();
           const chat = this.chats.find(x => x.chatId === this.chatId);
-          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format("YYYYMMDDHHmmss");
+          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format("YMMDDHHmmss");
           this.$axios
             .post("/message", {chatId: this.chatId, contents: message.data.text, lastSendTimestamp}, {headers: {silent: true}})
             .then(response => {
               if (Array.isArray(response.data.messageList)) {
                 response.data.messageList.reverse();
                 console.log(response.data.messageList);
-                this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
+                this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})));
                 if (response.data.messageList.length > 0) {
                   chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss").toDate();
                   chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents;
@@ -169,7 +169,7 @@ export default {
       this.axios
         .get("/message", {params: {chatId: item.chatId}})
         .then(response => {
-          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}}));
+          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}}));
           this.messageList.reverse();
           if (this.disabled) {
             this.messageList.push({type: "system", data: {text: `${item.otherNickName} 님이 채팅을 나갔습니다.`}});
@@ -213,7 +213,7 @@ export default {
           this.scrollToBottom = false;
           this.loadingMessages = true;
           this.axios
-            .get("/message", {params: {chatId: this.chatId, timestampBefore: this.messageList[0] ? this.$moment(this.messageList[0].data.meta, "YYYY.M.D hh:mm:ss a").format("YYYYMMDDHHmmss") : this.$moment().format("YYYYMMDDHHmmss")}, headers: {silent: true}})
+            .get("/message", {params: {chatId: this.chatId, timestampBefore: this.messageList[0] ? this.$moment(this.messageList[0].data.meta, "YYYY.M.D hh:mm:ss a").format("YMMDDHHmmss") : this.$moment().format("YMMDDHHmmss")}, headers: {silent: true}})
             .then(response => {
               if (Array.isArray(response.data)) {
                 if (response.data.length < 15) {
@@ -221,7 +221,7 @@ export default {
                 }
                 response.data.reverse();
                 const chat = this.chats.find(x => x.chatId === this.chatId);
-                this.messageList = response.data.map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})).concat(this.messageList);
+                this.messageList = response.data.map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})).concat(this.messageList);
                 this.loadingMessages = false;
                 this.$nextTick(() => {
                   this.scrollToBottom = true;
@@ -240,13 +240,13 @@ export default {
     loadNewMessages() {
       (() => {
         this.loadingMessages = true;
-        const lastSendTimestamp = this.messageList.length > 0 ? this.$moment(this.messageList[this.messageList.length - 1].data.meta, "YYYY.M.D hh:mm:ss a").format("YYYYMMDDHHmmss") : undefined;
+        const lastSendTimestamp = this.messageList.length > 0 ? this.$moment(this.messageList[this.messageList.length - 1].data.meta, "YYYY.M.D hh:mm:ss a").format("YMMDDHHmmss") : undefined;
         this.axios
           .get("/message", {params: {chatId: this.chatId, timestampAfter: lastSendTimestamp}, headers: {silent: true}})
           .then(response => {
             const chat = this.chats.find(x => x.chatId === this.chatId);
             response.data.reverse();
-            this.messageList = this.messageList.concat(response.data.filter(x => !lastSendTimestamp || x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("YYYY.M.D hh:mm:ss a")}})));
+            this.messageList = this.messageList.concat(response.data.filter(x => !lastSendTimestamp || x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})));
             this.loadingMessages = false;
           })
           .catch(error => {
