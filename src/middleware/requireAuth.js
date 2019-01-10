@@ -5,7 +5,7 @@ export default async (to, from, next) => {
   console.log('middleware!!!')
   const result = await checkSignin(to, from, router.app, store);
   if (typeof result === 'boolean' && result) {
-    if (store.getters.profile.status === 'AUTHORIZED') {
+    if (store.getters.profile.auth === 'AUTHORIZED') {
       next();
     } else {
       next('/error?error=403');
