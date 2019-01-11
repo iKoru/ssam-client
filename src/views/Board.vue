@@ -74,7 +74,7 @@ export default {
   async beforeRouteEnter(to, from, next) {
     let board;
     try {
-      board = await router.app.$axios.get("/board", {params: {boardId: to.path.replace("/", "")}});
+      board = await router.app.$axios.get("/board", {params: {boardId: to.params.boardId}});
     } catch (error) {
       console.log(from);
       console.log(error, JSON.stringify(error));

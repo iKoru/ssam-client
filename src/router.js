@@ -125,11 +125,6 @@ const router = new Router({
         title: '에러'
       }
     },
-    {
-      path: '/:boardId/:documentId(\\d+)', // eslint-disable-line no-useless-escape
-      component: () => import('@/components/board/ViewDocument'),
-      beforeEnter: requireAuth,
-    },
     { // should be placed at the last of array
       path: '/:boardId', // eslint-disable-line no-useless-escape
       component: () => import('@/views/Board'),
