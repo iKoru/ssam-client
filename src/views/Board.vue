@@ -77,9 +77,9 @@ export default {
       board = await router.app.$axios.get("/board", {params: {boardId: to.path.replace("/", "")}});
     } catch (error) {
       console.log(from);
-      console.log(error);
+      console.log(error, JSON.stringify(error));
       console.log("fail!!!");
-      next('/error?error=404');
+      next('/error?error=' + (error.response ? error.response.status || '404':'404'));
       return;
     }
     next(vm => {

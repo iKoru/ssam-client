@@ -122,6 +122,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          this.$router.replace('/error?error=' + (error && error.response? error.response.status || '404':'404'))
         });
     },
     deltaToHTML(delta) {
