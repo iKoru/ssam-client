@@ -151,7 +151,9 @@ export default {
         T: "토픽",
         L: "라운지",
         D: "아카이브",
-        E: "기타"
+        X: "기타",
+        E: '전직교사',
+        N: '예비교사'
       },
       searchQuery: "",
       allowedToJoin: false,
