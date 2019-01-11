@@ -67,7 +67,7 @@
 <script>
 const reserved = ["document", "documents", "profile", "profiles", "auth", "user", "users", "comment", "comments", "vote", "votes", "report", "reports", "index", "scraps", "scrap", "board", "boards", "manage", "manages", "chat", "chats", "message", "messages", "group", "groups", "event", "events", "signup", "signin", "signout", "resetPassword", "notification", "notifications", "survey", "list", "admin", "ADMIN", "ADMINISTRATOR", "administrator", "attach", "profiles", "animal", "loungeBest", "topicBest", "lounge", "topic", "type", "best", "sanction", "userId", "nickName", "myPage", "myBoard", "myCommunity", "pedagy", "myPedagy", "Pedagy"];
 const boardIdRegex = [/^(?:[a-zA-Z]+)(?:[a-zA-Z0-9\-_]{0,15})$/, /^((?!(--|__)).)*$/];
-const groupName = {M: "전공", G: "학년", N: "일반", R: "지역"};
+const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", Z:'인증'};
 export default {
   name: "topicCreator",
   data() {
@@ -186,6 +186,11 @@ export default {
     this.$axios
       .get("/group", {headers: {silent: true}})
       .then(response => {
+        response.data.forEach(x=>{
+          if(x.groupType === 'N' || x.groupType === 'D' || x.groupType === 'E'){
+            x.groupType = 'Z'
+          }
+        })
         this.groupItems = response.data.sort((a, b) => a.groupType < b.groupType);
         let previous = null;
         let i = 0;
@@ -203,7 +208,6 @@ export default {
           }
           i++;
         }
-        console.log(this.groupItems);
         this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
       })
       .catch(error => {
