@@ -336,7 +336,10 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
+.ql-image {
+  visibility: hidden;
+}
 #survey-button {
   width: 28px;
 }

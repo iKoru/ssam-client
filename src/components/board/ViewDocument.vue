@@ -21,10 +21,29 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
+      <v-layout row>
+        <v-spacer/>
+        <v-flex sm12 md4 text-sm-right v-if="document.attach">
+            <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{document.attach.length}}개</v-chip>
+            <v-tooltip v-model="showAttach" bottom>
+              <span slot="activator"></span>
+              <v-list style="background-color:#616161">
+                <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
+                  {{item.attachName}}
+                  <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
+                    <v-btn type="submit" icon color="white" circle small><v-icon small>mdi-arrow-down</v-icon></v-btn>
+                  </a>
+                </v-list-tile>
+              </v-list>
+            </v-tooltip> 
+        </v-flex>
+      </v-layout>
+    </v-flex>
+    <v-flex xs12>
       <v-card-text>
           <div v-html="documentHTML">
           </div>
-            {{document}}
+            <!-- {{document}} -->
       </v-card-text>
     </v-flex>
     <v-flex xs12 v-if="document.hasSurvey">
@@ -48,20 +67,8 @@
             {{document.voteUpCount}}
             </v-chip>
         </v-flex>
-        <v-flex sm12 md4 text-sm-right v-if="document.attach">
-          {{document.attach}}
-           <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{document.attach.length}}개</v-chip>
-            <v-tooltip v-model="showAttach" top>
-              <span slot="activator"></span>
-              <v-list style="background-color:#616161">
-                <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
-                  {{item.attachName}}
-                  <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
-                    <v-btn type="submit" icon color="white" circle small><v-icon small>mdi-arrow-down</v-icon></v-btn>
-                  </a>
-                </v-list-tile>
-              </v-list>
-            </v-tooltip> 
+        <v-flex sm12 md4 text-xs-right>
+          <v-icon color="red" small>pen</v-icon>
         </v-flex>
       </v-layout>
       <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "documents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
@@ -69,9 +76,8 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-
-       <WriteComment/>
-        <ViewComment/>
+      <ViewComment/>
+      <WriteComment/>
     </v-flex>
     <v-card-text>
         <br>작성자본인{{document.isWriter}}
