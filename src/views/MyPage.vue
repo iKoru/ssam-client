@@ -44,7 +44,10 @@
                     </v-flex>
                     <v-flex sm4 xs8 py-0 text-xs-left>
                       <div class="d-inline-flex align-center fill-height" style="padding-bottom:12px;">
-                        <span>{{userAuthItems[profile.auth || 'NORMAL']}}</span>
+                        <router-link v-if="profile.auth !== 'AUTHORIZED'" to="/auth" class="primary--text" title="이메일 인증 페이지로 이동">
+                          {{userAuthItems[profile.auth || 'NORMAL']}}
+                        </router-link>
+                        <span v-else>{{userAuthItems[profile.auth || 'NORMAL']}}</span>
                         <small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.auth === 'AUTHORIZED'">({{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('Y.M.D')}})</small>
                       </div>
                     </v-flex>

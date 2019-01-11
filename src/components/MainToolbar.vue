@@ -22,7 +22,7 @@
           <span slot="badge">{{totalNotifications}}</span>
         </v-badge>
       </v-btn>
-      <v-list class="py-0" v-if="!notification">
+      <v-list class="py-0" v-if="!notification" id="mainToolbarMenu">
         <v-list-tile to="/myPage" ripple="ripple">
           <v-list-tile-content class="align-end">내 계정정보</v-list-tile-content>
         </v-list-tile>
@@ -117,5 +117,8 @@ export default {
   position: absolute;
   top: 30px;
   right: 0;
+}
+#mainToolbarMenu{
+  white-space:nowrap;
 }
 </style>
