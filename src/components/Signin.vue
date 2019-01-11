@@ -61,7 +61,7 @@ export default {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
           });
-          console.log(response.data.token, jwt(response.data.token).userId);
+
           const redirectTo = response.data.redirectTo;
           if (response.data.imminent || response.data.needEmail) {
             this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
@@ -79,7 +79,7 @@ export default {
                 }
               } else {
                 const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
+                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
               }
             })
             .catch(err => {
@@ -165,7 +165,7 @@ export default {
                   }
                 } else {
                   const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
+                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
                 }
               })
               .catch(err => {
@@ -196,10 +196,10 @@ export default {
           });
       }
     },
-    focusPassword(){
-      if(this.password !== ''){
+    focusPassword() {
+      if (this.password !== "") {
         this.signin();
-      }else{
+      } else {
         this.$refs.password.focus();
       }
     }

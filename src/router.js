@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import requireSignin from './middleware/requireSignin'
 import requireAuth from './middleware/requireAuth'
 import visitorOnly from './middleware/visitorOnly'
+import checkNotification from './middleware/checkNotification'
 Vue.use(Router)
 
 const router = new Router({
@@ -153,5 +154,5 @@ router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? to.meta.title + ' - Pedagy' : 'Pedagy'
   next()
 })
-
+router.afterEach(checkNotification)
 export default router
