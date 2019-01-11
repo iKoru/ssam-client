@@ -15,7 +15,7 @@
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table hide-headers :headers="headers" id="searchBoardTable" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :loading="loading" class="customAction">
+            <v-data-table hide-headers :headers="headers" id="searchBoardTable" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :pagination.sync="pagination" :loading="loading" :class="{customAction:true, 'noResult':pagination.totalItems === 0}">
               <template slot="items" slot-scope="props">
                 <tr @click="openDialog(props.item)" class="cursor-pointer">
                   <td>{{boardTypeItems[props.item.boardType]}}</td>
@@ -157,6 +157,7 @@ export default {
       allowedToJoin: false,
       selected: {boardAuth: []},
       groupItems: [],
+      pagination:{},
       headers: [{text: "구분", value: "boardType", sortable: false}, {text: "이름", value: "boardName", sortable: false}, {text: "주소", value: "boardId", sortable: false}, {text: "설명", value: "boardDescription", sortable: false}]
     };
   },

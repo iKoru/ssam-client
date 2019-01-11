@@ -9,7 +9,7 @@
                 <h3 class="headline">채팅 목록</h3>
               </v-layout>
               <v-flex xs12>
-                <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" class="customAction">
+                <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalChats === 0}">
                   <template slot="items" slot-scope="props">
                     <tr class="cursor-pointer" @click="getChat(props.item)">
                       <td>
