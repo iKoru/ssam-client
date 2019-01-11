@@ -3,7 +3,7 @@
     <component :is="layout">
       <router-view :layout.sync="layout"/>
     </component>
-    <v-dialog :value="$store.getters.spinner" width="300">
+    <v-dialog :value="$store.getters.spinner" hide-overlay width="300">
       <v-card color="primary" :dark="$store.getters.isLight">
         <v-card-text>
           <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
