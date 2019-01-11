@@ -8,7 +8,8 @@ export default async (to, from, next) => {
     if (store.getters.profile.auth === 'AUTHORIZED') {
       next();
     } else {
-      next('/error?error=403');
+      console.log(store.getters.profile.auth, '튕김')
+      next();
     }
   } else if (typeof result === 'string') {
     console.log(to, 'aaaa');
