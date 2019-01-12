@@ -15,7 +15,7 @@
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table hide-headers :headers="headers" id="searchBoardTable" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :loading="loading" class="customAction">
+            <v-data-table hide-headers :headers="headers" id="searchBoardTable" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :pagination.sync="pagination" :loading="loading" :class="{customAction:true, 'noResult':pagination.totalItems === 0}">
               <template slot="items" slot-scope="props">
                 <tr @click="openDialog(props.item)" class="cursor-pointer">
                   <td>{{boardTypeItems[props.item.boardType]}}</td>
@@ -151,12 +151,15 @@ export default {
         T: "토픽",
         L: "라운지",
         D: "아카이브",
-        E: "기타"
+        X: "기타",
+        E: '전직교사',
+        N: '예비교사'
       },
       searchQuery: "",
       allowedToJoin: false,
       selected: {boardAuth: []},
       groupItems: [],
+      pagination:{},
       headers: [{text: "구분", value: "boardType", sortable: false}, {text: "이름", value: "boardName", sortable: false}, {text: "주소", value: "boardId", sortable: false}, {text: "설명", value: "boardDescription", sortable: false}]
     };
   },
@@ -234,7 +237,7 @@ export default {
       this.topicCreator = false;
     },
     openTopicDialog() {
-      if (this.$store.getters.profile.status !== "AUTHORIZED") {
+      if (this.$store.getters.profile.auth !== "AUTHORIZED") {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }

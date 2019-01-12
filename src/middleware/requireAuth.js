@@ -6,10 +6,11 @@ export default async (to, from, next) => {
   const result = await checkSignin(to, from, router.app, store);
   next()
   if (typeof result === 'boolean' && result) {
-    if (store.getters.profile.status === 'AUTHORIZED') {
+    if (store.getters.profile.auth === 'AUTHORIZED') {
       next();
     } else {
-      next(false);// TODO : redirect to unauthorized access page (need auth)
+      console.log(store.getters.profile.auth, '튕김')
+      next();
     }
   } else if (typeof result === 'string') {
     console.log(to, 'aaaa');

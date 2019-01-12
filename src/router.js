@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import requireSignin from './middleware/requireSignin'
-import requireAuth from './middleware/requreAuth'
+import requireAuth from './middleware/requireAuth'
 import visitorOnly from './middleware/visitorOnly'
+import checkNotification from './middleware/checkNotification'
 Vue.use(Router)
 
 const router = new Router({
@@ -117,13 +118,21 @@ const router = new Router({
         { path: '/searchDocument', name: 'SearchDocument', component: () => import('@/components/SearchDocument'), meta: { title: '게시물 검색' } }
       ]
     },
+    {
+      path: '/error',
+      component: () => import('@/views/Error'),
+      props: (route) => ({ error: route.query.error }),
+      meta: {
+        title: '에러'
+      }
+    },
     { // should be placed at the last of array
       path: '/:boardId', // eslint-disable-line no-useless-escape
       component: () => import('@/views/Board'),
       beforeEnter: requireAuth,
       children: [
         {
-          path: '/',
+          path: '',
           name: 'boardList',
           component: () => import('@/components/board/BoardList')
         },
@@ -150,5 +159,5 @@ router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? to.meta.title + ' - Pedagy' : 'Pedagy'
   next()
 })
-
+router.afterEach(checkNotification)
 export default router

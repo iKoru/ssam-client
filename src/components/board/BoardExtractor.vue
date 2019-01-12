@@ -1,8 +1,9 @@
 
 <template>
   <div class="text-xs-center position-relative">
-    <div class="pt-3 position-relative">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}의 {{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
-    <v-carousel cycle hide-delimiters hide-controls v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
+    <div class="pt-3 position-relative">{{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
+    <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
+    <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
       <v-carousel-item transition="fade-transition">
         <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false"></small-document-list>
         <div v-else class="d-flex cover-title">
@@ -49,13 +50,12 @@ export default {
       .get("/best", {params: {boardType: this.boardType}, headers: {silent: true}})
       .then(response => {
         this.items = response.data;
-        //this.targets = this.items.daily;
       })
       .catch(error => {
         console.log(error);
         this.$store.dispatch("showSnackbar", {text: `베스트 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
       });
-  },
+  }
 };
 </script>
 <style>
@@ -64,5 +64,11 @@ export default {
 }
 .periodBestCarousel .v-carousel__item{
   display:block;
+}
+.boardExtractorPeriod{
+  position:absolute;
+  top:20px;
+  right:20px;
+  color:#aaa;
 }
 </style>

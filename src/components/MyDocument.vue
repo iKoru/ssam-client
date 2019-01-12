@@ -11,7 +11,7 @@
     </v-card-title>
     <v-layout row>
       <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
-        <v-data-table :headers="headers" xs12 :items="userDocuments" id="userDocumentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" class="customAction">
+        <v-data-table :headers="headers" xs12 :items="userDocuments" id="userDocumentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalUserDocuments === 0}">
           <template slot="items" slot-scope="props">
             <tr @click="selected = (selected===props.index?null:props.index)">
               <td>
@@ -25,7 +25,7 @@
                 </a>
               </td>
               <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD') }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD') }}</td>
             </tr>
           </template>
           <template slot="no-data">

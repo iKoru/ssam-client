@@ -35,7 +35,7 @@ export default async (to, from, app, store) => {
       }
       store.dispatch('profile', response.data);
       if (redirectTo) {
-        if (redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= app.$moment().format('YYYYMMDD')) {
+        if (redirectTo === '/auth' && localStorage.getItem('authRequirement') && localStorage.getItem('authRequirement') >= app.$moment().format('YMMDD')) {
           return true;
         } else {
           return redirectTo + '?' + qs.stringify({ redirectTo: to.path }); // preserve original redirect options

@@ -3,7 +3,7 @@
     <v-layout>
       <v-flex>
         <v-form ref="form" lazy-validation>
-          <v-text-field name="userId" ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required maxlength="50" @focus="clearError" autofocus></v-text-field>
+          <v-text-field name="userId" ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required maxlength="50" @focus="clearError" autofocus @keydown.enter.stop="focusPassword"></v-text-field>
           <v-text-field name="password" ref="password" height="20" v-model="password" :error="passwordError" :rules="passwordRules" label="비밀번호" required type="password" @keydown.enter.stop="signin" @focus="clearError"></v-text-field>
 
           <v-btn color="primary" @click="signin" block :loading="loading">로그인</v-btn>
@@ -61,25 +61,25 @@ export default {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
           });
-          console.log(response.data.token, jwt(response.data.token).userId);
+
           const redirectTo = response.data.redirectTo;
           if (response.data.imminent || response.data.needEmail) {
             this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
           }
 
           this.$axios
-            .get("/user", {headers:{silent:true}})
+            .get("/user", {headers: {silent: true}})
             .then(response => {
               this.$store.dispatch("profile", response.data);
               if (redirectTo) {
-                if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YYYYMMDD")) {
+                if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
                   this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
                 } else {
                   this.$router.push(redirectTo + window.location.search); //preserve original redirect options
                 }
               } else {
                 const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
+                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
               }
             })
             .catch(err => {
@@ -158,14 +158,14 @@ export default {
               .then(response => {
                 this.$store.dispatch("profile", response.data);
                 if (redirectTo) {
-                  if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YYYYMMDD")) {
+                  if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
                     this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
                   } else {
                     this.$router.push(redirectTo + window.location.search); //preserve original redirect options
                   }
                 } else {
                   const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" ? searchRedirectTo : "/");
+                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
                 }
               })
               .catch(err => {
@@ -194,6 +194,13 @@ export default {
               this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
             }
           });
+      }
+    },
+    focusPassword() {
+      if (this.password !== "") {
+        this.signin();
+      } else {
+        this.$refs.password.focus();
       }
     }
   }

@@ -57,6 +57,7 @@ export default {
     setBoard(board) {
       this.board = board;
       this.boardId = board.boardId;
+      document.title = board.boardName ? board.boardName + ' - Pedagy' : 'Pedagy'
       this.$store.dispatch("switchBoardType", this.board.boardType === "T" ? "T" : "L");
     }
   },
@@ -64,27 +65,36 @@ export default {
     this.$emit("update:layout", MainLayout);
   },
   async beforeRouteUpdate(to, from, next) {
-    if (await this.getBoard(to.path.split("/")[1])) {
+    if(this.$store.getters.boards.some(x=>x.boardId === to.params.boardId)){
+      this.setBoard(this.$store.getters.boards.find(x=>x.boardId === to.params.boardId));
+      next();
+    }else if (await this.getBoard(to.params.boardId)) {
       //TODO : get notifications request
       next();
     } else {
-      next(false); //TODO : redirect to common 404 error page
+      next('/error?error=404');
     }
   },
   async beforeRouteEnter(to, from, next) {
-    let board;
-    try {
-      board = await router.app.$axios.get("/board", {params: {boardId: to.path.replace("/", "")}});
-    } catch (error) {
-      console.log(from);
-      console.log(error);
-      console.log("fail!!!");
-      next(false); //TODO : redirect to common 404 error page
-      return;
+    if(router.app.$store.getters.boards.some(x=>x.boardId === to.params.boardId)){
+      next(vm => {
+        vm.setBoard(router.app.$store.getters.boards.find(x=>x.boardId === to.params.boardId))
+      });
+    }else{
+      let board;
+      try {
+        board = await router.app.$axios.get("/board", {params: {boardId: to.params.boardId}});
+      } catch (error) {
+        console.log(from);
+        console.log(error, JSON.stringify(error));
+        console.log("fail!!!");
+        next('/error?error=' + (error.response ? error.response.status || '404':'404'));
+        return;
+      }
+      next(vm => {
+        vm.setBoard(board.data);
+      });
     }
-    next(vm => {
-      vm.setBoard(board.data);
-    });
   }
 };
 </script>

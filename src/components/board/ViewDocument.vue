@@ -1,23 +1,17 @@
 <template>
   <v-layout column v-if="document">
     <v-flex xs12>
-       <v-card-title primary-title>
-          <div class="w-100">
-            <h3 class="headline mb-0">{{document.title}}</h3>
-            <v-layout row>
-              <v-flex xs6></v-flex>
-              <v-flex xs2>
-                {{document.nickName}}
-              </v-flex>
-              <v-flex xs2>
-                조회수 {{document.viewCount}}
-              </v-flex>
-              <v-flex xs3 text-xs-right>
-                {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("YYYY.MM.DD HH:mm:ss")}}
-              </v-flex>
-            </v-layout>
-          </div>
-        </v-card-title>
+      <v-card-title primary-title>
+        <div class="w-100">
+          <h3 class="headline mb-0">{{document.title}}</h3>
+          <v-layout row>
+            <v-flex xs6></v-flex>
+            <v-flex xs2>{{document.nickName}}</v-flex>
+            <v-flex xs2>조회수 {{document.viewCount}}</v-flex>
+            <v-flex xs3 text-xs-right>{{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}</v-flex>
+          </v-layout>
+        </div>
+      </v-card-title>
     </v-flex>
     <v-divider/>
     <v-flex xs12>
@@ -41,14 +35,13 @@
     </v-flex>
     <v-flex xs12>
       <v-card-text>
-          <div v-html="documentHTML">
-          </div>
-            {{document}}
+        <div v-html="documentHTML"></div>
+        {{document}}
       </v-card-text>
     </v-flex>
     <v-flex xs12 v-if="document.hasSurvey">
       <v-layout row>
-        <v-flex xs10>    
+        <v-flex xs10>
           <v-card-text>
             <Survey :survey="survey"/>
           </v-card-text>
@@ -57,8 +50,7 @@
     </v-flex>
     <v-flex xs12>
       <v-layout row>
-        <v-flex sm12 md4>
-        </v-flex>
+        <v-flex sm12 md4></v-flex>
         <v-flex sm12 md4 text-xs-center>
           <v-chip color="indigo" text-color="white" @click.native="voteDocument">
             <div class="vote-chip">
@@ -79,7 +71,6 @@
         </v-flex>
       </v-layout>
       <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "documents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
-     
     </v-flex>
     <v-divider/>
     <v-flex xs12>
@@ -87,20 +78,21 @@
       <WriteComment/>
     </v-flex>
     <v-card-text>
-        <br>작성자본인{{document.isWriter}}
-        <br >
-      </v-card-text>
+      <br>
+      작성자본인{{document.isWriter}}
+      <br>
+    </v-card-text>
   </v-layout>
 </template>
 
 <script>
 // import LinkPrevue from '@/components/LinkPrevue'
-import Survey from '@/components/board/survey/Survey'
-import WriteComment from '@/components/board/WriteComment'
-import ViewComment from '@/components/board/ViewComment'
-import BoardMixins from '@/components/mixins/BoardMixins'
-import _Quill from 'quill'
-const Quill = window.Quill || _Quill
+import Survey from "@/components/board/survey/Survey";
+import WriteComment from "@/components/board/WriteComment";
+import ViewComment from "@/components/board/ViewComment";
+import BoardMixins from "@/components/mixins/BoardMixins";
+import _Quill from "quill";
+const Quill = window.Quill || _Quill;
 export default {
   props: [],
   data() {
@@ -116,14 +108,14 @@ export default {
     WriteComment,
     ViewComment
   },
-  mixins: [ BoardMixins ],
+  mixins: [BoardMixins],
   mounted() {
     this.document = localStorage.item;
   },
   created() {
     this.getDocument();
   },
-  computed:{
+  computed: {
     webUrl() {
       return process.env.VUE_APP_WEB_URL;
     }
@@ -135,14 +127,14 @@ export default {
         .then(response => {
           console.log(response);
           this.document = response.data;
-          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents))
-          if(this.document.hasSurvey) {
-            this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey)
+          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents));
+          if (this.document.hasSurvey) {
+            this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
           }
         })
         .catch(error => {
-          console.log(error)
-          this.$router.push(`/${this.$route.params.boardId}`)
+          console.log(error);
+          this.$router.replace('/error?error=' + (error && error.response? error.response.status || '404':'404'))
         });
     },
     deleteDocument () {
@@ -168,21 +160,21 @@ export default {
       })
     },
     deltaToHTML(delta) {
-        var tempCont = document.createElement("div");
-        let quill = new Quill(tempCont)
-        delta.ops.forEach(item => {
-          if (item.insert.hasOwnProperty('image')) {
+      var tempCont = document.createElement("div");
+      let quill = new Quill(tempCont);
+      delta.ops.forEach(item => {
+        if (item.insert.hasOwnProperty("image")) {
           // random generated uuid should given here
           item.insert.image = this.getImagePath(item.insert.image);
-          }
-        })
-        quill.setContents(delta);
-        return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
+        }
+      });
+      quill.setContents(delta);
+      return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
     },
     getImagePath(imagePath) {
-      let attach = this.document.attach
-      this.document.attach = this.document.attach.filter(item=>item.attachName!==imagePath)
-      return this.webUrl + attach.find(item=>item.attachName === imagePath).attachPath
+      let attach = this.document.attach;
+      this.document.attach = this.document.attach.filter(item => item.attachName !== imagePath);
+      return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);
@@ -190,8 +182,7 @@ export default {
         this.link = href[0].substr(0, href[0].indexOf("<"));
         console.log(this.link);
       }
-    },
-    
+    }
   }
 };
 </script>

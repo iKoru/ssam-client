@@ -65,7 +65,7 @@ export default {
     moreNotification() {
       this.loading = true;
       this.$axios
-        .get("/notification", {params: {dateTimeBefore: this.$moment(this.notifications[this.notifications.length - 1].createdDateTime).format("YYYYMMDDHHmmss")}, headers: {silent: true}})
+        .get("/notification", {params: {dateTimeBefore: this.$moment(this.notifications[this.notifications.length - 1].createdDateTime).format("YMMDDHHmmss")}, headers: {silent: true}})
         .then(response => {
           this.loading = false;
           this.$store.dispatch("addNotifications", response.data);
