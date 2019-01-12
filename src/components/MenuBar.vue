@@ -1,6 +1,6 @@
 <template>
   <v-container px-0 py-0 fluid id="menubarContainer">
-    <v-layout row class="menuBar position-relative">
+    <v-layout row id="menuBar" class="position-relative">
       <v-flex sm2 :class="{'loungeTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'position-relative':true, 'hide-menuBar':!menuBar}" order-sm1>
         <v-flex class="position-absolute menuBarTab">
           <v-tabs light hide-slider v-model="menu" :mandatory="false" height="32">
@@ -85,7 +85,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex order-sm2>
+      <v-flex order-sm2 :sm10="menu===1" :sm8="menu===0">
         <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false">
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents':true}">
             <template v-show="menu===0">
@@ -214,7 +214,7 @@ export default {
 </script>
 
 <style>
-.menuBar {
+#menuBar {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -222,16 +222,6 @@ export default {
 #menubarContainer {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-.menu {
-  height: 150px;
-  background-color: lightgrey;
-}
-@media (max-width: 600px) {
-  .menu {
-    height: 35px;
-    overflow: auto;
-  }
 }
 .menuBarTab {
   max-height: 32px;
@@ -257,7 +247,7 @@ export default {
 .topicTab .v-tabs__item {
   opacity: 1;
 }
-.topicTabMenuBar.flex.sm2 {
+.topicTabMenuBar {
   position: absolute;
   top: 0;
   right: 0;
