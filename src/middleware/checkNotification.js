@@ -2,22 +2,17 @@ import store from '../store'
 import router from '../router'
 let check;
 export default async () => {
-  if (!check) {
-    if (store.getters.accessToken) {
-      check = setTimeout(() => {
-        if (store.getters.accessToken) {
-          router.app.$axios
-            .get('/notification')
-            .then(response => {
-              store.dispatch('addNotifications', response.data);
-              check = null;
-            })
-            .catch(error => {
-              check = null;
-              console.log(error);
-            });
-        }
-      }, 1000 * 60 * 5);
-    }
+  if (!check && store.getters.accessToken) {
+    check = setTimeout(() => {
+      check = null
+    }, 1000 * 60 * 5);
+    router.app.$axios
+      .get('/notification', { headers: { silent: true } })
+      .then(response => {
+        store.dispatch('addNotifications', response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 }

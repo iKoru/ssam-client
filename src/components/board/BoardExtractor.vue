@@ -4,28 +4,22 @@
     <div class="pt-3 position-relative">{{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
     <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
     <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
-      <v-carousel-item transition="fade-transition">
+      <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false"></small-document-list>
         <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">
-            표시할 내용이 없습니다.
-          </div>
+          <div class="my-auto flex">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
-      <v-carousel-item transition="fade-transition">
+      <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.weekly" :maxCount="maxCount" v-if="items.weekly && items.weekly.length > 0" :showDateTime="false"></small-document-list>
         <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">
-            표시할 내용이 없습니다.
-          </div>
+          <div class="my-auto flex">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
-      <v-carousel-item transition="fade-transition">
+      <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.monthly" :maxCount="maxCount" v-if="items.monthly && items.monthly.length > 0" :showDateTime="false"></small-document-list>
         <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">
-            표시할 내용이 없습니다.
-          </div>
+          <div class="my-auto flex">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
     </v-carousel>
@@ -38,11 +32,11 @@ export default {
   components: {
     SmallDocumentList
   },
-  props:['boardType', 'maxCount'],
+  props: ["boardType", "maxCount"],
   data() {
     return {
-      period:0,
-      items: {daily:[], weekly:[], monthly:[]}
+      period: 0,
+      items: {daily: [], weekly: [], monthly: []}
     };
   },
   created() {
@@ -59,16 +53,31 @@ export default {
 };
 </script>
 <style>
-.periodBestCarousel{
-  box-shadow:none;
+.periodBestCarousel {
+  box-shadow: none;
 }
-.periodBestCarousel .v-carousel__item{
-  display:block;
+.periodBestCarousel .v-carousel__controls__item {
+  margin: 0 !important;
 }
-.boardExtractorPeriod{
-  position:absolute;
-  top:20px;
-  right:20px;
-  color:#aaa;
+.periodBestCarousel .v-carousel__controls {
+  background: white;
+}
+.periodBestCarousel .v-btn--active:before,
+.periodBestCarousel .v-btn:hover:before,
+.periodBestCarousel .v-btn:focus:before {
+  background-color: unset;
+}
+.periodBestCarousel .v-carousel__controls__item .v-icon {
+  opacity: 0.1;
+}
+.periodBestCarousel .v-carousel__controls__item:hover .v-icon,
+.periodBestCarousel .v-carousel__controls__item.v-btn--active .v-icon {
+  opacity: 0.5;
+}
+.boardExtractorPeriod {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #aaa;
 }
 </style>

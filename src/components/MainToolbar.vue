@@ -88,16 +88,6 @@ export default {
     closeDialog() {
       this.notification = false;
     }
-  },
-  mounted() {
-    this.$axios
-      .get("/notification")
-      .then(response => {
-        this.$store.dispatch("addNotifications", response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
   }
 };
 </script>
@@ -118,7 +108,7 @@ export default {
   top: 30px;
   right: 0;
 }
-#mainToolbarMenu{
-  white-space:nowrap;
+#mainToolbarMenu {
+  white-space: nowrap;
 }
 </style>
