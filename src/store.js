@@ -140,6 +140,8 @@ export default new Vuex.Store({
       notifications.forEach(x => {
         if (!state.notifications.some(y => y.notificationId === x.notificationId)) {
           state.notifications.push(x)
+        } else {
+          state.notifications.splice(state.notifications.findIndex(y => y.notificationId === x.notificationId), 1, x);
         }
       })
     }
