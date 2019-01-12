@@ -20,9 +20,7 @@
                       </td>
                       <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.otherNickName }}</td>
                       <td class="text-xs-left multi-row">{{getShortContents(props.item.lastContents)}}</td>
-                      <td class="text-xs-right">
-                        <timeago :datetime="props.item.lastSendTimestamp" :autoUpdate="true"></timeago>
-                      </td>
+                      <td class="text-xs-right">{{props.item.lastSendTimestamp.fromNow()}}</td>
                       <td>
                         <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
                       </td>
@@ -114,7 +112,7 @@ export default {
       this.$axios
         .get("/message/list", {params: {page: this.pagination.page}, headers: {silent: true}})
         .then(response => {
-          this.chats = response.data.map(x => ({...x, lastSendTimestamp: this.$moment(x.lastSendTimestamp, "YYYYMMDDHHmmss").toDate()}));
+          this.chats = response.data.map(x => ({...x, lastSendTimestamp: this.$moment(x.lastSendTimestamp, "YYYYMMDDHHmmss")}));
           this.totalChats = response.data.length > 0 ? response.data[0].totalCount : 0;
           this.loading = false;
         })

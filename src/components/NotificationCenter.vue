@@ -12,9 +12,7 @@
         <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
           <v-list-tile-title>{{notification.message}}</v-list-tile-title>
           <div class="timeago">
-            <v-list-tile-sub-title>
-              <timeago :datetime="notification.createdDateTime" :autoUpdate="true"></timeago>
-            </v-list-tile-sub-title>
+            <v-list-tile-sub-title>{{notification.createdDateTime.fromNow()}}</v-list-tile-sub-title>
           </div>
         </v-list-tile>
         <v-list-tile v-if="$vuetify.breakpoint.xsOnly || notifications.length < notifications[0].totalCount">
@@ -92,7 +90,7 @@ export default {
   },
   computed: {
     notifications() {
-      return this.$store.getters.notifications.map(x => ({...x, createdDateTime: this.$moment(x.createdDateTime, "YYYYMMDDHHmmss").toDate()}));
+      return this.$store.getters.notifications.map(x => ({...x, createdDateTime: this.$moment(x.createdDateTime, "YYYYMMDDHHmmss")}));
     }
   }
 };
