@@ -14,15 +14,15 @@
       </v-layout>
       <v-layout row>
         <v-spacer v-if="$vuetify.breakpoint.smAndUp"/>
-        <v-flex xs4 sm1 my-auto py-0 text-xs-center >
+        <v-flex xs4 sm1 my-auto py-0 text-xs-left >
           <v-btn @click="$refs.imageAttach.click()" icon><v-icon>image</v-icon>이미지</v-btn>
         </v-flex>
-        <v-flex xs4 sm1 text-xs-center my-auto py-0 mx-auto px-auto>
+        <v-flex xs4 sm1 text-xs-right my-auto py-0 mx-auto px-auto>
           <v-checkbox hide-details label="익명" v-model="isAnonymous">
           </v-checkbox>
         </v-flex>
-        <v-flex xs4 sm1 text-xs-center>
-          <v-btn block @click="postComment">
+        <v-flex xs4 my-auto sm2 text-xs-center>
+          <v-btn small short @click="postComment">
               쓰기
           </v-btn>
         </v-flex>

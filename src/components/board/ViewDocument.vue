@@ -50,23 +50,20 @@
     </v-flex>
     <v-flex xs12>
       <v-layout row>
-        <v-flex sm12 md4></v-flex>
-        <v-flex sm12 md4 text-xs-center>
-          <v-chip color="indigo" text-color="white" @click.native="voteDocument">
-            <div class="vote-chip">
-            <v-avatar>
-              <v-icon color="white" small>thumb_up</v-icon>
-            </v-avatar>
-            {{document.voteUpCount}}
-            </div>
-          </v-chip>
+        <v-flex xs12 md4></v-flex>
+        <v-flex xs12 md4 text-xs-center>
+          <v-btn color="white" class="vote-chip" small short @click.native="voteDocument">
+            <v-icon color="indigo" small>thumb_up</v-icon>
+            &nbsp;
+            <v-label font-color="indigo">{{document.voteUpCount}}</v-label>
+          </v-btn>
         </v-flex>
-        <v-flex sm12 md4 text-xs-right pr-2 my-auto>
+        <v-flex xs12 md4 text-xs-right pr-2 my-auto>
           <router-link v-if="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
-            <v-label>수정 / </v-label>
+            <v-label>수정 </v-label>
           </router-link>
           <!-- <v-label v-if="document.isWriter" @click="editDocument">수정 /</v-label> -->
-          <v-label v-if="document.isWriter" @click="deleteDocument"> 삭제 /</v-label>
+          <v-label v-if="document.isWriter" @click="deleteDocument"> 삭제 </v-label>
           <v-label> 신고</v-label>
         </v-flex>
       </v-layout>
@@ -91,8 +88,8 @@ import Survey from "@/components/board/survey/Survey";
 import WriteComment from "@/components/board/WriteComment";
 import ViewComment from "@/components/board/ViewComment";
 import BoardMixins from "@/components/mixins/BoardMixins";
-import _Quill from "quill";
-const Quill = window.Quill || _Quill;
+import Quill from 'quill'
+
 export default {
   props: [],
   data() {
@@ -127,7 +124,7 @@ export default {
         .then(response => {
           console.log(response);
           this.document = response.data;
-          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents));
+          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents), this.document.attach);
           if (this.document.hasSurvey) {
             this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
           }
@@ -172,7 +169,7 @@ export default {
       return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
     },
     getImagePath(imagePath) {
-      let attach = this.document.attach;
+      let attach = this.document.attach
       this.document.attach = this.document.attach.filter(item => item.attachName !== imagePath);
       return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;
     },

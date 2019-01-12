@@ -48,8 +48,6 @@ const BoardMixins = {
     },
     timeParser(timestamp) {
       let time = moment(timestamp, "YYYYMMDDHHmmss").format("YYYY.MM.DD HH:mm:ss")
-        console.log(moment(time).fromNow())
-        moment.locale('ko')
         return moment(time).fromNow()
     }
   }
