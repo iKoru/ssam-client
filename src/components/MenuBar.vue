@@ -1,6 +1,6 @@
 <template>
   <v-container px-0 py-0 fluid id="menubarContainer">
-    <v-layout row class="menuBar">
+    <v-layout row class="menuBar position-relative">
       <v-flex sm2 :class="{'loungeTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'position-relative':true, 'hide-menuBar':!menuBar}" order-sm1>
         <v-flex class="position-absolute menuBarTab">
           <v-tabs light hide-slider v-model="menu" :mandatory="false" height="32">
@@ -45,18 +45,14 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'position-relative':true, 'hide-menuBar':!menuBar}" order-sm3>
-        <v-flex class="position-absolute menuBarTab">
-          <v-tabs dark hide-slider v-model="menu" :mandatory="false" height="32">
-            <v-tab :key="1" class="topicTab flex" @click.stop="toggleMenuBar('topic')">토픽</v-tab>
-          </v-tabs>
-        </v-flex>
+      <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'hide-menuBar':!menuBar}" id="topicTabScreen"></v-flex>
+      <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'hide-menuBar':!menuBar}" order-sm3 v-show="menu===0">
         <v-layout row class="menuBarContents">
           <v-flex class="menuColumn position-relative">
-            <div class="switchTabIcon switchToLounge cursor-pointer" v-show="menu===0" @click="toggleMenuBar('topic')">
+            <div class="switchTabIcon switchToLounge cursor-pointer" @click="toggleMenuBar('topic')">
               <v-icon class="white--text">navigate_before</v-icon>
             </div>
-            <div class="ml-2" v-show="menu===0">
+            <div class="ml-2">
               <template v-if="topics.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
                   <router-link :to="topics[n-1].boardId">{{topics[n-1].boardName}}</router-link>
@@ -166,6 +162,11 @@
           </v-tab-item>
         </v-tabs-items>
       </v-flex>
+      <v-flex sm2 class="topicTabMenuBar">
+        <v-tabs dark hide-slider v-model="menu" :mandatory="false" height="32">
+          <v-tab :key="1" class="topicTab flex" @click.stop="toggleMenuBar('topic')">토픽</v-tab>
+        </v-tabs>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -250,22 +251,31 @@ export default {
 .topicTab .flex {
   color: white;
 }
+.v-tabs__div.topicTab {
+  width: 100%;
+}
 .topicTab .v-tabs__item {
   opacity: 1;
+}
+.topicTabMenuBar.flex.sm2 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+}
+#topicTabScreen {
+  position: absolute;
+  width: 100%;
+  right: 0;
+  visibility: visible;
+  transition: height 0.3s linear;
+}
+#topicTabScreen.hide-menuBar {
+  visibility: hidden;
 }
 .menuBarContents {
   padding-top: 32px;
 }
-/* .tapSpacer {
-  background: linear-gradient(to right, white 50%, #424242 50%);
-  background-size: 200% 100%;
-  background-position: left bottom;
-  transition: background-position 0.3s cubic-bezier(0.27, 0.3, 0.53, 0.91);
-  border-right-color: #424242;
-}
-.tapSpacer.dark {
-  background-position: right bottom;
-} */
 .switchTabIcon {
   position: absolute;
   top: 50%;
