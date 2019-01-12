@@ -13,7 +13,7 @@ export default new Vuex.Store({
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
-    menuBar: false,
+    menuBar: true,
     boards: [],
     userBoards: [],
     notifications: []
@@ -137,7 +137,11 @@ export default new Vuex.Store({
       }
     },
     ADD_NOTIFICATIONS (state, notifications) {
-      state.notifications = state.notifications.concat(notifications)
+      notifications.forEach(x => {
+        if (!state.notifications.some(y => y.notificationId === x.notificationId)) {
+          state.notifications.push(x)
+        }
+      })
     }
   },
   actions: {
