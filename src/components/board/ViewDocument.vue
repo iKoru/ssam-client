@@ -43,7 +43,7 @@
       <v-card-text>
           <div v-html="documentHTML">
           </div>
-            <!-- {{document}} -->
+            {{document}}
       </v-card-text>
     </v-flex>
     <v-flex xs12 v-if="document.hasSurvey">
@@ -60,15 +60,22 @@
         <v-flex sm12 md4>
         </v-flex>
         <v-flex sm12 md4 text-xs-center>
-          <v-chip color="indigo" text-color="white">
+          <v-chip color="indigo" text-color="white" @click.native="voteDocument">
+            <div class="vote-chip">
             <v-avatar>
               <v-icon color="white" small>thumb_up</v-icon>
             </v-avatar>
             {{document.voteUpCount}}
-            </v-chip>
+            </div>
+          </v-chip>
         </v-flex>
-        <v-flex sm12 md4 text-xs-right>
-          <v-icon color="red" small>pen</v-icon>
+        <v-flex sm12 md4 text-xs-right pr-2 my-auto>
+          <router-link v-if="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
+            <v-label>수정 / </v-label>
+          </router-link>
+          <!-- <v-label v-if="document.isWriter" @click="editDocument">수정 /</v-label> -->
+          <v-label v-if="document.isWriter" @click="deleteDocument"> 삭제 /</v-label>
+          <v-label> 신고</v-label>
         </v-flex>
       </v-layout>
       <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "documents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
@@ -134,8 +141,31 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
+          console.log(error)
+          this.$router.push(`/${this.$route.params.boardId}`)
         });
+    },
+    deleteDocument () {
+      if(confirm('이 글을 삭제합니다.')) {
+        this.$axios
+          .delete(`/document/${this.$route.params.documentId}`)
+          .then(response => {
+            this.$router.push(`/${this.$route.params.boardId}`)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+    },
+    voteDocument() {
+      this.$axios.post('/vote/document/', {
+        documentId: this.$route.params.documentId
+      }).then(res => {
+        console.log(res)
+        document.voteUpCount = res.data.voteUpCount
+      }).catch(err => {
+        console.log(err.response)
+      })
     },
     deltaToHTML(delta) {
         var tempCont = document.createElement("div");
@@ -165,3 +195,11 @@ export default {
   }
 };
 </script>
+<style>
+.v-label {
+  cursor: pointer
+}
+.vote-chip {
+  cursor: pointer
+}
+</style>

@@ -9,7 +9,7 @@
                 <span class="title">{{board.boardName}}</span>
               </v-flex>
               <v-spacer/>
-              <router-link :to="`/${this.boardId}/writeDocument`" v-if="!$route.path.endsWith('writeDocument')">
+              <router-link :to="`/${this.boardId}/write`" v-if="!$route.path.endsWith('write')">
                 <v-icon color="indigo">edit</v-icon>
               </router-link>
             </v-layout>
@@ -52,7 +52,7 @@ export default {
       return true;
     },
     writeDocument() {
-      this.$router.push(`/${this.$route.params.boardId}/writeDocument`);
+      this.$router.push(`/${this.$route.params.boardId}/write`);
     },
     setBoard(board) {
       this.board = board;

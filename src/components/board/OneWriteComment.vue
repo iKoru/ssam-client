@@ -1,5 +1,5 @@
 <template>
-    <v-layout column >
+    <v-layout column>
       <v-layout justify-space-between row py-2 px-2>
         <v-flex xs12 class="comment">
           <quill-editor
@@ -22,7 +22,7 @@
           </v-checkbox>
         </v-flex>
         <v-flex xs4 sm1 text-xs-center>
-          <v-btn full-width @click="postComment">
+          <v-btn block @click="postComment">
               쓰기
           </v-btn>
         </v-flex>
@@ -38,6 +38,7 @@ import BoardMixins from '@/components/mixins/BoardMixins'
 export default {
   name: 'WriteComment',
   mixins: [BoardMixins],
+  props: ['commentTo'],
   data: () => ({
     editorOption: {
       placeholder: '댓글을 남겨주세요',
@@ -73,19 +74,24 @@ export default {
     async postComment() {
       if (!this.formData) this.formData = new FormData()
       await this.attachImages()
-      this.formData.append('documentId', this.$route.params.documentId)
-      this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta))
-      this.formData.append('isAnonymous', this.isAnonymous)
-      for (var pair of this.formData.entries()) {
-          console.log(pair[0]+ ', ' + pair[1]); 
-      }     
+      // this.formData.append('documentId', this.$route.params.documentId)
+      // this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta))
+      // this.formData.append('isAnonymous', this.isAnonymous)
+      let body = {}
+      body['documentId'] = this.$route.params.documentId;
+      if(this.commentTo) {
+        body['parentCommentId'] = this.commetTo
+      }
+      body['contents'] = JSON.stringify(this.$refs.commentEditor.quill.editor.delta)
+      body['isAnonymous'] = this.isAnonymous
+      console.log(body)
       this.$axios.post('/comment',
-        this.formData
+      //  this.formData
+      body
       ).then(res => {
         console.log(res)
       }).catch(err => {
         console.log(err)
-        delete this.formData
       })
     }
   },

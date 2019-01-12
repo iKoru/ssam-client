@@ -4,6 +4,7 @@ import checkSignin from './checkSignin'
 export default async (to, from, next) => {
   console.log('middleware!!!')
   const result = await checkSignin(to, from, router.app, store);
+  next()
   if (typeof result === 'boolean' && result) {
     if (store.getters.profile.status === 'AUTHORIZED') {
       next();

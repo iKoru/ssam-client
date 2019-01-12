@@ -128,9 +128,14 @@ const router = new Router({
           component: () => import('@/components/board/BoardList')
         },
         {
-          path: 'writeDocument',
+          path: 'write',
           name: 'writeDocument',
           component: () => import('@/components/board/WriteDocument')
+        },
+        {
+          path: 'edit/:documentId(\\d+)',
+          name: 'editDocument',
+          component: () => import('@/components/board/EditDocument')
         },
         {
           path: ':documentId(\\d+)',

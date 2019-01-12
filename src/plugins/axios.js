@@ -44,6 +44,8 @@ _axios.interceptors.response.use(
   },
   function (error) {
     // Do something with response error
+
+    alert(error.response.data.message)
     store.dispatch('hideSpinner')
     if (error.response && error.response.status === 401) {
       let query = location.search !== '' ? qs.parse(location.search.substring(1)) : {};

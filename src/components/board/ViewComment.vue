@@ -3,34 +3,33 @@
     <v-flex xs12>
       <v-card>
         <v-list three-line>
-          <template v-for="(item, index) in items">
-            <v-subheader
-              v-if="item.header"
-              :key="item.header"
-            >
-              {{ item.header }}
-            </v-subheader>
-
-            <v-divider
-              v-else-if="item.divider"
-              :inset="item.inset"
-              :key="index"
-            ></v-divider>
-
-            <v-list-tile
-              v-else
-              :key="item.title"
-              avatar
-            >
-              <v-list-tile-avatar>
-                <img :src="item.avatar">
-              </v-list-tile-avatar>
-
-              <v-list-tile-content>
-                <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
+          <template v-for="(item, index) in commentList">
+            <v-layout :key="'comment-show'+index" column>
+              <v-layout>
+                <v-flex xs12>
+                  <v-list-tile
+                    :key="item.title"
+                  >
+                    <OneComment :comment="item" :commentIndex="index" @openRecomment="openRecomment"/>
+                  </v-list-tile>
+                  <v-divider
+                    v-if="index < commentList.length - 1"
+                    :inset="item.inset"
+                    :key="index"
+                  ></v-divider>
+                </v-flex>
+              </v-layout>
+              <v-layout :key="'child-comment-list'+index">
+                <v-flex xs11 offset-xs1  :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children">
+                  <OneComment :comment="childItem" :commentIndex="childIndex"/>
+                </v-flex>
+              </v-layout>
+              <v-layout :key="'recomment-write'+index" v-if="openRecommentIndex==index">
+                <v-flex xs12 offset-xs1>
+                  <OneWriteComment :commentTo="item.commentId"/>
+                </v-flex>
+              </v-layout>
+            </v-layout>
           </template>
         </v-list>
       </v-card>
@@ -38,7 +37,16 @@
   </v-layout>
 </template>
 <script>
+import BoardMixins from '@/components/mixins/BoardMixins'
+import OneComment from "./OneComment";
+import OneWriteComment from "./OneWriteComment"
+
   export default {
+    mixins: [BoardMixins],
+    components: {
+      OneComment,
+      OneWriteComment
+    },
     data () {
       return {
         items: [
@@ -60,7 +68,22 @@
             title: 'Recipe to try',
             subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
           }
-        ]
+        ],
+        commentList: [],
+        openRecommentIndex: -1
+      }
+    },
+    created() {
+      this.$axios.get(`/comment?documentId=${this.$route.params.documentId}`)
+        .then(res => {
+          this.commentList = res.data
+        })
+        .catch(err => console.log(err))
+    },
+    methods: {
+      openRecomment (commentIndex) {
+        if(this.openRecommentIndex === commentIndex) this.openRecommentIndex = -1;
+        else this.openRecommentIndex = commentIndex
       }
     }
   }

@@ -10,6 +10,7 @@
             hide-details
           ></v-text-field>
         </v-flex>
+        <v-flex xs12 class="write-editor">
         <quill-editor
                     v-model="content"
                     ref="editor"
@@ -32,6 +33,7 @@
             <button ref="imageAttach" class="ql-image" value="image"></button>
           </div>
         </quill-editor>
+        </v-flex>
         <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
         <div>{{savedContent}}</div>
         <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
@@ -122,6 +124,7 @@ import Survey from '@/components/board/survey/Survey'
 import SurveyMaker from '@/components/board/survey/SurveyMaker'
 
 import vueFilePond, { setOptions } from 'vue-filepond'
+import BoardMixins from '@/components/mixins/BoardMixins'
 
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
@@ -139,6 +142,7 @@ export default {
     Survey,
     FilePond
   },
+  mixins: [BoardMixins],
   data () {
     return {
       savedContent: undefined,
@@ -252,12 +256,6 @@ export default {
         .then(res=> console.log(res))
         .catch(err=>console.error(err))
     },
-    uuid() {
-      let partialUUID = () => {
-          return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
-      };
-      return partialUUID() + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + '-' + partialUUID() + partialUUID() + partialUUID()
-    },
     attachImages () {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty('image')).length
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
@@ -265,29 +263,12 @@ export default {
           // random generated uuid should given here
           let imgSrc = item.insert.image
           let imageName = this.uuid() + '.' + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"))
-          item.insert.image = imageName;
           this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName)
+          item.insert.image = imageName;
+          // 취소되었을 때 이미지 source restore해야함
         }
       })
     },
-    dataURItoBlob(dataURI) {
-    // convert base64/URLEncoded data component to raw binary data held in a string
-      var byteString;
-      if (dataURI.split(',')[0].indexOf('base64') >= 0)
-          byteString = atob(dataURI.split(',')[1]);
-      else
-          byteString = unescape(dataURI.split(',')[1]);
-
-      // separate out the mime component
-      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-      // write the bytes of the string to a typed array
-      var ia = new Uint8Array(byteString.length);
-      for (var i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ia], {type:mimeString});
-  },
     surveyButtonClick () {
       console.log(this.currentSurvey, this.survey)
       if (this.currentSurvey.questions.length === 0) {
@@ -336,7 +317,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .ql-image {
   visibility: hidden;
 }
@@ -349,10 +330,12 @@ export default {
 #anonymous-slot {
   width: 28px;
 }
-.ql-editor {
-  height:400px !important;
+.write-editor .quill-editor .ql-container{
+  min-height: 30rem;
+  padding-bottom: 1rem;
 }
-.ql-container {
-  height: 400px;
+
+.write-editor .quill-editor .ql-editor{
+  min-height: 30rem;
 }
 </style>
