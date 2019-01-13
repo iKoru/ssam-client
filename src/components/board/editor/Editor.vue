@@ -167,6 +167,7 @@ export default {
       formData: undefined,
       attachedFileNumber: 0,
       selectedFile: undefined,
+      originImages: [],
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
           // const formData = new FormData();
@@ -265,6 +266,7 @@ export default {
           let imageName = this.uuid() + '.' + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"))
           this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName)
           item.insert.image = imageName;
+          this.originImages.push({name: imageName, src: imgSrc})
           // 취소되었을 때 이미지 source restore해야함
         }
       })

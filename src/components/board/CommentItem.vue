@@ -2,8 +2,8 @@
     <v-list-tile-content>
         <v-list-tile-title>
              <v-layout row>
-                <v-flex xs11 my-auto pt-2 text-xs-left style="height:wrap-content">
-                    <div v-html="deltaToHTML(JSON.parse(comment.contents))">
+                <v-flex xs11 my-auto pt-3 text-xs-left style="height:wrap-content">
+                    <div style="margin-bottom: 0px"  v-html="deltaToHTML(JSON.parse(comment.contents))">
                     </div>
                 </v-flex>
                 <v-spacer/>
@@ -74,3 +74,8 @@ export default {
     }
 }
 </script>
+<style>
+p {
+    margin-bottom: 3px;
+}
+</style>

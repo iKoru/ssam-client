@@ -10,7 +10,7 @@
                   <v-list-tile
                     :key="item.title"
                   >
-                    <OneComment :comment="item" :commentIndex="index" @openRecomment="openRecomment"/>
+                    <CommentItem :comment="item" :commentIndex="index" @openRecomment="openRecomment"/>
                   </v-list-tile>
                 </v-flex>
               </v-layout>
@@ -18,13 +18,13 @@
                 <v-flex xs11 offset-xs1  :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children">
 
                   <v-list-tile>
-                  <OneComment :comment="childItem" :commentIndex="childIndex" :children="true"/>
+                  <CommentItem :comment="childItem" :commentIndex="childIndex" :children="true"/>
                   </v-list-tile>
                 </v-flex>
               </v-layout>
               <v-layout :key="'recomment-write'+index" v-if="openRecommentIndex==index">
                 <v-flex xs12 offset-xs1>
-                  <OneWriteComment :commentTo="item.commentId"/>
+                  <CommentWriter :commentTo="item.commentId"/>
                 </v-flex>
               </v-layout>
 
@@ -42,14 +42,14 @@
 </template>
 <script>
 import BoardMixins from '@/components/mixins/BoardMixins'
-import OneComment from "./OneComment";
-import OneWriteComment from "./OneWriteComment"
+import CommentItem from "./CommentItem";
+import CommentWriter from "./CommentWriter"
 
   export default {
     mixins: [BoardMixins],
     components: {
-      OneComment,
-      OneWriteComment
+      CommentItem,
+      CommentWriter
     },
     data () {
       return {

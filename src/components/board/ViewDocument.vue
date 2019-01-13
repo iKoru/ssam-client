@@ -71,8 +71,8 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-      <ViewComment/>
-      <WriteComment/>
+      <ViewComments/>
+      <comment-writer/>
     </v-flex>
     <v-card-text>
       <br>
@@ -85,8 +85,8 @@
 <script>
 // import LinkPrevue from '@/components/LinkPrevue'
 import Survey from "@/components/board/survey/Survey";
-import WriteComment from "@/components/board/WriteComment";
-import ViewComment from "@/components/board/ViewComment";
+import CommentWriter from "@/components/board/CommentWriter";
+import ViewComments from "@/components/board/ViewComments";
 import BoardMixins from "@/components/mixins/BoardMixins";
 import Quill from 'quill'
 
@@ -102,8 +102,8 @@ export default {
   },
   components: {
     Survey,
-    WriteComment,
-    ViewComment
+    CommentWriter,
+    ViewComments
   },
   mixins: [BoardMixins],
   mounted() {
