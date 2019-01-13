@@ -16,9 +16,7 @@
                 <span v-if="list[n-1].commentCount > 0" class="primary--text">[{{list[n-1].commentCount}}]</span>
                 <v-spacer/>
                 <v-subheader class="tiny align-center mx-1 px-0" v-if="showDateTime">
-                  <small>
-                    <timeago :datetime="list[n-1].writeDateTime" :autoUpdate="true"></timeago>
-                  </small>
+                  <small>{{list[n-1].writeDateTime.fromNow()}}</small>
                 </v-subheader>
                 <span class="tiny align-center">
                   <v-icon small color="red darken-2">favorite</v-icon>
