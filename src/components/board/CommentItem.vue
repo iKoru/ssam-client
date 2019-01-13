@@ -1,7 +1,7 @@
 <template>
     <v-list-tile-content>
         <v-list-tile-title>
-             <v-layout row>
+            <v-layout row>
                 <v-flex xs11 my-auto pt-3 text-xs-left style="height:wrap-content">
                     <div style="margin-bottom: 0px"  v-html="deltaToHTML(JSON.parse(comment.contents))">
                     </div>

@@ -71,8 +71,7 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-      <ViewComments/>
-      <comment-writer/>
+      <ViewComments :isWriter="document.isWriter"/>
     </v-flex>
     <v-card-text>
       <br>

@@ -221,13 +221,14 @@ export default {
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`)
+          this.revertImages()
           }
-        })
-        .catch(error => {
+        }).catch(error => {
           delete this.formData
+          this.revertImages()
           this.attachedFileNumber = 0
           console.log(error.response)
-        });
+        })
     },
     async post () {
       // manually add images as file
@@ -270,6 +271,17 @@ export default {
           // 취소되었을 때 이미지 source restore해야함
         }
       })
+    },
+    revertImages () {
+      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.hasOwnProperty('image')) {
+          // random generated uuid should given here
+          let imgName = item.insert.image
+          item.insert.image = this.originImages.find(img=> img.name === imgName).src
+        }
+      })
+      this.originImages = []
+      console.log(this.$refs.editor.quill.editor.delta.ops)
     },
     surveyButtonClick () {
       console.log(this.currentSurvey, this.survey)

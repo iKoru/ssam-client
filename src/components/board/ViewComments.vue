@@ -10,24 +10,22 @@
                   <v-list-tile
                     :key="item.title"
                   >
-                    <CommentItem :comment="item" :commentIndex="index" @openRecomment="openRecomment"/>
+                    <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList"/>
                   </v-list-tile>
                 </v-flex>
               </v-layout>
-              <v-layout :key="'child-comment-list'+index">
+              <v-layout :key="'child-comment-list'+index" column>
                 <v-flex xs11 offset-xs1  :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children">
-
                   <v-list-tile>
-                  <CommentItem :comment="childItem" :commentIndex="childIndex" :children="true"/>
+                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList"/>
                   </v-list-tile>
                 </v-flex>
               </v-layout>
               <v-layout :key="'recomment-write'+index" v-if="openRecommentIndex==index">
                 <v-flex xs12 offset-xs1>
-                  <CommentWriter :commentTo="item.commentId"/>
+                  <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isWriter="isWriter"/>
                 </v-flex>
               </v-layout>
-
               <v-divider
                 v-if="index < commentList.length - 1"
                 :inset="item.inset"
@@ -36,6 +34,7 @@
             </v-layout>
           </template>
         </v-list>
+        <comment-writer @update="getCommentList" :isWriter="isWriter"/>
       </v-card>
     </v-flex>
   </v-layout>
@@ -51,6 +50,7 @@ import CommentWriter from "./CommentWriter"
       CommentItem,
       CommentWriter
     },
+    props: ['isWriter'],
     data () {
       return {
         items: [
@@ -85,6 +85,14 @@ import CommentWriter from "./CommentWriter"
         .catch(err => console.log(err))
     },
     methods: {
+      getCommentList () {
+        this.openRecommentIndex = -1
+        this.$axios.get(`/comment?documentId=${this.$route.params.documentId}`)
+          .then(res => {
+            this.commentList = res.data
+          })
+          .catch(err => console.log(err))
+      },
       openRecomment (commentIndex) {
         if(this.openRecommentIndex === commentIndex) this.openRecommentIndex = -1;
         else this.openRecommentIndex = commentIndex

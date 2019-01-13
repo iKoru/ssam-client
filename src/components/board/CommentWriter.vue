@@ -38,7 +38,7 @@ import BoardMixins from '@/components/mixins/BoardMixins'
 export default {
   name: 'WriteComment',
   mixins: [BoardMixins],
-  props: ['commentTo'],
+  props: ['commentTo', 'isWriter'],
   data: () => ({
     editorOption: {
       placeholder: '댓글을 남겨주세요',
@@ -52,6 +52,7 @@ export default {
     },
     content: '',
     isAnonymous: false,
+    originImages: []
   }),
   components: {
   },
@@ -67,36 +68,49 @@ export default {
           console.log(imgSrc)
           this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName)
           item.insert.image = imageName;
+          this.originImages.push({name: imageName, src: imgSrc})
           // 취소되었을 때 이미지 source restore해야함
         }
       })
     },
+    revertImages () {
+      console.log(this.$refs.commentEditor)
+      this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.hasOwnProperty('image')) {
+          // random generated uuid should given here
+          let imgName = item.insert.image
+          item.insert.image = this.originImages.find(img=> img.name === imgName).src
+        }
+      })
+      this.originImages = []
+      console.log(this.$refs.commentEditor.quill.editor.delta.ops)
+    },
     async postComment() {
       if (!this.formData) this.formData = new FormData()
       await this.attachImages()
-      // this.formData.append('documentId', this.$route.params.documentId)
-      // this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta))
-      // this.formData.append('isAnonymous', this.isAnonymous)
-      let body = {}
-      body['documentId'] = this.$route.params.documentId;
+      console.log(this.$route.params.documentId)
+      this.formData.append('documentId', this.$route.params.documentId)
+      this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta))
+      this.formData.append('isAnonymous', this.isAnonymous)
       if(this.commentTo) {
-        body['parentCommentId'] = this.commetTo
-      }
-      body['contents'] = JSON.stringify(this.$refs.commentEditor.quill.editor.delta)
-      body['isAnonymous'] = this.isAnonymous
-      console.log(body)
+        this.formData.append('parentCommentId',this.commentTo)
+      }     
       this.$axios.post('/comment',
-      //  this.formData
-      body
+        this.formData
       ).then(res => {
         console.log(res)
+        this.$refs.commentEditor.quill.setText('')
+        this.revertImages()
+        this.$emit('update')
       }).catch(err => {
         console.log(err)
+        delete this.formData
+        this.revertImages()
       })
     }
   },
   created () {
-    console.log('write document')
+    this.isAnonymous = this.isWriter
   }
 }
 </script>

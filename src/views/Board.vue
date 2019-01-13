@@ -9,6 +9,9 @@
                 <span class="title">{{board.boardName}}</span>
               </v-flex>
               <v-spacer/>
+              <router-link :to="`/${this.boardId}`">
+                <v-icon color="primary">list</v-icon>
+              </router-link>
               <router-link :to="`/${this.boardId}/write`" v-if="!$route.path.endsWith('write')">
                 <v-icon color="indigo">edit</v-icon>
               </router-link>
