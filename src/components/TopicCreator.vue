@@ -4,23 +4,24 @@
       <v-btn icon @click="$emit('closeDialog', null)">
         <v-icon>close</v-icon>
       </v-btn>
-      <v-toolbar-title>새로운 토픽 만들기</v-toolbar-title>
+      <v-toolbar-title>{{board?'토픽 관리':'새로운 토픽 만들기'}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="$vuetify.breakpoint.xsOnly">
-        <v-btn flat @click="save" :loading="loading">등록</v-btn>
+        <v-btn flat @click="save" :loading="loading">{{board?'저장':'등록'}}</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-card-text>
       <v-form ref="form">
         <v-layout row xs12 wrap>
           <v-flex xs6 class="mb-1">
-            <v-text-field v-model="boardId" :rules="boardIdRules" class="dense" :error-messages="boardIdErrors" maxlength="15" label="토픽ID" required hint="주소창에 들어갈 토픽의 ID입니다." validate-on-blur @blur="checkBoardId"></v-text-field>
+            <v-text-field v-if="board" v-model="boardId" class="dense" readonly label="토픽ID" hint="pedagy.com/<b>seoul</b>과 같이 URL주소에 들어가는 문구입니다."></v-text-field>
+            <v-text-field v-else v-model="boardId" :rules="boardIdRules" class="dense" :error-messages="boardIdErrors" maxlength="15" label="토픽ID" hint="pedagy.com/<b>seoul</b>과 같이 URL주소에 들어갈 문구입니다." placeholder="비워두면 임의로 생성됩니다." validate-on-blur @blur="checkBoardId"></v-text-field>
           </v-flex>
           <v-flex xs6 class="mb-1">
             <v-text-field v-model="boardName" :rules="boardNameRules" class="dense" maxlength="200" label="토픽 이름" required hint="토픽 목록에 표시되는 이름입니다." validate-on-blur></v-text-field>
           </v-flex>
           <v-flex xs12 class="mt-4">
-            <v-textarea ref="boardDescription" v-model="boardDescription" maxlength="1000" height="40px" label="토픽 소개" hint="토픽 이름 아래에 작게 표시되는 설명입니다." validate-on-blur></v-textarea>
+            <v-textarea ref="boardDescription" v-model="boardDescription" :rows="3" maxlength="1000" height="80px" label="토픽 소개" hint="토픽 이름 아래에 작게 표시되는 설명입니다." validate-on-blur></v-textarea>
           </v-flex>
           <v-flex xs6>
             <v-checkbox ref="allowAnonymous" v-model="allowAnonymous" class="dense" label="익명글 허용" hide-details></v-checkbox>
@@ -40,7 +41,7 @@
             </v-layout>
           </v-flex>
           <v-flex xs12>
-            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독허용 그룹" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:true}">
+            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독 권한" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:true}">
               <template slot="selection" slot-scope="props">
                 <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, allowedGroups)">{{props.item.text}}</v-chip>
               </template>
@@ -51,10 +52,17 @@
               </template>
             </component>
           </v-flex>
+          <v-flex xs12 v-if="board" class="mt-3">
+            <v-select name="ownerNickName" dense v-model="ownerNickName" :items="boardMemberItems" label="토픽지기 양도" hint="선택한 회원에게 토픽지기가 양도됩니다." persistent-hint></v-select>
+          </v-flex>
+          <v-flex xs12 v-if="board && board.reservedDate" class="mt-5">
+            <v-textarea ref="reservedContents" v-model="reservedContents" :rows="3" readonly height="80px" :label="'변경 예약('+$moment(board.reservedDate, 'YYYYMMDD').format('Y.M.D')+' 반영 예정) 내용'" hint="변경이 예약된 토픽의 내용입니다."></v-textarea>
+          </v-flex>
         </v-layout>
         <v-divider class="mt-4 mb-2"/>
         <v-layout row>
           <v-btn flat @click="reset">초기화</v-btn>
+          <v-btn color="error" @click="deleteBoard" v-if="board">삭제</v-btn>
           <template v-if="$vuetify.breakpoint.smAndUp">
             <v-spacer/>
             <v-btn color="primary" @click="save" :loading="loading">등록</v-btn>
@@ -81,12 +89,15 @@ export default {
       useCategory: false,
       allowedGroups: [],
       allGroupAuthItems: [{value: "READWRITE", text: "전체구독허용"}, {value: "READONLY", text: "읽기공개"}, {value: "NONE", text: "비공개"}],
+      ownerNickName: null,
       groupItems: [],
-      boardIdRules: [v => !!v || "토픽ID를 입력해주세요.", v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => (v && v.length > 3 && v.length < 16) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, 알파벳이 아닌 문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
+      boardIdRules: [v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => (!v || (v.length > 3 && v.length < 16)) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, 알파벳이 아닌 문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
       boardNameRules: [v => !!v || "토픽 이름을 입력해주세요."],
+      boardMemberItems:[],
       boardIdErrors: []
     };
   },
+  props:['board'],
   computed: {
     allGroupAuthDescription() {
       switch (this.allGroupAuth) {
@@ -97,17 +108,75 @@ export default {
         case "READWRITE":
           return "모든 회원이 토픽을 구독할 수 있습니다.<br>구독하지 않아도 글을 볼 수 있습니다.<br>핫토픽에 글이 노출됩니다.";
       }
+    },
+    reservedContents(){
+      if(this.board && this.board.reservedContents){
+        let reservedContents = this.board.reservedContents
+        let string = "";
+        for(let key in reservedContents){
+          switch(key){
+            case 'boardName':
+              string += `토픽 이름 : ${reservedContents[key]}\n`
+              break;
+            case 'boardDescription':
+              string += `토픽 설명 : ${reservedContents[key]}\n`
+              break;
+            case 'allowAnonymous':
+              string += `익명글 허용 여부 : ${reservedContents[key]?'허용':'비허용'}\n`
+              break;
+            case 'useCategory':
+              string += `카테고리 : ${reservedContents[key]?'사용':'미사용'}\n`
+              break;
+            case 'allGroupAuth':
+              string += `토픽 공개/비공개 : ${this.allGroupAuthItems[reservedContents[key]]}\n`
+              break;
+            case 'ownerNickName':
+              string += `토픽지기 : ${reservedContents[key]}\n`
+              break;
+            case 'auth':
+              string += `구독 권한 : ${reservedContents[key].filter(x=>this.groupItems.some(y=>y.value === x.groupId)).map(x=>this.groupItems.find(y=>y.value === x.groupId).text + (x.command === 'INSERT'?' 추가':(x.command === 'DELETE'?' 삭제':''))).join(', ')}`
+              break;
+          }
+        }
+        return string;
+      }else{
+        return null;
+      }
     }
   },
   methods: {
     reset() {
-      this.boardId = null;
-      this.boardName = null;
-      this.boardDescription = null;
-      this.allGroupAuth = "READONLY";
-      this.allowAnonymous = true;
-      this.useCategory = false;
-      this.allowedGroups = [];
+      if(this.board){
+        this.loading = true;
+        this.$axios.get('/board/member', {params:{boardId:this.board.boardId}, headers:{silent:true}})
+        .then(response => {
+          const myNickName = this.$store.getters.profile.topicNickName
+          this.boardMemberItems = response.data.filter(x=>x.nickName !== myNickName).map(x => x.nickName);
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error.response);
+          this.loading = false;
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽 구성원을 불러오지 못했습니다.", color: "error"});
+        })
+        this.boardId = this.board.boardId;
+        this.boardName = this.board.boardName;
+        this.boardDescription = this.board.boardDescription;
+        this.allGroupAuth = this.board.allGroupAuth;
+        this.allowAnonymous = this.board.allowAnonymous;
+        this.useCategory = this.board.categories?this.board.categories.filter(x=>x).length > 0 : false;
+        this.allowedGroups = this.board.boardAuth.map(x=>x.groupId);
+        this.ownerNickName = this.board.ownerNickName;
+      }else{
+        this.boardId = null;
+        this.boardName = null;
+        this.boardDescription = null;
+        this.allGroupAuth = "READONLY";
+        this.allowAnonymous = true;
+        this.useCategory = false;
+        this.allowedGroups = [];
+        this.ownerNickName = null;
+      }
     },
     removeChip(props, item, list) {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
@@ -134,52 +203,87 @@ export default {
       }
     },
     save() {
-      this.checkBoardId(() => {
+      if(this.board){
         if (this.$refs.form.validate() && this.boardIdErrors.length === 0) {
-          this.loading = true;
-          this.$axios
-            .post("/board", {
-              boardId: this.boardId,
-              boardName: this.boardName,
-              boardType: "T",
-              boardDescription: this.boardDescription || undefined,
-              allGroupAuth: this.allGroupAuth,
-              allowAnonymous: this.allowAnonymous,
-              allowedGroups: this.allowedGroups.map(x => ({groupId: x, authType: "READWRITE"})),
-              useCategory: this.useCategory
-            })
-            .then(response => {
-              this.loading = false;
-              this.$store.dispatch("addBoard", {
+          if(confirm('변경 내용은 1개월 뒤에 반영됩니다. 계속하시겠습니까?')){
+            this.loading = true;
+            this.$axios
+              .put("/board", {
+                boardId: this.boardId,
+                boardName: this.boardName,
+                boardDescription: this.boardDescription || undefined,
+                allGroupAuth: this.allGroupAuth,
+                allowAnonymous: this.allowAnonymous,
+                allowedGroups: this.allowedGroups.map(x => ({groupId: x, authType: "READWRITE"})),
+                useCategory: this.useCategory,
+                ownerNickName: this.ownerNickName || undefined
+              })
+              .then(response => {
+                this.loading = false;
+                this.$emit("resetBoard");
+                this.$emit("closeDialog");
+                this.$store.dispatch("showSnackbar", {text: "토픽 정보를 변경 예약하였습니다.", color: "success"});
+              })
+              .catch(error => {
+                console.log(error.response);
+                this.loading = false;
+                this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
+              });
+            }
+          } else {
+            this.$store.dispatch("showSnackbar", {text: "토픽 정보를 정확히 입력해주세요.", color: "error"});
+          }
+      }else{
+        this.checkBoardId(() => {
+          if (this.$refs.form.validate() && this.boardIdErrors.length === 0) {
+            this.loading = true;
+            this.$axios
+              .post("/board", {
                 boardId: this.boardId,
                 boardName: this.boardName,
                 boardType: "T",
                 boardDescription: this.boardDescription || undefined,
                 allGroupAuth: this.allGroupAuth,
-                allowAnonymous: this.allowAnonymous
+                allowAnonymous: this.allowAnonymous,
+                allowedGroups: this.allowedGroups.map(x => ({groupId: x, authType: "READWRITE"})),
+                useCategory: this.useCategory
+              })
+              .then(response => {
+                this.loading = false;
+                this.$store.dispatch("addBoard", {
+                  boardId: this.boardId,
+                  boardName: this.boardName,
+                  boardType: "T",
+                  boardDescription: this.boardDescription || undefined,
+                  allGroupAuth: this.allGroupAuth,
+                  allowAnonymous: this.allowAnonymous
+                });
+                this.$store.dispatch("addUserBoard", {
+                  boardId: this.boardId,
+                  boardName: this.boardName,
+                  boardType: "T",
+                  boardDescription: this.boardDescription || undefined,
+                  allGroupAuth: this.allGroupAuth,
+                  allowAnonymous: this.allowAnonymous
+                });
+                this.$emit("resetBoard");
+                this.$emit("closeDialog");
+                this.reset();
+                this.$store.dispatch("showSnackbar", {text: "새로운 토픽을 만들었습니다.", color: "success"});
+              })
+              .catch(error => {
+                console.log(error.response);
+                this.loading = false;
+                this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
               });
-              this.$store.dispatch("addUserBoard", {
-                boardId: this.boardId,
-                boardName: this.boardName,
-                boardType: "T",
-                boardDescription: this.boardDescription || undefined,
-                allGroupAuth: this.allGroupAuth,
-                allowAnonymous: this.allowAnonymous
-              });
-              this.$emit("resetBoard");
-              this.$emit("closeDialog");
-              this.reset();
-              this.$store.dispatch("showSnackbar", {text: "새로운 토픽을 만들었습니다.", color: "success"});
-            })
-            .catch(error => {
-              console.log(error.response);
-              this.loading = false;
-              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
-            });
-        } else {
-          this.$store.dispatch("showSnackbar", {text: "토픽 정보를 정확히 입력해주세요.", color: "error"});
-        }
-      });
+          } else {
+            this.$store.dispatch("showSnackbar", {text: "토픽 정보를 정확히 입력해주세요.", color: "error"});
+          }
+        });
+      }
+    },
+    deleteBoard(){
+      console.log('delete!!')
     }
   },
   created() {
@@ -191,7 +295,7 @@ export default {
             x.groupType = 'Z'
           }
         })
-        this.groupItems = response.data.sort((a, b) => a.groupType < b.groupType);
+        this.groupItems = response.data.sort((a, b) => a.groupType < b.groupType ? -1 : (a.groupType === b.groupType ? 0 : 1));
         let previous = null;
         let i = 0;
         while (i < this.groupItems.length) {
@@ -213,12 +317,19 @@ export default {
       .catch(error => {
         this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
       });
+    this.reset()
   },
   watch: {
     boardId() {
       if (this.boardIdErrors.length > 0) {
         this.boardIdErrors = [];
       }
+    },
+    board:{
+      handler() {
+        this.reset()
+      },
+      deep:true
     }
   }
 };

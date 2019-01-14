@@ -35,7 +35,7 @@
             <v-layout row :class="{'titleRow':true, 'mb-2':lounges.length === 0}">
               <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">토픽</span>
               <v-spacer/>
-              <v-btn id="createTopic" small @click="openDialog" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
+              <v-btn id="createTopic" small @click="openDialog(null)" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
               <br>
             </v-layout>
             <span class="ellipsis subtitle">드래그하여 순서를 변경할 수 있습니다.</span>
@@ -52,7 +52,7 @@
                   <v-spacer/>
                   <template v-if="!topic.readRestrictDate && !topic.writeRestrictDate">
                     <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click="removeItem(index)">구독해제</v-btn>
-                    <v-btn flat v-else primary small class="mx-0" @click="manageBoard(topic.boardId)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
+                    <v-btn flat v-else primary small class="mx-0" @click="openDialog(topic)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
                   </template>
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
@@ -77,7 +77,7 @@
         </v-layout>
       </v-layout>
       <v-dialog v-model="dialog" id="topicCreatorDialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
-        <topic-creator @closeDialog="closeDialog" @resetBoard="resetBoard"/>
+        <topic-creator @closeDialog="closeDialog" @resetBoard="resetBoard" :board="editItem"/>
       </v-dialog>
     </v-card-title>
     <v-card-actions pa-3>
@@ -103,8 +103,7 @@ export default {
       loading: false,
       dialog: false,
       topics: [],
-      lounges: [],
-      originalTopics: []
+      editItem: {}
     };
   },
   methods: {
@@ -160,13 +159,27 @@ export default {
           });
       }
     },
-    openDialog() {
-      if (this.$store.getters.profile.auth !== "AUTHORIZED") {
-        this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
-        return;
+    openDialog(item) {
+      if(item === null){
+        if (this.$store.getters.profile.auth !== "AUTHORIZED") {
+          this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
+          return;
+        }
+        this.editItem = null;
+        document.body.style.position = "fixed";
+        this.dialog = true;
+      }else if(item){
+        this.$axios.get('/board', {params:{boardId:item.boardId}})
+        .then(response => {
+          this.editItem = response.data
+          document.body.style.position = "fixed";
+          this.dialog = true;
+        })
+        .catch(error=>{
+          console.log(error.response);
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽 정보를 가져오지 못했습니다." : "토픽 정보를 가져오지 못했습니다.", color: "error"});
+        })
       }
-      document.body.style.position = "fixed";
-      this.dialog = true;
     },
     closeDialog() {
       document.body.style.position = "initial";
@@ -176,16 +189,18 @@ export default {
       this.$axios
         .get("/user/board")
         .then(response => {
-          this.initBoard(response.data);
           this.$store.dispatch("setUserBoards", response.data);
+          this.$nextTick(this.reset)
         })
         .catch(error => {
           console.log(error);
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 토픽 목록을 불러오지 못했습니다." : "구독 토픽 목록을 불러오지 못했습니다.", color: "error"});
         });
-    },
-    initBoard(userBoards) {
-      let filtered = userBoards.map(x => {
+    }
+  },
+  computed:{
+    originalTopics(){
+      return this.userBoards.filter(x => x.boardType === "T").map(x => {
         if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
           delete x.readRestrictDate;
         }
@@ -194,16 +209,29 @@ export default {
         }
         return x;
       });
-      this.originalTopics = filtered.filter(x => x.boardType === "T");
-      this.lounges = filtered.filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
-      this.reset();
     },
-    manageBoard(boardId) {
-      this.$router.push("/board/" + boardId);
+    lounges(){
+      return this.userBoards.map(x => {
+        if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          delete x.readRestrictDate;
+        }
+        if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          delete x.writeRestrictDate;
+        }
+        return x;
+      }).filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
+    },
+    userBoards(){
+      return this.$store.getters.userBoards;
     }
   },
   mounted() {
-    this.initBoard(this.$store.getters.userBoards);
+    this.reset();
+  },
+  watch:{
+    userBoards(){
+      this.reset();
+    }
   },
   render(h) {
     return h("myBoard", {attrs: {id: "app"}}, this.draggable);
