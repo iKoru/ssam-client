@@ -20,7 +20,7 @@
                     </v-list-tile>
                   </v-list>
                 </component>
-                <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="dialog = true" title="클릭하여 이미지 등록" v-else>
+                <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="openDialog" title="클릭하여 이미지 등록" v-else>
                   <img :src="require('@/static/img/defaultUser.png')" alt="기본 프로필 이미지">
                 </v-avatar>
               </p>
