@@ -128,7 +128,7 @@
         </v-card>
       </v-dialog>
       <v-dialog v-model="topicCreator" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
-        <topic-creator @closeDialog="closeTopicDialog" @resetBoard="resetBoard"/>
+        <topic-creator @closeDialog="closeTopicDialog" @resetBoard="resetBoard" :board="null"/>
       </v-dialog>
       <v-layout v-show="dialog"></v-layout>
     </v-layout>

@@ -102,6 +102,7 @@ export default {
             this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
           })
           .catch(error => {
+            console.log(error);
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 삭제하지 못했습니다." : "글을 삭제하지 못했습니다.", color: "error"});
           });
       } else {

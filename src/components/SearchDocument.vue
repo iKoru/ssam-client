@@ -5,244 +5,129 @@
         <v-card-title primary-title class="px-0">
           <v-flex xs12 sm11 md10 lg9 class="mx-auto px-3 pb-2">
             <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
-              <v-container fluid grid-list-xs>asdfasdfasdf
+              <v-container fluid grid-list-xs>
                 <v-layout row>
-                  <v-flex py-0>
-                    <v-text-field ref="searchQuery" append-icon="search" placeholder="검색할 라운지/토픽/아카이브 이름" v-model="searchQuery" class="mt-0 pt-0 dense" hint="각각의 주소, 이름, 설명으로 검색할 수 있습니다."></v-text-field>
+                  <v-flex xs3>
+                    <v-autocomplete ref="searchBoard" class="dense" placeholder="검색할 게시판" v-model="boardId" :items="boardItems"></v-autocomplete>
+                  </v-flex>
+                  <v-flex xs9 pl-3>
+                    <v-text-field ref="searchQuery" placeholder="글의 제목, 내용으로 검색할 수 있습니다." v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table hide-headers :headers="headers" :items="boards" :search="searchQuery" :rows-per-page-items="[15]" :loading="loading" class="customAction">
+            <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :class="{'noResult':totalDocuments === 0}">
               <template slot="items" slot-scope="props">
-                <tr @click="openDialog(props.item)" class="cursor-pointer">
-                  <td>{{boardTypeItems[props.item.boardType]}}</td>
-                  <td class="ellipsis">
-                    <v-layout column>
-                      <v-flex xs12>
-                        <span>{{props.item.boardName}}</span>
-                      </v-flex>
-                      <v-flex xs12 class="ellipsis">
-                        <small>{{props.item.boardDescription}}</small>
-                      </v-flex>
-                    </v-layout>
+                <tr @click="$router.push('/'+props.item.boardId + '/'+props.item.documentId)">
+                  <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.value === props.item.boardId)?boardItems.find(x=>x.value === props.item.boardId).text:'(삭제된 게시판)' }}</td>
+                  <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
+                    <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
+                      {{props.item.title}}
+                      <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+                    </a>
                   </td>
-                  <td>
-                    <router-link :to="'/'+props.item.boardId" v-if="props.item.boardType !== 'T' || userBoards.some(x=>x.boardId === props.item.boardId)">
-                      <v-btn small flat class="short">바로가기</v-btn>
-                    </router-link>
-                    <v-btn small class="short" v-else @click.stop="openDialog(props.item, true)" color="primary">구독하기</v-btn>
-                  </td>
+                  <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD') }}</td>
                 </tr>
               </template>
-              <template slot="actions-prepend">
-                <v-btn color="primary" flat @click="topicCreator = true">토픽 만들기</v-btn>
-                <v-spacer></v-spacer>
+              <template slot="footer">
+                <td :colspan="headers.length" v-if="searched" class="multi-row">
+                  {{this.noresult}}
+                  <v-btn color="primary" @click="searchMore" small v-if="targetYear > 2018">계속 검색</v-btn>
+                </td>
               </template>
             </v-data-table>
           </v-flex>
         </v-card-title>
       </v-card>
-      <v-dialog v-model="dialog" :full-screen="$vuetify.breakpoint.xsOnly" max-width="800" lazy>
-        <v-card>
-          <v-card-title class="headline" primary-title>
-            <span>상세정보</span>
-            <v-spacer/>
-            <v-icon @click="dialog = false">close</v-icon>
-          </v-card-title>
-          <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs4 md2>
-                <v-subheader>구분</v-subheader>
-              </v-flex>
-              <v-flex xs8 md4>
-                <div class="v-subheader">{{boardTypeItems[selected.boardType]}}</div>
-              </v-flex>
-              <v-flex xs4 md2>
-                <v-subheader>이름</v-subheader>
-              </v-flex>
-              <v-flex xs8 md4>
-                <div class="v-subheader">
-                  {{selected.boardName}}(
-                  <router-link class="primary--text" :to="'/'+selected.boardId">/{{selected.boardId}}</router-link>)
-                </div>
-              </v-flex>
-              <template v-if="selected.boardType === 'T'">
-                <v-flex xs4 md2>
-                  <v-subheader>토픽지기</v-subheader>
-                </v-flex>
-                <v-flex xs8 md4>
-                  <div class="v-subheader">{{selected.owner}}</div>
-                </v-flex>
-                <v-flex md6 v-if="$vuetify.breakpoint.mdAndUp"></v-flex>
-              </template>
-              <v-flex xs4 md2>
-                <v-subheader>설명</v-subheader>
-              </v-flex>
-              <v-flex xs8 md10>
-                <div class="v-subheader">{{selected.boardDescription || '(등록된 설명이 없습니다.)'}}</div>
-              </v-flex>
-              <v-flex xs4 md2>
-                <v-subheader>공개여부</v-subheader>
-              </v-flex>
-              <v-flex xs8 md4>
-                <div class="v-subheader">{{selected.allGroupAuth === 'NONE'?'비공개':'공개'}}</div>
-              </v-flex>
-              <v-flex xs4 md2>
-                <v-subheader>익명 게시물</v-subheader>
-              </v-flex>
-              <v-flex xs8 md4>
-                <div class="v-subheader">{{selected.allowAnonymous?'허용':'비허용'}}</div>
-              </v-flex>
-              <template v-if="selected.allGroupAuth !== 'READWRITE'">
-                <v-flex xs4 md2>
-                  <v-subheader class="pr-0">
-                    <span v-if="selected.boardType === 'T'">구독/</span>글쓰기 조건
-                  </v-subheader>
-                </v-flex>
-                <v-flex xs8 md10>
-                  <div class="v-subheader">{{selected.boardAuth.map(x=>x.groupName).join(', ')}}</div>
-                </v-flex>
-              </template>
-            </v-layout>
-            <p v-if="selected.boardType === 'T'" class="justify-center align-center text-xs-center">
-              <template v-if="userBoards.some(x=>x.boardId === selected.boardId)">내가 구독중인 토픽입니다.</template>
-              <template v-else-if="selected.allGroupAuth === 'READWRITE' || selected.boardAuth.some(x=>userGroups.some(y=>y === x.groupId))">이 토픽을 구독할 수 있습니다.</template>
-              <template v-else-if="selected.allGroupAuth === 'READONLY'">이 토픽을 구독할 수 없지만 글을 읽을 수 있습니다.</template>
-              <template v-else>내가 구독할 수 없는 조건의 토픽입니다.</template>
-            </p>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="leave" flat v-if="selected.boardType === 'T' && userBoards.some(x=>x.boardId === selected.boardId)">구독취소</v-btn>
-            <v-spacer/>
-            <template v-if="selected.boardType === 'T' && !userBoards.some(x=>x.boardId === selected.boardId) && (selected.allGroupAuth === 'READWRITE' || selected.boardAuth.some(x=>userGroups.some(y=>y === x.groupId)))">
-              <v-btn flat @click="dialog=false">취소</v-btn>
-              <v-btn color="primary" @click="join" :loading="loadingJoin">구독</v-btn>
-            </template>
-            <template v-else>
-              <v-btn color="primary" @click="dialog=false">닫기</v-btn>
-            </template>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="topicCreator" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
-        <topic-creator @closeDialog="closeTopicDialog" @resetBoard="resetBoard"/>
-      </v-dialog>
-      <v-layout v-show="dialog"></v-layout>
     </v-layout>
   </v-container>
 </template>
 
 <script>
 export default {
-  name: "SearchBoard",
-  components: {
-    TopicCreator: () => import("../components/TopicCreator")
-  },
+  name: "SearchDocument",
   data() {
     return {
       loading: false,
-      loadingJoin: false,
-      dialog: false,
-      topicCreator: false,
       boardTypeItems: {
         T: "토픽",
         L: "라운지",
         D: "아카이브",
         E: "기타"
       },
+      boardId: null,
+      targetYear: new Date().getFullYear(),
       searchQuery: "",
-      allowedToJoin: false,
-      selected: {boardAuth: []},
       groupItems: [],
-      headers: [{text: "구분", value: "boardType", sortable: false}, {text: "이름", value: "boardName", sortable: false}, {text: "주소", value: "boardId", sortable: false}, {text: "설명", value: "boardDescription", sortable: false}]
+      documents:[],
+      totalDocuments:0,
+      searched: false,
+      pagination:{}
     };
   },
   computed: {
-    boards() {
-      return this.$store.getters.boards;
+    boardItems() {
+      return this.$store.getters.boards.filter(x=>x.boardType !== 'T').concat(this.$store.getters.userBoards.filter(x=>x.boardType === 'T')).map(x=>({text:x.boardName, value:x.boardId}));
     },
-    userBoards() {
-      return this.$store.getters.userBoards;
+    noresult(){
+      return this.targetYear + '년을 대상으로 검색한 결과입니다.' + (this.targetYear > 2018? ' 이전 연도로 계속 검색할 수 있습니다.' : '')
     },
-    userGroups() {
-      return this.$store.getters.profile.groups;
-    },
-    totalBoards() {
-      return this.boards.length;
+    headers() {
+      return this.$vuetify.breakpoint.xsOnly ? [{text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
     }
   },
-  created() {
-    this.$axios
-      .get("/group", {params: {groupType: ["N", "R", "M", "G"]}, headers: {silent: true}})
+  methods: {
+    search(){
+      if(!this.boardId){
+        this.$store.dispatch('showSnackbar', {text:'검색할 게시판을 선택해주세요.',color:'error'});
+        return;
+      }else if(!this.searchQuery){
+        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+        return;
+      }
+      this.targetYear = new Date().getFullYear()
+      this.getDocuments(this.targetYear);
+      this.searched = true;
+    },
+    searchMore(){
+      if(!this.boardId){
+        this.$store.dispatch('showSnackbar', {text:'검색할 게시판을 선택해주세요.',color:'error'});
+        return;
+      }else if(!this.searchQuery){
+        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+        return;
+      }
+      this.getDocuments(--this.targetYear);
+    },
+    getDocuments(targetYear){
+      this.loading = true;
+      this.$axios.get('/document', {params:{targetYear:targetYear, boardId:this.boardId, searchQuery:this.searchQuery, searchTarget:'titleContents', page:this.pagination.page}, headers:{silent:true}})
       .then(response => {
-        this.groupItems = response.data;
+        this.documents = Array.isArray(response.data)?response.data : [];
+        this.totalDocuments = this.documents[0]?this.documents[0].totalCount:0
+        this.loading = false;
       })
       .catch(error => {
+        this.loading = false;
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
-      });
+        this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 검색하지 못했습니다." : "글을 검색하지 못했습니다.", color: "error"});
+      })
+    }
   },
-  methods: {
-    openDialog(item, join) {
-      this.$axios
-        .get("/board", {params: {boardId: item.boardId}})
-        .then(response => {
-          this.selected = response.data;
-          this.allowedToJoin = join && (this.selected.allGroupAuth === "READWRITE" || this.selected.boardAuth.some(x => this.userGroups.some(y => y.groupId === x)));
-          this.dialog = true;
-        })
-        .catch(error => {
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `정보를 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
-        });
-    },
-    join() {
-      this.loadingJoin = true;
-      this.$axios
-        .post("/user/board", {boardId: this.selected.boardId}, {headers: {silent: true}})
-        .then(response => {
-          this.$store.dispatch("addUserBoard", Object.assign({}, this.selected));
-          this.loadingJoin = false;
-          this.dialog = false;
-          this.$store.dispatch("showSnackbar", {text: "토픽을 구독하였습니다.", color: "success"});
-        })
-        .catch(error => {
-          console.log(error);
-          this.loadingJoin = false;
-          this.$store.dispatch("showSnackbar", {text: `토픽을 구독하지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
-        });
-    },
-    leave() {
-      this.$axios
-        .delete("/user/board/" + this.selected.boardId)
-        .then(response => {
-          this.$store.dispatch("removeUserBoard", this.selected.boardId);
-          this.dialog = false;
-          this.$store.dispatch("showSnackbar", {text: "토픽을 구독 해제하였습니다.", color: "success"});
-        })
-        .catch(error => {
-          console.log(error.response);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽을 구독 해제하지 못했습니다." : "토픽을 구독 해제하지 못했습니다.", color: "error"});
-        });
-    },
-    closeTopicDialog() {
-      this.topicCreator = false;
-    },
-    resetBoard() {}
+  watch:{
+    pagination: {
+      handler() {
+        this.getDocuments(this.targetYear);
+      },
+      deep: true
+    }
   }
 };
 </script>
 <style>
-.v-subheader {
-  height: 32px;
-}
-td.ellipsis {
-  width: 100%;
-  max-width: 0;
-}
 table.v-table thead td:not(:nth-child(1)),
 table.v-table tbody td:not(:nth-child(1)),
 table.v-table thead th:not(:nth-child(1)),
