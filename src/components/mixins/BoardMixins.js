@@ -47,8 +47,7 @@ const BoardMixins = {
       return new Blob([ia], {type:mimeString});
     },
     timeParser(timestamp) {
-      let time = moment(timestamp, "YYYYMMDDHHmmss").format("YYYY.MM.DD HH:mm:ss")
-        return moment(time).fromNow()
+        return moment(timestamp, "YYYYMMDDHHmmss").fromNow()
     }
   }
 }
