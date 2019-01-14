@@ -20,19 +20,19 @@
           <v-flex xs6 class="mb-1">
             <v-text-field v-model="boardName" :rules="boardNameRules" class="dense" maxlength="200" label="토픽 이름" required hint="토픽 목록에 표시되는 이름입니다." validate-on-blur></v-text-field>
           </v-flex>
-          <v-flex xs12 class="mt-4">
+          <v-flex xs12>
             <v-textarea ref="boardDescription" v-model="boardDescription" :rows="3" maxlength="1000" height="80px" label="토픽 소개" hint="토픽 이름 아래에 작게 표시되는 설명입니다." validate-on-blur></v-textarea>
           </v-flex>
           <v-flex xs6>
-            <v-checkbox ref="allowAnonymous" v-model="allowAnonymous" class="dense" label="익명글 허용" hide-details></v-checkbox>
+            <v-checkbox ref="allowAnonymous" v-model="allowAnonymous" class="dense mt-2" label="익명글 허용" hide-details></v-checkbox>
           </v-flex>
           <v-flex xs6>
             <v-tooltip bottom>
-              <v-checkbox ref="useCategory" slot="activator" v-model="useCategory" class="dense" label="카테고리 분류 사용" hide-details></v-checkbox>
+              <v-checkbox ref="useCategory" slot="activator" v-model="useCategory" class="dense mt-2" label="카테고리 분류 사용" hide-details></v-checkbox>
               <span>글을 작성할 때 작성자가 기본/정보/질문 중 하나의 카테고리를 지정할 수 있습니다.</span>
             </v-tooltip>
           </v-flex>
-          <v-flex xs6 class="mt-2">
+          <v-flex xs6 class="mt-3">
             <v-select v-model="allGroupAuth" :items="allGroupAuthItems" label="토픽 공개 여부" dense></v-select>
           </v-flex>
           <v-flex xs6 class="mt-3">
@@ -41,7 +41,7 @@
             </v-layout>
           </v-flex>
           <v-flex xs12>
-            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독 권한" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:true}">
+            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독 권한" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:$vuetify.breakpoint.xsOnly}">
               <template slot="selection" slot-scope="props">
                 <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, allowedGroups)">{{props.item.text}}</v-chip>
               </template>
@@ -52,16 +52,16 @@
               </template>
             </component>
           </v-flex>
-          <v-flex xs12 v-if="board" class="mt-3">
+          <v-flex xs12 v-if="board" class="mt-2">
             <v-select name="ownerNickName" dense v-model="ownerNickName" :items="boardMemberItems" label="토픽지기 양도" hint="선택한 회원에게 토픽지기가 양도됩니다." persistent-hint></v-select>
           </v-flex>
-          <v-flex xs12 v-if="board && board.reservedDate" class="mt-5">
+          <v-flex xs12 v-if="board && board.reservedDate" class="mt-3">
             <v-textarea ref="reservedContents" v-model="reservedContents" :rows="3" readonly height="80px" :label="'변경 예약('+$moment(board.reservedDate, 'YYYYMMDD').format('Y.M.D')+' 반영 예정) 내용'" hint="변경이 예약된 토픽의 내용입니다."></v-textarea>
           </v-flex>
         </v-layout>
-        <v-divider class="mt-4 mb-2"/>
+        <v-divider class="my-2"/>
         <v-layout row>
-          <v-btn flat @click="reset">초기화</v-btn>
+          <v-btn flat @click="reset(true)">초기화</v-btn>
           <v-btn color="error" @click="deleteBoard" v-if="board">삭제</v-btn>
           <template v-if="$vuetify.breakpoint.smAndUp">
             <v-spacer/>
@@ -136,6 +136,9 @@ export default {
             case 'auth':
               string += `구독 권한 : ${reservedContents[key].filter(x=>this.groupItems.some(y=>y.value === x.groupId)).map(x=>this.groupItems.find(y=>y.value === x.groupId).text + (x.command === 'INSERT'?' 추가':(x.command === 'DELETE'?' 삭제':''))).join(', ')}`
               break;
+            case 'status':
+              string += reservedContents[key] === 'DELETED'? '토픽 삭제 예정' : ''
+              break;
           }
         }
         return string;
@@ -145,20 +148,22 @@ export default {
     }
   },
   methods: {
-    reset() {
+    reset(skipGetInformationFormServer) {
       if(this.board){
-        this.loading = true;
-        this.$axios.get('/board/member', {params:{boardId:this.board.boardId}, headers:{silent:true}})
-        .then(response => {
-          const myNickName = this.$store.getters.profile.topicNickName
-          this.boardMemberItems = response.data.filter(x=>x.nickName !== myNickName).map(x => x.nickName);
-          this.loading = false;
-        })
-        .catch(error => {
-          console.log(error.response);
-          this.loading = false;
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽 구성원을 불러오지 못했습니다.", color: "error"});
-        })
+        if(!skipGetInformationFormServer){
+          this.loading = true;
+          this.$axios.get('/board/member', {params:{boardId:this.board.boardId}, headers:{silent:true}})
+          .then(response => {
+            const myNickName = this.$store.getters.profile.topicNickName
+            this.boardMemberItems = response.data.filter(x=>x.nickName !== myNickName).map(x => x.nickName);
+            this.loading = false;
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.loading = false;
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽 구성원을 불러오지 못했습니다.", color: "error"});
+          })
+        }
         this.boardId = this.board.boardId;
         this.boardName = this.board.boardName;
         this.boardDescription = this.board.boardDescription;
@@ -283,7 +288,18 @@ export default {
       }
     },
     deleteBoard(){
-      console.log('delete!!')
+      if(confirm('토픽 삭제는 1개월 유예기간 후에 이루어지고,\n삭제 후에는 모든 글에 접근이 불가능합니다. 계속하시겠습니까?')){
+        this.$axios.put('/board', {boardId:this.boardId, status:'DELETED'})
+        .then(response => {
+          this.$emit("resetBoard");
+          this.$emit("closeDialog");
+          this.$store.dispatch("showSnackbar", {text: "토픽 삭제를 예약하였습니다.", color: "success"});
+        })
+        .catch(error => {
+          console.log(error.response);
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
+        })
+      }
     }
   },
   created() {
