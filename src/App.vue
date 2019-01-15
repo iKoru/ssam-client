@@ -3,13 +3,7 @@
     <component :is="layout">
       <router-view :layout.sync="layout"/>
     </component>
-    <v-dialog :value="$store.getters.spinner" hide-overlay width="300">
-      <v-card color="primary" :dark="$store.getters.isLight">
-        <v-card-text>
-          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <v-progress-circular v-show="$store.getters.spinner" indeterminate color="primary" id="spinner"></v-progress-circular>
     <v-snackbar :timeout="snackbar.color === 'success'?3000:5000" bottom left :color="snackbar.color" v-model="showSnackbar">
       {{ snackbar.text }}
       <v-btn dark flat @click="showSnackbar = false" icon>
@@ -69,5 +63,11 @@ export default {
 }
 body {
   font-family: "Nanum Gothic" !important;
+}
+#spinner{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
 }
 </style>

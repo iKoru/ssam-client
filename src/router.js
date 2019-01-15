@@ -102,7 +102,7 @@ const router = new Router({
       component: () => import('@/views/Message'),
       beforeEnter: requireSignin,
       meta: {
-        title: '메세지'
+        title: '메시지'
       }
     },
     {
