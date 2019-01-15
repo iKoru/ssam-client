@@ -1,35 +1,72 @@
 <template>
   <v-container px-0 fluid>
     <v-layout row wrap align-center>
-      <v-flex xs12 sm6 md4 offset-md2>
-        <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
-      </v-flex>
-      <v-flex xs12 sm6 md4>
-        <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
-      </v-flex>
-      <v-flex xs12 md2>
-        <div>asdfasdfasdf</div>
-      </v-flex>
-      <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index">
-        <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
-          <template v-if="recent.documents && recent.documents.length > 0">
-            <div class="pt-3 position-relative">
-              <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
-              <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
-            </div>
-            <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :showDateTime="true"></small-document-list>
-          </template>
-          <template v-else>
-            <div class="d-flex cover-title align-center">
-              <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
-            </div>
-            <div class="pt-3 position-relative">
-              <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
-              <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
-            </div>
-          </template>
-        </div>
-      </v-flex>
+      <v-layout row wrap>
+        <v-flex xs12 md8 offset-md1>
+          <v-layout row wrap>
+            <v-flex xs12 sm6>
+              <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
+            </v-flex>
+            <v-flex xs12 sm6>
+              <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
+            </v-flex>
+            <v-flex xs12 sm6 v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index">
+              <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
+                <template v-if="recent.documents && recent.documents.length > 0">
+                  <div class="pt-3 position-relative">
+                    <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
+                    <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+                  </div>
+                  <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :showDateTime="true"></small-document-list>
+                </template>
+                <template v-else>
+                  <div class="d-flex cover-title align-center">
+                    <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
+                  </div>
+                  <div class="pt-3 position-relative">
+                    <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
+                    <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+                  </div>
+                </template>
+              </div>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex d-flex xs12 md3>
+          <v-layout column>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>asdfasdfasdf</v-flex>
+          </v-layout>
+        </v-flex>
+      </v-layout>
     </v-layout>
   </v-container>
 </template>
