@@ -233,7 +233,6 @@ export default {
         });
     },
     closeTopicDialog() {
-      document.body.style.position = "initial";
       this.topicCreator = false;
     },
     openTopicDialog() {
@@ -241,10 +240,14 @@ export default {
         this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
         return;
       }
-      document.body.style.position = "fixed";
       this.topicCreator = true;
     },
     resetBoard() {}
+  },
+  watch:{
+    topicCreator(val){
+      document.body.style.position = val?'fixed':'initial';
+    }
   }
 };
 </script>

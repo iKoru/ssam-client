@@ -218,13 +218,14 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  margin-top:1px;
 }
 #menubarContainer {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 .menuBarTab {
-  max-height: 24px;
+  max-height: 32px;
   width: 100%;
   top:0;
 }

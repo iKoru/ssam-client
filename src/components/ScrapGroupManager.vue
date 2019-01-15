@@ -137,6 +137,9 @@ export default {
     dialog(val) {
       if (val) {
         this.resetScrapGroups();
+        document.body.style.position = "fixed"
+      }else{
+        document.body.style.position = "initial";
       }
     }
   }

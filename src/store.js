@@ -65,7 +65,6 @@ export default new Vuex.Store({
       return notifications
     },
     totalNotifications ({ notifications }) {
-      console.log(notifications);
       return notifications.length === 0 ? 0 : notifications[0].totalCount
     }
   },

@@ -166,13 +166,11 @@ export default {
           return;
         }
         this.editItem = null;
-        document.body.style.position = "fixed";
         this.dialog = true;
       }else if(item){
         this.$axios.get('/board', {params:{boardId:item.boardId}})
         .then(response => {
           this.editItem = response.data
-          document.body.style.position = "fixed";
           this.dialog = true;
         })
         .catch(error=>{
@@ -182,7 +180,6 @@ export default {
       }
     },
     closeDialog() {
-      document.body.style.position = "initial";
       this.dialog = false;
     },
     resetBoard() {
@@ -231,6 +228,9 @@ export default {
   watch:{
     userBoards(){
       this.reset();
+    },
+    dialog(val){
+      document.body.style.position = val?"fixed":"initial";
     }
   },
   render(h) {
