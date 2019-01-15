@@ -73,6 +73,14 @@ const router = new Router({
       }
     },
     {
+      path: '/authSubmit',
+      name: 'authSubmit',
+      component: () => import('@/views/AuthSubmit'),
+      meta: {
+        title: '이메일 인증'
+      }
+    },
+    {
       path: '/myPage',
       name: 'myPage',
       component: () => import('@/views/MyPage'),
