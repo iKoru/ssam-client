@@ -2,7 +2,7 @@
   <v-card flat>
     <v-card-title>
       <v-layout row>
-        <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
+        <v-flex xs12 sm10 lg8 class="mx-auto">
           <v-layout row>
             <h3 class="headline">내가 쓴 댓글 목록</h3>
           </v-layout>
@@ -10,7 +10,7 @@
       </v-layout>
     </v-card-title>
     <v-layout row>
-      <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
+      <v-flex xs12 sm10 lg8 class="mx-auto">
         <v-data-table :headers="headers" xs12 :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalUserComments === 0}">
           <template slot="items" slot-scope="props">
             <tr @click="selected = (selected===props.index?null:props.index)">

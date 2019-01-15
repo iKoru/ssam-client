@@ -20,7 +20,7 @@
                 <tr @click="openDialog(props.item)" class="cursor-pointer">
                   <td>{{boardTypeItems[props.item.boardType]}}</td>
                   <td class="ellipsis">
-                    <v-layout column>
+                    <v-layout column class="d-inline">
                       <v-flex xs12>
                         <span>{{props.item.boardName}}</span>
                       </v-flex>
