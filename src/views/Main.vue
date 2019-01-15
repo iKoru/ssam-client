@@ -14,8 +14,8 @@
             <template v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</template>
           </div>
           <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0" :showDateTime="true"></small-document-list>
-          <div v-else class="d-flex cover-title">
-            <div class="my-auto flex">표시할 내용이 없습니다.</div>
+          <div v-else class="d-flex cover-title align-center">
+            <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
           </div>
         </div>
       </v-flex>

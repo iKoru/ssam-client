@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.2.3",
     "@vue/cli-service-global": "^3.2.1",
     "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
     "filepond": "^3.5.0",
     "filepond-plugin-file-rename": "^1.1.0",
     "filepond-plugin-file-validate-type": "^1.2.0",

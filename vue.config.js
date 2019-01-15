@@ -15,6 +15,7 @@ module.exports = {
       port: 8082
     }
   },
+  transpileDependencies:[/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/],
   chainWebpack: config => {
     config.module.rule('eslint').use('eslint-loader').options({
       fix: true

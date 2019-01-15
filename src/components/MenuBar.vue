@@ -17,16 +17,16 @@
               </template>
               <template v-else>
                 <template v-if="lounges.length === 0">
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
                 <template v-else-if="lounges.length === 1">
                   <v-flex class="ellipsis">
                     <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
@@ -35,7 +35,7 @@
                   <v-flex class="ellipsis">
                     <router-link :to="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
               </template>
             </v-layout>
@@ -60,16 +60,16 @@
               </template>
               <template v-else>
                 <template v-if="topics.length === 0">
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
                 <template v-else-if="topics.length === 1">
                   <v-flex class="ellipsis">
                     <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>nbsp;</v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
@@ -78,7 +78,7 @@
                   <v-flex class="ellipsis">
                     <router-link :to="topics[1].boardId">{{topics[1].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>nbsp;</v-flex>
+                  <v-flex>&nbsp;</v-flex>
                 </template>
               </template>
             </div>
@@ -224,8 +224,9 @@ export default {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 .menuBarTab {
-  max-height: 32px;
+  max-height: 24px;
   width: 100%;
+  top:0;
 }
 .menuBarTab a {
   position: absolute !important;
@@ -243,6 +244,9 @@ export default {
 }
 .v-tabs__div.topicTab {
   width: 100%;
+}
+.v-tabs__div.loungeTab {
+  display:block;
 }
 .topicTab .v-tabs__item {
   opacity: 1;
@@ -264,7 +268,10 @@ export default {
   visibility: hidden;
 }
 .menuBarContents {
-  padding-top: 32px;
+  padding-top: 24px;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 .switchTabIcon {
   position: absolute;
@@ -284,14 +291,17 @@ export default {
   -webkit-flex-direction: row;
   overflow-x: auto;
   height: 120px;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 .scrollContainer.topicTab,
 .scrollContainer.loungeTab {
-  height: 152px;
+  height: 144px;
 }
 .scrollContainer.topicTab.hide-menuBar,
 .scrollContainer.loungeTab.hide-menuBar {
-  height: 32px;
+  height: 24px;
 }
 .scrollContainer.overflow-hidden {
   overflow-x: hidden;
@@ -299,5 +309,8 @@ export default {
 .menuColumn {
   margin: auto 20px;
   min-width: 100px;
+}
+.menuColumn .flex.ellipsis{
+  margin: 2px 0;
 }
 </style>

@@ -6,20 +6,20 @@
     <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false"></small-document-list>
-        <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">표시할 내용이 없습니다.</div>
+        <div v-else class="d-flex cover-title align-center">
+          <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.weekly" :maxCount="maxCount" v-if="items.weekly && items.weekly.length > 0" :showDateTime="false"></small-document-list>
-        <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">표시할 내용이 없습니다.</div>
+        <div v-else class="d-flex cover-title align-center">
+          <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.monthly" :maxCount="maxCount" v-if="items.monthly && items.monthly.length > 0" :showDateTime="false"></small-document-list>
-        <div v-else class="d-flex cover-title">
-          <div class="my-auto flex">표시할 내용이 없습니다.</div>
+        <div v-else class="d-flex cover-title align-center">
+          <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
     </v-carousel>
