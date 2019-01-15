@@ -85,7 +85,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex order-sm2 :sm10="menu===1" :sm8="menu===0">
+      <v-flex order-sm2>
         <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false">
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents':true}">
             <template v-show="menu===0">
@@ -252,11 +252,13 @@ export default {
 .topicTab .v-tabs__item {
   opacity: 1;
 }
-.topicTabMenuBar {
+.topicTabMenuBar.flex.sm2 {
   position: absolute;
   top: 0;
   right: 0;
   width: 100%;
+  max-width:13.88888888889%;
+  flex-basis:13.88888888889%;
 }
 #topicTabScreen {
   position: absolute;
@@ -299,6 +301,8 @@ export default {
 .scrollContainer.topicTab,
 .scrollContainer.loungeTab {
   height: 144px;
+  max-width:13.88888888889%;
+  flex-basis:13.88888888889%;
 }
 .scrollContainer.topicTab.hide-menuBar,
 .scrollContainer.loungeTab.hide-menuBar {
