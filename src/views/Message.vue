@@ -4,12 +4,12 @@
       <v-card width="100%" flat>
         <v-card-title primary-title>
           <v-layout row>
-            <v-flex xs12 sm10 lg8 xl6 class="mx-auto">
+            <v-flex xs12 sm10 lg8 class="mx-auto">
               <v-layout row>
                 <h3 class="headline">채팅 목록</h3>
               </v-layout>
               <v-flex xs12>
-                <v-data-table xs12 :items="chats" id="chatTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalChats === 0}">
+                <v-data-table xs12 :items="chats" id="chatTable" hide-headers :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalChats === 0, 'mt-5':true}">
                   <template slot="items" slot-scope="props">
                     <tr class="cursor-pointer" @click="getChat(props.item)">
                       <td>

@@ -93,7 +93,7 @@
         </v-card-title>
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" text-xs-right>
-            <v-btn @click="reset" flat :block="$vuetify.breakpoint.xsOnly" class="mt-2">초기화</v-btn>
+            <v-btn @click="reset" flat class="mt-2">초기화</v-btn>
             <v-flex order-xs3 order-sm2 class="mt-2">
               <v-subheader>
                 <v-btn @click="exit" class="short" flat>
@@ -129,9 +129,12 @@
 
 <script>
 import MainLayout from "../layouts/MainLayout";
+/*var agent = navigator.userAgent.toLowerCase();
+if ( (navigator.appName === 'Netscape' && navigator.userAgent.search('Trident') !== -1) || (agent.indexOf("msie") !== -1) ) {
+}*/
+import 'filepond-polyfill'
 import vueFilePond, {setOptions} from "vue-filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
-
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
 setOptions({
   labelIdle: "이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(200KB 이내)",
