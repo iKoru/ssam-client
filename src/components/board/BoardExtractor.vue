@@ -1,7 +1,9 @@
 
 <template>
   <div class="text-xs-center position-relative">
-    <div class="pt-3 position-relative">{{boardType === 'T'?'토픽':'라운지'}} 베스트</div>
+    <div class="pt-3 position-relative">
+      <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 베스트</router-link>
+    </div>
     <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
     <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">

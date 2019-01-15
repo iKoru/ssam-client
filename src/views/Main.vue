@@ -9,14 +9,22 @@
       </v-flex>
       <v-flex xs12 sm6 md4 :offset-md2="index % 2 === 0" v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index">
         <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
-          <div class="pt-3 position-relative">
-            <template v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</template>
-            <template v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</template>
-          </div>
-          <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" v-if="recent.documents && recent.documents.length > 0" :showDateTime="true"></small-document-list>
-          <div v-else class="d-flex cover-title align-center">
-            <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
-          </div>
+          <template v-if="recent.documents && recent.documents.length > 0">
+            <div class="pt-3 position-relative">
+              <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
+              <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+            </div>
+            <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :showDateTime="true"></small-document-list>
+          </template>
+          <template v-else>
+            <div class="d-flex cover-title align-center">
+              <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
+            </div>
+            <div class="pt-3 position-relative">
+              <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
+              <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+            </div>
+          </template>
         </div>
       </v-flex>
     </v-layout>
