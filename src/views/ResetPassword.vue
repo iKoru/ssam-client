@@ -1,13 +1,14 @@
  <template>
-  <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'">
-    <v-layout row height="200px" justify-center align-center id="resetPasswordLayout">
+  <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'" id="resetPasswordLayout">
+    <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
         <v-img src="@/static/img/index.jpg" aspect-ratio="2.75"></v-img>
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">비밀번호 찾기</h3>
             <div class="text-xs-center justify-center align-center pa-3">
-              <p>임시 비밀번호를 만들기 위한 계정의 ID와 이메일 주소를 입력해주세요.
+              <p>
+                임시 비밀번호를 만들기 위한 계정의 ID와 이메일 주소를 입력해주세요.
                 <br>자격증을 통하여 인증하셨다면, 이용하셨던 메일로
                 <span>webmaster@pedagy.com</span>에 문의해주세요.
               </p>
@@ -123,7 +124,12 @@ form .flex {
 #resetPasswordForm {
   max-width: 800px;
 }
-/* #resetPasswordLayout{
-  margin-top:64px;
-} */
+#resetPasswordLayout {
+  margin: 5rem auto 74px auto;
+}
+@media (max-width: 600px) {
+  #resetPasswordLayout {
+    margin-top: 64px;
+  }
+}
 </style>
