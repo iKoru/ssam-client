@@ -35,64 +35,6 @@
       </div>
     </v-flex>
   </v-layout>
-  <!--<v-container px-0 fluid>
-    <v-layout row wrap align-center>
-      <v-layout row wrap>
-        <v-flex xs12 md9>
-        </v-flex>
-        <v-flex d-flex xs12 md3>
-          <v-layout column>
-            <v-flex xs12>
-              <v-card flat>
-                <v-card-title>
-                  <v-layout column>
-                    <v-flex class="pt-3 px-2 position-relative">
-                      <router-link to="/notice">
-                        <span>공지사항</span>
-                      </router-link>
-                    </v-flex>
-                    <v-divider class="my-2"/>
-                    <v-flex>
-                      <small-document-list :list="notice.documents" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
-                    </v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                  </v-layout>
-                </v-card-title>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-  </v-container>-->
 </template>
 
 <script>
@@ -105,8 +47,7 @@ export default {
   },
   data() {
     return {
-      recents: [],
-      notice: {}
+      recents: []
     };
   },
   created() {
@@ -114,23 +55,27 @@ export default {
     this.$store.dispatch('setColumnType', 'SHOW_ALWAYS')
   },
   mounted() {
-    this.$axios
-      .get("/recent", {headers: {silent: true}})
-      .then(response => {
-        response.data.forEach(x => {
-          x.documents.forEach(y => {
-            if (y.writeDateTime) {
-              y.writeDateTime = this.$moment(y.writeDateTime, "YYYYMMDDHHmmss");
-            }
+    if(this.$store.getters.recents){
+      this.recents = this.$store.getters.recents.filter(x=>x.boardId !== 'notice')
+    }else{
+      this.$axios
+        .get("/recent", {headers: {silent: true}})
+        .then(response => {
+          response.data.forEach(x => {
+            x.documents.forEach(y => {
+              if (y.writeDateTime) {
+                y.writeDateTime = this.$moment(y.writeDateTime, "YYYYMMDDHHmmss");
+              }
+            });
           });
+          this.recents = response.data.filter(x=>x.boardId !== 'notice');
+          this.$store.dispatch('setRecents', response.data)
+        })
+        .catch(error => {
+          console.log(error);
+          this.$store.dispatch("showSnackbar", {text: `최근 게시물을 가져오지 못했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
         });
-        this.recents = response.data.filter(x=>x.boardId !== 'notice');
-        this.notice = response.data.filter(x=>x.boardId === 'notice');
-      })
-      .catch(error => {
-        console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `최근 게시물을 가져오지 못했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
-      });
+    }
   },
   methods: {}
 };

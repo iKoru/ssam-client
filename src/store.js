@@ -17,6 +17,7 @@ export default new Vuex.Store({
     boards: [],
     userBoards: [],
     notifications: [],
+    recents:null,
     columnType:'SHOW_ALWAYS'
   },
   getters: {
@@ -70,6 +71,9 @@ export default new Vuex.Store({
     },
     columnType({columnType}){
       return columnType
+    },
+    recents({recents}){
+      return recents
     }
   },
   mutations: {
@@ -150,6 +154,9 @@ export default new Vuex.Store({
     },
     SET_COLUMN_TYPE(state, columnType){
       state.columnType = columnType
+    },
+    SET_RECENTS(state, recents){
+      state.recents = recents
     }
   },
   actions: {
@@ -223,6 +230,9 @@ export default new Vuex.Store({
     },
     setColumnType({commit}, columnType){
       commit('SET_COLUMN_TYPE', columnType)
+    },
+    setRecents({commit}, recents){
+      commit('SET_RECENTS', recents)
     }
   }
 })
