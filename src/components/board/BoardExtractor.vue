@@ -1,25 +1,26 @@
 
 <template>
-  <div class="text-xs-center position-relative">
-    <div class="pt-3 position-relative">
+  <div class="position-relative">
+    <div class="pt-3 px-2 position-relative">
       <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 베스트</router-link>
     </div>
+    <v-divider class="my-2"/>
     <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
-    <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel" :interval="10000" :height="(maxCount || 10)*27 + 39">
+    <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel text-xs-center" :interval="10000" :height="(maxCount || 10)*28 + 50">
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
-        <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false"></small-document-list>
+        <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false" :showVoteUpCount="true"></small-document-list>
         <div v-else class="d-flex cover-title align-center">
           <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
-        <small-document-list :list="items.weekly" :maxCount="maxCount" v-if="items.weekly && items.weekly.length > 0" :showDateTime="false"></small-document-list>
+        <small-document-list :list="items.weekly" :maxCount="maxCount" v-if="items.weekly && items.weekly.length > 0" :showDateTime="false" :showVoteUpCount="true"></small-document-list>
         <div v-else class="d-flex cover-title align-center">
           <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
       </v-carousel-item>
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
-        <small-document-list :list="items.monthly" :maxCount="maxCount" v-if="items.monthly && items.monthly.length > 0" :showDateTime="false"></small-document-list>
+        <small-document-list :list="items.monthly" :maxCount="maxCount" v-if="items.monthly && items.monthly.length > 0" :showDateTime="false" :showVoteUpCount="true"></small-document-list>
         <div v-else class="d-flex cover-title align-center">
           <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
         </div>
@@ -78,8 +79,8 @@ export default {
 }
 .boardExtractorPeriod {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 8px;
   color: #aaa;
 }
 </style>

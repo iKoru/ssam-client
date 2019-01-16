@@ -5,28 +5,36 @@
         <v-flex xs12 md8 offset-md1>
           <v-layout row wrap>
             <v-flex xs12 sm6>
-              <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
+              <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'mt-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
             </v-flex>
             <v-flex xs12 sm6>
-              <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'elevation-1':true, 'my-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
+              <board-extractor boardType="T" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'mt-2':true,'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
             </v-flex>
             <v-flex xs12 sm6 v-for="(recent, index) in recents" :class="{'mt-3':$vuetify.breakpoint.xsOnly && index > 0, 'mb-3': $vuetify.breakpoint.xsOnly && index === recents.length - 1}" :key="index">
-              <div :class="{'elevation-1':true, 'my-2':true, 'text-xs-center':true, 'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'200px':'335px'}">
+              <div :class="{'mt-2':true,'fill-height':true, 'position-relative':true, 'mx-2':$vuetify.breakpoint.smAndUp}" :style="{height:$vuetify.breakpoint.xsOnly?'190px':'330px'}">
                 <template v-if="recent.documents && recent.documents.length > 0">
-                  <div class="pt-3 position-relative">
-                    <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
-                    <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+                  <div class="pt-3 px-2 position-relative">
+                    <router-link :to="'/'+recent.boardId">
+                      <span v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</span>
+                      <span v-else-if="recent.boardId === 'question'">답변을 기다리는 질문</span>
+                      <span v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</span>
+                    </router-link>
                   </div>
-                  <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :showDateTime="true"></small-document-list>
+                  <v-divider class="my-2"/>
+                  <small-document-list :list="recent.documents" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :showDateTime="true" :showVoteUpCount="false"></small-document-list>
                 </template>
                 <template v-else>
-                  <div class="d-flex cover-title align-center">
+                  <div class="d-flex cover-title align-center text-xs-center">
                     <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
                   </div>
-                  <div class="pt-3 position-relative">
-                    <router-link :to="'/'+recent.boardId" v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</router-link>
-                    <router-link :to="'/'+recent.boardId" v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</router-link>
+                  <div class="pt-3 px-2 position-relative">
+                    <router-link :to="'/'+recent.boardId">
+                      <span v-if="recent.hot">최근 인기 토픽 - {{recent.boardName}}</span>
+                      <span v-else-if="recent.boardId === 'question'">답변을 기다리는 질문</span>
+                      <span v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</span>
+                    </router-link>
                   </div>
+                  <v-divider class="my-2 "/>
                 </template>
               </div>
             </v-flex>
@@ -34,7 +42,23 @@
         </v-flex>
         <v-flex d-flex xs12 md3>
           <v-layout column>
-            <v-flex xs12>asdfasdfasdf</v-flex>
+            <v-flex xs12>
+              <v-card flat>
+                <v-card-title>
+                  <v-layout column>
+                    <v-flex class="pt-3 px-2 position-relative">
+                      <router-link to="/notice">
+                        <span>공지사항</span>
+                      </router-link>
+                    </v-flex>
+                    <v-divider class="my-2"/>
+                    <v-flex>
+                      <small-document-list :list="notice.documents" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
+                    </v-flex>
+                  </v-layout>
+                </v-card-title>
+              </v-card>
+            </v-flex>
             <v-flex xs12>asdfasdfasdf</v-flex>
             <v-flex xs12>asdfasdfasdf</v-flex>
             <v-flex xs12>asdfasdfasdf</v-flex>
@@ -81,7 +105,8 @@ export default {
   },
   data() {
     return {
-      recents: []
+      recents: [],
+      notice: {}
     };
   },
   created() {
@@ -98,7 +123,8 @@ export default {
             }
           });
         });
-        this.recents = response.data;
+        this.recents = response.data.filter(x=>x.boardId !== 'notice');
+        this.notice = response.data.filter(x=>x.boardId === 'notice');
       })
       .catch(error => {
         console.log(error);

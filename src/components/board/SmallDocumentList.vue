@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div>
     <template v-if="!list || list.length === 0">
       <div>표시할 내용이 없습니다.</div>
     </template>
@@ -18,7 +18,7 @@
                 <v-subheader class="tiny align-center mx-1 px-0" v-if="showDateTime">
                   <small>{{list[n-1].writeDateTime.fromNow()}}</small>
                 </v-subheader>
-                <span class="tiny align-center">
+                <span class="tiny align-center" v-if="showVoteUpCount">
                   <v-icon small color="red darken-2">favorite</v-icon>
                   {{list[n-1].voteUpCount}}
                 </span>
@@ -33,6 +33,6 @@
 <script>
 export default {
   name: "smallDocumentList",
-  props: ["list", "maxCount", "showDateTime"]
+  props: ["list", "maxCount", "showDateTime", "showVoteUpCount"]
 };
 </script>
