@@ -30,7 +30,7 @@
               <span v-else>{{recent.boardName}} 최근 {{recent.boardId === 'archive'?'자료':'게시물'}}</span>
             </router-link>
           </div>
-          <v-divider class="my-2 "/>
+          <v-divider class="my-2"/>
         </template>
       </div>
     </v-flex>
@@ -52,12 +52,12 @@ export default {
   },
   created() {
     this.$emit("update:layout", MainLayout);
-    this.$store.dispatch('setColumnType', 'SHOW_ALWAYS')
+    this.$store.dispatch("setColumnType", "SHOW_ALWAYS");
   },
   mounted() {
-    if(this.$store.getters.recents){
-      this.recents = this.$store.getters.recents.filter(x=>x.boardId !== 'notice')
-    }else{
+    if (this.$store.getters.recents) {
+      this.recents = this.$store.getters.recents.filter(x => x.boardId !== "notice");
+    } else {
       this.$axios
         .get("/recent", {headers: {silent: true}})
         .then(response => {
@@ -68,8 +68,8 @@ export default {
               }
             });
           });
-          this.recents = response.data.filter(x=>x.boardId !== 'notice');
-          this.$store.dispatch('setRecents', response.data)
+          this.recents = response.data.filter(x => x.boardId !== "notice");
+          this.$store.dispatch("setRecents", response.data);
         })
         .catch(error => {
           console.log(error);

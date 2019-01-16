@@ -20,6 +20,10 @@
                     <v-flex>
                       <small-document-list :list="notice.length > 0? notice[0].documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
+                    <v-divider class="my-2"/>
+                    <v-flex>
+                      <router-link to="/tools">생활기록부 도구</router-link>
+                    </v-flex>
                     <v-flex xs12>asdfasdfasdf</v-flex>
                     <v-flex xs12>asdfasdfasdf</v-flex>
                     <v-flex xs12>asdfasdfasdf</v-flex>
@@ -71,27 +75,27 @@ export default {
       notice: {}
     };
   },
-  computed:{
-    columnType(){
+  computed: {
+    columnType() {
       return this.$store.getters.columnType;
     }
   },
   mounted() {
-    if(this.$store.getters.recents){
-      this.notice = this.$store.getters.recents.filter(x=>x.boardId === 'notice')
-    }else{
+    if (this.$store.getters.recents) {
+      this.notice = this.$store.getters.recents.filter(x => x.boardId === "notice");
+    } else {
       this.$axios
         .get("/recent", {headers: {silent: true}})
         .then(response => {
-          response.data.forEach(x=>{
+          response.data.forEach(x => {
             x.documents.forEach(y => {
               if (y.writeDateTime) {
                 y.writeDateTime = this.$moment(y.writeDateTime, "YYYYMMDDHHmmss");
               }
-            })
-          })
-          this.notice = response.data.filter(x=>x.boardId === 'notice');
-          this.$store.dispatch('setRecents', response.data)
+            });
+          });
+          this.notice = response.data.filter(x => x.boardId === "notice");
+          this.$store.dispatch("setRecents", response.data);
         })
         .catch(error => {
           console.log(error);
@@ -110,7 +114,7 @@ export default {
   left: 0;
   right: 0;
 }
-#columnAside{
-  display:flex;
+#columnAside {
+  display: flex;
 }
 </style>

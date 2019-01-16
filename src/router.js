@@ -128,10 +128,19 @@ const router = new Router({
     },
     {
       path: '/error',
+      name: 'error',
       component: () => import('@/views/Error'),
       props: (route) => ({ error: route.query.error }),
       meta: {
         title: '에러'
+      }
+    },
+    {
+      path: '/tools',
+      name: 'tools',
+      component: () => import('@/views/Tools'),
+      meta: {
+        title: '도구'
       }
     },
     { // should be placed at the last of array
