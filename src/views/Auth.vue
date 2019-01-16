@@ -58,6 +58,7 @@ export default {
   name: "Auth",
   created() {
     this.$emit("update:layout", MainLayout);
+    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
   },
   data() {
     return {

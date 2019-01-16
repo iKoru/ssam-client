@@ -66,6 +66,7 @@ export default {
   },
   created() {
     this.$emit("update:layout", MainLayout);
+    this.$store.dispatch('setColumnType', 'HIDE_SM')
   },
   async beforeRouteUpdate(to, from, next) {
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {

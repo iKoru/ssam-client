@@ -242,6 +242,7 @@ export default {
   },
   created() {
     this.$emit("update:layout", MainLayout);
+    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
     this.reset();
     this.$axios
       .get("/group", {params: {groupType: ["M", "G"]}, headers: {silent: true}})
