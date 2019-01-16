@@ -14,6 +14,7 @@ export default {
   },
   created () {
     console.log('write document')
+    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
   }
 }
 </script>

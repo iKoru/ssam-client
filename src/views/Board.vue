@@ -71,8 +71,10 @@ export default {
   async beforeRouteUpdate(to, from, next) {
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {
       this.setBoard(this.$store.getters.boards.find(x => x.boardId === to.params.boardId));
+      this.$store.dispatch('setColumnType', 'HIDE_SM')
       next();
     } else if (await this.getBoard(to.params.boardId)) {
+      this.$store.dispatch('setColumnType', 'HIDE_SM')
       next();
     } else {
       next("/error?error=404");
