@@ -16,7 +16,8 @@ export default new Vuex.Store({
     menuBar: true,
     boards: [],
     userBoards: [],
-    notifications: []
+    notifications: [],
+    columnType:'SHOW_ALWAYS'
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -66,6 +67,9 @@ export default new Vuex.Store({
     },
     totalNotifications ({ notifications }) {
       return notifications.length === 0 ? 0 : notifications[0].totalCount
+    },
+    columnType({columnType}){
+      return columnType
     }
   },
   mutations: {
@@ -143,6 +147,9 @@ export default new Vuex.Store({
           state.notifications.splice(state.notifications.findIndex(y => y.notificationId === x.notificationId), 1, x);
         }
       })
+    },
+    SET_COLUMN_TYPE(state, columnType){
+      state.columnType = columnType
     }
   },
   actions: {
@@ -213,6 +220,9 @@ export default new Vuex.Store({
     },
     addNotifications ({ commit }, notifications) {
       commit('ADD_NOTIFICATIONS', notifications)
+    },
+    setColumnType({commit}, columnType){
+      commit('SET_COLUMN_TYPE', columnType)
     }
   }
 })

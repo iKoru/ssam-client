@@ -1,10 +1,11 @@
 <template>
   <div class="mainLayout">
     <main-toolbar class="mainLayout__nav"></main-toolbar>
-    <menu-bar :lounges="lounges" :topics="topics" v-if="$vuetify.breakpoint.smAndUp"/>
-    <menu-drawer :lounges="lounges" :topics="topics" v-else/>
+    <component :is="$vuetify.breakpoint.smAndUp?'menu-bar':'menu-drawer'" :lounges="lounges" :topics="topics"/>
     <main class="mainLayout__main">
-      <slot></slot>
+      <main-column-layout>
+        <slot></slot>
+      </main-column-layout>
     </main>
     <main-footer class="mainLayout__footer"></main-footer>
   </div>
@@ -14,12 +15,14 @@ import MainToolbar from "../components/MainToolbar";
 import MainFooter from "../components/MainFooter";
 import MenuDrawer from "../components/MenuDrawer";
 import MenuBar from "../components/MenuBar";
+import MainColumnLayout from "./MainColumnLayout";
 export default {
   components: {
     MainToolbar,
     MainFooter,
     MenuDrawer,
-    MenuBar
+    MenuBar,
+    MainColumnLayout
   },
   computed: {
     lounges() {
