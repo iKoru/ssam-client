@@ -1,18 +1,59 @@
  <template>
   <v-container>
-    <v-layout column justify-center align-center>
-      <v-flex xs12>
-        <v-textarea v-model="text"></v-textarea>
-        <div contenteditable="true" @input="highlightContent" v-html="content()" style="border:1px solid #e8e8e8"></div>
-        <editor/>
+    <v-layout row wrap>
+      <v-flex xs12 class="mb-3">
+        <p class="title">글자수 세기 / 금지어 체크</p>
+        <span class="subheading">영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</span>
       </v-flex>
-      <v-flex>
-        공백 포함 :
-        <span class="primary--text">{{text.length}}</span>자 |
-        <span>{{byteLength}}</span> Bytes
-        <br>공백 제외 :
-        <span class="primary--text">{{withoutSpace.length}}</span>자 |
-        <span>{{byteLengthWithoutSpace}}</span> Bytes
+      <v-flex xs12 :sm6="forbidden.length > 0">
+        <v-layout column>
+          <v-flex xs12 class="px-2">
+            <span>검사할 내용 입력</span>
+            <v-textarea v-model="text" id="text" class="mt-2" auto-grow @keydown="inputChanged" outline hide-details placeholder="검사할 내용을 입력해주세요."></v-textarea>
+          </v-flex>
+          <v-divider class="my-2"/>
+          <v-flex class="px-2">
+            공백 포함 
+            <span class="primary--text ml-2">{{text.length}}</span> 자 &nbsp;| &nbsp;
+            <b>{{byteLength}}</b> 바이트
+            <br>공백 제외 
+            <span class="primary--text ml-2">{{withoutSpace.length}}</span> 자 &nbsp;| &nbsp;
+            <b>{{byteLengthWithoutSpace}}</b> 바이트
+          </v-flex>
+          <v-divider class="my-2"/>
+          <v-flex xs12 class="mt-2 px-2">
+            <div>
+              <span>금지어 설정</span>
+              <div>
+                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item">{{item}}</v-chip>
+              </div>
+              <v-layout row align-center>
+                <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
+                <v-btn @click="addItems" depressed small>등록</v-btn>
+              </v-layout>
+            </div>
+          </v-flex>
+          <v-flex v-if="$vuetify.breakpoint.smAndUp">
+            <v-layout row>
+              <v-flex class="text-xs-center mt-3">
+                <v-btn depressed color="primary" @click="copy">전체내용 복사</v-btn>
+                <v-btn depressed @click="reset">초기화</v-btn>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}">
+        <span>금지어 체크결과</span>
+        <div id="filtered" class="mt-2" v-html="filtered"></div>
+      </v-flex>
+      <v-flex v-if="$vuetify.breakpoint.xsOnly">
+        <v-layout row>
+          <v-flex class="text-xs-center mt-3">
+            <v-btn depressed color="primary" @click="copy">전체내용 복사</v-btn>
+            <v-btn depressed @click="reset">초기화</v-btn>
+          </v-flex>
+        </v-layout>
       </v-flex>
     </v-layout>
   </v-container>
@@ -20,6 +61,7 @@
 
 <script>
 import MainLayout from "../layouts/MainLayout";
+
 export default {
   name: "Tools",
   components: {
@@ -27,7 +69,12 @@ export default {
   },
   data() {
     return {
-      text: ""
+      text: "",
+      filtered: '금지어가 입력되면 붉은 글씨로 표시됩니다.',
+      debounce:null,
+      forbidden:['금지어', '호호'],
+      defaultForbidden:['금지어', '호호'],
+      candidate:null
     };
   },
   computed: {
@@ -62,7 +109,64 @@ export default {
     highlightContent(evt) {
       var texts = evt.target.innerText.split(" ");
       this.text = texts.map(t => t.toLocaleUpperCase());
+    },
+    inputChanged(){
+      if(!this.debounce){
+        clearTimeout(this.debounce)
+      }
+      this.debounce = setTimeout(()=>{
+        let words = this.text
+        if(this.forbidden.length > 0){
+          words=this.text.replace(new RegExp('('+this.forbidden.join('|')+')', 'g'), '<span>$1</span>');
+        }
+        words = words.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        this.filtered = words;
+      }, 500);
+    },
+    itemRemoved(index){
+      this.forbidden.splice(index, 1);
+    },
+    addItems() {
+      if (typeof this.candidate === "string") {
+        this.candidate.split(",").forEach(x => {
+          x = x.replace(/(<|>)/g, '');
+          if (x !== "") {
+            if (this.forbidden.indexOf(x) >= 0) {
+              return;
+            }
+            this.forbidden.push(x);
+          }
+        });
+        this.inputChanged();
+        this.candidate = null;
+      }
+    },
+    copy(){
+      let testingCodeToCopy = document.querySelector('#text')
+      testingCodeToCopy.select()
+
+      try {
+        document.execCommand('copy')
+        this.$store.dispatch('showSnackbar', {text:'내용이 복사되었습니다.', color:'success'})
+      } catch (error) {
+        console.log(error)
+      }
+
+      window.getSelection().removeAllRanges()
+    },
+    reset(){
+      this.text = '';
+      this.forbidden = this.defaultForbidden.slice();
+      this.inputChanged()
     }
   }
 };
 </script>
+<style>
+#filtered span{
+  color:red;
+}
+textarea#text{
+  margin-top:8px;
+}
+</style>
