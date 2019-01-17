@@ -57,6 +57,7 @@ export default {
           this.loading = false;
           localStorage.setItem("accessToken", response.data.token);
           this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+          this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
           this.$store.dispatch("signin", {
             accessToken: response.data.token,
             userId: jwt(response.data.token).userId
@@ -136,6 +137,7 @@ export default {
           .then(response => {
             localStorage.setItem("accessToken", response.data.token);
             this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+            this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
             this.$store.dispatch("signin", {
               accessToken: response.data.token,
               userId: this.userId
@@ -144,24 +146,16 @@ export default {
             if (response.data.imminent || response.data.needEmail) {
               this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
             }
-            this.$axios
-              .get("/user")
-              .then(response => {
-                this.$store.dispatch("profile", response.data);
-                if (redirectTo) {
-                  if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
-                    this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
-                  } else {
-                    this.$router.push(redirectTo + window.location.search); //preserve original redirect options
-                  }
-                } else {
-                  const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                  this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
-                }
-              })
-              .catch(err => {
-                this.$store.dispatch("showSnackbar", {text: err && err.response ? err.response.data.message : "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.", color: "error"});
-              });
+            if (redirectTo) {
+              if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
+                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+              } else {
+                this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+              }
+            } else {
+              const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+              this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
+            }
           })
           .catch(err => {
             this.loading = false;

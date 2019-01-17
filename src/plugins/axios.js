@@ -60,6 +60,7 @@ _axios.interceptors.response.use(
           .then(response => { // success to refresh
             localStorage.setItem('accessToken', response.data.token);
             _axios.defaults.headers.common['x-auth'] = response.data.token;
+            _axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
             store.dispatch('signin', {
               accessToken: response.data.token,
               userId: jwt(response.data.token).userId
