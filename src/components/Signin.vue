@@ -67,25 +67,16 @@ export default {
             this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
           }
 
-          this.$axios
-            .get("/user", {headers: {silent: true}})
-            .then(response => {
-              this.$store.dispatch("profile", response.data);
-              if (redirectTo) {
-                if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
-                  this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
-                } else {
-                  this.$router.push(redirectTo + window.location.search); //preserve original redirect options
-                }
-              } else {
-                const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-                this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
-              }
-            })
-            .catch(err => {
-              console.log(err);
-              this.$store.dispatch("showSnackbar", {text: err && err.response ? err.response.data.message : "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.", color: "error"});
-            });
+          if (redirectTo) {
+            if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
+              this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+            } else {
+              this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+            }
+          } else {
+            const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+            this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
+          }
         })
         .catch(err => {
           this.loading = false;

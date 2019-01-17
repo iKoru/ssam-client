@@ -47,6 +47,15 @@ export default {
   },
   created() {
     this.$axios
+      .get("/user", {headers: {silent: true}})
+      .then(response => {
+        this.$store.dispatch("profile", response.data);
+      })
+      .catch(err => {
+        console.log(err);
+        this.$store.dispatch("showSnackbar", {text: err && err.response ? err.response.data.message : "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.", color: "error"});
+      });
+    this.$axios
       .get("/board/list", {headers: {silent: true}})
       .then(response => {
         this.$store.dispatch("setBoards", response.data);
