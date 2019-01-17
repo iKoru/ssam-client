@@ -10,49 +10,50 @@
             <v-flex xs12>
               <v-card flat>
                 <v-card-title>
-                  <v-layout column>
-                    <v-flex class="pt-3 px-2 position-relative">
+                  <v-layout column class="pt-3">
+                    <v-flex class="px-2">
                       <router-link to="/notice">
                         <span>공지사항</span>
                       </router-link>
                     </v-flex>
                     <v-divider class="my-2"/>
-                    <v-flex>
+                    <v-flex class='px-2'>
                       <small-document-list :list="notice.length > 0? notice[0].documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
                     <v-divider class="my-2"/>
-                    <v-flex>
+                    <v-flex class="px-2">
                       <router-link to="/tools">생활기록부 도구</router-link>
                     </v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
-                    <v-flex xs12>asdfasdfasdf</v-flex>
+                    <v-divider class="my-2"/>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
+                    <v-flex xs12>광고가 들어갈것이다.</v-flex>
                   </v-layout>
                 </v-card-title>
               </v-card>

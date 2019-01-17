@@ -45,7 +45,7 @@
       </v-flex>
       <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}" :style="{'border-left':$vuetify.breakpoint.smAndUp?'1px solid rgba(0,0,0,0.12)':'none'}">
         <span>금지어 체크결과</span>
-        <div id="filtered" class="mt-2" v-html="filtered"></div>
+        <div id="filtered" class="mt-2 px-3" v-html="filtered"></div>
       </v-flex>
       <v-flex v-if="$vuetify.breakpoint.xsOnly">
         <v-layout row>
@@ -163,6 +163,9 @@ export default {
 };
 </script>
 <style>
+#filtered{
+  font-size:16px;
+}
 #filtered span{
   color:red;
 }
