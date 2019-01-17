@@ -53,21 +53,11 @@ export default {
 };
 </script>
 <style>
-@import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 @import url(https://fonts.googleapis.com/css?family=Material+Icons);
-.w-100 {
-  width: 100%;
-}
-.float-right {
-  float: right;
-}
-body {
-  font-family: "Nanum Gothic" !important;
-}
-#spinner{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+#spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
