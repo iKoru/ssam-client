@@ -1,11 +1,11 @@
  <template>
   <v-container>
     <v-layout row wrap>
-      <v-flex xs12 class="mb-3">
-        <p class="title">글자수 세기 / 금지어 체크</p>
-        <span class="subheading">영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</span>
+      <v-flex xs12 class="mb-3 pl-2">
+        <span class="title">글자수 세기 / 금지어 체크</span>
+        <v-subheader>영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</v-subheader>
       </v-flex>
-      <v-flex xs12 :sm6="forbidden.length > 0">
+      <v-flex xs12 :sm6="forbidden.length > 0" :class="{'pr-3':$vuetify.breakpoint.smAndUp}">
         <v-layout column>
           <v-flex xs12 class="px-2">
             <span>검사할 내용 입력</span>
@@ -29,7 +29,7 @@
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
-                <v-btn @click="addItems" depressed small>등록</v-btn>
+                <v-btn @click="addItems" class="short" depressed small>추가</v-btn>
               </v-layout>
             </div>
           </v-flex>
@@ -43,7 +43,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}">
+      <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}" :style="{'border-left':$vuetify.breakpoint.smAndUp?'1px solid rgba(0,0,0,0.12)':'none'}">
         <span>금지어 체크결과</span>
         <div id="filtered" class="mt-2" v-html="filtered"></div>
       </v-flex>
