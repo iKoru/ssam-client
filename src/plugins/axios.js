@@ -45,7 +45,6 @@ _axios.interceptors.response.use(
   function (error) {
     // Do something with response error
 
-    alert(error.response.data.message)
     store.dispatch('hideSpinner')
     if (error.response && error.response.status === 401) {
       let query = location.search !== '' ? qs.parse(location.search.substring(1)) : {};
@@ -59,21 +58,15 @@ _axios.interceptors.response.use(
           headers: { 'x-auth': token }
         })
           .then(response => { // success to refresh
-            if (token === response.data.token) {
-              localStorage.removeItem('accessToken');
-              store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
-              return router.push('/signin?' + qs.stringify(query));
-            } else {
-              localStorage.setItem('accessToken', response.data.token);
-              _axios.defaults.headers.common['x-auth'] = response.data.token;
-              store.dispatch('signin', {
-                accessToken: response.data.token,
-                userId: jwt(response.data.token).userId
-              });
-              error.config.headers['x-auth'] = response.data.token;
-              isRefreshing = false;
-              return _axios.request(error.config);
-            }
+            localStorage.setItem('accessToken', response.data.token);
+            _axios.defaults.headers.common['x-auth'] = response.data.token;
+            store.dispatch('signin', {
+              accessToken: response.data.token,
+              userId: jwt(response.data.token).userId
+            });
+            error.config.headers['x-auth'] = response.data.token;
+            isRefreshing = false;
+            return _axios.request(error.config);
           })
           .catch(error2 => { // failed to refresh. redirect to signin page. save original request information only when get request
             if (isRefreshing) {
