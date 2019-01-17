@@ -13,9 +13,13 @@ module.exports = {
       compress: true,
       disableHostCheck: true,
       port: 8082
+    },
+    loader: {
+      test: /\.styl$/,
+      loader: ['style-loader', 'css-loader', 'stylus-loader']
     }
   },
-  transpileDependencies:[/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]filepond-plugin-file-validate-type[/\\\\]/],
+  transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]filepond-plugin-file-validate-type[/\\\\]/],
   chainWebpack: config => {
     config.module.rule('eslint').use('eslint-loader').options({
       fix: true

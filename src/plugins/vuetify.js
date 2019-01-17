@@ -40,7 +40,7 @@ import {
   VCarousel,
   transitions
 } from 'vuetify'
-import 'vuetify/src/stylus/app.styl'
+// import 'vuetify/src/stylus/app.styl'
 import { Resize } from 'vuetify/lib/directives'
 Vue.use(Vuetify, {
   components: {
