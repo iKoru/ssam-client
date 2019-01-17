@@ -169,7 +169,6 @@ export default {
     return {
       loading: false,
       dialog: false,
-      profile: {},
       grade: null,
       major: null,
       password: null,
@@ -238,6 +237,9 @@ export default {
     },
     webUrl() {
       return process.env.VUE_APP_WEB_URL;
+    },
+    profile(){
+      return Object.assign({}, this.$store.getters.profile);
     }
   },
   created() {
@@ -266,7 +268,6 @@ export default {
   },
   methods: {
     reset() {
-      this.profile = Object.assign({}, this.$store.getters.profile);
       if (this.profile.major === undefined) {
         this.major = null;
       } else {
