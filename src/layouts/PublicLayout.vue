@@ -29,6 +29,9 @@ export default {
   max-width: 900px;
   margin: 10rem auto 74px auto;
 }
+.publicLayoutContents.stickToTop{
+  margin-top:0;
+}
 @media (max-width: 600px) {
   .publicLayoutContents {
     margin-top: 0;
