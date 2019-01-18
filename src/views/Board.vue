@@ -6,7 +6,12 @@
           <v-flex>
             <v-layout row>
               <v-flex>
-                <span class="title">{{board.boardName}}</span>
+                <v-layout row>
+                  <span class="title">{{board.boardName}}</span>
+                  <v-flex xs3 md2 xl1 ml-2>
+                    <v-select class="hideLine dense mt-0 pt-0" dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details :label="childBoardLabel" @input="childBoardChanged" v-if="childBoardItems.length > 0"></v-select>
+                  </v-flex>
+                </v-layout>
               </v-flex>
               <v-spacer/>
               <router-link :to="`/${this.boardId}`">
@@ -39,9 +44,31 @@ export default {
   data: () => ({
     board: undefined,
     boardId: null,
-    writeButton: true
+    writeButton: true,
+    childBoardId:null,
+    boardTypeItems: {
+        T: "토픽",
+        L: "라운지",
+        D: "아카이브",
+        X: "기타",
+        E: '전직교사',
+        N: '예비교사'
+      }
   }),
-  components: {},
+  computed:{
+    childBoardItems(){
+      if(this.board.parentBoardId){
+        let siblings = this.$store.getters.boards.filter(x=>x.parentBoardId === this.board.parentBoardId)
+        siblings.splice(0,0,this.$store.getters.boards.find(x=>x.boardId === this.board.parentBoardId));
+        return siblings
+      }else{
+        return this.$store.getters.boards.filter(x=>x.parentBoardId === this.boardId)
+      }
+    },
+    childBoardLabel(){
+      return (this.board.parentBoardId?'관련 ':'하위 ')+this.boardTypeItems[this.board.boardType]
+    }
+  },
   methods: {
     async getBoard(boardId) {
       let response;
@@ -62,6 +89,9 @@ export default {
       this.boardId = board.boardId;
       document.title = board.boardName ? board.boardName + " - Pedagy" : "Pedagy";
       this.$store.dispatch("switchBoardType", this.board.boardType === "T" ? "T" : "L");
+    },
+    childBoardChanged(){
+      this.$router.push('/'+this.childBoardId)
     }
   },
   created() {
@@ -72,9 +102,11 @@ export default {
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {
       this.setBoard(this.$store.getters.boards.find(x => x.boardId === to.params.boardId));
       this.$store.dispatch('setColumnType', 'HIDE_SM')
+      this.$nextTick(() => (this.childBoardId = null));
       next();
     } else if (await this.getBoard(to.params.boardId)) {
       this.$store.dispatch('setColumnType', 'HIDE_SM')
+      this.$nextTick(() => (this.childBoardId = null));
       next();
     } else {
       next("/error?error=404");
