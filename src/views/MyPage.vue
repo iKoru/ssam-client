@@ -94,17 +94,19 @@
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" text-xs-right>
             <v-btn @click="reset" flat class="mt-2">초기화</v-btn>
-            <v-flex order-xs3 order-sm2 class="mt-2">
-              <v-subheader>
-                <v-btn @click="exit" class="short" flat>
-                  <small>탈퇴</small>
-                </v-btn>
-              </v-subheader>
-            </v-flex>
-            <v-flex v-if="$vuetify.breakpoint.smAndUp" order-sm3>
-              <v-spacer></v-spacer>
-            </v-flex>
-            <v-flex order-xs2 order-sm4 class="mt-2">
+            <template v-if="$vuetify.breakpoint.smAndUp">
+              <v-flex class="mt-2">
+                <v-subheader>
+                  <v-btn @click="exit" class="short" flat>
+                    <small>탈퇴</small>
+                  </v-btn>
+                </v-subheader>
+              </v-flex>
+              <v-flex>
+                <v-spacer></v-spacer>
+              </v-flex>
+            </template>
+            <v-flex class="mt-2">
               <v-btn @click="submit" color="primary" :loading="loading" :block="$vuetify.breakpoint.xsOnly">저장</v-btn>
             </v-flex>
           </v-layout>
