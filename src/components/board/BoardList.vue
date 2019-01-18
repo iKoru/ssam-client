@@ -1,82 +1,113 @@
 <template>
-    <v-flex>
-         <v-data-table
-          :headers="headers"
-          :items="list"
-          hide-actions
-          class="elevation-1"
-        >
-          <template slot="items" slot-scope="props">
-            <td @click.stop="viewDocument(props.item)">{{ props.item.title }} <span v-if="props.item.commentCount" style="color:indigo">({{props.item.commentCount}})</span></td>
-            <td class="text-xs-center">{{ props.item.nickName }}</td>
-            <td class="text-xs-center">{{ timeParser(props.item.writeDateTime)  }}</td>
-            <td class="text-xs-center">{{ props.item.voteUpCount }}</td>
-          </template>
-        </v-data-table>
-    </v-flex>
+  <v-flex>
+    <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
+      <template slot="headers" slot-scope="props">
+        <tr>
+          <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
+        </tr>
+      </template>
+      <template slot="items" slot-scope="props">
+        <tr>
+          <td class="text-xs-left pa-1" v-if="board.hasChildren">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'' }}</td>
+          <td class="text-xs-left pa-1" v-if="board.category && board.category.length > 0">{{ props.item.category }}</td>
+          <td class="text-xs-left py-1 px-2 multi-row cursor-pointer" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+            <router-link :to="`/${props.item.boardId}/${props.item.documentId}`">
+              {{props.item.title}}
+              <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+            </router-link>
+          </td>
+          <td class="text-xs-left pa-1 multi-row" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
+          <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
+          <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M.D':'Y.M.D') }}</td>
+        </tr>
+      </template>
+      <template slot="no-data">표시할 항목이 없습니다.
+        <v-btn color="primary" @click="getDocuments">새로고침</v-btn>
+      </template>
+    </v-data-table>
+  </v-flex>
 </template>
 <script>
-
-import BoardMixins from '@/components/mixins/BoardMixins'
+import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
-  name: 'BoardList',
+  name: "BoardList",
   mixins: [BoardMixins],
-  data: () => ({
-    board: undefined,
-    headers: [
-      {
-        text: '제목',
-        value: 'title',
-        sortable: false,
-        width: '300'
-      },
-      {
-        text: '글쓴이',
-        value: 'nickName',
-        align: 'center',
-        sortable: false,
-        width: '50'
-      },
-      {
-        text: '날짜',
-        value: 'writeDateTime',
-        align: 'center',
-        sortable: false,
-        width: '50'
-      },
-      {
-        text: '추천',
-        value: 'voteUpCount',
-        align: 'center',
-        sortable: false,
-        width: '40'
-      },
-    ],
-    list: []
-  }),
-  components: {
+  props: ["board", "boardType"],
+  data() {
+    return {
+      documents: [],
+      totalDocuments: 0,
+      loading: false,
+      pagination: {}
+    };
   },
-  methods: {
-    getList (boardId) {
-      this.$axios.get(`/${boardId}`)
-        .then(response => {
-          console.log(response)
-          this.list = response.data
-        })
-        .catch(error => {
-          console.log(error)
-        })
+  computed: {
+    headers() {
+      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: "30"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : undefined}];
+      if (this.$vuetify.breakpoint.smAndUp) {
+        headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "50"});
+      }
+      if (this.board.category) {
+        headers.splice(0, 0, {text: "카테고리", value: "category", sortable: false, align: "left"});
+      }
+      if (this.board.hasChildren) {
+        headers.splice(0, 0, {text: this.boardType, value: "boardId", sortable: false, align: "left"});
+      }
+      return headers;
     },
-    viewDocument (item) {
-      this.$router.push(`${this.$route.params.boardId}/${item.documentId}`)
+    boardItems() {
+      return this.$store.getters.boards;
     }
   },
-  created () {
-    this.getList(this.$route.params.boardId)
+  methods: {
+    getDocuments(boardId) {
+      this.$axios
+        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || 0}})
+        .then(response => {
+          console.log(response);
+          this.documents = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   },
-  beforeRouteUpdate (to, from, next) {
-    this.getList(to.path.replace('/',''))
-    next()
+  created() {
+    this.getDocuments(this.$route.params.boardId);
+  },
+  watch: {
+    "$route.params": {
+      handler(val) {
+        this.getDocuments(val.boardId);
+      },
+      deep: true,
+      immediate: true
+    },
+    pagination: {
+      handler() {
+        this.getDocuments();
+      },
+      deep: true
+    }
   }
-}
+};
 </script>
+<style>
+#documentTable table {
+  table-layout: fixed;
+}
+#documentTable thead tr {
+  height: 24px;
+}
+#documentTable thead th {
+  padding-left: 0;
+  padding-right: 0;
+}
+#documentTable tbody td,
+#documentTable tbody th {
+  height: 32px;
+}
+#documentTable tbody tr:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+</style>
