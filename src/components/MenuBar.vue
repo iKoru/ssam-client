@@ -12,7 +12,7 @@
             <v-layout column>
               <template v-if="lounges.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :to="lounges[n-1].boardId" v-if="lounges[n-1].boardId !== null">{{lounges[n-1].boardName || '&nbsp;'}}</router-link>
+                  <router-link :to="'/'+lounges[n-1].boardId" v-if="lounges[n-1].boardId !== null">{{lounges[n-1].boardName || '&nbsp;'}}</router-link>
                   <span v-else class="cursor-default">&nbsp;</span>
                 </v-flex>
               </template>
@@ -23,17 +23,17 @@
               </template>
               <template v-else-if="lounges.length === 1">
                 <v-flex class="ellipsis">
-                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[0].boardId">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
               </template>
               <template v-else>
                 <v-flex class="ellipsis">
-                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[0].boardId">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="ellipsis">
-                  <router-link :to="lounges[1].boardId" v-if="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[1].boardId" v-if="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
                   <span v-else class="cursor-default">&nbsp;</span>
                 </v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
@@ -55,7 +55,7 @@
             <div class="ml-2">
               <template v-if="topics.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :to="topics[n-1].boardId">{{topics[n-1].boardName}}</router-link>
+                  <router-link :to="'/'+topics[n-1].boardId">{{topics[n-1].boardName}}</router-link>
                 </v-flex>
               </template>
               <template v-else>
@@ -66,17 +66,17 @@
                 </template>
                 <template v-else-if="topics.length === 1">
                   <v-flex class="ellipsis">
-                    <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
+                    <router-link :to="'/'+topics[0].boardId">{{topics[0].boardName}}</router-link>
                   </v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
-                    <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
+                    <router-link :to="'/'+topics[0].boardId">{{topics[0].boardName}}</router-link>
                   </v-flex>
                   <v-flex class="ellipsis">
-                    <router-link :to="topics[1].boardId">{{topics[1].boardName}}</router-link>
+                    <router-link :to="'/'+topics[1].boardId">{{topics[1].boardName}}</router-link>
                   </v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
@@ -218,7 +218,7 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  margin-top:1px;
+  margin-top: 1px;
 }
 #menubarContainer {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
@@ -227,7 +227,7 @@ export default {
 .menuBarTab {
   max-height: 32px;
   width: 100%;
-  top:0;
+  top: 0;
 }
 .menuBarTab a {
   position: absolute !important;
@@ -245,13 +245,13 @@ export default {
 }
 .v-tabs__div.topicTab {
   width: 100%;
-  font-size:16px;
-  font-weight:bold;
+  font-size: 16px;
+  font-weight: bold;
 }
 .v-tabs__div.loungeTab {
-  display:block;
-  font-size:16px;
-  font-weight:bold;
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
 }
 .topicTab .v-tabs__item {
   opacity: 1;
@@ -261,15 +261,17 @@ export default {
   top: 0;
   right: 0;
   width: 100%;
-  max-width:13.88888888889%;
-  flex-basis:13.88888888889%;
+  max-width: 13.88888888889%;
+  flex-basis: 13.88888888889%;
 }
-.menuColumn.loungeColumn{
-  max-width:19.233333333333334%;
-  flex-basis:19.233333333333334%;
+.menuColumn.loungeColumn {
+  max-width: 19.233333333333334%;
+  flex-basis: 19.233333333333334%;
 }
-.menuColumn.loungeColumn:last-child, .menuColumn.topicColumn:last-child, #topicFixedColumn{
-  border-right:none;
+.menuColumn.loungeColumn:last-child,
+.menuColumn.topicColumn:last-child,
+#topicFixedColumn {
+  border-right: none;
 }
 #topicTabScreen {
   position: absolute;
@@ -312,8 +314,8 @@ export default {
 .scrollContainer.topicTab,
 .scrollContainer.loungeTab {
   height: 132px;
-  max-width:13.88888888889%;
-  flex-basis:13.88888888889%;
+  max-width: 13.88888888889%;
+  flex-basis: 13.88888888889%;
 }
 .scrollContainer.topicTab.hide-menuBar,
 .scrollContainer.loungeTab.hide-menuBar {
@@ -326,9 +328,9 @@ export default {
   margin: auto 0px;
   padding: 0 20px;
   min-width: 100px;
-  border-right:1px solid #e8e8e8;
+  border-right: 1px solid #e8e8e8;
 }
-.menuColumn .flex{
+.menuColumn .flex {
   margin: 2px 0;
 }
 </style>
