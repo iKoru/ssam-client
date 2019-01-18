@@ -12,31 +12,33 @@
             <v-layout column>
               <template v-if="lounges.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :to="lounges[n-1].boardId">{{lounges[n-1].boardName}}</router-link>
+                  <router-link :to="lounges[n-1].boardId" v-if="lounges[n-1].boardId !== null">{{lounges[n-1].boardName || '&nbsp;'}}</router-link>
+                  <span v-else class="cursor-default">&nbsp;</span>
                 </v-flex>
               </template>
+              <template v-else-if="lounges.length === 0">
+                <v-flex class="cursor-default">&nbsp;</v-flex>
+                <v-flex class="cursor-default">&nbsp;</v-flex>
+                <v-flex class="cursor-default">&nbsp;</v-flex>
+              </template>
+              <template v-else-if="lounges.length === 1">
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[0].boardId" v-if="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <span v-else class="cursor-default">&nbsp;</span>
+                </v-flex>
+                <v-flex class="cursor-default">&nbsp;</v-flex>
+                <v-flex class="cursor-default">&nbsp;</v-flex>
+              </template>
               <template v-else>
-                <template v-if="lounges.length === 0">
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                </template>
-                <template v-else-if="lounges.length === 1">
-                  <v-flex class="ellipsis">
-                    <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
-                  </v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                </template>
-                <template v-else>
-                  <v-flex class="ellipsis">
-                    <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
-                  </v-flex>
-                  <v-flex class="ellipsis">
-                    <router-link :to="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
-                  </v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                </template>
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[0].boardId" v-if="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <span v-else class="cursor-default">&nbsp;</span>
+                </v-flex>
+                <v-flex class="ellipsis">
+                  <router-link :to="lounges[1].boardId" v-if="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+                  <span v-else class="cursor-default">&nbsp;</span>
+                </v-flex>
+                <v-flex class="cursor-default">&nbsp;</v-flex>
               </template>
             </v-layout>
             <div class="switchTabIcon switchToTopic cursor-pointer" v-show="menu===1" @click="toggleMenuBar('lounge')">
@@ -48,7 +50,7 @@
       <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'hide-menuBar':!menuBar}" id="topicTabScreen"></v-flex>
       <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'hide-menuBar':!menuBar}" order-sm3 v-show="menu===0">
         <v-layout row class="menuBarContents">
-          <v-flex class="menuColumn position-relative">
+          <v-flex class="menuColumn position-relative" id="topicFixedColumn">
             <div class="switchTabIcon switchToLounge cursor-pointer" @click="toggleMenuBar('topic')">
               <v-icon class="white--text">navigate_before</v-icon>
             </div>
@@ -60,16 +62,16 @@
               </template>
               <template v-else>
                 <template v-if="topics.length === 0">
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
                 <template v-else-if="topics.length === 1">
                   <v-flex class="ellipsis">
                     <router-link :to="topics[0].boardId">{{topics[0].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>&nbsp;</v-flex>
-                  <v-flex>&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
@@ -78,7 +80,7 @@
                   <v-flex class="ellipsis">
                     <router-link :to="topics[1].boardId">{{topics[1].boardName}}</router-link>
                   </v-flex>
-                  <v-flex>&nbsp;</v-flex>
+                  <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
               </template>
             </div>
@@ -91,7 +93,7 @@
             <template v-show="menu===0">
               <v-flex class="scrollContainer">
                 <template v-if="lounges.length > 5">
-                  <v-flex class="menuColumn" sm2 v-for="n in (Math.floor(lounges.length / 3) - 1)" :key="n">
+                  <v-flex class="menuColumn loungeColumn" sm2 v-for="n in (Math.floor(lounges.length / 3) - 1)" :key="n">
                     <v-layout column>
                       <v-flex class="ellipsis">
                         <router-link :to="'/'+lounges[n*3].boardId" :title="lounges[n*3].boardName">{{lounges[n*3].boardName}}</router-link>
@@ -105,13 +107,13 @@
                     </v-layout>
                   </v-flex>
                 </template>
-                <v-flex class="menuColumn" sm2 v-if="lounges.length % 3 !== 0">
+                <v-flex class="menuColumn loungeColumn" sm2 v-if="lounges.length % 3 !== 0">
                   <v-layout column>
                     <v-flex v-for="n in (lounges.length % 3)" :key="n" class="ellipsis">
                       <router-link :to="'/'+lounges[lounges.length - (lounges.length % 3) + n - 1].boardId" :title="lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName">{{lounges[lounges.length - (lounges.length % 3) + (n-1)].boardName}}</router-link>
                     </v-flex>
-                    <v-flex>&nbsp;</v-flex>
-                    <v-flex v-if="lounges.length % 3 === 1">&nbsp;</v-flex>
+                    <v-flex class="cursor-default">&nbsp;</v-flex>
+                    <v-flex class="cursor-default" v-if="lounges.length % 3 === 1">&nbsp;</v-flex>
                   </v-layout>
                 </v-flex>
               </v-flex>
@@ -120,7 +122,7 @@
           <v-tab-item :key="1" :class="{'d-none':!menuBar, 'menuBarContents':true, 'secondary':true, 'white--text':true}">
             <template v-show="menu === 1">
               <v-flex class="scrollContainer">
-                <v-flex class="menuColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
+                <v-flex class="menuColumn topicColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
                   <v-layout column>
                     <v-flex class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">{{topics[(n-1)*3].boardName}}</router-link>
@@ -133,7 +135,7 @@
                     </v-flex>
                   </v-layout>
                 </v-flex>
-                <v-flex class="menuColumn" sm2 v-if="topics.length % 3 !== 0">
+                <v-flex class="menuColumn topicColumn" sm2 v-if="topics.length % 3 !== 0">
                   <v-layout column>
                     <v-flex v-for="n in topics.length % 3" :key="n" class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
@@ -143,18 +145,18 @@
                         <v-icon small>search</v-icon>다른 토픽 찾기
                       </router-link>
                     </v-flex>
-                    <v-flex v-if="topics.length % 3 === 1">&nbsp;</v-flex>
+                    <v-flex class="cursor-default" v-if="topics.length % 3 === 1">&nbsp;</v-flex>
                   </v-layout>
                 </v-flex>
-                <v-flex class="menuColumn" sm2 v-else>
+                <v-flex class="menuColumn topicColumn" sm2 v-else>
                   <v-layout column>
                     <v-flex class="ellipsis">
                       <router-link class="white--text" to="/searchBoard">
                         <v-icon small>search</v-icon>다른 토픽 찾기
                       </router-link>
                     </v-flex>
-                    <v-flex>&nbsp;</v-flex>
-                    <v-flex>&nbsp;</v-flex>
+                    <v-flex class="cursor-default">&nbsp;</v-flex>
+                    <v-flex class="cursor-default">&nbsp;</v-flex>
                   </v-layout>
                 </v-flex>
               </v-flex>
@@ -245,9 +247,13 @@ export default {
 }
 .v-tabs__div.topicTab {
   width: 100%;
+  font-size:16px;
+  font-weight:bold;
 }
 .v-tabs__div.loungeTab {
   display:block;
+  font-size:16px;
+  font-weight:bold;
 }
 .topicTab .v-tabs__item {
   opacity: 1;
@@ -260,6 +266,13 @@ export default {
   max-width:13.88888888889%;
   flex-basis:13.88888888889%;
 }
+.menuColumn.loungeColumn{
+  max-width:19.233333333333334%;
+  flex-basis:19.233333333333334%;
+}
+.menuColumn.loungeColumn:last-child, .menuColumn.topicColumn:last-child, #topicFixedColumn{
+  border-right:none;
+}
 #topicTabScreen {
   position: absolute;
   width: 100%;
@@ -271,7 +284,7 @@ export default {
   visibility: hidden;
 }
 .menuBarContents {
-  padding-top: 24px;
+  padding-top: 16px;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -282,10 +295,10 @@ export default {
   transform: translateY(-50%);
 }
 .switchTabIcon.switchToTopic {
-  right: -20px;
+  right: 0;
 }
 .switchTabIcon.switchToLounge {
-  left: -20px;
+  left: 0;
 }
 .scrollContainer {
   white-space: nowrap;
@@ -293,14 +306,14 @@ export default {
   flex-direction: row;
   -webkit-flex-direction: row;
   overflow-x: auto;
-  height: 120px;
-  -webkit-box-align: center;
+  height: 116px;
+  /*-webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;
+  align-items: center;*/
 }
 .scrollContainer.topicTab,
 .scrollContainer.loungeTab {
-  height: 144px;
+  height: 132px;
   max-width:13.88888888889%;
   flex-basis:13.88888888889%;
 }
@@ -312,10 +325,12 @@ export default {
   overflow-x: hidden;
 }
 .menuColumn {
-  margin: auto 20px;
+  margin: auto 0px;
+  padding: 0 20px;
   min-width: 100px;
+  border-right:1px solid #e8e8e8;
 }
-.menuColumn .flex.ellipsis{
+.menuColumn .flex{
   margin: 2px 0;
 }
 </style>
