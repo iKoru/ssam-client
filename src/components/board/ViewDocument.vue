@@ -18,18 +18,20 @@
       <v-layout row>
         <v-spacer/>
         <v-flex sm12 md4 text-sm-right v-if="document.attach">
-            <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{document.attach.length}}개</v-chip>
-            <v-tooltip v-model="showAttach" bottom>
-              <span slot="activator"></span>
-              <v-list style="background-color:#616161">
-                <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
-                  {{item.attachName}}
-                  <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
-                    <v-btn type="submit" icon color="white" circle small><v-icon small>mdi-arrow-down</v-icon></v-btn>
-                  </a>
-                </v-list-tile>
-              </v-list>
-            </v-tooltip> 
+          <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{document.attach.length}}개</v-chip>
+          <v-tooltip v-model="showAttach" bottom>
+            <span slot="activator"></span>
+            <v-list style="background-color:#616161">
+              <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
+                {{item.attachName}}
+                <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
+                  <v-btn type="submit" icon color="white" circle small>
+                    <v-icon small>mdi-arrow-down</v-icon>
+                  </v-btn>
+                </a>
+              </v-list-tile>
+            </v-list>
+          </v-tooltip>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -53,18 +55,17 @@
         <v-flex xs12 md4></v-flex>
         <v-flex xs12 md4 text-xs-center>
           <v-btn color="white" class="vote-chip" small short @click.native="voteDocument">
-            <v-icon color="indigo" small>thumb_up</v-icon>
-            &nbsp;
+            <v-icon color="indigo" small>thumb_up</v-icon>&nbsp;
             <v-label font-color="indigo">{{document.voteUpCount}}</v-label>
           </v-btn>
         </v-flex>
         <v-flex xs12 md4 text-xs-right pr-2 my-auto>
           <router-link v-if="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
-            <v-label>수정 </v-label>
+            <v-label>수정</v-label>
           </router-link>
           <!-- <v-label v-if="document.isWriter" @click="editDocument">수정 /</v-label> -->
-          <v-label v-if="document.isWriter" @click="deleteDocument"> 삭제 </v-label>
-          <v-label> 신고</v-label>
+          <v-label v-if="document.isWriter" @click="deleteDocument">삭제</v-label>
+          <v-label>신고</v-label>
         </v-flex>
       </v-layout>
       <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "documents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
@@ -87,7 +88,7 @@ import Survey from "@/components/board/survey/Survey";
 import CommentWriter from "@/components/board/CommentWriter";
 import ViewComments from "@/components/board/ViewComments";
 import BoardMixins from "@/components/mixins/BoardMixins";
-import Quill from 'quill'
+import Quill from "quill";
 
 export default {
   props: [],
@@ -130,34 +131,38 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$router.replace('/error?error=' + (error && error.response? error.response.status || '404':'404'))
+          this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         });
     },
-    deleteDocument () {
-      if(confirm('이 글을 삭제합니다.')) {
+    deleteDocument() {
+      if (confirm("이 글을 삭제합니다.")) {
         this.$axios
           .delete(`/document/${this.$route.params.documentId}`)
           .then(response => {
-            this.$router.push(`/${this.$route.params.boardId}`)
+            this.$router.push(`/${this.$route.params.boardId}`);
           })
           .catch(err => {
-            console.log(err)
-          })
+            console.log(err);
+          });
       }
     },
     voteDocument() {
-      this.$axios.post('/vote/document/', {
-        documentId: this.$route.params.documentId
-      }).then(res => {
-        console.log(res)
-        document.voteUpCount = res.data.voteUpCount
-      }).catch(err => {
-        console.log(err.response)
-      })
+      this.$axios
+        .post("/vote/document/", {
+          documentId: this.$route.params.documentId
+        })
+        .then(res => {
+          console.log(res);
+          document.voteUpCount = res.data.voteUpCount;
+        })
+        .catch(err => {
+          console.log(err.response);
+        });
     },
     deltaToHTML(delta) {
       var tempCont = document.createElement("div");
       let quill = new Quill(tempCont);
+      console.log(delta, "aa");
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           // random generated uuid should given here
@@ -168,7 +173,7 @@ export default {
       return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
     },
     getImagePath(imagePath) {
-      let attach = this.document.attach
+      let attach = this.document.attach;
       this.document.attach = this.document.attach.filter(item => item.attachName !== imagePath);
       return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;
     },
@@ -184,9 +189,9 @@ export default {
 </script>
 <style>
 .v-label {
-  cursor: pointer
+  cursor: pointer;
 }
 .vote-chip {
-  cursor: pointer
+  cursor: pointer;
 }
 </style>
