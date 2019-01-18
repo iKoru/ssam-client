@@ -165,11 +165,6 @@ const router = new Router({
       beforeEnter: requireAuth,
       children: [
         {
-          path: '',
-          name: 'boardList',
-          component: () => import('@/components/board/BoardList')
-        },
-        {
           path: 'write',
           name: 'writeDocument',
           component: () => import('@/components/board/WriteDocument')
