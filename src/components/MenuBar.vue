@@ -7,7 +7,7 @@
             <v-tab :key="0" class="loungeTab flex" @click.stop="toggleMenuBar('lounge')">라운지</v-tab>
           </v-tabs>
         </v-flex>
-        <v-layout row class="menuBarContents">
+        <v-layout row class="menuBarContents" :style="{'margin-top':menuBar?0:'32px'}">
           <v-flex class="menuColumn position-relative">
             <v-layout column>
               <template v-if="lounges.length > 2">
@@ -23,16 +23,14 @@
               </template>
               <template v-else-if="lounges.length === 1">
                 <v-flex class="ellipsis">
-                  <router-link :to="lounges[0].boardId" v-if="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
-                  <span v-else class="cursor-default">&nbsp;</span>
+                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
               </template>
               <template v-else>
                 <v-flex class="ellipsis">
-                  <router-link :to="lounges[0].boardId" v-if="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
-                  <span v-else class="cursor-default">&nbsp;</span>
+                  <router-link :to="lounges[0].boardId">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="ellipsis">
                   <router-link :to="lounges[1].boardId" v-if="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
@@ -319,7 +317,7 @@ export default {
 }
 .scrollContainer.topicTab.hide-menuBar,
 .scrollContainer.loungeTab.hide-menuBar {
-  height: 24px;
+  height: 32px;
 }
 .scrollContainer.overflow-hidden {
   overflow-x: hidden;
