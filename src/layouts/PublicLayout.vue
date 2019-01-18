@@ -18,8 +18,20 @@ export default {
 };
 </script>
 <style>
+.publicLayout {
+  background-color: white;
+  height: 100%;
+}
 .publicLayout__main {
-  margin-bottom: 100px;
-  margin-top: -64px;
+  height:calc(100% - 174px);
+}
+.publicLayoutContents {
+  max-width: 900px;
+  margin: 10rem auto 74px auto;
+}
+@media (max-width: 600px) {
+  .publicLayoutContents {
+    margin-top: 0;
+  }
 }
 </style>

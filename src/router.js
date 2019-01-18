@@ -38,11 +38,27 @@ const router = new Router({
       }
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('./views/About.vue'),
+      path: '/contract',
+      name: 'contract',
+      component: () => import('./views/Contract.vue'),
       mets: {
-        title: 'pedagy 소개'
+        title: '이용약관'
+      }
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('./views/Privacy.vue'),
+      mets: {
+        title: '개인정보 처리방침'
+      }
+    },
+    {
+      path: '/rules',
+      name: 'rules',
+      component: () => import('./views/Rules.vue'),
+      mets: {
+        title: '커뮤니티 이용규칙'
       }
     },
     {
@@ -77,7 +93,7 @@ const router = new Router({
       name: 'authSubmit',
       component: () => import('@/views/AuthSubmit'),
       meta: {
-        title: '이메일 인증'
+        title: '교사 인증'
       }
     },
     {

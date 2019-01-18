@@ -29,13 +29,3 @@ export default {
   name: "SigninPage"
 };
 </script>
-<style>
-.publicLayout {
-  background-color: white;
-  height: 100%;
-}
-.publicLayout__main {
-  height: 100%;
-  margin-bottom: 0;
-}
-</style>

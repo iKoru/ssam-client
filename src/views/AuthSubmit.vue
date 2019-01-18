@@ -1,5 +1,5 @@
 <template>
-  <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'" id="authSubmitter">
+  <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'" class="publicLayoutContents">
     <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
         <v-img src="@/static/img/index.jpg" aspect-ratio="2.75"></v-img>
@@ -59,22 +59,3 @@ export default {
   methods: {}
 };
 </script>
-<style>
-.publicLayout {
-  background-color: white;
-  height: 100%;
-}
-.publicLayout__main {
-  height: 100%;
-  margin-bottom: 0;
-}
-#authSubmitter {
-  max-width: 900px;
-  margin: 10rem auto 74px auto;
-}
-@media (max-width: 600px) {
-  #authSubmitter {
-    margin-top: 64px;
-  }
-}
-</style>

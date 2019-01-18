@@ -52,12 +52,4 @@ export default {
   color: #252932;
   text-shadow: rgba(61, 61, 61, 0.3) 1px 1px, rgba(61, 61, 61, 0.2) 2px 2px, rgba(61, 61, 61, 0.3) 3px 3px;
 }
-.publicLayout {
-  background-color: white;
-  height: 100%;
-}
-.publicLayout__main {
-  height: 100%;
-  margin-bottom: 0;
-}
 </style>
