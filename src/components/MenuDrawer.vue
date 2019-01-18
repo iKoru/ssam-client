@@ -18,7 +18,7 @@
               </v-list-tile-title>
             </v-list-tile>
 
-            <v-list-tile v-for="(lounge, i) in lounges" :key="i" @click="drawerChanged(false)" :to="`/${lounge.boardId}`">
+            <v-list-tile v-for="(lounge, i) in lounges.filter(x=>x.boardId)" :key="i" @click="drawerChanged(false)" :to="`/${lounge.boardId}`">
               <v-list-tile-title v-text="lounge.boardName"></v-list-tile-title>
             </v-list-tile>
           </v-list-group>

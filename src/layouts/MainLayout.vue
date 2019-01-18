@@ -28,6 +28,7 @@ export default {
     lounges() {
       const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T" && x.boardType !== 'X' && !x.parentBoardId);
       lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
+      lounges.splice(2, 0, {boardName:null, boardId:null})
       return lounges;
     },
     topics() {
