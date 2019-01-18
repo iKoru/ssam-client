@@ -16,7 +16,7 @@
               <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
             </router-link>
           </td>
-          <td class="text-xs-left pa-1 multi-row" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
+          <td class="text-xs-center pa-1 multi-row" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
           <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
           <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M.D':'Y.M.D') }}</td>
         </tr>
@@ -43,9 +43,9 @@ export default {
   },
   computed: {
     headers() {
-      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: "30"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : undefined}];
+      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: "30"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
       if (this.$vuetify.breakpoint.smAndUp) {
-        headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "50"});
+        headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "100"});
       }
       if (this.board.category) {
         headers.splice(0, 0, {text: "카테고리", value: "category", sortable: false, align: "left"});
