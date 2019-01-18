@@ -11,7 +11,7 @@
               <v-card flat>
                 <v-card-title>
                   <v-layout column class="pt-3">
-                    <v-flex class="px-2">
+                    <v-flex class="px-2 font-weight-bold">
                       <router-link to="/notice">
                         <span>공지사항</span>
                       </router-link>

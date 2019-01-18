@@ -8,6 +8,8 @@ body
   cursor:pointer
 .cursor-move
   cursor:move
+.cursor-default
+  cursor:default
 .vertical-center
   position:relative
   top:50%
@@ -31,12 +33,18 @@ span.tiny, span.tiny .v-icon, .v-list--dense .v-list__tile span.tiny .v-icon
 td.ellipsis 
   width: 100%
   max-width: 0
-
 .w-100
   width:100%
 .float-right
   float:right
+//pedagy specific
+.boardTitle
+  font-size:16px
+  font-weight:bold
+
 // vuetify-related
+.theme--light.v-divider.dark-border
+  border-color:rgba(0,0,0,0.5)
 .v-menu__content
   -webkit-overflow-scrolling: touch
 .v-btn.plain:hover:before,
@@ -48,8 +56,9 @@ td.ellipsis
   margin-top:4px
 
 .v-text-field.dense .v-label, .v-select.dense .v-label, .v-input.dense input
-  font-size: 14px
-
+  font-size: 16px
+.v-text-field .v-input__slot
+  padding-bottom:8px
 .v-text-field.dense .v-input__slot
   margin-bottom:0
 .v-text-field.dense input, .v-select.dense input

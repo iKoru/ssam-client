@@ -1,10 +1,10 @@
 
 <template>
   <div class="position-relative">
-    <div class="pt-3 px-2 position-relative">
+    <div class="pt-3 px-2 position-relative boardTitle">
       <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 베스트</router-link>
     </div>
-    <v-divider class="my-2"/>
+    <v-divider class="my-2 dark-border"/>
     <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
     <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel text-xs-center" :interval="10000" :height="(maxCount || 10)*28 + 50">
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">

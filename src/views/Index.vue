@@ -21,7 +21,9 @@
           <span v-if="$vuetify.breakpoint.mdAndUp">Pedagy</span>
           <h1 v-else>Pedagy</h1>
           <Signin/>
-          <BoardExtractor boardType="L"/>
+          <div class="text-xs-left">
+            <BoardExtractor boardType="L"/>
+          </div>
         </div>
       </v-flex>
     </v-layout>
