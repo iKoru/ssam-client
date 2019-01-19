@@ -2,7 +2,7 @@
   <v-flex>
     <v-layout column>
       <v-flex>
-        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
+        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
           <template slot="headers" slot-scope="props">
             <tr>
               <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
