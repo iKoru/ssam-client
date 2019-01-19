@@ -44,11 +44,9 @@
                     </v-flex>
                     <v-flex sm4 xs8 py-0 text-xs-left>
                       <div class="d-inline-flex align-center fill-height" style="padding-bottom:12px;">
-                        <router-link v-if="profile.auth !== 'AUTHORIZED'" to="/auth" class="primary--text" title="이메일 인증 페이지로 이동">
-                          {{userAuthItems[profile.auth || 'NORMAL']}}
-                        </router-link>
+                        <router-link v-if="profile.auth !== 'A'" to="/auth" class="primary--text" title="이메일 인증 페이지로 이동">{{userAuthItems[profile.auth || 'NORMAL']}}</router-link>
                         <span v-else>{{userAuthItems[profile.auth || 'NORMAL']}}</span>
-                        <small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.auth === 'AUTHORIZED'">({{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('Y.M.D')}})</small>
+                        <small title="인증한 날짜" v-if="profile.emailVerifiedDate && profile.auth === 'A'">({{$moment(profile.emailVerifiedDate, 'YYYYMMDD').format('Y.M.D')}})</small>
                       </div>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
@@ -134,7 +132,7 @@ import MainLayout from "../layouts/MainLayout";
 /*var agent = navigator.userAgent.toLowerCase();
 if ( (navigator.appName === 'Netscape' && navigator.userAgent.search('Trident') !== -1) || (agent.indexOf("msie") !== -1) ) {
 }*/
-import 'filepond-polyfill'
+import "filepond-polyfill";
 import vueFilePond, {setOptions} from "vue-filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
@@ -207,10 +205,10 @@ export default {
       },
       labels: {},
       userAuthItems: {
-        NORMAL: "미인증(예비교사)",
-        AUTHORIZED: "인증",
-        EXPIRED: "인증만료(전직교사)",
-        DENIED: "인증제한"
+        N: "미인증(예비교사)",
+        A: "인증",
+        E: "인증만료(전직교사)",
+        D: "인증제한"
       }
     };
   },
@@ -240,13 +238,13 @@ export default {
     webUrl() {
       return process.env.VUE_APP_WEB_URL;
     },
-    profile(){
+    profile() {
       return Object.assign({}, this.$store.getters.profile);
     }
   },
   created() {
     this.$emit("update:layout", MainLayout);
-    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
+    this.$store.dispatch("setColumnType", "HIDE_ALWAYS");
     this.reset();
     this.$axios
       .get("/group", {params: {groupType: ["M", "G"]}, headers: {silent: true}})

@@ -160,23 +160,24 @@ export default {
       }
     },
     openDialog(item) {
-      if(item === null){
-        if (this.$store.getters.profile.auth !== "AUTHORIZED") {
+      if (item === null) {
+        if (this.$store.getters.profile.auth !== "A") {
           this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
           return;
         }
         this.editItem = null;
         this.dialog = true;
-      }else if(item){
-        this.$axios.get('/board', {params:{boardId:item.boardId}})
-        .then(response => {
-          this.editItem = response.data
-          this.dialog = true;
-        })
-        .catch(error=>{
-          console.log(error.response);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽 정보를 가져오지 못했습니다." : "토픽 정보를 가져오지 못했습니다.", color: "error"});
-        })
+      } else if (item) {
+        this.$axios
+          .get("/board", {params: {boardId: item.boardId}})
+          .then(response => {
+            this.editItem = response.data;
+            this.dialog = true;
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽 정보를 가져오지 못했습니다." : "토픽 정보를 가져오지 못했습니다.", color: "error"});
+          });
       }
     },
     closeDialog() {
@@ -187,7 +188,7 @@ export default {
         .get("/user/board")
         .then(response => {
           this.$store.dispatch("setUserBoards", response.data);
-          this.$nextTick(this.reset)
+          this.$nextTick(this.reset);
         })
         .catch(error => {
           console.log(error);
@@ -195,42 +196,46 @@ export default {
         });
     }
   },
-  computed:{
-    originalTopics(){
-      return this.userBoards.filter(x => x.boardType === "T").map(x => {
-        if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-          delete x.readRestrictDate;
-        }
-        if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-          delete x.writeRestrictDate;
-        }
-        return x;
-      });
+  computed: {
+    originalTopics() {
+      return this.userBoards
+        .filter(x => x.boardType === "T")
+        .map(x => {
+          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+            delete x.readRestrictDate;
+          }
+          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+            delete x.writeRestrictDate;
+          }
+          return x;
+        });
     },
-    lounges(){
-      return this.userBoards.map(x => {
-        if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-          delete x.readRestrictDate;
-        }
-        if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-          delete x.writeRestrictDate;
-        }
-        return x;
-      }).filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
+    lounges() {
+      return this.userBoards
+        .map(x => {
+          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+            delete x.readRestrictDate;
+          }
+          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+            delete x.writeRestrictDate;
+          }
+          return x;
+        })
+        .filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
     },
-    userBoards(){
+    userBoards() {
       return this.$store.getters.userBoards;
     }
   },
   mounted() {
     this.reset();
   },
-  watch:{
-    userBoards(){
+  watch: {
+    userBoards() {
       this.reset();
     },
-    dialog(val){
-      document.body.style.position = val?"fixed":"initial";
+    dialog(val) {
+      document.body.style.position = val ? "fixed" : "initial";
     }
   },
   render(h) {
