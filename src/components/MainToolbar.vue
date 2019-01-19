@@ -8,8 +8,9 @@
     </router-link>
     <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
-        <v-avatar size="30px" class="mr-1">
-          <img :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
+        <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'primary'">
+          <img v-if="$store.getters.isLight" :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
+          <span v-else class="white--text subheading">{{nickName.substring(0, 1)}}</span>
         </v-avatar>
         <v-badge color="error" :value="totalNotifications>0 && !menu && !notification">
           <span>{{nickName || ''}}</span>
