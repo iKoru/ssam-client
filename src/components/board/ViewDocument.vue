@@ -184,6 +184,15 @@ export default {
         console.log(this.link);
       }
     }
+  },
+  watch: {
+    "$route.params": {
+      handler() {
+        this.getDocument();
+      },
+      deep: true,
+      immediate: true
+    }
   }
 };
 </script>
