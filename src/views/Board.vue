@@ -34,7 +34,7 @@
       <router-view/>
     </v-card>
     <v-card flat v-if="!$route.path.endsWith('write')">
-      <board-list :board="board" :boardType="boardTypeItems[board.boardType]"/>
+      <document-list :board="board" :hasChildren="childBoardItems.length > 1"/>
     </v-card>
   </v-container>
 </template>
@@ -42,24 +42,18 @@
 <script>
 import MainLayout from "../layouts/MainLayout";
 import router from "../router";
+import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
   name: "Board",
   data: () => ({
     board: undefined,
     boardId: null,
     writeButton: true,
-    childBoardId: null,
-    boardTypeItems: {
-      T: "토픽",
-      L: "라운지",
-      D: "아카이브",
-      X: "게시판",
-      E: "전직교사",
-      N: "예비교사"
-    }
+    childBoardId: null
   }),
+  mixins: [BoardMixins],
   components: {
-    BoardList: () => import("@/components/board/BoardList")
+    DocumentList: () => import("@/components/board/DocumentList")
   },
   computed: {
     childBoardItems() {
@@ -134,9 +128,6 @@ export default {
       this.$router.push(`/${this.$route.params.boardId}/write`);
     },
     setBoard(board) {
-      if (board.hasChildren === undefined) {
-        board.hasChildren = board.parentBoardId ? false : this.$store.getters.boards.some(x => x.parentBoardId === board.boardId);
-      }
       this.board = board;
       this.boardId = board.boardId;
       document.title = board.boardName ? board.boardName + " - Pedagy" : "Pedagy";
