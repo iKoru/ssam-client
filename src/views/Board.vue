@@ -7,7 +7,7 @@
             <v-layout row>
               <v-flex>
                 <v-layout row align-center>
-                  <span class="title cursor-pointer" @click="openDialog">{{board.boardName}}</span>
+                  <span class="title cursor-pointer" @click="$route.params.documentId?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
                   <v-tooltip bottom v-if="reservedContents" close-delay="500">
                     <v-icon slot="activator" small class="ml-1" color="primary">calendar_today</v-icon>
                     <span v-html="reservedContents"></span>
