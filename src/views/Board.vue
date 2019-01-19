@@ -6,7 +6,7 @@
           <v-flex>
             <v-layout row>
               <v-flex>
-                <v-layout row>
+                <v-layout row align-center>
                   <span class="title">{{board.boardName}}</span>
                   <v-tooltip bottom v-if="reservedContents" close-delay="500">
                     <v-icon slot="activator" small class="ml-1" color="primary">calendar_today</v-icon>
@@ -19,8 +19,9 @@
               </v-flex>
               <v-spacer/>
               <router-link :to="`/${this.boardId}/write`" v-if="!$route.path.endsWith('write')">
-                <v-icon color="primary" small>edit</v-icon>
-                <small>글쓰기</small>
+                <v-btn depressed color="primary" icon class="ma-0">
+                  <v-icon small>edit</v-icon>
+                </v-btn>
               </router-link>
             </v-layout>
           </v-flex>
