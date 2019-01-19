@@ -38,6 +38,7 @@ import {
   VBottomSheet,
   VBadge,
   VCarousel,
+  VPagination,
   transitions
 } from 'vuetify'
 // import 'vuetify/src/stylus/app.styl'
@@ -81,6 +82,7 @@ Vue.use(Vuetify, {
     VBottomSheet,
     VBadge,
     VCarousel,
+    VPagination,
     transitions
   },
   directives: {

@@ -34,7 +34,7 @@
       <router-view/>
     </v-card>
     <v-card flat v-if="!$route.path.endsWith('write')">
-      <document-list :board="board" :hasChildren="childBoardItems.length > 1"/>
+      <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1"/>
     </v-card>
   </v-container>
 </template>
