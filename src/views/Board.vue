@@ -7,7 +7,7 @@
             <v-layout row>
               <v-flex>
                 <v-layout row align-center>
-                  <span class="title">{{board.boardName}}</span>
+                  <span class="title cursor-pointer" @click="openDialog">{{board.boardName}}</span>
                   <v-tooltip bottom v-if="reservedContents" close-delay="500">
                     <v-icon slot="activator" small class="ml-1" color="primary">calendar_today</v-icon>
                     <span v-html="reservedContents"></span>
@@ -15,18 +15,20 @@
                   <span class="ml-2" v-if="childBoardItems.length > 1">
                     <v-select id="childBoardSelector" class="hideLine dense childBoardSelector cursor-pointer mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
                   </span>
+                  <v-btn small depressed class="short" color="secondary" v-else-if="board.boardType === 'T' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
                 </v-layout>
               </v-flex>
               <v-spacer/>
-              <router-link :to="`/${this.boardId}/write`" v-if="!$route.path.endsWith('write')">
-                <v-btn depressed color="primary" icon class="ma-0">
-                  <v-icon small>edit</v-icon>
-                </v-btn>
-              </router-link>
+              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write')">
+                <v-icon small>edit</v-icon>
+              </v-btn>
             </v-layout>
           </v-flex>
-          <v-flex>
-            <span class="caption">{{board.boardDescription}}</span>
+          <v-flex v-show="board.boardDescription">
+            <span class="caption">
+              {{board.boardDescription}}
+              <v-icon small @click="openDialog">info</v-icon>
+            </span>
           </v-flex>
         </v-layout>
       </v-card-title>
@@ -34,15 +36,18 @@
     <v-card flat :class="{'my-3':$route.path.endsWith('write')}">
       <router-view/>
     </v-card>
-    <v-card flat v-if="!$route.path.endsWith('write')">
+    <v-card flat v-show="!$route.path.endsWith('write')">
       <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1"/>
     </v-card>
+    <v-dialog v-model="dialog" max-width="800" lazy>
+      <board-information :board="selected" @closeDialog="closeDialog"></board-information>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
-import router from "../router";
+import MainLayout from "@/layouts/MainLayout";
+import router from "@/router";
 import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
   name: "Board",
@@ -50,11 +55,20 @@ export default {
     board: undefined,
     boardId: null,
     writeButton: true,
-    childBoardId: null
+    childBoardId: null,
+    dialog: false,
+    selected: null,
+    userAuthItems: {
+      N: "예비교사",
+      A: "인증",
+      E: "전직교사",
+      D: "인증제한"
+    }
   }),
   mixins: [BoardMixins],
   components: {
-    DocumentList: () => import("@/components/board/DocumentList")
+    DocumentList: () => import("@/components/board/DocumentList"),
+    BoardInformation: () => import("@/components/BoardInformation")
   },
   computed: {
     childBoardItems() {
@@ -114,6 +128,80 @@ export default {
     }
   },
   methods: {
+    moveToWriteDocument() {
+      if (!this.board.parentBoardId && this.childBoardItems.length > 1) {
+        const profile = this.$store.getters.profile;
+        const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
+        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : (x.allowedGroups.includes(profile.region) || x.allowedGroups.includes(profile.major) || x.allowedGroups.includes(profile.grade)) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
+        if (available.length > 0) {
+          this.$router.push(`/${available[0].boardId}/write`);
+          this.$store.dispatch("showSnackbar", {text: `글을 쓸 수 있는 ${available[0].boardName}에 작성됩니다.`, color: "info"});
+        } else if (this.board.boardType === "T") {
+          this.$store.dispatch("showSnackbar", {text: "글을 쓸 토픽을 선택하여 구독해주세요", color: "info"});
+        } else {
+          available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth));
+          if (available.length === 0) {
+            this.$store.dispatch("showSnackbar", {text: "인증 후에 글을 쓸 수 있습니다.", color: "info"});
+          } else {
+            available = available.filter(x => x.allowedGroups.includes(profile.region) || x.allowedGroups.includes(profile.major) || x.allowedGroups.includes(profile.grade));
+            if (available.length === 0) {
+              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. 내 계정정보 화면에서 지역, 전공을 선택해주세요.`, color: "info"});
+            } else {
+              this.$store.dispatch("showSnackbar", {text: `현재 ${available[0].boardName}에 글쓰기가 제한되어있습니다.`, color: "info"});
+            }
+          }
+        }
+      } else {
+        const profile = this.$store.getters.profile;
+        if (this.board.statusAuth.write.includes(profile.auth)) {
+          if (this.board.boardType === "T") {
+            if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
+              const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
+              if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+                this.$router.push(`/${this.board.boardId}/write`);
+              } else {
+                this.$store.dispatch("showSnackbar", {text: `글쓰기가 ${this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").format("Y/M/D")}까지 제한되었습니다.`});
+              }
+            } else {
+              //need subscription
+              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region) || this.board.allowedGroups.some(x => x === profile.major) || this.board.allowedGroups.some(x => x === profile.grade)) {
+                //i can subscribe this board!
+                this.$axios
+                  .post("/user/board", {boardId: this.board.boardId})
+                  .then(response => {
+                    this.$store.dispatch("addUserBoard", Object.assign({}, this.board));
+                    this.$store.dispatch("showSnackbar", {text: `${this.board.boardName} 토픽을 구독하였습니다.`, color: "info"});
+                    this.$router.push(`/${this.board.boardId}/write`);
+                  })
+                  .catch(error => {
+                    console.log(error);
+                    this.$store.dispatch("showSnackbar", {text: `글을 쓰기 위한 구독을 하지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+                  });
+              } else {
+                this.$store.dispatch("showSnackbar", {text: "내가 구독할 수 없는 토픽입니다.", color: "info"});
+              }
+            }
+          } else {
+            if (this.board.allowedGroups.some(x => x === profile.region) || this.board.allowedGroups.some(x => x === profile.major) || this.board.allowedGroups.some(x => x === profile.grade)) {
+              if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
+                const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
+                if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+                  this.$router.push(`/${this.board.boardId}/write`);
+                } else {
+                  this.$store.dispatch("showSnackbar", {text: `글쓰기가 ${this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").format("Y/M/D")}까지 제한되었습니다.`});
+                }
+              } else {
+                this.$router.push(`/${this.board.boardId}/write`);
+              }
+            } else {
+              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 아닙니다.`, color: "info"});
+            }
+          }
+        } else {
+          this.$store.dispatch("showSnackbar", {text: `${this.board.statusAuth.write.map(x => this.userAuthItems[x]).join(", ")}회원만 글을 쓸 수 있습니다.`, color: "info"});
+        }
+      }
+    },
     async getBoard(boardId) {
       let response;
       try {
@@ -138,6 +226,37 @@ export default {
       if (this.childBoardId) {
         this.$router.push("/" + this.childBoardId);
       }
+    },
+    subscribe() {
+      this.$axios
+        .post("/user/board", {boardId: this.board.boardId})
+        .then(response => {
+          this.$store.dispatch("addUserBoard", Object.assign({}, this.board));
+          this.$store.dispatch("showSnackbar", {text: `${this.board.boardName} 토픽을 구독하였습니다! 구독 기념 글을 작성해보세요.`, color: "success"});
+        })
+        .catch(error => {
+          console.log(error);
+          this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || `${this.board.boardName} 구독을 하지 못했습니다.` : `${this.board.boardName} 구독을 하지 못했습니다.`}`, color: "error"});
+        });
+    },
+    openDialog() {
+      if (this.selected && this.selected.boardId === this.board.boardId) {
+        this.dialog = true;
+      } else {
+        this.$axios
+          .get("/board", {params: {boardId: this.board.boardId}})
+          .then(response => {
+            this.selected = response.data;
+            this.dialog = true;
+          })
+          .catch(error => {
+            console.log(error);
+            this.$store.dispatch("showSnackbar", {text: `정보를 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+          });
+      }
+    },
+    closeDialog() {
+      this.dialog = false;
     }
   },
   created() {
@@ -147,6 +266,7 @@ export default {
   async beforeRouteUpdate(to, from, next) {
     console.log("update!!");
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {
+      console.log("aaa");
       this.setBoard(this.$store.getters.boards.find(x => x.boardId === to.params.boardId));
       this.$store.dispatch("setColumnType", "HIDE_SM");
       this.$nextTick(() => (this.childBoardId = null));
