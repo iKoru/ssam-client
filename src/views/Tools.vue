@@ -13,23 +13,39 @@
           </v-flex>
           <v-divider class="my-2"/>
           <v-flex class="px-2">
-            공백 포함 
+            공백 포함
             <span class="primary--text ml-2">{{text.length}}</span> 자 &nbsp;| &nbsp;
             <b>{{byteLength}}</b> 바이트
-            <br>공백 제외 
+            <br>공백 제외
             <span class="primary--text ml-2">{{withoutSpace.length}}</span> 자 &nbsp;| &nbsp;
             <b>{{byteLengthWithoutSpace}}</b> 바이트
           </v-flex>
           <v-divider class="my-2"/>
           <v-flex xs12 class="mt-2 px-2">
             <div>
-              <span>금지어 설정</span>
-              <div>
+              <span>
+                <span class="error--text">금지어</span> 설정
+              </span>
+              <div class="mt-2">
                 <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item">{{item}}</v-chip>
               </div>
               <v-layout row align-center>
-                <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
+                <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
                 <v-btn @click="addItems" class="short" depressed small>추가</v-btn>
+              </v-layout>
+            </div>
+          </v-flex>
+          <v-flex xs12 class="mt-3 px-2">
+            <div>
+              <span>
+                <span class="warning--text">주의어</span> 설정
+              </span>
+              <div class="mt-2">
+                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small color="secondary" :key="item">{{item}}</v-chip>
+              </div>
+              <v-layout row align-center>
+                <v-text-field v-model="warningCandidate" placeholder="추가할 주의어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addWarningItems"></v-text-field>
+                <v-btn @click="addWarningItems" class="short" depressed small>추가</v-btn>
               </v-layout>
             </div>
           </v-flex>
@@ -44,7 +60,7 @@
         </v-layout>
       </v-flex>
       <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}" :style="{'border-left':$vuetify.breakpoint.smAndUp?'1px solid rgba(0,0,0,0.12)':'none'}">
-        <span>금지어 체크결과</span>
+        <span>금지어, 주의어 체크결과</span>
         <div id="filtered" class="mt-2 px-3" v-html="filtered"></div>
       </v-flex>
       <v-flex v-if="$vuetify.breakpoint.xsOnly">
@@ -70,11 +86,14 @@ export default {
   data() {
     return {
       text: "",
-      filtered: '금지어가 입력되면 붉은 글씨로 표시됩니다.',
-      debounce:null,
-      forbidden:['금지어', '호호'],
-      defaultForbidden:['금지어', '호호'],
-      candidate:null
+      filtered: "금지어, 주의어가 입력되면 강조되어 표시됩니다.",
+      debounce: null,
+      forbidden: ["금지어", "호호"],
+      defaultForbidden: ["금지어", "호호"],
+      warning: ["주의어", "키키"],
+      defaultWarning: ["주의어", "키키"],
+      candidate: null,
+      warningCandidate: null
     };
   },
   computed: {
@@ -99,37 +118,32 @@ export default {
     this.$store.dispatch("setColumnType", "HIDE_SM");
   },
   methods: {
-    content() {
-      var html = "";
-      for (var text of this.text) {
-        html += "<span>" + text + " " + "</span>";
+    inputChanged() {
+      if (!this.debounce) {
+        clearTimeout(this.debounce);
       }
-      return html;
-    },
-    highlightContent(evt) {
-      var texts = evt.target.innerText.split(" ");
-      this.text = texts.map(t => t.toLocaleUpperCase());
-    },
-    inputChanged(){
-      if(!this.debounce){
-        clearTimeout(this.debounce)
-      }
-      this.debounce = setTimeout(()=>{
-        let words = this.text
-        if(this.forbidden.length > 0){
-          words=this.text.replace(new RegExp('('+this.forbidden.join('|')+')', 'g'), '<span>$1</span>');
+      this.debounce = setTimeout(() => {
+        let words = this.text;
+        if (this.forbidden.length > 0) {
+          words = this.text.replace(new RegExp("(" + this.forbidden.join("|") + ")", "g"), '<span class="error--text">$1</span>');
         }
-        words = words.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        if (this.warning.length > 0) {
+          words = words.replace(new RegExp("(" + this.warning.join("|") + ")", "g"), '<span class="warning--text">$1</span>');
+        }
+        words = words.replace(/(?:\r\n|\r|\n)/g, "<br>");
         this.filtered = words;
       }, 500);
     },
-    itemRemoved(index){
+    itemRemoved(index) {
       this.forbidden.splice(index, 1);
+    },
+    warningItemRemoved(index) {
+      this.warning.splice(index, 1);
     },
     addItems() {
       if (typeof this.candidate === "string") {
         this.candidate.split(",").forEach(x => {
-          x = x.replace(/(<|>)/g, '');
+          x = x.replace(/(<|>)/g, "");
           if (x !== "") {
             if (this.forbidden.indexOf(x) >= 0) {
               return;
@@ -141,35 +155,48 @@ export default {
         this.candidate = null;
       }
     },
-    copy(){
-      let testingCodeToCopy = document.querySelector('#text')
-      testingCodeToCopy.select()
+    addWarningItems() {
+      if (typeof this.warningCandidate === "string") {
+        this.warningCandidate.split(",").forEach(x => {
+          x = x.replace(/(<|>)/g, "");
+          if (x !== "") {
+            if (this.warning.indexOf(x) >= 0) {
+              return;
+            }
+            this.warning.push(x);
+          }
+        });
+        this.inputChanged();
+        this.warningCandidate = null;
+      }
+    },
+    copy() {
+      let testingCodeToCopy = document.querySelector("#text");
+      testingCodeToCopy.select();
 
       try {
-        document.execCommand('copy')
-        this.$store.dispatch('showSnackbar', {text:'내용이 복사되었습니다.', color:'success'})
+        document.execCommand("copy");
+        this.$store.dispatch("showSnackbar", {text: "내용이 복사되었습니다.", color: "success"});
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
 
-      window.getSelection().removeAllRanges()
+      window.getSelection().removeAllRanges();
     },
-    reset(){
-      this.text = '';
+    reset() {
+      this.text = "";
       this.forbidden = this.defaultForbidden.slice();
-      this.inputChanged()
+      this.warning = this.defaultWarning.slice();
+      this.inputChanged();
     }
   }
 };
 </script>
 <style>
-#filtered{
-  font-size:16px;
+#filtered {
+  font-size: 16px;
 }
-#filtered span{
-  color:red;
-}
-textarea#text{
-  margin-top:8px;
+textarea#text {
+  margin-top: 8px;
 }
 </style>
