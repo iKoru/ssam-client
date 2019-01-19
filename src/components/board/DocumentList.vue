@@ -8,14 +8,35 @@
       </template>
       <template slot="items" slot-scope="props">
         <tr>
-          <td class="text-xs-left pa-1" v-if="board.hasChildren">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'' }}</td>
-          <td class="text-xs-left pa-1" v-if="board.category && board.category.length > 0">{{ props.item.category }}</td>
-          <td class="text-xs-left py-1 px-2 multi-row cursor-pointer" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
-            <router-link :to="`/${props.item.boardId}/${props.item.documentId}`">
-              {{props.item.title}}
-              <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
-            </router-link>
-          </td>
+          <template v-if="$vuetify.breakpoint.xsOnly && hasChildren">
+            <td class="text-xs-center pa-1 grey--text lighten-1" colspan="2">
+              <!--prettyhtml-ignore-->
+              <v-layout row>
+                [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName:boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'')):'' }}</router-link>]
+                <div class="ellipsis ml-1">
+                  <router-link :to="`/${props.item.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
+                </div>
+                <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+              </v-layout>
+            </td>
+          </template>
+          <template v-else>
+            <td class="pa-1 grey--text lighten-1" v-if="hasChildren">
+              <!--prettyhtml-ignore-->
+              <v-layout row justify-center>
+                [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName:boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'')):'' }}</router-link>]
+              </v-layout>
+            </td>
+            <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
+            <td :class="{'text-xs-left':true, 'py-1':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'ellipsis':true, 'cursor-pointer':true}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+              <v-layout row>
+                <div class="ellipsis">
+                  <router-link :to="`/${props.item.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
+                </div>
+                <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+              </v-layout>
+            </td>
+          </template>
           <td class="text-xs-center pa-1 multi-row" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
           <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
           <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M.D':'Y.M.D') }}</td>
@@ -30,9 +51,9 @@
 <script>
 import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
-  name: "BoardList",
+  name: "DocumentList",
   mixins: [BoardMixins],
-  props: ["board", "boardType"],
+  props: ["board", "hasChildren"],
   data() {
     return {
       documents: [],
@@ -47,11 +68,11 @@ export default {
       if (this.$vuetify.breakpoint.smAndUp) {
         headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "100"});
       }
-      if (this.board.category) {
+      if (!this.hasChildren && this.board.category) {
         headers.splice(0, 0, {text: "카테고리", value: "category", sortable: false, align: "left"});
       }
-      if (this.board.hasChildren) {
-        headers.splice(0, 0, {text: this.boardType, value: "boardId", sortable: false, align: "left"});
+      if (this.hasChildren) {
+        headers.splice(0, 0, {text: this.boardTypeItems[this.board.boardType], value: "boardId", sortable: false, align: "center", width: this.$vuetify.breakpoint.smAndUp ? "100" : "50"});
       }
       return headers;
     },
