@@ -92,14 +92,18 @@ export default {
   },
   methods: {
     getDocuments(boardId) {
+      this.loading = true;
       this.$axios
-        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || this.pagination.page}})
+        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || this.pagination.page}, headers: {silent: true}})
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
+          this.loading = false;
         })
         .catch(error => {
+          this.loading = false;
           console.log(error);
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다."}`, color: "error"});
         });
     }
   },
