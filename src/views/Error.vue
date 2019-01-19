@@ -14,7 +14,7 @@
               <h2 class="my-3 headline" v-else-if="errorCode === 404">페이지를 찾을 수 없습니다.</h2>
               <h2 class="my-3 headline" v-else>요청을 처리하던 도중 에러가 발생하였습니다.</h2>
               <v-layout :column="$vuetify.breakpoint.xsOnly">
-                <v-btn @click="$router.go(-1)">이전 페이지로 가기</v-btn>
+                <v-btn class="mx-0" @click="$router.go(-1)">이전 페이지로 가기</v-btn>
                 <router-link to="/auth" v-if="errorCode === 403">
                   <v-btn :block="$vuetify.breakpoint.xsOnly">인증 페이지로 가기</v-btn>
                 </router-link>

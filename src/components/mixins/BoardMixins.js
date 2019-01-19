@@ -42,10 +42,11 @@ const BoardMixins = {
     dataURItoBlob (dataURI) {
       // convert base64/URLEncoded data component to raw binary data held in a string
       var byteString;
-      if (dataURI.split(',')[0].indexOf('base64') >= 0)
-        {byteString = atob(dataURI.split(',')[1]);}
-      else
-        {byteString = unescape(dataURI.split(',')[1]);}
+      if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1]);
+      } else {
+        byteString = unescape(dataURI.split(',')[1]);
+      }
 
       // separate out the mime component
       console.log(dataURI)

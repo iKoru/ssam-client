@@ -9,7 +9,6 @@ export default new Vuex.Store({
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
-    auth: {},
     snackbarList: [],
     spinner: false,
     menuDrawer: false,
@@ -17,8 +16,8 @@ export default new Vuex.Store({
     boards: [],
     userBoards: [],
     notifications: [],
-    recents:null,
-    columnType:'SHOW_ALWAYS'
+    recents: null,
+    columnType: 'SHOW_ALWAYS'
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -69,10 +68,10 @@ export default new Vuex.Store({
     totalNotifications ({ notifications }) {
       return notifications.length === 0 ? 0 : notifications[0].totalCount
     },
-    columnType({columnType}){
+    columnType ({ columnType }) {
       return columnType
     },
-    recents({recents}){
+    recents ({ recents }) {
       return recents
     }
   },
@@ -152,10 +151,10 @@ export default new Vuex.Store({
         }
       })
     },
-    SET_COLUMN_TYPE(state, columnType){
+    SET_COLUMN_TYPE (state, columnType) {
       state.columnType = columnType
     },
-    SET_RECENTS(state, recents){
+    SET_RECENTS (state, recents) {
       state.recents = recents
     }
   },
@@ -228,10 +227,10 @@ export default new Vuex.Store({
     addNotifications ({ commit }, notifications) {
       commit('ADD_NOTIFICATIONS', notifications)
     },
-    setColumnType({commit}, columnType){
+    setColumnType ({ commit }, columnType) {
       commit('SET_COLUMN_TYPE', columnType)
     },
-    setRecents({commit}, recents){
+    setRecents ({ commit }, recents) {
       commit('SET_RECENTS', recents)
     }
   }
