@@ -2,7 +2,7 @@
   <v-flex>
     <v-layout column>
       <v-flex>
-        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
+        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
           <template slot="headers" slot-scope="props">
             <tr>
               <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
@@ -13,8 +13,8 @@
               <td class="pa-1 grey--text lighten-1" v-if="hasChildren">
                 <!--prettyhtml-ignore-->
                 <v-layout row justify-center>
-                    [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
-                  </v-layout>
+                  [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
+                </v-layout>
               </td>
               <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
               <td :class="{'text-xs-left':true, 'py-1':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'ellipsis':true, 'cursor-pointer':true}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
@@ -78,7 +78,7 @@ export default {
     getDocuments(boardId) {
       this.loading = true;
       this.$axios
-        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || this.pagination.page}, headers: {silent: true}})
+        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly?10:20}, headers: {silent: true}})
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
