@@ -5,7 +5,7 @@
         <v-tabs v-model="tab">
           <v-tab key="searchDocument" to="searchDocument">게시물 찾기</v-tab>
           <v-tab key="searchBoard" to="searchBoard">게시판 찾기</v-tab>
-          <v-tabs-items>
+          <v-tabs-items touchless>
             <v-tab-item value="searchDocument">
               <router-view v-if="tab === 'searchDocument'"/>
             </v-tab-item>
