@@ -37,28 +37,29 @@
         <v-flex pr-2>
           <v-btn-toggle id="bottomBottons">
             <template v-show="document.attach && document.attach.length > 0">
-              <v-btn @click="showAttach=!showAttach" class="font-weight-bold" title="첨부파일 보기">첨부파일({{document.attach.length}})</v-btn>
-              <v-tooltip v-model="showAttach" bottom>
+              <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.length}})</v-btn>
+              <!--<v-tooltip v-model="showAttach" bottom>
                 <span slot="activator"></span>
-                <v-list style="background-color:#616161">
-                  <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
-                    {{item.attachName}}
-                    <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
-                      <v-btn type="submit" icon color="white" circle small>
-                        <v-icon small>mdi-arrow-down</v-icon>
-                      </v-btn>
-                    </a>
-                  </v-list-tile>
-                </v-list>
-              </v-tooltip>
+              </v-tooltip>-->
             </template>
-            <v-btn class="short font-weight-bold" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
+            <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
               <span>수정</span>
             </v-btn>
-            <v-btn class="short font-weight-bold" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
-            <v-btn class="short font-weight-bold" @click="scrapDocument">스크랩</v-btn>
-            <v-btn class="short font-weight-bold" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
+            <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
+            <v-btn class="short" @click="scrapDocument">스크랩</v-btn>
+            <v-btn class="short" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
           </v-btn-toggle>
+        </v-flex>
+      </v-layout>
+      <v-layout row v-show="showAttach" mt-2>
+        <v-flex px-2>
+          <v-list dense id="attachList">
+            <v-list-tile :key="index" v-for="(item, index) in document.attach">
+              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis">
+                {{item.attachName}}
+              </router-link>
+            </v-list-tile>
+          </v-list>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -111,6 +112,7 @@ export default {
           if (this.document.hasSurvey) {
             this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
           }
+          this.showAttach = false;
         })
         .catch(error => {
           console.log(error);
@@ -136,11 +138,11 @@ export default {
           documentId: this.$route.params.documentId
         })
         .then(res => {
-          console.log(res);
           document.voteUpCount = res.data.voteUpCount;
         })
-        .catch(err => {
-          console.log(err.response);
+        .catch(error => {
+          console.log(error.response);
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "추천하지 못했습니다."}`, color: "error"});
         });
     },
     deltaToHTML(delta) {
@@ -189,5 +191,9 @@ export default {
 <style>
 #bottomBottons .v-btn{
   opacity:1;
+  font-weight:bold;
+}
+#attachList .v-list__tile{
+  height:28px;
 }
 </style>
