@@ -73,7 +73,7 @@
         <v-flex px-2>
           <v-list dense id="attachList">
             <v-list-tile :key="index" v-for="(item, index) in document.attach">
-              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis underline">{{item.attachName}}</router-link>
+              <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attachName" class="ellipsis underline">{{item.attachName}}</router-link>
             </v-list-tile>
           </v-list>
         </v-flex>
@@ -115,17 +115,15 @@ export default {
     this.getScrapGroups();
     this.getReportTypes();
   },
-  computed: {
-    webUrl() {
-      return process.env.VUE_APP_WEB_URL;
-    }
-  },
   methods: {
     getDocument: function() {
       this.$axios
         .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
         .then(response => {
           console.log(response);
+          if (Array.isArray(response.data.attach)) {
+            response.data.attach = response.data.attach.filter(x => x);
+          }
           this.document = response.data;
           this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents), this.document.attach);
           if (this.document.hasSurvey) {
@@ -178,9 +176,10 @@ export default {
       return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
     },
     getImagePath(imagePath) {
-      let attach = this.document.attach;
-      this.document.attach = this.document.attach.filter(item => item.attachName !== imagePath);
-      return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;
+      if (this.document.attach.some(x => x.attach_name === imagePath)) {
+        return this.webUrl + this.document.attach.find(item => item.attach_name === imagePath).attach_path;
+      }
+      return null;
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);
