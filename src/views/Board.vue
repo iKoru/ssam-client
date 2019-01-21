@@ -27,7 +27,7 @@
           <v-flex v-show="board.boardDescription">
             <span class="caption">
               {{board.boardDescription}}
-              <v-icon small @click="openDialog">info</v-icon>
+              <v-icon small @click="openDialog" class="vertical-align-middle">info</v-icon>
             </span>
           </v-flex>
         </v-layout>
