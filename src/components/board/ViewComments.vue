@@ -63,6 +63,11 @@ export default {
       this.$axios
         .get("/comment", {params: {documentId: this.$route.params.documentId}, headers: {silent: true}})
         .then(res => {
+          res.data.forEach(x => {
+            if (Array.isArray(x.attach)) {
+              x.attach = x.attach.filter(x => x);
+            }
+          });
           this.commentList = res.data;
         })
         .catch(err => console.log(err));

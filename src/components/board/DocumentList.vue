@@ -27,7 +27,7 @@
               </td>
               <td class="text-xs-center pa-1 ellipsis" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
-              <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('M/D') }}</td>
+              <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
           </template>
           <template slot="no-data">아직 작성된 글이 없습니다. 첫 글을 작성해보세요!</template>
@@ -51,13 +51,13 @@ export default {
       totalDocuments: 0,
       loading: false,
       pagination: {}, // page object for data table component
-      page:null, // page element for pagination component
+      page: null, // page element for pagination component
       boardId: null //local current boardId
     };
   },
   computed: {
     headers() {
-      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: "30"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
+      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "30" : "50"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
       if (this.$vuetify.breakpoint.smAndUp) {
         headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "100"});
       }
@@ -80,7 +80,7 @@ export default {
     getDocuments() {
       this.loading = true;
       this.$axios
-        .get(`/${this.boardId}`, {params: {page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly?10:20}, headers: {silent: true}})
+        .get(`/${this.boardId}`, {params: {page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20}, headers: {silent: true}})
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
@@ -94,28 +94,28 @@ export default {
     }
   },
   created() {
-    this.page = this.$route.query.page*1 > 0 && Number.isInteger(this.$route.query.page*1) ? this.$route.query.page*1 : 1;//set page and trigger the watch function
+    this.page = this.$route.query.page * 1 > 0 && Number.isInteger(this.$route.query.page * 1) ? this.$route.query.page * 1 : 1; //set page and trigger the watch function
   },
   watch: {
     "$route.params": {
       handler(val) {
-        if(this.boardId !== val.boardId){
+        if (this.boardId !== val.boardId) {
           this.documents = [];
           this.totalDocuments = 0;
-          const queryPage = (this.$route.query.page*1 > 0 && Number.isInteger(this.$route.query.page*1) ? this.$route.query.page*1 : 1)
+          const queryPage = this.$route.query.page * 1 > 0 && Number.isInteger(this.$route.query.page * 1) ? this.$route.query.page * 1 : 1;
           this.boardId = val.boardId;
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.pagination.page = queryPage;
             this.page = queryPage;
             this.getDocuments();
-          })
+          });
         }
       },
       deep: true,
       immediate: true
     },
-    page(val){
-      if(this.pagination.page !== val){
+    page(val) {
+      if (this.pagination.page !== val) {
         this.pagination.page = val;
         this.getDocuments();
       }
