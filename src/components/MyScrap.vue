@@ -8,7 +8,7 @@
             <v-spacer v-if="$vuetify.breakpoint.smAndUp"/>
             <v-select class="selectScrapGroup" v-model="scrapGroupId" :items="scrapGroups" label="그룹 선택" hide-details dense item-text="scrapGroupName" item-value="scrapGroupId" append-outer-icon="settings" @click:append-outer="openDialog" id="selectScrapGroup"></v-select>
             <v-dialog v-model="dialog" :fullscreen="$vuetify.breakpoint.xsOnly" :transition="$vuetify.breakpoint.xsOnly?'dialog-bottom-transition':'fade-transition'" lazy scrollable max-width="700px">
-              <scrap-group-manager :scrapGroups="scrapGroups" :dialog="dialog" @closeDialog="closeDialog" @updateScrapGroup="getScrapGroups"/>
+              <scrap-group-manager :scrapGroups="scrapGroups" :dialog="dialog" @closeDialog="closeDialog" @updateScrapGroup="resetScrapGroups"/>
             </v-dialog>
           </v-layout>
         </v-flex>
@@ -115,6 +115,10 @@ export default {
       } else {
         this.$store.dispatch("showSnackbar", {text: "삭제할 스크랩을 선택해주세요.", color: "error"});
       }
+    },
+    resetScrapGroups(){
+      this.$store.dispatch('setScrapGroups', null);
+      this.getScrapGroups();
     },
     getScrapGroups() {
       if(this.$store.getters.scrapGroups){
