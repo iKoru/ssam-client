@@ -106,9 +106,6 @@ export default {
     ViewComments
   },
   mixins: [BoardMixins],
-  mounted() {
-    this.document = localStorage.item;
-  },
   created() {
     this.getDocument();
   },
@@ -135,14 +132,15 @@ export default {
         });
     },
     deleteDocument() {
-      if (confirm("이 글을 삭제합니다.")) {
+      if (confirm("이 글을 삭제하시겠습니까?")) {
         this.$axios
-          .delete(`/document/${this.$route.params.documentId}`)
+          .put('/document', {documentId:this.$route.params.documentId, isDeleted:true})
           .then(response => {
+            this.$store.dispatch('showSnackbar', {text:'글을 삭제하였습니다.', color:'success'})
             this.$router.push(`/${this.$route.params.boardId}`);
           })
-          .catch(err => {
-            console.log(err);
+          .catch(error => {
+            this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글을 삭제하지 못했습니다."}`, color: "error"});
           });
       }
     },
