@@ -145,7 +145,7 @@ export default {
           } else {
             available = available.filter(x => x.allowedGroups.includes(profile.region) || x.allowedGroups.includes(profile.major) || x.allowedGroups.includes(profile.grade));
             if (available.length === 0) {
-              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly?'학년, 전공을 지정해주세요.':'내 계정정보에서 학년, 전공을 지정해주세요.'}`, color: "info"});
+              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly ? "학년, 전공을 지정해주세요." : "내 계정정보에서 학년, 전공을 지정해주세요."}`, color: "info"});
             } else {
               this.$store.dispatch("showSnackbar", {text: `현재 ${available[0].boardName}에 글쓰기가 제한되어있습니다.`, color: "info"});
             }
@@ -264,9 +264,7 @@ export default {
     this.$store.dispatch("setColumnType", "HIDE_SM");
   },
   async beforeRouteUpdate(to, from, next) {
-    console.log("update!!");
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {
-      console.log("aaa");
       this.setBoard(this.$store.getters.boards.find(x => x.boardId === to.params.boardId));
       this.$store.dispatch("setColumnType", "HIDE_SM");
       this.$nextTick(() => (this.childBoardId = null));

@@ -4,31 +4,37 @@
       <v-card>
         <v-list two-line>
           <template v-for="(item, index) in commentList">
-            <v-layout :key="'comment-show'+index" column>
-              <v-layout>
-                <v-flex xs12>
-                  <v-list-tile :key="item.title">
-                    <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList"/>
-                  </v-list-tile>
-                </v-flex>
-              </v-layout>
-              <v-layout :key="'child-comment-list'+index" column>
-                <v-flex xs11 offset-xs1 :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children">
-                  <v-list-tile>
-                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList"/>
-                  </v-list-tile>
-                </v-flex>
-              </v-layout>
-              <v-layout :key="'recomment-write'+index" v-if="openRecommentIndex==index">
-                <v-flex xs12 offset-xs1>
-                  <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isWriter="isWriter"/>
-                </v-flex>
-              </v-layout>
-              <v-divider v-if="index < commentList.length - 1" :inset="item.inset" :key="index"></v-divider>
-            </v-layout>
+            <!-- <v-layout :key="'comment-show'+index" column> -->
+            <!-- <v-flex> -->
+            <v-list-tile :key="index" class="py-2">
+              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList"/>
+            </v-list-tile>
+            <div :key="'child'+index" v-if="item.children">
+              <div v-for="(childItem, childIndex) in item.children" :key="childIndex">
+                <v-divider inset/>
+                <v-list-tile class="py-2" avatar>
+                  <v-list-tile-action></v-list-tile-action>
+                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList"/>
+                </v-list-tile>
+              </div>
+            </div>
+            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index">
+              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous"/>
+            </v-list-tile>
+            <!-- </v-flex> -->
+            <!-- <v-flex :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children"> -->
+            <!-- </v-flex> -->
+            <!-- <v-layout :key="'child-comment-list'+index" column> -->
+            <!-- </v-layout> -->
+            <!-- <v-layout :key="'recomment-write'+index" v-if="openRecommentIndex==index"> -->
+            <!-- <v-flex ml-5> -->
+            <!-- </v-flex> -->
+            <!-- </v-layout> -->
+            <v-divider v-if="index < commentList.length - 1" :key="'divider'+index"></v-divider>
+            <!-- </v-layout> -->
           </template>
         </v-list>
-        <comment-writer @update="getCommentList" :isWriter="isWriter"/>
+        <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous"/>
       </v-card>
     </v-flex>
   </v-layout>
@@ -44,35 +50,12 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isWriter"],
+  props: ["isAnonymous", "allowAnonymous"],
   data() {
     return {
-      items: [
-        {header: "Today"},
-        {
-          avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-          title: "Brunch this weekend?",
-          subtitle: "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-        },
-        {divider: true, inset: true},
-        {
-          avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-          title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-          subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-        },
-        {divider: true, inset: true},
-        {
-          avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-          title: "Recipe to try",
-          subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
-        }
-      ],
       commentList: [],
       openRecommentIndex: -1
     };
-  },
-  created() {
-    this.getCommentList();
   },
   methods: {
     getCommentList() {
