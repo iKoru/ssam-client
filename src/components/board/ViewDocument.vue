@@ -72,7 +72,7 @@
         <v-flex px-2>
           <v-list dense id="attachList">
             <v-list-tile :key="index" v-for="(item, index) in document.attach">
-              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis">
+              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis underline">
                 {{item.attachName}}
               </router-link>
             </v-list-tile>
