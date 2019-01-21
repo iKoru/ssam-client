@@ -1,84 +1,70 @@
 <template>
   <v-layout column v-if="document">
-    <v-flex xs12>
+    <v-flex>
       <v-card-title primary-title>
         <div class="w-100">
-          <h3 class="headline mb-0">{{document.title}}</h3>
+          <router-link :to="'/'+document.boardId+'/'+document.documentId" class="title mb-0 multi-row">{{document.title}}</router-link>
           <v-layout row>
-            <v-flex xs6></v-flex>
-            <v-flex xs2>{{document.nickName}}</v-flex>
-            <v-flex xs2>조회수 {{document.viewCount}}</v-flex>
-            <v-flex xs3 text-xs-right>{{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}</v-flex>
+            <v-spacer/>
+            <v-flex text-xs-right>
+              <b>{{document.nickName === ''? '(익명)' : document.nickName}}</b> | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+            </v-flex>
           </v-layout>
         </div>
       </v-card-title>
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-      <v-layout row>
-        <v-spacer/>
-        <v-flex sm12 md4 text-sm-right v-if="document.attach">
-          <v-chip @click="showAttach=!showAttach" color="grey lighten-1">첨부파일 {{document.attach.length}}개</v-chip>
-          <v-tooltip v-model="showAttach" bottom>
-            <span slot="activator"></span>
-            <v-list style="background-color:#616161">
-              <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
-                {{item.attachName}}
-                <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
-                  <v-btn type="submit" icon color="white" circle small>
-                    <v-icon small>mdi-arrow-down</v-icon>
-                  </v-btn>
-                </a>
-              </v-list-tile>
-            </v-list>
-          </v-tooltip>
-        </v-flex>
-      </v-layout>
-    </v-flex>
-    <v-flex xs12>
       <v-card-text>
         <div v-html="documentHTML"></div>
         {{document}}
       </v-card-text>
     </v-flex>
-    <v-flex xs12 v-if="document.hasSurvey">
-      <v-layout row>
-        <v-flex xs10>
-          <v-card-text>
-            <Survey :survey="survey"/>
-          </v-card-text>
-        </v-flex>
-      </v-layout>
-    </v-flex>
-    <v-flex xs12>
-      <v-layout row>
-        <v-flex xs12 md4></v-flex>
-        <v-flex xs12 md4 text-xs-center>
-          <v-btn color="white" class="vote-chip" small short @click.native="voteDocument">
-            <v-icon color="indigo" small>thumb_up</v-icon>&nbsp;
-            <v-label font-color="indigo">{{document.voteUpCount}}</v-label>
-          </v-btn>
-        </v-flex>
-        <v-flex xs12 md4 text-xs-right pr-2 my-auto>
-          <router-link v-if="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
-            <v-label>수정</v-label>
-          </router-link>
-          <!-- <v-label v-if="document.isWriter" @click="editDocument">수정 /</v-label> -->
-          <v-label v-if="document.isWriter" @click="deleteDocument">삭제</v-label>
-          <v-label>신고</v-label>
-        </v-flex>
-      </v-layout>
-      <!-- { "documentId": 589, "boardId": "free", "isDeleted": false, "commentCount": 0, "reportCount": 0, "voteUpCount": 0, "viewCount": 2, "writeDateTime": "20190107161923", "bestDateTime": null, "title": "ㅅㄷㄴㅅ", "restriction": null, "allowAnonymous": true, "hasSurvey": false, "hasAttach": true, "categoryName": null, "reserved1": null, "reserved2": null, "reserved3": null, "reserved4": null, "nickName": "운영진blue", "documents": "<p>ㅅㄷㄴㅅ</p>", "attach": [ { "documentId": 589, "attachId": "5552c00b-6925-c911-e844-440ee0fdcd3e", "attachType": ".jpg", "attachName": "1557374ea811ed9.jpg", "attachPath": "attach/589/5552c00b-6925-c911-e844-440ee0fdcd3e.jpg" } ], "isWriter": true } -->
+    <v-layout row justify-center v-show="document.hasSurvey">
+      <v-flex xs12 sm10 md8>
+        <Survey :survey="survey"/>
+      </v-flex>
+    </v-layout>
+    <v-flex text-xs-center my-2>
+      <v-btn short @click="voteDocument" class="font-weight-bold">
+        <v-icon color="primary" small>thumb_up</v-icon>&nbsp;
+        <span class="primary--text">{{document.voteUpCount}}</span>
+      </v-btn>
     </v-flex>
     <v-divider/>
+    <v-flex class="my-2">
+      <v-layout row text-xs-right>
+        <v-flex pr-2>
+          <v-btn-toggle id="bottomBottons">
+            <template v-show="document.attach && document.attach.length > 0">
+              <v-btn @click="showAttach=!showAttach" class="font-weight-bold" title="첨부파일 보기">첨부파일({{document.attach.length}})</v-btn>
+              <v-tooltip v-model="showAttach" bottom>
+                <span slot="activator"></span>
+                <v-list style="background-color:#616161">
+                  <v-list-tile color="white" :key="index" v-for="(item, index) in document.attach">
+                    {{item.attachName}}
+                    <a target="_blank" :href="webUrl + item.attachPath" :download="item.attachName">
+                      <v-btn type="submit" icon color="white" circle small>
+                        <v-icon small>mdi-arrow-down</v-icon>
+                      </v-btn>
+                    </a>
+                  </v-list-tile>
+                </v-list>
+              </v-tooltip>
+            </template>
+            <v-btn class="short font-weight-bold" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
+              <span>수정</span>
+            </v-btn>
+            <v-btn class="short font-weight-bold" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
+            <v-btn class="short font-weight-bold" @click="scrapDocument">스크랩</v-btn>
+            <v-btn class="short font-weight-bold" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
+          </v-btn-toggle>
+        </v-flex>
+      </v-layout>
+    </v-flex>
     <v-flex xs12>
       <ViewComments :isWriter="document.isWriter"/>
     </v-flex>
-    <v-card-text>
-      <br>
-      작성자본인{{document.isWriter}}
-      <br>
-    </v-card-text>
   </v-layout>
 </template>
 
@@ -181,6 +167,12 @@ export default {
         this.link = href[0].substr(0, href[0].indexOf("<"));
         console.log(this.link);
       }
+    },
+    reportDocument(){
+      console.log('report!')
+    },
+    scrapDocument(){
+      console.log('scrap!')
     }
   },
   watch: {
@@ -195,10 +187,7 @@ export default {
 };
 </script>
 <style>
-.v-label {
-  cursor: pointer;
-}
-.vote-chip {
-  cursor: pointer;
+#bottomBottons .v-btn{
+  opacity:1;
 }
 </style>
