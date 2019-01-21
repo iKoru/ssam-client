@@ -48,13 +48,23 @@
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
             <v-menu open-on-hover bottom offset-y lazy>
               <v-btn slot="activator" class="short">스크랩</v-btn>
-              <v-list>
+              <v-list dense>
                 <v-list-tile v-for="item in scrapGroups" :key="item.scrapGroupId" @click="scrapDocument(item)">
                   <v-list-tile-title>{{ item.scrapGroupName }}</v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-menu>
-            <v-btn class="short" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
+            <v-menu open-on-hover bottom offset-y lazy>
+              <v-btn slot="activator" class="short" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
+              <v-list two-line>
+                <v-list-tile v-for="(item, index) in reportTypes" :key="item.reportTypeId" @click="reportDocument(item)" :class="{'mt-2':index>0}">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ item.reportTypeName }}</v-list-tile-title>
+                    <v-list-tile-sub-title>{{item.reportTypeDescription}}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
           </v-btn-toggle>
         </v-flex>
       </v-layout>
@@ -104,6 +114,7 @@ export default {
   created() {
     this.getDocument();
     this.getScrapGroups();
+    this.getReportTypes();
   },
   computed: {
     webUrl() {
@@ -179,19 +190,30 @@ export default {
         console.log(this.link);
       }
     },
-    reportDocument(){
-      console.log('report!')
+    reportDocument(item){
+      this.$axios.post('/report/document', {documentId:this.document.documentId, reportTypeId:item.reportTypeId})
+      .then(response => {
+        this.$store.dispatch("showSnackbar", {text: "이 글을 신고하였습니다.", color: "success"});
+      })
+      .catch(error => {
+        if(error.response && error.response.status === 409){
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "info"});
+        }else{
+          console.log(error);
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "error"});
+        }
+      })
     },
     scrapDocument(item){
       this.$axios.post('/scrap', {scrapGroupId:item.scrapGroupId, documentId:this.document.documentId})
       .then(response => {
-        this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩했습니다.", color: "success"});
+        this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩하였습니다.", color: "success"});
       })
       .catch(error => {
-        console.log(error);
         if(error.response && error.response.status === 409){
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
         }else{
+          console.log(error);
           this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
         }
       })
@@ -207,11 +229,27 @@ export default {
             this.scrapGroups = response.data;
           })
           .catch(error => {
+            console.log(error);
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
           })
         }
-      }else{
-        this.scrapGroups = this.$store.getters.scrapGroups
+      }
+    },
+    getReportTypes(){
+      if(!this.reportTypes){
+        if(this.$store.getters.reportTypes){
+          this.reportTypes = this.$store.getters.reportTypes
+        }else{
+          this.$axios.get('/report/type', {headers:{silent:true}})
+          .then(response=>{
+            this.$store.dispatch('setReportTypes', response.data);
+            this.reportTypes = response.data;
+          })
+          .catch(error => {
+            console.log(error);
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "신고 타입을 가져오지 못했습니다." : "신고 타입을 가져오지 못했습니다.", color: "error"});
+          })
+        }
       }
     }
   },
