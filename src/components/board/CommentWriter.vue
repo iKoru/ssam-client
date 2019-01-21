@@ -1,25 +1,25 @@
 <template>
-  <v-layout column>
-    <v-layout justify-space-between row py-2 px-2>
-      <v-flex xs12 class="comment">
-        <quill-editor v-model="content" ref="commentEditor" :options="editorOption">
-          <div id="toolbar" slot="toolbar">
-            <button ref="imageAttach" class="ql-image" value="image"></button>
-          </div>
-        </quill-editor>
-      </v-flex>
-    </v-layout>
-    <v-layout row align-center>
-      <span class="ml-3">
-        <v-checkbox hide-details label="익명" v-model="anonymous" v-show="allowAnonymous" class="pt-0"></v-checkbox>
-      </span>
-      <v-btn @click="$refs.imageAttach.click()" flat>
-        <v-icon>image</v-icon>이미지
-      </v-btn>
+  <v-layout column px-3>
+    <v-flex class="comment-editor">
+      <quill-editor v-model="content" ref="commentEditor" :options="editorOption">
+        <div class="commentToolbar" slot="toolbar">
+          <button ref="imageAttach" class="ql-image" value="image"></button>
+        </div>
+      </quill-editor>
+    </v-flex>
+    <v-flex>
+      <v-layout row align-center>
+        <span class="ml-3">
+          <v-checkbox hide-details label="익명" v-model="anonymous" v-show="allowAnonymous" class="pt-0 mt-0"></v-checkbox>
+        </span>
+        <v-btn @click="$refs.imageAttach.click()" flat>
+          <v-icon>image</v-icon>이미지
+        </v-btn>
 
-      <v-spacer/>
-      <v-btn small @click="postComment" color="primary" class="short">쓰기</v-btn>
-    </v-layout>
+        <v-spacer/>
+        <v-btn small @click="postComment" color="primary" class="short">쓰기</v-btn>
+      </v-layout>
+    </v-flex>
   </v-layout>
 </template>
 
@@ -36,7 +36,7 @@ export default {
         placeholder: "댓글을 입력해주세요.",
 
         modules: {
-          toolbar: "#toolbar",
+          toolbar: ".commentToolbar",
           imageDrop: true,
           imageResize: true
         },
@@ -106,28 +106,15 @@ export default {
 };
 </script>
 <style>
-.comment .quill-editor .ql-container {
+.comment-editor .ql-toolbar.ql-snow + .ql-container.ql-snow {
   min-height: 5rem;
-  padding-bottom: 1rem;
+  border: 1px solid #e8e8e8;
+  border-top: 1px solid #e8e8e8;
 }
-.comment .quill-editor .ql-container .ql-editor {
-  border-top: 1px solid #ccc;
-  min-height: 5rem;
-  padding-bottom: 1rem;
+.comment-editor .quill-editor .ql-toolbar {
+  display: none;
 }
-
-.comment .quill-editor .ql-toolbar {
-  height: 0;
-  padding: 0;
-  visibility: hidden;
-}
-.comment .quill-editor .ql-toolbar button {
-  height: 0;
-  padding: 0;
-  visibility: hidden;
-}
-.v-input {
-  margin-top: 0;
-  margin-bottom: 0;
+.comment-editor .ql-editor.ql-blank::before {
+  font-style: normal;
 }
 </style>

@@ -21,13 +21,13 @@
         <v-flex text-xs-right px-2 my-auto>
           <span @click="voteUp" class="cursor-pointer" title="추천">
             <v-icon color="primary" small>thumb_up</v-icon>
-            <span class="mx-1">{{comment.voteUpCount}}</span> |
+            <b class="mx-1 body--text">{{comment.voteUpCount}}</b> |
           </span>
           <template v-if="comment.isWriter">
             <span class="subheading cursor-pointer" @click="updateComment">수정</span> |
-            <span class="subheading cursor-pointer" @click="deleteComment">삭제</span> |
+            <span class="subheading cursor-pointer" @click="deleteComment">삭제</span>
           </template>
-          <span class="subheading cursor-pointer" @click="reportComment">신고</span>
+          <span class="subheading cursor-pointer" @click="reportComment" v-else>신고</span>
         </v-flex>
       </v-layout>
     </v-list-tile-sub-title>
@@ -62,8 +62,9 @@ export default {
       let quill = new Quill(tempCont);
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          // random generated uuid should given here
-          // item.insert.image = this.getImagePath(item.insert.image);
+          if (this.comment.attach.some(x => x.attach_name === item.insert.image)) {
+            item.insert.image = this.webUrl + "/" + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
+          }
         }
       });
       quill.setContents(delta);
