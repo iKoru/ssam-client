@@ -7,7 +7,8 @@
           <v-layout row>
             <v-spacer/>
             <v-flex text-xs-right>
-              <b>{{document.nickName === ''? '(익명)' : document.nickName}}</b> | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+              <b>{{document.nickName === ''? '(익명)' : document.nickName}}</b>
+              | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
           </v-layout>
         </div>
@@ -26,9 +27,9 @@
       </v-flex>
     </v-layout>
     <v-flex text-xs-center my-2>
-      <v-btn short @click="voteDocument" class="font-weight-bold">
+      <v-btn @click="voteDocument" class="font-weight-bold short">
         <v-icon color="primary" small>thumb_up</v-icon>&nbsp;
-        <span class="primary--text">{{document.voteUpCount}}</span>
+        <span>{{document.voteUpCount}}</span>
       </v-btn>
     </v-flex>
     <v-divider/>
@@ -72,16 +73,14 @@
         <v-flex px-2>
           <v-list dense id="attachList">
             <v-list-tile :key="index" v-for="(item, index) in document.attach">
-              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis underline">
-                {{item.attachName}}
-              </router-link>
+              <router-link :to="webUrl + '/' + item.attachPath" target="_blank" :download="item.attachName" class="ellipsis underline">{{item.attachName}}</router-link>
             </v-list-tile>
           </v-list>
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex xs12>
-      <ViewComments :isWriter="document.isWriter"/>
+    <v-flex mb-4>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous"/>
     </v-flex>
   </v-layout>
 </template>
@@ -102,7 +101,8 @@ export default {
       documentHTML: null,
       survey: null,
       showAttach: false,
-      scrapGroups: null
+      scrapGroups: null,
+      reportTypes: null
     };
   },
   components: {
@@ -112,7 +112,6 @@ export default {
   },
   mixins: [BoardMixins],
   created() {
-    this.getDocument();
     this.getScrapGroups();
     this.getReportTypes();
   },
@@ -142,9 +141,9 @@ export default {
     deleteDocument() {
       if (confirm("이 글을 삭제하시겠습니까?")) {
         this.$axios
-          .put('/document', {documentId:this.$route.params.documentId, isDeleted:true})
+          .put("/document", {documentId: this.$route.params.documentId, isDeleted: true})
           .then(response => {
-            this.$store.dispatch('showSnackbar', {text:'글을 삭제하였습니다.', color:'success'})
+            this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
             this.$router.push(`/${this.$route.params.boardId}`);
           })
           .catch(error => {
@@ -190,65 +189,69 @@ export default {
         console.log(this.link);
       }
     },
-    reportDocument(item){
-      this.$axios.post('/report/document', {documentId:this.document.documentId, reportTypeId:item.reportTypeId})
-      .then(response => {
-        this.$store.dispatch("showSnackbar", {text: "이 글을 신고하였습니다.", color: "success"});
-      })
-      .catch(error => {
-        if(error.response && error.response.status === 409){
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "info"});
-        }else{
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "error"});
-        }
-      })
-    },
-    scrapDocument(item){
-      this.$axios.post('/scrap', {scrapGroupId:item.scrapGroupId, documentId:this.document.documentId})
-      .then(response => {
-        this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩하였습니다.", color: "success"});
-      })
-      .catch(error => {
-        if(error.response && error.response.status === 409){
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
-        }else{
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
-        }
-      })
-    },
-    getScrapGroups(){
-      if(!this.scrapGroups){
-        if(this.$store.getters.scrapGroups){
-          this.scrapGroups = this.$store.getters.scrapGroups
-        }else{
-          this.$axios.get("/scrap/group", {headers: {silent: true}})
-          .then(response => {
-            this.$store.dispatch('setScrapGroups', response.data);
-            this.scrapGroups = response.data;
-          })
-          .catch(error => {
+    reportDocument(item) {
+      this.$axios
+        .post("/report/document", {documentId: this.document.documentId, reportTypeId: item.reportTypeId})
+        .then(response => {
+          this.$store.dispatch("showSnackbar", {text: "이 글을 신고하였습니다.", color: "success"});
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 409) {
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "info"});
+          } else {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
-          })
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "error"});
+          }
+        });
+    },
+    scrapDocument(item) {
+      this.$axios
+        .post("/scrap", {scrapGroupId: item.scrapGroupId, documentId: this.document.documentId})
+        .then(response => {
+          this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩하였습니다.", color: "success"});
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 409) {
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
+          } else {
+            console.log(error);
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
+          }
+        });
+    },
+    getScrapGroups() {
+      if (!this.scrapGroups) {
+        if (this.$store.getters.scrapGroups) {
+          this.scrapGroups = this.$store.getters.scrapGroups;
+        } else {
+          this.$axios
+            .get("/scrap/group", {headers: {silent: true}})
+            .then(response => {
+              this.$store.dispatch("setScrapGroups", response.data);
+              this.scrapGroups = response.data;
+            })
+            .catch(error => {
+              console.log(error);
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
+            });
         }
       }
     },
-    getReportTypes(){
-      if(!this.reportTypes){
-        if(this.$store.getters.reportTypes){
-          this.reportTypes = this.$store.getters.reportTypes
-        }else{
-          this.$axios.get('/report/type', {headers:{silent:true}})
-          .then(response=>{
-            this.$store.dispatch('setReportTypes', response.data);
-            this.reportTypes = response.data;
-          })
-          .catch(error => {
-            console.log(error);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "신고 타입을 가져오지 못했습니다." : "신고 타입을 가져오지 못했습니다.", color: "error"});
-          })
+    getReportTypes() {
+      if (!this.reportTypes) {
+        if (this.$store.getters.reportTypes) {
+          this.reportTypes = this.$store.getters.reportTypes;
+        } else {
+          this.$axios
+            .get("/report/type", {headers: {silent: true}})
+            .then(response => {
+              this.$store.dispatch("setReportTypes", response.data);
+              this.reportTypes = response.data;
+            })
+            .catch(error => {
+              console.log(error);
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "신고 타입을 가져오지 못했습니다." : "신고 타입을 가져오지 못했습니다.", color: "error"});
+            });
         }
       }
     }
@@ -265,11 +268,11 @@ export default {
 };
 </script>
 <style>
-#bottomBottons .v-btn{
-  opacity:1;
-  font-weight:bold;
+#bottomBottons .v-btn {
+  opacity: 1;
+  font-weight: bold;
 }
-#attachList .v-list__tile{
-  height:28px;
+#attachList .v-list__tile {
+  height: 28px;
 }
 </style>
