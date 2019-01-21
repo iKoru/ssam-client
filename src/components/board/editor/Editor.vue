@@ -99,17 +99,11 @@
   </v-layout>
 </template>
 <script>
-// Import FilePond
-// import vueFilePond from 'vue-filepond'
-
 // Import plugins
 import Survey from "@/components/board/survey/Survey";
 import SurveyMaker from "@/components/board/survey/SurveyMaker";
-
 import vueFilePond, {setOptions} from "vue-filepond";
 import BoardMixins from "@/components/mixins/BoardMixins";
-
-// Import plugins
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
@@ -132,6 +126,7 @@ export default {
       surveyDialog: false,
       currentSurvey: {questions: []},
       editorOption: {
+        placeholder: "내용을 입력해주세요.",
         modules: {
           toolbar: "#toolbar",
           imageDrop: true,
@@ -362,5 +357,8 @@ export default {
 }
 .write-editor .quill-editor .ql-editor {
   min-height: 30rem;
+}
+.write-editor .ql-editor.ql-blank::before {
+  font-style: normal;
 }
 </style>
