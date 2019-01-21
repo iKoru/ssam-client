@@ -17,7 +17,7 @@
                 </v-layout>
               </td>
               <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
-              <td :class="{'text-xs-left':true, 'py-1':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'ellipsis':true, 'cursor-pointer':true}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+              <td :class="{'text-xs-left':true, 'py-1':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'ellipsis':true, 'cursor-pointer':true, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
                     <router-link :to="`/${board.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
@@ -34,7 +34,7 @@
         </v-data-table>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
-        <v-pagination id="documentPagination" v-model="pagination.page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+        <v-pagination id="documentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
       </v-flex>
     </v-layout>
   </v-flex>
@@ -50,7 +50,9 @@ export default {
       documents: [],
       totalDocuments: 0,
       loading: false,
-      pagination: {}
+      pagination: {}, // page object for data table component
+      page:null, // page element for pagination component
+      boardId: null //local current boardId
     };
   },
   computed: {
@@ -71,14 +73,14 @@ export default {
       return this.$store.getters.boards;
     },
     pages() {
-      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 0;
+      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
-    getDocuments(boardId) {
+    getDocuments() {
       this.loading = true;
       this.$axios
-        .get(`/${boardId || this.board.boardId}`, {params: {page: this.$route.params.page || this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly?10:20}, headers: {silent: true}})
+        .get(`/${this.boardId}`, {params: {page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly?10:20}, headers: {silent: true}})
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
@@ -92,21 +94,31 @@ export default {
     }
   },
   created() {
-    this.getDocuments(this.$route.params.boardId);
+    this.page = this.$route.query.page*1 > 0 && Number.isInteger(this.$route.query.page*1) ? this.$route.query.page*1 : 1;//set page and trigger the watch function
   },
   watch: {
     "$route.params": {
       handler(val) {
-        this.getDocuments(val.boardId);
+        if(this.boardId !== val.boardId){
+          this.documents = [];
+          this.totalDocuments = 0;
+          const queryPage = (this.$route.query.page*1 > 0 && Number.isInteger(this.$route.query.page*1) ? this.$route.query.page*1 : 1)
+          this.boardId = val.boardId;
+          this.$nextTick(()=>{
+            this.pagination.page = queryPage;
+            this.page = queryPage;
+            this.getDocuments();
+          })
+        }
       },
       deep: true,
       immediate: true
     },
-    pagination: {
-      handler() {
+    page(val){
+      if(this.pagination.page !== val){
+        this.pagination.page = val;
         this.getDocuments();
-      },
-      deep: true
+      }
     }
   }
 };
