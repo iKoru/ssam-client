@@ -9,7 +9,8 @@ const BoardMixins = {
         X: '게시판',
         E: '전직교사',
         N: '예비교사'
-      }
+      },
+      webUrl: process.env.VUE_APP_WEB_URL
     }
   },
   methods: {
