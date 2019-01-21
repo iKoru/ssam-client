@@ -17,7 +17,8 @@ export default new Vuex.Store({
     userBoards: [],
     notifications: [],
     recents: null,
-    columnType: 'SHOW_ALWAYS'
+    columnType: 'SHOW_ALWAYS',
+    scrapGroups:null
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -73,6 +74,9 @@ export default new Vuex.Store({
     },
     recents ({ recents }) {
       return recents
+    },
+    scrapGroups ({scrapGroups}){
+      return scrapGroups
     }
   },
   mutations: {
@@ -156,6 +160,9 @@ export default new Vuex.Store({
     },
     SET_RECENTS (state, recents) {
       state.recents = recents
+    },
+    SET_SCRAP_GROUPS(state, scrapGroups){
+      state.scrapGroups = scrapGroups;
     }
   },
   actions: {
@@ -232,6 +239,9 @@ export default new Vuex.Store({
     },
     setRecents ({ commit }, recents) {
       commit('SET_RECENTS', recents)
+    },
+    setScrapGroups({commit}, scrapGroups){
+      commit('SET_SCRAP_GROUPS', scrapGroups)
     }
   }
 })

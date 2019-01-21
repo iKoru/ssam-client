@@ -36,7 +36,7 @@
       <v-layout row text-xs-right>
         <v-flex pr-2>
           <v-btn-toggle id="bottomBottons">
-            <template v-show="document.attach && document.attach.length > 0">
+            <template v-if="document.attach && document.attach.length > 0">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.length}})</v-btn>
               <!--<v-tooltip v-model="showAttach" bottom>
                 <span slot="activator"></span>
@@ -46,7 +46,14 @@
               <span>수정</span>
             </v-btn>
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
-            <v-btn class="short" @click="scrapDocument">스크랩</v-btn>
+            <v-menu open-on-hover bottom offset-y lazy>
+              <v-btn slot="activator" class="short">스크랩</v-btn>
+              <v-list>
+                <v-list-tile v-for="item in scrapGroups" :key="item.scrapGroupId" @click="scrapDocument(item)">
+                  <v-list-tile-title>{{ item.scrapGroupName }}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
             <v-btn class="short" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
           </v-btn-toggle>
         </v-flex>
@@ -84,7 +91,8 @@ export default {
       document: null,
       documentHTML: null,
       survey: null,
-      showAttach: false
+      showAttach: false,
+      scrapGroups: null
     };
   },
   components: {
@@ -95,6 +103,7 @@ export default {
   mixins: [BoardMixins],
   created() {
     this.getDocument();
+    this.getScrapGroups();
   },
   computed: {
     webUrl() {
@@ -173,8 +182,37 @@ export default {
     reportDocument(){
       console.log('report!')
     },
-    scrapDocument(){
-      console.log('scrap!')
+    scrapDocument(item){
+      this.$axios.post('/scrap', {scrapGroupId:item.scrapGroupId, documentId:this.document.documentId})
+      .then(response => {
+        this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩했습니다.", color: "success"});
+      })
+      .catch(error => {
+        console.log(error);
+        if(error.response && error.response.status === 409){
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
+        }else{
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
+        }
+      })
+    },
+    getScrapGroups(){
+      if(!this.scrapGroups){
+        if(this.$store.getters.scrapGroups){
+          this.scrapGroups = this.$store.getters.scrapGroups
+        }else{
+          this.$axios.get("/scrap/group", {headers: {silent: true}})
+          .then(response => {
+            this.$store.dispatch('setScrapGroups', response.data);
+            this.scrapGroups = response.data;
+          })
+          .catch(error => {
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
+          })
+        }
+      }else{
+        this.scrapGroups = this.$store.getters.scrapGroups
+      }
     }
   },
   watch: {
