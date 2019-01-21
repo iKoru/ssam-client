@@ -101,7 +101,7 @@ export default {
       window.open(routeData.href, "_blank");
     },
     deleteRow() {
-      if (this.selected) {
+      if (this.selected !== null) {
         this.$axios
           .delete(`/scrap/${this.scrapGroupId}/${this.userScraps[this.selected].documentId}`)
           .then(response => {
@@ -117,19 +117,29 @@ export default {
       }
     },
     getScrapGroups() {
-      this.$axios
-        .get("/scrap/group", {headers: {silent: true}})
-        .then(response => {
-          this.scrapGroups = response.data;
-          if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
-            this.pagination.page = 1;
-            this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
-            this.getMyScraps();
-          }
-        })
-        .catch(error => {
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
-        });
+      if(this.$store.getters.scrapGroups){
+        this.scrapGroups = this.$store.getters.scrapGroups
+        if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
+          this.pagination.page = 1;
+          this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
+          this.getMyScraps();
+        }
+      }else{
+        this.$axios
+          .get("/scrap/group", {headers: {silent: true}})
+          .then(response => {
+            this.scrapGroups = response.data;
+            if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
+              this.pagination.page = 1;
+              this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
+              this.getMyScraps();
+            }
+            this.$store.dispatch('setScrapGroups', this.scrapGroups);
+          })
+          .catch(error => {
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
+          });
+      }
     },
     openDialog() {
       this.dialog = true;

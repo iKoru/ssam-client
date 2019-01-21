@@ -90,7 +90,7 @@ export default {
       window.open(routeData.href, "_blank");
     },
     deleteRow() {
-      if (this.selected) {
+      if (this.selected !== null) {
         this.$axios
           .put("/document", {documentId: this.userDocuments[this.selected].documentId, isDeleted: true})
           .then(response => {

@@ -93,7 +93,7 @@ export default {
       return contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
     },
     deleteRow() {
-      if (this.selected) {
+      if (this.selected !== null) {
         this.$axios
           .put("/comment", {commentId: this.userComments[this.selected].commentId, isDeleted: true})
           .then(response => {
