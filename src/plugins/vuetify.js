@@ -89,7 +89,7 @@ Vue.use(Vuetify, {
     Resize
   },
   theme: {
-    primary: '#ee44aa',
+    primary: '#3F51B5',
     secondary: '#424242',
     accent: '#82B1FF',
     error: '#FF5252',
