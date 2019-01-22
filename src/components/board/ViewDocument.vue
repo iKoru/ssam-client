@@ -17,7 +17,7 @@
     <v-divider/>
     <v-flex xs12>
       <v-card-text>
-        <div v-html="documentHTML"></div>
+        <div v-html="documentHTML" id="documentContents"></div>
         {{document}}
       </v-card-text>
     </v-flex>
@@ -39,9 +39,6 @@
           <v-btn-toggle id="bottomBottons">
             <template v-if="document.attach && document.attach.length > 0">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.length}})</v-btn>
-              <!--<v-tooltip v-model="showAttach" bottom>
-                <span slot="activator"></span>
-              </v-tooltip>-->
             </template>
             <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
               <span>수정</span>
@@ -56,7 +53,7 @@
               </v-list>
             </v-menu>
             <v-menu open-on-hover bottom offset-y lazy>
-              <v-btn slot="activator" class="short" v-show="!document.isWriter" @click="reportDocument">신고</v-btn>
+              <v-btn slot="activator" class="short" v-show="!document.isWriter">신고</v-btn>
               <v-list two-line>
                 <v-list-tile v-for="(item, index) in reportTypes" :key="item.reportTypeId" @click="reportDocument(item)" :class="{'mt-2':index>0}">
                   <v-list-tile-content>
@@ -69,18 +66,16 @@
           </v-btn-toggle>
         </v-flex>
       </v-layout>
-      <v-layout row v-show="showAttach" mt-2>
-        <v-flex px-2>
-          <v-list dense id="attachList">
-            <v-list-tile :key="index" v-for="(item, index) in document.attach">
-              <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attachName" class="ellipsis underline">{{item.attachName}}</router-link>
-            </v-list-tile>
-          </v-list>
-        </v-flex>
-      </v-layout>
+      <v-slide-y-transition>
+        <v-layout row v-show="showAttach" mt-2 wrap>
+          <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach">
+            <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
+          </v-flex>
+        </v-layout>
+      </v-slide-y-transition>
     </v-flex>
     <v-flex mb-4>
-      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous"/>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable"/>
     </v-flex>
   </v-layout>
 </template>
@@ -94,7 +89,7 @@ import BoardMixins from "@/components/mixins/BoardMixins";
 import Quill from "quill";
 
 export default {
-  props: [],
+  props: ["board", "boardId", "documentId"],
   data() {
     return {
       document: null,
@@ -102,7 +97,8 @@ export default {
       survey: null,
       showAttach: false,
       scrapGroups: null,
-      reportTypes: null
+      reportTypes: null,
+      currentBoard: null
     };
   },
   components: {
@@ -115,17 +111,68 @@ export default {
     this.getScrapGroups();
     this.getReportTypes();
   },
+  computed:{
+    isCommentWritable(){
+      let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x=>x.boardId === this.document.boardId);
+      if(!board){
+        return 'UNAVAILABLE';
+      }
+      
+      const profile = this.$store.getters.profile;
+      const userBoards = this.$store.getters.userBoards;
+      if (board.statusAuth.comment.includes(profile.auth)) {
+        if (board.boardType === "T") {
+          if (userBoards.some(x => x.boardId === board.boardId)) {
+            const userBoard = userBoards.find(x => x.boardId === board.boardId);
+            if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+              return 'AVAILABLE'
+            } else {
+              return 'RESTRICTED'
+            }
+          } else {
+            //need subscription
+            if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+              //i can subscribe this board!
+              return 'NEEDSUBSCRIPTION'
+            } else {
+              return 'UNAVAILABLE'
+            }
+          }
+        } else {
+          if (board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+            if (userBoards.some(x => x.boardId === board.boardId)) {
+              const userBoard = userBoards.find(x => x.boardId === board.boardId);
+              if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+                return 'AVAILABLE'
+              } else {
+                return 'RESTRICTED'
+              }
+            } else {
+              return 'AVAILABLE'
+            }
+          } else {
+            return 'UNAVAILABLE'
+          }
+        }
+      } else {
+        return 'UNAVAILABLE'
+      }
+      
+    }
+  },
   methods: {
     getDocument: function() {
       this.$axios
-        .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
+        .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
-          console.log(response);
+          console.log("aa", response.data.attach);
+          console.log("bb", JSON.parse(response.request.response));
           if (Array.isArray(response.data.attach)) {
-            response.data.attach = response.data.attach.filter(x => x);
+            //response.data.attach = response.data.attach.filter(x => x !== null);
           }
-          this.document = response.data;
-          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents), this.document.attach);
+          console.log(response.data.attach)
+          this.document = JSON.parse(response.request.response);
+          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents));
           if (this.document.hasSurvey) {
             this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
           }
@@ -139,10 +186,10 @@ export default {
     deleteDocument() {
       if (confirm("이 글을 삭제하시겠습니까?")) {
         this.$axios
-          .put("/document", {documentId: this.$route.params.documentId, isDeleted: true})
+          .put("/document", {documentId: this.documentId, isDeleted: true})
           .then(response => {
             this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
-            this.$router.push(`/${this.$route.params.boardId}`);
+            this.$router.push(`/${this.boardId}`);
           })
           .catch(error => {
             this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글을 삭제하지 못했습니다."}`, color: "error"});
@@ -168,18 +215,18 @@ export default {
       console.log(delta, "aa");
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          // random generated uuid should given here
-          item.insert.image = this.getImagePath(item.insert.image);
+          if (this.document.attach.some(x => x.attach_name === item.insert.image)) {
+            item.attributes={
+              download:item.insert.image,
+              alt:item.insert.image
+            }
+            item.insert.image = this.webUrl + "/" + this.document.attach.splice(this.document.attach.findIndex(x => x.attach_name === item.insert.image), 1)[0].attach_path;
+            item.attributes.link = item.insert.image
+          }
         }
       });
       quill.setContents(delta);
       return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
-    },
-    getImagePath(imagePath) {
-      if (this.document.attach.some(x => x.attach_name === imagePath)) {
-        return this.webUrl + this.document.attach.find(item => item.attach_name === imagePath).attach_path;
-      }
-      return null;
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);
@@ -271,7 +318,11 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
-#attachList .v-list__tile {
-  height: 28px;
+@media(max-width:600px){
+  #documentContents p img{
+    max-width:calc(100% + 32px);
+    margin-left:-16px;
+    margin-right:-16px;
+  }
 }
 </style>

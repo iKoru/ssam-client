@@ -63,7 +63,12 @@ export default {
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           if (this.comment.attach.some(x => x.attach_name === item.insert.image)) {
-            item.insert.image = this.webUrl + "/" + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
+            item.attributes={
+              download:item.insert.image,
+              alt:item.insert.image
+            }
+            item.insert.image = this.webUrl + "/" + this.comment.attach.splice(this.comment.attach.findIndex(x => x.attach_name === item.insert.image), 1)[0].attach_path;
+            item.attributes.link = item.insert.image
           }
         }
       });
