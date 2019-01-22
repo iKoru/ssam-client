@@ -2,7 +2,7 @@
   <v-flex>
     <v-layout column>
       <v-flex>
-        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" class="noResult">
+        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
               <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
@@ -30,7 +30,6 @@
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
           </template>
-          <template slot="no-data">아직 작성된 글이 없습니다. 첫 글을 작성해보세요!</template>
         </v-data-table>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
@@ -52,7 +51,8 @@ export default {
       loading: false,
       pagination: {}, // page object for data table component
       page: null, // page element for pagination component
-      boardId: null //local current boardId
+      boardId: null, //local current boardId,
+      noDataText: "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!"
     };
   },
   computed: {
@@ -84,11 +84,13 @@ export default {
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
+          this.noDataText = "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!";
           this.loading = false;
         })
         .catch(error => {
           this.loading = false;
           console.log(error);
+          this.noDataText = error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다.";
           this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다."}`, color: "error"});
         });
     }
