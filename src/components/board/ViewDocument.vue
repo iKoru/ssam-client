@@ -215,7 +215,11 @@ export default {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + "/" + image.attach_path;
+            item.insert.image = {
+              src: this.webUrl + "/" + image.attach_path,
+              download: item.insert.image,
+              alt: item.insert.image
+            }
             item.attributes.link = item.insert.image;
           }
         }
