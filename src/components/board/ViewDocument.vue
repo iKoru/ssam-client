@@ -18,7 +18,6 @@
     <v-flex xs12>
       <v-card-text>
         <div v-html="documentHTML" id="documentContents"></div>
-        {{document}}
       </v-card-text>
     </v-flex>
     <v-layout row justify-center v-show="document.hasSurvey">
@@ -111,13 +110,13 @@ export default {
     this.getScrapGroups();
     this.getReportTypes();
   },
-  computed:{
-    isCommentWritable(){
-      let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x=>x.boardId === this.document.boardId);
-      if(!board){
-        return 'UNAVAILABLE';
+  computed: {
+    isCommentWritable() {
+      let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x => x.boardId === this.document.boardId);
+      if (!board) {
+        return "UNAVAILABLE";
       }
-      
+
       const profile = this.$store.getters.profile;
       const userBoards = this.$store.getters.userBoards;
       if (board.statusAuth.comment.includes(profile.auth)) {
@@ -125,39 +124,38 @@ export default {
           if (userBoards.some(x => x.boardId === board.boardId)) {
             const userBoard = userBoards.find(x => x.boardId === board.boardId);
             if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-              return 'AVAILABLE'
+              return "AVAILABLE";
             } else {
-              return 'RESTRICTED'
+              return "RESTRICTED";
             }
           } else {
             //need subscription
-            if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+            if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
               //i can subscribe this board!
-              return 'NEEDSUBSCRIPTION'
+              return "NEEDSUBSCRIPTION";
             } else {
-              return 'UNAVAILABLE'
+              return "UNAVAILABLE";
             }
           }
         } else {
-          if (board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+          if (board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
             if (userBoards.some(x => x.boardId === board.boardId)) {
               const userBoard = userBoards.find(x => x.boardId === board.boardId);
               if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-                return 'AVAILABLE'
+                return "AVAILABLE";
               } else {
-                return 'RESTRICTED'
+                return "RESTRICTED";
               }
             } else {
-              return 'AVAILABLE'
+              return "AVAILABLE";
             }
           } else {
-            return 'UNAVAILABLE'
+            return "UNAVAILABLE";
           }
         }
       } else {
-        return 'UNAVAILABLE'
+        return "UNAVAILABLE";
       }
-      
     }
   },
   methods: {
@@ -165,13 +163,10 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
-          console.log("aa", response.data.attach);
-          console.log("bb", JSON.parse(response.request.response));
           if (Array.isArray(response.data.attach)) {
-            //response.data.attach = response.data.attach.filter(x => x !== null);
+            response.data.attach = response.data.attach.filter(x => x !== null);
           }
-          console.log(response.data.attach)
-          this.document = JSON.parse(response.request.response);
+          this.document = response.data;
           this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents));
           if (this.document.hasSurvey) {
             this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
@@ -215,12 +210,12 @@ export default {
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           if (this.document.attach.some(x => x.attach_name === item.insert.image)) {
-            item.attributes={
-              download:item.insert.image,
-              alt:item.insert.image
-            }
+            item.attributes = {
+              download: item.insert.image,
+              alt: item.insert.image
+            };
             item.insert.image = this.webUrl + "/" + this.document.attach.splice(this.document.attach.findIndex(x => x.attach_name === item.insert.image), 1)[0].attach_path;
-            item.attributes.link = item.insert.image
+            item.attributes.link = item.insert.image;
           }
         }
       });
@@ -317,14 +312,14 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
-#documentContents p img{
-  max-width:100%;
+#documentContents p img {
+  max-width: 100%;
 }
-@media(max-width:600px){
-  #documentContents p img{
-    max-width:calc(100% + 32px);
-    margin-left:-16px;
-    margin-right:-16px;
+@media (max-width: 600px) {
+  #documentContents p img {
+    max-width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
   }
 }
 </style>
