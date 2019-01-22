@@ -19,8 +19,8 @@
       </quill-editor>
     </v-flex>
     <div>{{savedContent}}</div>
-    <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
-      <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
+    <v-dialog v-model="surveyDialog" max-width="500px" :fullscreen="$vuetify.breakpoint.xsOnly" scrollable>
+      <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :survey="currentSurvey"/>
     </v-dialog>
 
     <v-layout pt-1 align-center>
@@ -36,7 +36,7 @@
         </v-btn>
       </div>
       <div>
-        <v-btn small flat @click="attachButtonClick">
+        <v-btn small flat @click="$refs.pond.browse()">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
         </v-btn>
       </div>
@@ -54,7 +54,7 @@
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
-    <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
+    <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-hwp, application/pdf, image/*" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
     <v-layout py-2 ml-3 justify-center>
       <div class="mr-3">
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
@@ -239,29 +239,22 @@ export default {
       console.log(this.$refs.editor.quill.editor.delta.ops);
     },
     surveyButtonClick() {
-      console.log(this.currentSurvey, this.survey);
       if (this.currentSurvey.questions.length === 0) {
-        this.currentSurvey.questions.push({
-          title: "",
-          allowMultipleChoice: false,
-          choices: ["", ""]
-        });
-      } else this.currentSurvey = this.survey;
+        this.currentSurvey.questions.push({title: "", allowMultipleChoice: false, choices: ["", ""]});
+      } else if(this.survey){
+        this.currentSurvey = JSON.parse(JSON.stringify(this.survey));
+      }
       this.surveyDialog = true;
     },
-    attachButtonClick() {
-      this.$refs.pond.browse();
-    },
     extractSurvey(survey) {
-      this.survey = survey;
-      console.log(this.survey);
       this.surveyDialog = false;
+      this.survey = JSON.parse(JSON.stringify(survey));
     },
     closeSurvey() {
       this.surveyDialog = false;
     },
     deleteSurvey() {
-      if (confirm("설문을 삭제합니다.")) {
+      if (confirm("작성된 질문 및 내용을 삭제할까요?")) {
         this.surveyDialog = false;
         this.currentSurvey.questions = [];
         this.survey = undefined;
