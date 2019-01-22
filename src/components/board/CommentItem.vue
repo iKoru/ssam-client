@@ -3,7 +3,7 @@
     <v-list-tile-title>
       <v-layout row>
         <v-flex>
-          <div v-html="deltaToHTML(JSON.parse(comment.contents))"></div>
+          <div v-html="deltaToHTML(JSON.parse(comment.contents))" class="commentContents"></div>
         </v-flex>
       </v-layout>
     </v-list-tile-title>
@@ -62,13 +62,17 @@ export default {
       let quill = new Quill(tempCont);
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
+          console.log(this.comment.attach, item.insert.image);
           if (this.comment.attach.some(x => x.attach_name === item.insert.image)) {
             item.attributes={
               download:item.insert.image,
               alt:item.insert.image
             }
-            item.insert.image = this.webUrl + "/" + this.comment.attach.splice(this.comment.attach.findIndex(x => x.attach_name === item.insert.image), 1)[0].attach_path;
+            const image = this.comment.attach.splice(this.comment.attach.findIndex(x => x.attach_name === item.insert.image), 1);
+            console.log("this",image)
+            item.insert.image = this.webUrl + "/" + image[0].attach_path;
             item.attributes.link = item.insert.image
+            console.log("item",item);
           }
         }
       });
@@ -84,7 +88,17 @@ export default {
 };
 </script>
 <style>
-p {
+.commentContents p {
   margin-bottom: 3px;
+}
+.commentContents p img{
+  max-width:100%;
+}
+@media(max-width:600px){
+  .commentContents p img{
+    max-width:calc(100% + 32px);
+    margin-left:-16px;
+    margin-right:-16px;
+  }
 }
 </style>

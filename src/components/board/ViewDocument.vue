@@ -212,7 +212,6 @@ export default {
     deltaToHTML(delta) {
       var tempCont = document.createElement("div");
       let quill = new Quill(tempCont);
-      console.log(delta, "aa");
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           if (this.document.attach.some(x => x.attach_name === item.insert.image)) {
