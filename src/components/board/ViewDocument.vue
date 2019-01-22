@@ -167,7 +167,7 @@ export default {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
           this.document = response.data;
-          this.documentHTML = this.deltaToHTML(JSON.parse(this.document.contents));
+          this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
           if (this.document.hasSurvey) {
             this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
           }
