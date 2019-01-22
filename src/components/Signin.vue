@@ -48,10 +48,11 @@ export default {
   created() {
     const token = localStorage.getItem("accessToken");
     if (token) {
+      this.loading = true;
       this.$axios({
         method: "POST",
         url: "/refresh",
-        headers: {"x-auth": token}
+        headers: {"x-auth": token, silent:true}
       })
         .then(response => {
           this.loading = false;
@@ -133,7 +134,7 @@ export default {
             userId: this.userId,
             password: this.password,
             rememberMe: this.rememberMe
-          })
+          }, {headers:{silent:true}})
           .then(response => {
             localStorage.setItem("accessToken", response.data.token);
             this.$axios.defaults.headers.common["x-auth"] = response.data.token;
@@ -156,6 +157,7 @@ export default {
               const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
               this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
             }
+            this.loading = false;
           })
           .catch(err => {
             this.loading = false;
