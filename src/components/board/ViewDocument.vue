@@ -7,8 +7,8 @@
           <v-layout row>
             <v-spacer/>
             <v-flex text-xs-right>
-              <b>{{document.nickName === ''? '(익명)' : document.nickName}}</b>
-              | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+              <span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>
+              | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
           </v-layout>
         </div>
@@ -37,7 +37,7 @@
         <v-flex pr-2>
           <v-btn-toggle id="bottomBottons">
             <template v-if="document.attach && document.attach.length > 0">
-              <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.length}})</v-btn>
+              <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
             <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
               <span>수정</span>
@@ -67,14 +67,14 @@
       </v-layout>
       <v-slide-y-transition>
         <v-layout row v-show="showAttach" mt-2 wrap>
-          <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach">
+          <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
             <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
           </v-flex>
         </v-layout>
       </v-slide-y-transition>
     </v-flex>
     <v-flex mb-4>
-      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable"/>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes"/>
     </v-flex>
   </v-layout>
 </template>
@@ -193,9 +193,7 @@ export default {
     },
     voteDocument() {
       this.$axios
-        .post("/vote/document/", {
-          documentId: this.$route.params.documentId
-        })
+        .post("/vote/document", {documentId: this.$route.params.documentId}, {headers: {silent: true}})
         .then(res => {
           document.voteUpCount = res.data.voteUpCount;
         })
@@ -205,16 +203,19 @@ export default {
         });
     },
     deltaToHTML(delta) {
-      var tempCont = document.createElement("div");
+      let tempCont = document.createElement("div");
       let quill = new Quill(tempCont);
+      let image;
       delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          if (this.document.attach.some(x => x.attach_name === item.insert.image)) {
+          image = this.document.attach.find(x => x.attach_name === item.insert.image);
+          if (image) {
+            image.insert = true;
             item.attributes = {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + "/" + this.document.attach.splice(this.document.attach.findIndex(x => x.attach_name === item.insert.image), 1)[0].attach_path;
+            item.insert.image = this.webUrl + "/" + image.attach_path;
             item.attributes.link = item.insert.image;
           }
         }

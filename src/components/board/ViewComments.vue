@@ -2,17 +2,17 @@
   <v-layout row>
     <v-flex xs12>
       <v-card>
-        <v-list two-line class="commentList">
+        <v-list two-line class="commentList py-0">
           <template v-for="(item, index) in commentList">
             <v-list-tile :key="index">
-              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList"/>
+              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
               <div v-for="(childItem, childIndex) in item.children" :key="childIndex">
                 <v-divider inset/>
                 <v-list-tile avatar>
                   <v-list-tile-action></v-list-tile-action>
-                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList"/>
+                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes"/>
                 </v-list-tile>
               </div>
             </div>
@@ -22,7 +22,9 @@
             <v-divider v-if="index < commentList.length - 1" :key="'divider'+index"></v-divider>
           </template>
         </v-list>
-        <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+        <div :class="{'pt-3':commentList.length === 0}">
+          <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+        </div>
       </v-card>
     </v-flex>
   </v-layout>
@@ -38,7 +40,7 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable"],
+  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes"],
   data() {
     return {
       commentList: [],
