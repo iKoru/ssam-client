@@ -137,13 +137,13 @@ export default {
   border: 1px solid #e8e8e8;
   border-top: 1px solid #e8e8e8;
 }
-/*.comment-editor .quill-editor .ql-toolbar {
-  display: none;
-}*/
+.comment-editor .quill-editor .ql-bubble .ql-tooltip {
+  z-index:1
+}
 .comment-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
 .comment-editor .ql-bubble .ql-picker.ql-size {
-    width: 60px;
+  width: 60px;
 }
 </style>

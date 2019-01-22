@@ -5,84 +5,63 @@
     </v-flex>
     <v-flex xs12 class="write-editor">
       <quill-editor v-model="content" ref="editor" :options="editorOption" @ready="onEditorReady($event)">
-        <!-- @blur="onEditorBlur($event)"
-        @focus="onEditorFocus($event)"-->
         <div id="toolbar" slot="toolbar">
-          <!-- Add a bold button -->
           <button class="ql-bold">Bold</button>
           <button class="ql-italic">Italic</button>
-          <!-- Add font size dropdown -->
           <select class="ql-size">
-            <option value="small"></option>
-            <!-- Note a missing, thus falsy value, is used to reset to default -->
-            <option selected></option>
-            <option value="large"></option>
-            <option value="huge"></option>
+            <option value="small">작게</option>
+            <option selected>보통</option>
+            <option value="large">크게</option>
+            <option value="huge">더 크게</option>
           </select>
           <button ref="imageAttach" class="ql-image" value="image"></button>
         </div>
       </quill-editor>
     </v-flex>
-    <!-- <image-attachment ref="imageAttachment" @imageAttached="imageAttached"/> -->
     <div>{{savedContent}}</div>
-    <!-- <Attachment ref="attachment" @imageAttached="imageAttached" @fileAttached="fileAttached" @fileRemoved="fileREmoved"/> -->
     <v-dialog v-model="surveyDialog" max-width="500px" transition="dialog-bottom-transition" persistent>
       <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :currentSurvey="currentSurvey"/>
     </v-dialog>
 
-    <v-layout pt-1 justify-center>
-      <component :is="$vuetify.breakpoint.xsOnly?'v-flex':'div'" xs4 px-1>
+    <v-layout pt-1 align-center>
+      <div>
         <v-btn small flat @click="surveyButtonClick" :color="survey?'primary':'default'">
           <v-icon id="survey-button">how_to_vote</v-icon>
           <span>설문조사</span>
         </v-btn>
-      </component>
-      <component :is="$vuetify.breakpoint.xsOnly?'v-flex':'div'" xs4 px-1>
+      </div>
+      <div>
         <v-btn small flat @click="$refs.imageAttach.click()">
           <v-icon id="attach-button">image</v-icon>이미지
         </v-btn>
-      </component>
-      <component :is="$vuetify.breakpoint.xsOnly?'v-flex':'div'" xs4 px-1>
+      </div>
+      <div>
         <v-btn small flat @click="attachButtonClick">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
         </v-btn>
-      </component>
-      <v-spacer/>
+      </div>
     </v-layout>
-    <v-layout v-if="attachedFilenames.length>0">
-      <v-flex xs12 sm6>
-        <v-list>
-          <template v-for="(item, index) in attachedFilenames">
-            <v-list-tile :key="index">
-              <v-list-tile-content>
-                <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-btn flat small class="short" @click="removeFile(item)">삭제</v-btn>
-              </v-list-tile-action>
-            </v-list-tile>
-          </template>
-        </v-list>
-        <!-- <v-list v-if="attachedFilenames.length>0">
-            <v-list-tile :key="index" v-for="(item, index) in attachedFilenames">
-              <v-list-tile-content>
-                <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-btn color="white" @click="removeFile(item)">파일삭제</v-btn>
-              </v-list-tile-action>
-            </v-list-tile>
-        </v-list>-->
-      </v-flex>
-    </v-layout>
+    <v-slide-y-transition>
+      <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
+        <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
+          <v-slide-y-transition>
+            <v-layout row align-center>
+              <div class="ellipsis">{{item}}</div>
+              <v-spacer/>
+              <v-btn small class="short" @click="removeFile(item)">삭제</v-btn>           
+            </v-layout>
+          </v-slide-y-transition>
+        </v-flex>
+      </v-layout>
+    </v-slide-y-transition>
     <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-hwp, application/pdf, image/jpeg, image/png, image/jpg" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
-    <v-layout py-2 justify-center>
-      <v-flex pl-4 ml-1 xs4 sm2>
+    <v-layout py-2 ml-3 justify-center>
+      <div class="mr-3">
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
-      </v-flex>
-      <v-flex xs8 sm4>
-        <v-checkbox v-show="!isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
-      </v-flex>
+      </div>
+      <div>
+        <v-checkbox :disabled="isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
+      </div>
       <v-spacer></v-spacer>
     </v-layout>
     <v-layout row>
@@ -313,15 +292,6 @@ export default {
 <style>
 .ql-image {
   visibility: hidden;
-}
-#survey-button {
-  width: 28px;
-}
-#attach-button {
-  width: 28px;
-}
-#anonymous-slot {
-  width: 28px;
 }
 .write-editor .quill-editor .ql-container {
   min-height: 30rem;
