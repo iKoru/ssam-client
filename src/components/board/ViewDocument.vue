@@ -318,6 +318,9 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
+#documentContents p img{
+  max-width:100%;
+}
 @media(max-width:600px){
   #documentContents p img{
     max-width:calc(100% + 32px);
