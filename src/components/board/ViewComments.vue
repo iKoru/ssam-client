@@ -19,7 +19,7 @@
               </div>
             </div>
             <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index">
-              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous"/>
+              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
             </v-list-tile>
             <!-- </v-flex> -->
             <!-- <v-flex :key="'child-comment-item'+childIndex" v-for="(childItem, childIndex) in item.children"> -->
@@ -34,7 +34,7 @@
             <!-- </v-layout> -->
           </template>
         </v-list>
-        <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous"/>
+        <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
       </v-card>
     </v-flex>
   </v-layout>
@@ -50,7 +50,7 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous"],
+  props: ["isAnonymous", "allowAnonymous", "isCommentWritable"],
   data() {
     return {
       commentList: [],

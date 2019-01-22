@@ -4,7 +4,7 @@
       <v-card-title primary-title class="py-2">
         <v-layout column>
           <v-flex>
-            <v-layout row>
+            <v-layout row align-center>
               <v-flex>
                 <v-layout row align-center>
                   <span class="title cursor-pointer" @click="$route.params.documentId?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
@@ -19,7 +19,7 @@
                 </v-layout>
               </v-flex>
               <v-spacer/>
-              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write')">
+              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write')" :small="$vuetify.breakpoint.xsOnly">
                 <v-icon small>edit</v-icon>
               </v-btn>
             </v-layout>
@@ -34,7 +34,7 @@
       </v-card-title>
     </v-card>
     <v-card flat :class="{'my-3':$route.path.endsWith('write')}">
-      <router-view/>
+      <router-view :board="board"/>
     </v-card>
     <v-card flat v-show="!$route.path.endsWith('write')">
       <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1"/>
@@ -53,7 +53,6 @@ export default {
   name: "Board",
   data: () => ({
     board: undefined,
-    boardId: null,
     writeButton: true,
     childBoardId: null,
     dialog: false,
@@ -65,6 +64,7 @@ export default {
       D: "인증제한"
     }
   }),
+  props:['boardId'],
   mixins: [BoardMixins],
   components: {
     DocumentList: () => import("@/components/board/DocumentList"),
@@ -132,7 +132,7 @@ export default {
       if (!this.board.parentBoardId && this.childBoardItems.length > 1) {
         const profile = this.$store.getters.profile;
         const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
-        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : (x.allowedGroups.includes(profile.region) || x.allowedGroups.includes(profile.major) || x.allowedGroups.includes(profile.grade)) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
+        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : (x.allowedGroups.some(y => (y === profile.region) || (y === profile.major) || (y === profile.grade) || (profile.groups.includes(y)))) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
         if (available.length > 0) {
           this.$router.push(`/${available[0].boardId}/write`);
           this.$store.dispatch("showSnackbar", {text: `글을 쓸 수 있는 ${available[0].boardName}에 작성됩니다.`, color: "info"});
@@ -143,7 +143,7 @@ export default {
           if (available.length === 0) {
             this.$store.dispatch("showSnackbar", {text: "인증 후에 글을 쓸 수 있습니다.", color: "info"});
           } else {
-            available = available.filter(x => x.allowedGroups.includes(profile.region) || x.allowedGroups.includes(profile.major) || x.allowedGroups.includes(profile.grade));
+            available = available.filter(x => x.allowedGroups.some(y => (y === profile.region) || (y === profile.major) || (y === profile.grade) || (profile.groups.includes(y))));
             if (available.length === 0) {
               this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly ? "학년, 전공을 지정해주세요." : "내 계정정보에서 학년, 전공을 지정해주세요."}`, color: "info"});
             } else {
@@ -164,7 +164,7 @@ export default {
               }
             } else {
               //need subscription
-              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region) || this.board.allowedGroups.some(x => x === profile.major) || this.board.allowedGroups.some(x => x === profile.grade)) {
+              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
                 //i can subscribe this board!
                 this.$axios
                   .post("/user/board", {boardId: this.board.boardId})
@@ -182,7 +182,7 @@ export default {
               }
             }
           } else {
-            if (this.board.allowedGroups.some(x => x === profile.region) || this.board.allowedGroups.some(x => x === profile.major) || this.board.allowedGroups.some(x => x === profile.grade)) {
+            if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
               if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
                 const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
                 if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
@@ -214,11 +214,10 @@ export default {
       return true;
     },
     writeDocument() {
-      this.$router.push(`/${this.$route.params.boardId}/write`);
+      this.$router.push(`/${this.boardId}/write`);
     },
     setBoard(board) {
       this.board = board;
-      this.boardId = board.boardId;
       document.title = board.boardName ? board.boardName + " - Pedagy" : "Pedagy";
       this.$store.dispatch("switchBoardType", this.board.boardType === "T" ? "T" : "L");
     },
