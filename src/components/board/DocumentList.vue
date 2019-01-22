@@ -22,7 +22,7 @@
                   <div class="ellipsis text-xs-left">
                     <router-link :to="`/${board.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
                   </div>
-                  <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+                  <span class="accent--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </v-layout>
               </td>
               <td class="text-xs-center pa-1 ellipsis" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>

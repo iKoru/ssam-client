@@ -3,7 +3,16 @@
     <v-flex class="comment-editor">
       <quill-editor v-model="content" ref="commentEditor" :options="editorOption">
         <div class="commentToolbar" slot="toolbar">
-          <button ref="imageAttach" class="ql-image" value="image"></button>
+          <button class="ql-bold">Bold</button>
+          <button class="ql-italic">Italic</button>
+          <!-- Add font size dropdown -->
+          <select class="ql-size">
+            <option value="small">작게</option>
+            <!-- Note a missing, thus falsy value, is used to reset to default -->
+            <option selected>보통</option>
+            <option value="large">크게</option>
+          </select>
+          <button ref="imageAttach" class="ql-image" value="image" v-show="false"></button>
         </div>
       </quill-editor>
     </v-flex>
@@ -17,7 +26,7 @@
         </v-btn>
 
         <v-spacer/>
-        <v-btn small @click="postComment" color="primary" class="short">쓰기</v-btn>
+        <v-btn small @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">쓰기</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -29,22 +38,23 @@ import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
   name: "WriteComment",
   mixins: [BoardMixins],
-  props: ["commentTo", "isAnonymous", "allowAnonymous"],
+  props: ["commentTo", "isAnonymous", "allowAnonymous", "isCommentWritable", "boardId"],
   data() {
     return {
       editorOption: {
-        placeholder: "댓글을 입력해주세요.",
-
+        placeholder: this.isCommentWritable === 'AVAILABLE'?"댓글을 입력해주세요.":(this.isCommentWritable === 'UNAVAILABLE'?'댓글을 작성할 수 있는 권한이 없습니다.':(this.isCommentWritable === 'RESTRICTED'?'글쓰기가 제한되어 있습니다.':'토픽 구독 후 입력된 댓글이 등록됩니다.')),
         modules: {
           toolbar: ".commentToolbar",
           imageDrop: true,
           imageResize: true
         },
-        formData: undefined
+        formData: undefined,
+        theme:'bubble'
       },
       content: "",
       anonymous: this.isAnonymous,
-      originImages: []
+      originImages: [],
+      loading:false
     };
   },
   components: {},
@@ -78,6 +88,20 @@ export default {
       console.log(this.$refs.commentEditor.quill.editor.delta.ops);
     },
     async postComment() {
+      this.loading = true;
+      if(this.isCommentWritable === 'NEEDSUBSCRIPTION'){
+        try{
+          await this.$axios.post('/user/board', {boardId:this.boardId}, {headers:{silent:true}})
+        }catch(error){
+          if(!error.response || error.response.status === 409){
+            this.loading = false;
+            this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || '댓글을 쓰기 위한 구독을 하지 못했습니다.' : "댓글을 쓰기 위한 구독을 하지 못했습니다."}`, color: "error"});
+            return;
+          }
+        }
+        this.$store.dispatch("addUserBoard", Object.assign({}, this.$store.getters.boards.find(x=>x.boardId === this.boardId)));
+        this.$store.dispatch("showSnackbar", {text: `${this.board.boardName} 토픽을 구독하였습니다.`, color: "info"});
+      }
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
       console.log(this.$route.params.documentId);
@@ -93,6 +117,7 @@ export default {
           console.log(res);
           this.$refs.commentEditor.quill.setText("");
           this.revertImages();
+          this.loading = false;
           this.$emit("update");
           delete this.formData;
         })
@@ -100,21 +125,25 @@ export default {
           console.log(err);
           delete this.formData;
           this.revertImages();
+          this.loading = false;
         });
     }
   }
 };
 </script>
 <style>
-.comment-editor .ql-toolbar.ql-snow + .ql-container.ql-snow {
+.comment-editor .ql-container.ql-bubble {
   min-height: 5rem;
   border: 1px solid #e8e8e8;
   border-top: 1px solid #e8e8e8;
 }
-.comment-editor .quill-editor .ql-toolbar {
+/*.comment-editor .quill-editor .ql-toolbar {
   display: none;
-}
+}*/
 .comment-editor .ql-editor.ql-blank::before {
   font-style: normal;
+}
+.comment-editor .ql-bubble .ql-picker.ql-size {
+    width: 60px;
 }
 </style>
