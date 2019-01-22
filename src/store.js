@@ -17,9 +17,10 @@ export default new Vuex.Store({
     userBoards: [],
     notifications: [],
     recents: null,
+    auth: {},
     columnType: 'SHOW_ALWAYS',
-    scrapGroups:null,
-    reportTypes:null
+    scrapGroups: null,
+    reportTypes: null
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -76,10 +77,10 @@ export default new Vuex.Store({
     recents ({ recents }) {
       return recents
     },
-    scrapGroups ({scrapGroups}){
+    scrapGroups ({ scrapGroups }) {
       return scrapGroups
     },
-    reportTypes({reportTypes}){
+    reportTypes ({ reportTypes }) {
       return reportTypes
     }
   },
@@ -165,10 +166,10 @@ export default new Vuex.Store({
     SET_RECENTS (state, recents) {
       state.recents = recents
     },
-    SET_SCRAP_GROUPS(state, scrapGroups){
+    SET_SCRAP_GROUPS (state, scrapGroups) {
       state.scrapGroups = scrapGroups;
     },
-    SET_REPORT_TYPES(state, reportTypes){
+    SET_REPORT_TYPES (state, reportTypes) {
       state.reportTypes = reportTypes
     }
   },
@@ -247,10 +248,10 @@ export default new Vuex.Store({
     setRecents ({ commit }, recents) {
       commit('SET_RECENTS', recents)
     },
-    setScrapGroups({commit}, scrapGroups){
+    setScrapGroups ({ commit }, scrapGroups) {
       commit('SET_SCRAP_GROUPS', scrapGroups)
     },
-    setReportTypes({commit}, reportTypes){
+    setReportTypes ({ commit }, reportTypes) {
       commit('SET_REPORT_TYPES', reportTypes)
     }
   }

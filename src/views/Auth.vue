@@ -34,11 +34,11 @@
         </v-card-title>
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
-            <template v-if="$store.getters.profile.auth === 'EXPIRED' && $store.getters.profile.emailVerifiedDate">
+            <template v-if="$store.getters.profile.auth === 'E' && $store.getters.profile.emailVerifiedDate">
               <v-btn @click="notAnymore" flat class="mt-2">더이상 보지 않기</v-btn>
               <div v-if="$vuetify.breakpoint.xsOnly"></div>
             </template>
-            <template v-if="$store.getters.profile.auth !== 'EXPIRED' || $store.getters.profile.emailVerifiedDate">
+            <template v-if="$store.getters.profile.auth !== 'E' || $store.getters.profile.emailVerifiedDate">
               <v-btn @click="notToday" class="mt-2">오늘 더이상 보지 않기</v-btn>
               <div v-if="$vuetify.breakpoint.xsOnly"></div>
             </template>
@@ -58,7 +58,7 @@ export default {
   name: "Auth",
   created() {
     this.$emit("update:layout", MainLayout);
-    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
+    this.$store.dispatch("setColumnType", "HIDE_ALWAYS");
   },
   data() {
     return {
@@ -80,18 +80,19 @@ export default {
       localStorage.setItem("authRequirement", this.$moment(new Date()).format("YMMDD"));
       this.goNext();
     },
-    notAnymore(){
-      if(confirm('더이상 인증을 하지 않으면 다양한 라운지와 토픽에 들어갈 수 없습니다.\n정말 더이상 인증을 하지 않으시겠습니까?')){
-        this.$axios.put('/user', {emailVerifiedDate:null})
-        .then(response => {
-          this.$store.dispatch('updateProfile', {emailVerifiedDate:null})
-        })
-        .catch(error => {
-          console.log(error);
-          if(error.response){
-            this.$store.dispatch("showSnackbar", {text: error.response.data.message || "다시보지 않기 처리를 하지 못했습니다.", color: "error"});
-          }
-        })
+    notAnymore() {
+      if (confirm("더이상 인증을 하지 않으면 다양한 라운지와 토픽에 들어갈 수 없습니다.\n정말 더이상 인증을 하지 않으시겠습니까?")) {
+        this.$axios
+          .put("/user", {emailVerifiedDate: null})
+          .then(response => {
+            this.$store.dispatch("updateProfile", {emailVerifiedDate: null});
+          })
+          .catch(error => {
+            console.log(error);
+            if (error.response) {
+              this.$store.dispatch("showSnackbar", {text: error.response.data.message || "다시보지 않기 처리를 하지 못했습니다.", color: "error"});
+            }
+          });
         this.goNext();
       }
     },
