@@ -128,7 +128,7 @@ export default {
               string += `카테고리 : ${reservedContents[key] ? "사용" : "미사용"}\n`;
               break;
             case "allGroupAuth":
-              string += `토픽 공개/비공개 : ${this.allGroupAuthItems[reservedContents[key]]}\n`;
+              string += `토픽 공개/비공개 : ${this.allGroupAuthItems.some(x=>x.value === reservedContents[key])?this.allGroupAuthItems.find(x=>x.value === reservedContents[key]).text:'(알 수 없음)'}\n`;
               break;
             case "ownerNickName":
               string += `토픽지기 : ${reservedContents[key]}\n`;

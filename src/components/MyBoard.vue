@@ -133,8 +133,7 @@ export default {
         .put("/user/board", {boards: this.topics.map((item, index) => ({orderNumber: index + 1, boardId: item.boardId}))})
         .then(responose => {
           this.loading = false;
-          this.originalTopics = JSON.parse(JSON.stringify(this.topics));
-          this.reset();
+          this.$store.dispatch('setUserBoards', JSON.parse(JSON.stringify(this.topics)).concat(this.userBoards.filter(x=>x.boarType !== 'T')));
           this.$store.dispatch("showSnackbar", {text: "변경 내용을 반영하였습니다.", color: "success"});
         })
         .catch(error => {

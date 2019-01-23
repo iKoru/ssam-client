@@ -64,7 +64,8 @@ export default {
       E: "전직교사",
       D: "인증제한"
     },
-    groupItems: []
+    groupItems: [],
+    allGroupAuthItems: {"READWRITE": "전체구독허용", "READONLY": "읽기공개","NONE": "비공개"}
   }),
   props: ["boardId"],
   mixins: [BoardMixins],
