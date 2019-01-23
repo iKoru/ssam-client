@@ -1,8 +1,17 @@
 <template>
-  <v-layout column class="border-light" v-if="survey">
+  <v-layout column class="border-light py-2" v-if="survey">
+    <v-flex>
+      <v-layout row align-center mx-2>
+        <span class="subheading">설문조사</span>
+        <v-spacer/>
+        <span v-show="finalResults">
+          {{survey.participants}}명 참여
+        </span>
+      </v-layout>
+    </v-flex>
     <v-flex v-for="(item, index) in survey.surveyContents.questions" :key="index" class="px-3 pt-2">
       <div id="poll">
-        <div class="font-weight-bold subheading mb-2">{{(index+1) + '. ' + item.title}}<small v-if="item.allowMultipleChoice" class="grey--text lighten-1">(복수응답)</small></div>
+        <div class="font-weight-bold body-2 mb-2">{{(index+1) + '. ' + item.title}}<small v-if="item.allowMultipleChoice" class="grey--text lighten-1">(복수응답)</small></div>
         <div class="ans-cnt">
           <div v-for="(choice,answerIndex) in item.choices" :key="answerIndex" class="ans">
             <template v-if="finalResults">
@@ -107,9 +116,7 @@ export default {
           return;
         }
         let answer = this.getAnswerArray(this.survey.surveyContents.questions)
-        console.log(answer)
-        alert('성공!')
-        /*this.$axios
+        this.$axios
           .post(`/survey`, {
             documentId: this.$route.params.documentId,
             answer: answer
@@ -133,8 +140,12 @@ export default {
             }
           })
           .catch(error => {
-            console.log(error.response);
-          });*/
+            if(error.response && error.response.status === 409){
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "설문 응답을 등록하지 못했습니다." : "설문 응답을 등록하지 못했습니다.", color: "info"});
+            }else{
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "설문 응답을 등록하지 못했습니다." : "설문 응답을 등록하지 못했습니다.", color: "error"});
+            }
+          });
       } else {
         this.$store.dispatch('showSnackbar', {text:(this.survey.surveyContents.questions.findIndex(question => !question.choices.some(choice => choice.selected)) + 1) + '번 질문의 응답을 선택해주세요.', color:'warning'});
       }

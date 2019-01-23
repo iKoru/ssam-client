@@ -21,7 +21,7 @@
       </v-card-text>
     </v-flex>
     <v-layout row justify-center v-if="document.hasSurvey && document.survey">
-      <v-flex xs12 sm10 md8 mx-2>
+      <v-flex xs12 sm10 md8 mx-3>
         <survey :currentSurvey="document.survey"/>
       </v-flex>
     </v-layout>
