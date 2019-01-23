@@ -10,6 +10,7 @@ import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 
 import Quill from 'quill'
+import MagicUrl from 'quill-magic-url'
 import { ImageDrop } from 'quill-image-drop-module'
 import ImageResize from 'quill-image-resize-module'
 
@@ -36,6 +37,50 @@ class ImageBlot extends BlockEmbed {
 ImageBlot.blotName = 'image';
 ImageBlot.tagName = 'img';
 Quill.register(ImageBlot);*/
+// class VideoBlot extends BlockEmbed {
+//     static create(url) {
+//         let node = super.create();
+
+//         // Set non-format related attributes with static values
+//         node.setAttribute('frameborder', '0');
+//         node.setAttribute('allowfullscreen', true);
+
+//         return node;
+//     }
+
+//     static formats(node) {
+//         // We still need to report unregistered embed formats
+//         let format = {};
+//         if (node.hasAttribute('height')) {
+//         format.height = node.getAttribute('height');
+//         }
+//         if (node.hasAttribute('width')) {
+//         format.width = node.getAttribute('width');
+//         }
+//         return format;
+//     }
+
+//     static value(node) {
+//         return node.getAttribute('src');
+//     }
+
+//     format(name, value) {
+//         // Handle unregistered embed formats
+//         if (name === 'height' || name === 'width') {
+//         if (value) {
+//             this.domNode.setAttribute(name, value);
+//         } else {
+//             this.domNode.removeAttribute(name, value);
+//         }
+//         } else {
+//         super.format(name, value);
+//         }
+//     }
+// }
+// VideoBlot.blotName = 'video';
+// VideoBlot.tagName = 'iframe';
+// Quill.register(VideoBlot)
+Quill.register('modules/magicUrl', MagicUrl)
 Quill.register('modules/imageDrop', ImageDrop)
 Quill.register('modules/imageResize', ImageResize)
 

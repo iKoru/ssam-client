@@ -108,6 +108,7 @@ export default {
         placeholder: "내용을 입력해주세요.",
         modules: {
           toolbar: "#toolbar",
+          magicUrl: true,
           imageDrop: true,
           imageResize: true
         },
