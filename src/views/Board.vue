@@ -49,6 +49,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import router from "@/router";
 import BoardMixins from "@/components/mixins/BoardMixins";
+const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", Z: "인증"};
 export default {
   name: "Board",
   data: () => ({
@@ -62,9 +63,10 @@ export default {
       A: "인증",
       E: "전직교사",
       D: "인증제한"
-    }
+    },
+    groupItems: []
   }),
-  props:['boardId'],
+  props: ["boardId"],
   mixins: [BoardMixins],
   components: {
     DocumentList: () => import("@/components/board/DocumentList"),
@@ -132,7 +134,7 @@ export default {
       if (!this.board.parentBoardId && this.childBoardItems.length > 1) {
         const profile = this.$store.getters.profile;
         const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
-        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : (x.allowedGroups.some(y => (y === profile.region) || (y === profile.major) || (y === profile.grade) || (profile.groups.includes(y)))) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
+        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : x.allowedGroups.some(y => y === profile.region || y === profile.major || y === profile.grade || profile.groups.includes(y)) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
         if (available.length > 0) {
           this.$router.push(`/${available[0].boardId}/write`);
           this.$store.dispatch("showSnackbar", {text: `글을 쓸 수 있는 ${available[0].boardName}에 작성됩니다.`, color: "info"});
@@ -143,7 +145,7 @@ export default {
           if (available.length === 0) {
             this.$store.dispatch("showSnackbar", {text: "인증 후에 글을 쓸 수 있습니다.", color: "info"});
           } else {
-            available = available.filter(x => x.allowedGroups.some(y => (y === profile.region) || (y === profile.major) || (y === profile.grade) || (profile.groups.includes(y))));
+            available = available.filter(x => x.allowedGroups.some(y => y === profile.region || y === profile.major || y === profile.grade || profile.groups.includes(y)));
             if (available.length === 0) {
               this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly ? "학년, 전공을 지정해주세요." : "내 계정정보에서 학년, 전공을 지정해주세요."}`, color: "info"});
             } else {
@@ -164,7 +166,7 @@ export default {
               }
             } else {
               //need subscription
-              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
                 //i can subscribe this board!
                 this.$axios
                   .post("/user/board", {boardId: this.board.boardId})
@@ -182,7 +184,7 @@ export default {
               }
             }
           } else {
-            if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => (x === profile.region) || (x === profile.major) || (x === profile.grade) || (profile.groups.includes(x)))) {
+            if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
               if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
                 const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
                 if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
@@ -261,6 +263,41 @@ export default {
   created() {
     this.$emit("update:layout", MainLayout);
     this.$store.dispatch("setColumnType", "HIDE_SM");
+    if (this.$store.getters.groups) {
+      this.groupItems = this.$store.getters.groups;
+    } else {
+      this.$axios
+        .get("/group", {headers: {silent: true}})
+        .then(response => {
+          response.data.forEach(x => {
+            if (x.groupType === "N" || x.groupType === "D" || x.groupType === "E") {
+              x.groupType = "Z";
+            }
+          });
+          this.groupItems = response.data.sort((a, b) => (a.groupType < b.groupType ? -1 : a.groupType === b.groupType ? 0 : 1));
+          let previous = null;
+          let i = 0;
+          while (i < this.groupItems.length) {
+            if (previous !== this.groupItems[i].groupType) {
+              if (previous) {
+                previous = this.groupItems[i].groupType;
+                this.groupItems.splice(i, 0, {divider: true});
+                i++;
+              } else {
+                previous = this.groupItems[i].groupType;
+              }
+              this.groupItems.splice(i, 0, {header: groupName[previous]});
+              i++;
+            }
+            i++;
+          }
+          this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
+          this.$store.dispatch("setGroups", this.groupItems);
+        })
+        .catch(error => {
+          this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+        });
+    }
   },
   async beforeRouteUpdate(to, from, next) {
     if (this.$store.getters.boards.some(x => x.boardId === to.params.boardId)) {

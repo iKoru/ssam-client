@@ -20,7 +20,8 @@ export default new Vuex.Store({
     auth: {},
     columnType: 'SHOW_ALWAYS',
     scrapGroups: null,
-    reportTypes: null
+    reportTypes: null,
+    groups: null
   },
   getters: {
     accessToken ({ accessToken }) {
@@ -82,6 +83,9 @@ export default new Vuex.Store({
     },
     reportTypes ({ reportTypes }) {
       return reportTypes
+    },
+    groups ({ groups }) {
+      return groups
     }
   },
   mutations: {
@@ -171,6 +175,9 @@ export default new Vuex.Store({
     },
     SET_REPORT_TYPES (state, reportTypes) {
       state.reportTypes = reportTypes
+    },
+    SET_GROUPS (state, groups) {
+      state.groups = groups
     }
   },
   actions: {
@@ -253,6 +260,9 @@ export default new Vuex.Store({
     },
     setReportTypes ({ commit }, reportTypes) {
       commit('SET_REPORT_TYPES', reportTypes)
+    },
+    setGroups ({ commit }, groups) {
+      commit('SET_GROUPS', groups)
     }
   }
 })
