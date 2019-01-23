@@ -1,13 +1,13 @@
 <template>
-  <v-list-tile-content :class="{'py-1':true, 'pl-1':children}">
+  <v-list-tile-content class="py-1 px-0">
     <v-list-tile-title>
       <v-layout row>
         <v-flex>
-          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{commentContents:true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted}"></div>
+          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{commentContents:true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted, 'ql-editor':true, 'py-0':true, 'px-3':true}"></div>
         </v-flex>
       </v-layout>
     </v-list-tile-title>
-    <v-list-tile-sub-title v-if="!comment.isDeleted">
+    <v-list-tile-sub-title v-if="!comment.isDeleted" class="px-3">
       <v-layout row class="body-1" wrap>
         <!--prettyhtml-ignore-->
         <v-flex text-xs-left>

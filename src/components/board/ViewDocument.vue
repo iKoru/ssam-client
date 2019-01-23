@@ -16,8 +16,8 @@
     </v-flex>
     <v-divider/>
     <v-flex xs12>
-      <v-card-text>
-        <div v-html="documentHTML" id="documentContents"></div>
+      <v-card-text class="px-0">
+        <div v-html="documentHTML" id="documentContents" class="ql-editor py-0 px-3"></div>
       </v-card-text>
     </v-flex>
     <v-layout row justify-center v-show="document.hasSurvey">
