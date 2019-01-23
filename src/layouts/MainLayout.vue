@@ -1,7 +1,8 @@
 <template>
   <div class="mainLayout">
     <main-toolbar class="mainLayout__nav"></main-toolbar>
-    <component :is="$vuetify.breakpoint.smAndUp?'menu-bar':'menu-drawer'" :lounges="lounges" :topics="topics"/>
+    <menu-bar :lounges="lounges" :topics="topics"/>
+    <menu-drawer v-if="$vuetify.breakpoint.xsOnly" :lounges="lounges" :topics="topics"/>
     <main class="mainLayout__main">
       <main-column-layout>
         <slot></slot>
@@ -26,9 +27,9 @@ export default {
   },
   computed: {
     lounges() {
-      const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T" && x.boardType !== 'X' && !x.parentBoardId);
+      const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T" && x.boardType !== "X" && !x.parentBoardId);
       lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
-      lounges.splice(2, 0, {boardName:null, boardId:null})
+      lounges.splice(2, 0, {boardName: null, boardId: null});
       return lounges;
     },
     topics() {

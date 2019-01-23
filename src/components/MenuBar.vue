@@ -1,13 +1,13 @@
 <template>
-  <v-container px-0 py-0 fluid id="menubarContainer">
-    <v-layout row id="menuBar" class="position-relative">
-      <v-flex sm2 :class="{'loungeTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'position-relative':true, 'hide-menuBar':!menuBar}" order-sm1>
+  <v-container px-0 py-0 :mb-3="$route.path !== '/'" fluid id="menubarContainer">
+    <v-layout row id="menuBar" class="position-relative" :wrap="$vuetify.breakpoint.xsOnly">
+      <v-flex sm2 :class="{'loungeTab scrollContainer overflow-hidden position-relative':true, 'hide-menuBar':!menuBar}" order-sm1 xs6 order-xs1>
         <v-flex class="position-absolute menuBarTab">
           <v-tabs light hide-slider v-model="menu" :mandatory="false" height="32">
             <v-tab :key="0" class="loungeTab flex" @click.stop="toggleMenuBar('lounge')">라운지</v-tab>
           </v-tabs>
         </v-flex>
-        <v-layout row class="menuBarContents" :style="{'margin-top':menuBar?0:'32px'}">
+        <v-layout row class="menuBarContents" :style="{'margin-top':menuBar?0:'32px'}" v-if="$vuetify.breakpoint.smAndUp">
           <v-flex class="menuColumn position-relative">
             <v-layout column>
               <template v-if="lounges.length > 2">
@@ -45,8 +45,8 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'hide-menuBar':!menuBar}" id="topicTabScreen"></v-flex>
-      <v-flex sm2 :class="{'topicTab':true, 'scrollContainer':true, 'overflow-hidden':true, 'hide-menuBar':!menuBar}" order-sm3 v-show="menu===0">
+      <v-flex sm2 :class="{'topicTab scrollContainer':true, 'hide-menuBar':!menuBar}" id="topicTabScreen" v-if="$vuetify.breakpoint.smAndUp"></v-flex>
+      <v-flex sm2 :class="{'topicTab scrollContainer overflow-hidden':true, 'hide-menuBar':!menuBar}" order-sm3 v-show="menu===0 && $vuetify.breakpoint.smAndUp">
         <v-layout row class="menuBarContents">
           <v-flex class="menuColumn position-relative" id="topicFixedColumn">
             <div class="switchTabIcon switchToLounge cursor-pointer" @click="toggleMenuBar('topic')">
@@ -85,11 +85,11 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex order-sm2>
-        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false">
+      <v-flex order-sm2 order-xs3>
+        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false" touchless>
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents':true}">
             <template v-show="menu===0">
-              <v-flex class="scrollContainer">
+              <v-flex class="scrollContainer" v-if="$vuetify.breakpoint.smAndUp">
                 <template v-if="lounges.length > 5">
                   <v-flex class="menuColumn loungeColumn" sm2 v-for="n in (Math.floor(lounges.length / 3) - 1)" :key="n">
                     <v-layout column>
@@ -115,11 +115,16 @@
                   </v-layout>
                 </v-flex>
               </v-flex>
+              <v-flex class="scrollContainer" v-else>
+                <v-flex class="menuColumn loungeColumn ellipsis text-xs-center px-1" xs4 v-for="lounge in lounges.filter(x=>x.boardId)" :key="lounge.boardId">
+                  <router-link :to="'/'+lounge.boardId" :title="lounges.boardName">{{lounge.boardName}}</router-link>
+                </v-flex>
+              </v-flex>
             </template>
           </v-tab-item>
           <v-tab-item :key="1" :class="{'d-none':!menuBar, 'menuBarContents':true, 'secondary':true, 'white--text':true}">
             <template v-show="menu === 1">
-              <v-flex class="scrollContainer">
+              <v-flex class="scrollContainer" v-if="$vuetify.breakpoint.smAndUp">
                 <v-flex class="menuColumn topicColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
                   <v-layout column>
                     <v-flex class="ellipsis">
@@ -158,11 +163,16 @@
                   </v-layout>
                 </v-flex>
               </v-flex>
+              <v-flex class="scrollContainer" v-else>
+                <v-flex class="menuColumn topicColumn text-xs-center ellipsis px-1" xs4 v-for="topic in topics" :key="topic.boardId">
+                  <router-link :class="{'white--text':true, 'text-darken-1':topic.notJoined}" :title="topic.notJoined?'추천 토픽':topic.boardName" :to="'/'+topic.boardId">{{topic.boardName}}</router-link>
+                </v-flex>
+              </v-flex>
             </template>
           </v-tab-item>
         </v-tabs-items>
       </v-flex>
-      <v-flex sm2 class="topicTabMenuBar">
+      <v-flex xs6 sm2 class="topicTabMenuBar" order-xs2>
         <v-tabs dark hide-slider v-model="menu" :mandatory="false" height="32">
           <v-tab :key="1" class="topicTab flex" @click.stop="toggleMenuBar('topic')">토픽</v-tab>
         </v-tabs>
@@ -256,18 +266,6 @@ export default {
 .topicTab .v-tabs__item {
   opacity: 1;
 }
-.topicTabMenuBar.flex.sm2 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  max-width: 13.88888888889%;
-  flex-basis: 13.88888888889%;
-}
-.menuColumn.loungeColumn {
-  max-width: 19.233333333333334%;
-  flex-basis: 19.233333333333334%;
-}
 .menuColumn.loungeColumn:last-child,
 .menuColumn.topicColumn:last-child,
 #topicFixedColumn {
@@ -284,7 +282,6 @@ export default {
   visibility: hidden;
 }
 .menuBarContents {
-  padding-top: 16px;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -304,19 +301,10 @@ export default {
   white-space: nowrap;
   display: flex;
   flex-direction: row;
-  -webkit-flex-direction: row;
   overflow-x: auto;
-  height: 116px;
-  /*-webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;*/
+  height: 32px;
 }
-.scrollContainer.topicTab,
-.scrollContainer.loungeTab {
-  height: 132px;
-  max-width: 13.88888888889%;
-  flex-basis: 13.88888888889%;
-}
+
 .scrollContainer.topicTab.hide-menuBar,
 .scrollContainer.loungeTab.hide-menuBar {
   height: 32px;
@@ -332,5 +320,31 @@ export default {
 }
 .menuColumn .flex {
   margin: 2px 0;
+}
+@media (min-width: 600px) {
+  .scrollContainer {
+    height: 116px;
+  }
+  .topicTabMenuBar.flex.sm2 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 13.88888888889%;
+    flex-basis: 13.88888888889%;
+  }
+  .menuColumn.loungeColumn {
+    max-width: 19.233333333333334%;
+    flex-basis: 19.233333333333334%;
+  }
+  .scrollContainer.topicTab,
+  .scrollContainer.loungeTab {
+    height: 132px;
+    max-width: 13.88888888889%;
+    flex-basis: 13.88888888889%;
+  }
+  .menuBarContents {
+    padding-top: 16px;
+  }
 }
 </style>
