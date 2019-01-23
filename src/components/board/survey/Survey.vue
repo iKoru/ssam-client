@@ -1,37 +1,20 @@
 <template>
-  <v-layout row style="background-color:#f8f8f8;" py-4 px-2>
-    <v-flex v-if="survey">
-          <!-- <v-btn @click="doSurvey">시행</v-btn> -->
-      <v-layout justify-center>
-        <v-btn-toggle v-if="!survey.participated" v-model="toggleOne">
-          <v-btn dark color="red" @click="showSurveyResult = false">
-            설문
-          </v-btn>
-          <v-btn dark color="orange" @click.stop="completeSurvey">제출</v-btn>
-          <v-btn dark color="success" @click="showSurveyResult = true">
-            결과
-          </v-btn>
-        </v-btn-toggle>
+  <v-layout column class="border-light">
+    <v-flex v-for="(item, index) in survey.surveyContents.questions" :key="index" class="px-3 pt-2">
+      <!--<v-layout column class="position-relative">
+        <v-flex mx-3>-->
+          <vue-poll :questionNumber="index+1" :question="item.title" :allowMultiple="item.allowMultipleChoice" :answers="item.choices" :multiple="true" :selectable="true" :finalResults="finalResults" @answerSelected="answerSelected"/>
+        <!--</v-flex>
+      </v-layout>-->
+      <v-divider v-if="index + 1 !== survey.surveyContents.questions.length" :key="'divider'+index" class="mt-3"></v-divider>
+    </v-flex>
+    <v-flex v-if="!survey.participated">
+      <v-layout justify-center my-2>
+        <v-btn small @click="showSurveyResult = !showSurveyResult">
+          {{showSurveyResult? '돌아가기':'결과보기'}}
+        </v-btn>
+        <v-btn small color="primary" @click.stop="completeSurvey">응답하기</v-btn>
       </v-layout>
-      <template v-for="(item, index) in survey.surveyContents.questions">
-        <v-layout row wrap :key="index" style="position:relative">
-          <v-flex xs12 mx-3>
-            <vue-poll
-             :questionNumber="index+1"
-             :question="item.title"
-             :allowMultiple="item.allowMultipleChoice"
-             :answers="item.choices"
-             :multiple="true"
-             :selectable="true"
-             :finalResults="finalResults"
-             @answerSelected="answerSelected" />
-          </v-flex>
-        </v-layout>
-        <v-layout row :key="'devider'+index">
-          <v-divider v-if="index + 1 < survey.length" :key="`divider-${index}`"></v-divider>
-        </v-layout>
-      </template>
-      
     </v-flex>
   </v-layout>
 </template>

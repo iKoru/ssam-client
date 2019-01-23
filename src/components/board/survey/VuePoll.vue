@@ -1,33 +1,28 @@
 <template>
-    <div class="vue-poll">
-        <h3 class="qst" v-html="question"></h3>
-        <h6 v-if="allowMultiple">&nbsp;*복수응답이 가능한 설문입니다.</h6>
-        <div class="ans-cnt">
-            <div v-for="(a,index) in calcAnswers" :key="index" :class="{ ans: true, [a.custom_class]: (a.custom_class) }">
-                <template v-if="!finalResults">
-                    <div v-if="!visibleResults" :class="{ 'ans-no-vote noselect': true, active: a.selected }" @click.prevent="handleVote(a)" >
-                        <span class="check">&nbsp;</span>
-                        <span class="txt" v-html="a.text"></span>
-                    </div>
-                    <div v-else :class="{ 'ans-voted': true, selected: a.selected }" >
-                        <span v-if="a.percent" class="percent" v-text="a.percent"></span>
-                        <span class="txt" v-html="a.text"></span>
-                    </div>
-
-                    <span class="bg" :style="{ width: visibleResults ? a.percent : '0%' }"></span>
-                </template>
-                <template v-else>
-                    <div class="ans-voted final">
-                        <span v-if="a.percent" class="percent" v-text="a.percent"></span>
-                        <span class="txt" v-html="a.text"></span>
-                    </div>
-                    <span :class="{ bg: true, selected: mostVotes == a.votes }" :style="{ width: a.percent }"></span>
-                </template>
-
-            </div>
-        </div>
-        <div class="votes" v-if="showTotalVotes && (visibleResults || finalResults)" v-text="totalVotesFormatted + ' votes'"></div>
+  <div class="vue-poll">
+    <div class="font-weight-bold subheading mb-2">{{question}}<small v-if="allowMultiple" class="grey--text lighten-1">(복수응답)</small></div>
+    <div class="ans-cnt">
+      <div v-for="(a,index) in calcAnswers" :key="index" class="ans">
+        <template v-if="finalResults">
+          <div :class="{'ans-voted final':true, 'selected': a.selected, 'font-weight-bold':mostVotes == a.votes}">
+            <span v-if="a.percent" class="percent">{{a.percent}}</span>
+            <span class="txt">{{a.text}}</span>
+          </div>
+          <span :class="{ bg: true }" :style="{ width: a.percent }"></span>
+        </template>
+        <template v-else>
+          <div v-if="visibleResults" :class="{ 'ans-voted': true, selected: a.selected }" >
+            <span v-if="a.percent" class="percent">{{a.percent}}</span>
+            <span class="txt">{{a.text}}</span>
+          </div>
+          <div v-else :class="{ 'ans-no-vote': true, active: a.selected }" @click.prevent="handleVote(a)">
+            <span class="txt">{{a.text}}</span>
+          </div>
+          <span class="bg" :style="{ width: visibleResults ? a.percent : '0%' }"></span>
+        </template>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -63,10 +58,6 @@ export default{
       type: Boolean,
       default: false
     },
-    showTotalVotes: {
-      type: Boolean,
-      default: true
-    },
     finalResults: {
       type: Boolean,
       default: false
@@ -96,9 +87,6 @@ export default{
         if (!isNaN(a.votes) && a.votes > 0) { totalVotes += parseInt(a.votes) }
       })
       return totalVotes
-    },
-    totalVotesFormatted () {
-      return this.totalVotes.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     mostVotes () {
       let max = 0
@@ -203,131 +191,69 @@ export default{
 </script>
 
 <style>
-.vue-poll{
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #2c3e50;
-}
-
-.vue-poll .noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.vue-poll .qst{
-    font-weight: bold;
-}
 .vue-poll .ans-cnt{
-        margin: 5px 0;
+  margin: 5px 0;
 }
 .vue-poll .ans-cnt .ans{
-    position: relative;
-    margin-top: 10px;
+  position: relative;
+  border-radius: 5px;
+  overflow:hidden;
+  margin-top: 10px;
 }
 .vue-poll .ans-cnt .ans:first-child{
-    margin-top: 0;
+  margin-top: 0;
 }
 
-.vue-poll .ans-cnt .ans-no-vote{
-    text-align: start;
-    /* border: 2px solid #77C7F7; */
-    background-color: #d5d5d5;
-    box-sizing: border-box;
-    border-radius: 5px;
-    cursor:pointer;
-    padding: 5px 0;
-    transition: background .2s ease-in-out;
-    -webkit-transition: background .2s ease-in-out;
-    -moz-transition: background .2s ease-in-out;
+.vue-poll .ans-cnt .ans-no-vote, .vue-poll .ans-cnt .final{
+  background-color: #E1E8ED;
+  border-radius: 5px;
+  cursor:pointer;
+  padding: 5px 0;
+  /*transition: background .5s ease-in-out;*/
 }
+
 
 .vue-poll .ans-cnt .ans-no-vote .txt{
-    margin-left:10px;
-    color: black;
-    transition: color .2s ease-in-out;
-    -webkit-transition: color .2s ease-in-out;
-    -moz-transition: color .2s ease-in-out;
+  margin-left:10px;
 }
 
 .vue-poll .ans-cnt .ans-no-vote.active{
-    background: #d5d5d5;
+  background: #d5d5d5;
 }
-
-.vue-poll .ans-cnt .ans-no-vote.active .txt{
-    /* color: black; */
-}
-.vue-poll .ans-cnt .ans-no-vote.active .txt::after{
-    /* color: red; */
-    /* content:'✔'; */
-}
-.vue-poll .ans-cnt .ans-no-vote.active .check {
-  width: 30px;
-  margin-left:10px;
-}
-.vue-poll .ans-cnt .ans-no-vote.active .check::after{
-    color:  black;
-    content:'✔';
+.vue-poll .ans-cnt .ans-no-vote.active .txt::before{
+  content:'✔';
+  width: 20px;
+  margin-right:4px;
 }
 
 .vue-poll .ans-cnt .ans-voted{
-    padding: 5px 0;
+  padding: 5px 0;
 }
 
 .vue-poll .ans-cnt .ans-voted .percent,
 .vue-poll .ans-cnt .ans-voted .txt{
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 }
 .vue-poll .ans-cnt .ans-voted .percent{
-    font-weight: bold;
-    min-width: 51px;
-    display: inline-block;
-    margin:0 10px;
+  min-width: 44px;
+  display: inline-block;
+  margin-left:8px;
 }
 
 .vue-poll .ans-cnt .ans-voted.selected .check:after{
-    content:'✔';
+  content:'✔';
 }
 
 .vue-poll .ans-cnt .ans .bg{
-    position: absolute;
-    width: 0%;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: 0;
-    background-color: #E1E8ED;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    transition: all .3s cubic-bezier(0.5,1.2,.5,1.2);
-    -webkit-transition: all .3s cubic-bezier(0.5,1.2,.5,1.2);
-    -moz-transition: all .3s cubic-bezier(0.5,1.2,.5,1.2);
+  position: absolute;
+  width: 0%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+  background-color: #77C7F7;
+  transition: width .3s cubic-bezier(0.5,1.2,.5,1.2);
 }
 
-.vue-poll .ans-cnt .ans .bg.selected{
-    background-color: #77C7F7;
-}
-
-.vue-poll .votes{
-    font-size: 14px;
-    color:#8899A6
-}
-
-.vue-poll .submit{
-    display: block;
-    text-align: center;
-    margin: 0 auto;
-    max-width: 80px;
-    text-decoration: none;
-    background-color: #41b882;
-    color:#fff;
-    padding: 10px 25px;
-    border-radius: 5px;
-
-}
 </style>
