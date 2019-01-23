@@ -7,17 +7,17 @@
     </v-toolbar>
     <v-card-text>
       <v-layout column>
-        <div class="border-light">
+        <div class="border-light" id="surveyMaker">
           <v-flex :key="index" v-for="(question, index) in currentSurvey.questions">
             <v-card flat>
-              <v-card-title class="pb-2">
+              <v-card-title class="pb-1">
                 {{index + 1}}.
                 <v-text-field v-model="question.title" single-line hide-details dense class="dense mt-0 pt-0 ml-2" placeholder="질문 내용" append-outer-icon="close" @click:append-outer="deleteQuestion(index)"></v-text-field>
               </v-card-title>
               <v-card-text class="py-0">
                 <v-layout column>
-                  <v-flex :key="answerIndex" v-for="(choice, answerIndex) in question.choices">
-                    <v-text-field class="pt-1 dense" single-line :label="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="remove_circle_outline" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
+                  <v-flex :key="answerIndex" v-for="(choice, answerIndex) in question.choices" class="mt-2">
+                    <v-text-field class="pt-1 dense" box single-line :placeholder="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="remove_circle_outline" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
                   </v-flex>
                   <v-flex>
                     <v-layout row align-center justify-space-around>
@@ -131,17 +131,13 @@ export default {
 }
 </script>
 <style>
-.fab-container {
-  position: absolute;
-  top: 0;
-  right: 0;
+#surveyMaker .v-text-field--box.v-text-field--single-line input{
+  margin-top:4px;
 }
-.toolbar-btn-last {
-  margin-right:-15px!important
+#surveyMaker .v-text-field--box > .v-input__control > .v-input__slot{
+  min-height:36px;
 }
-.btn-xs {
-  width:25px;
-  height:25px;
-  font-size:12px;
+#surveyMaker .v-text-field.v-text-field--enclosed .v-input__append-inner{
+  margin-top:8px;
 }
 </style>

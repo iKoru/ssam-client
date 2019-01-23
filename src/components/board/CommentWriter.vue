@@ -18,10 +18,10 @@
     </v-flex>
     <v-flex>
       <v-layout row align-center>
-        <span class="ml-3">
-          <v-checkbox hide-details label="익명" v-model="anonymous" v-show="allowAnonymous" class="pt-0 mt-0"></v-checkbox>
+        <span class="ml-3" v-show="allowAnonymous">
+          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0"></v-checkbox>
         </span>
-        <v-btn @click="$refs.imageAttach.click()" flat>
+        <v-btn @click="$refs.imageAttach.click()" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}">
           <v-icon>image</v-icon>이미지
         </v-btn>
 
@@ -140,10 +140,10 @@ export default {
 .comment-editor .quill-editor .ql-bubble .ql-tooltip {
   z-index:1
 }
-.comment-editor .ql-editor.ql-blank::before {
-  font-style: normal;
-}
 .comment-editor .ql-bubble .ql-picker.ql-size {
   width: 60px;
+}
+.comment-editor .ql-editor.ql-blank::before {
+  font-style: normal;
 }
 </style>

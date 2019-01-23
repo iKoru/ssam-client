@@ -19,10 +19,10 @@
             <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index">
               <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
             </v-list-tile>
-            <v-divider v-if="index < commentList.length - 1" :key="'divider'+index"></v-divider>
+            <v-divider :key="'divider'+index"></v-divider>
           </template>
         </v-list>
-        <div :class="{'pt-3':commentList.length === 0}">
+        <div class="pt-3">
           <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
         </div>
       </v-card>

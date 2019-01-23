@@ -8,9 +8,9 @@
       </v-layout>
     </v-list-tile-title>
     <v-list-tile-sub-title v-if="!comment.isDeleted">
-      <v-layout row class="body-1">
+      <v-layout row class="body-1" wrap>
         <!--prettyhtml-ignore-->
-        <v-flex my-auto text-xs-left>
+        <v-flex text-xs-left>
           <component :is="comment.nickName === ''?'span':'b'" :class="{'body--text':comment.nickName!==''}">{{comment.nickName === '' ? '익명' : comment.nickName}}</component>
           <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
           <b v-if="!children" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
@@ -18,7 +18,7 @@
           </b>
         </v-flex>
         <v-spacer/>
-        <v-flex text-xs-right px-2 my-auto>
+        <v-flex text-xs-right px-2>
           <span @click="voteUp" class="cursor-pointer" title="추천">
             <v-icon color="primary" small>thumb_up</v-icon>
             <b class="mx-1 body--text">{{comment.voteUpCount}}</b> |

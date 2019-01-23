@@ -36,7 +36,7 @@
       <v-layout row text-xs-right>
         <v-flex pr-2>
           <v-btn-toggle id="bottomBottons">
-            <template v-if="document.attach && document.attach.length > 0">
+            <template v-if="document.attach && document.attach.some(x=>!x.insert)">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
             <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
@@ -215,11 +215,12 @@ export default {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = {
+            item.insert.image = this.webUrl + "/" + image.attach_path
+            /*item.insert.image = {
               src: this.webUrl + "/" + image.attach_path,
               download: item.insert.image,
               alt: item.insert.image
-            }
+            }*/
             item.attributes.link = item.insert.image;
           }
         }
@@ -317,11 +318,11 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
-#documentContents p img {
+#documentContents p img, #documentContents img {
   max-width: 100%;
 }
 @media (max-width: 600px) {
-  #documentContents p img {
+  #documentContents p img, #documentContents img {
     max-width: calc(100% + 32px);
     margin-left: -16px;
     margin-right: -16px;

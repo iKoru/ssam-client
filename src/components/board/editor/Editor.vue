@@ -3,7 +3,7 @@
     <v-flex id="title" class="mb-0 pb-0">
       <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" solo v-model="title" hide-details></v-text-field>
     </v-flex>
-    <v-flex xs12 class="write-editor">
+    <v-flex xs12 id="write-editor">
       <quill-editor v-model="content" ref="editor" :options="editorOption" @ready="onEditorReady($event)">
         <div id="toolbar" slot="toolbar">
           <button class="ql-bold">Bold</button>
@@ -14,7 +14,7 @@
             <option value="large">크게</option>
             <option value="huge">더 크게</option>
           </select>
-          <button ref="imageAttach" class="ql-image" value="image"></button>
+          <button ref="imageAttach" class="ql-image" value="image" v-show="$vuetify.breakpoint.smAndUp"></button>
         </div>
       </quill-editor>
     </v-flex>
@@ -110,7 +110,8 @@ export default {
           toolbar: "#toolbar",
           imageDrop: true,
           imageResize: true
-        }
+        },
+        theme:this.$vuetify.breakpoint.xsOnly?'bubble':'snow'
       },
       show: false,
       isAnonymous: false,
@@ -286,42 +287,54 @@ export default {
 .ql-image {
   visibility: hidden;
 }
-.write-editor .quill-editor .ql-container {
-  min-height: 30rem;
+#write-editor .quill-editor .ql-container {
+  min-height: 20rem;
   padding-bottom: 1rem;
+}
+#write-editor .quill-editor .ql-editor {
+  min-height: 20rem;
 }
 #title .v-input__slot {
   box-shadow: none;
 }
 #title,
 #toolbar,
-#toolbar + .ql-container.ql-snow {
+#toolbar + .ql-container.ql-snow,
+#write-editor .ql-container.ql-bubble{
   border-top: 1px solid #e8e8e8;
   border-left: none;
   border-right: none;
 }
-#toolbar {
+.ql-snow #toolbar {
   display: none;
   border-bottom: none;
 }
-#toolbar + .ql-container.ql-snow {
+#toolbar + .ql-container.ql-snow,
+#write-editor .ql-container.ql-bubble{
   border-bottom: 1px solid #e8e8e8;
+}
+#write-editor .quill-editor .ql-bubble .ql-tooltip {
+  z-index:1
+}
+#write-editor .ql-bubble .ql-picker.ql-size {
+  width: 70px;
 }
 @media (min-width: 600px) {
   #title,
   #toolbar,
-  #toolbar + .ql-container.ql-snow {
+  #toolbar + .ql-container.ql-snow,
+  #write-editor .ql-container.ql-bubble{
     border-left: 1px solid #e8e8e8;
     border-right: 1px solid #e8e8e8;
   }
-  #toolbar {
+  .ql-snow #toolbar {
     display: block;
   }
+  #write-editor .quill-editor .ql-container, .write-editor .quill-editor .ql-editor {
+    min-height: 30rem;
+  }
 }
-.write-editor .quill-editor .ql-editor {
-  min-height: 30rem;
-}
-.write-editor .ql-editor.ql-blank::before {
+#write-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
 </style>
