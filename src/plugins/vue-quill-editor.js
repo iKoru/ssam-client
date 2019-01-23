@@ -13,7 +13,7 @@ import Quill from 'quill'
 import { ImageDrop } from 'quill-image-drop-module'
 import ImageResize from 'quill-image-resize-module'
 
-let BlockEmbed = Quill.import('blots/block/embed')
+/*let BlockEmbed = Quill.import('blots/block/embed')
 class ImageBlot extends BlockEmbed {
     static create(value) {
         let node = super.create();
@@ -35,7 +35,7 @@ class ImageBlot extends BlockEmbed {
 
 ImageBlot.blotName = 'image';
 ImageBlot.tagName = 'img';
-Quill.register(ImageBlot);
+Quill.register(ImageBlot);*/
 Quill.register('modules/imageDrop', ImageDrop)
 Quill.register('modules/imageResize', ImageResize)
 
