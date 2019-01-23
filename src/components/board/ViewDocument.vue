@@ -20,9 +20,9 @@
         <div v-html="documentHTML" id="documentContents" class="ql-editor py-0 px-3"></div>
       </v-card-text>
     </v-flex>
-    <v-layout row justify-center v-if="document.hasSurvey && survey">
-      <v-flex xs12 sm10 md8>
-        <survey :survey="survey"/>
+    <v-layout row justify-center v-if="document.hasSurvey && document.survey">
+      <v-flex xs12 sm10 md8 mx-2>
+        <survey :currentSurvey="document.survey"/>
       </v-flex>
     </v-layout>
     <v-flex text-xs-center my-2>
@@ -93,7 +93,6 @@ export default {
     return {
       document: null,
       documentHTML: null,
-      survey: null,
       showAttach: false,
       scrapGroups: null,
       reportTypes: null,
@@ -168,9 +167,6 @@ export default {
           }
           this.document = response.data;
           this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
-          if (this.document.hasSurvey) {
-            this.survey = this.formatSurvey(this.document.survey, this.document.participatedSurvey);
-          }
           this.showAttach = false;
         })
         .catch(error => {
