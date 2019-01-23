@@ -4,7 +4,7 @@
       <v-card-title primary-title>
         <div class="w-100">
           <router-link :to="'/'+document.boardId+'/'+document.documentId" class="title mb-0 multi-row">{{document.title}}</router-link>
-          <v-layout row>
+          <v-layout row mt-1>
             <v-spacer/>
             <v-flex text-xs-right>
               <span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>
@@ -20,9 +20,9 @@
         <div v-html="documentHTML" id="documentContents" class="ql-editor py-0 px-3"></div>
       </v-card-text>
     </v-flex>
-    <v-layout row justify-center v-show="document.hasSurvey">
+    <v-layout row justify-center v-if="document.hasSurvey && survey">
       <v-flex xs12 sm10 md8>
-        <Survey :survey="survey"/>
+        <survey :survey="survey"/>
       </v-flex>
     </v-layout>
     <v-flex text-xs-center my-2>

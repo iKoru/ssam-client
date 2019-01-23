@@ -5,7 +5,7 @@
         <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
-              <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
+              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">{{header.text}}</th>
             </tr>
           </template>
           <template slot="items" slot-scope="props">
@@ -17,7 +17,7 @@
                 </v-layout>
               </td>
               <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
-              <td :class="{'text-xs-left':true, 'py-1':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'ellipsis':true, 'cursor-pointer':true, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+              <td :class="{'text-xs-left py-1 ellipsis cursor-pointer':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
                     <router-link :to="`/${board.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
@@ -29,6 +29,9 @@
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
+          </template>
+          <template slot="no-data">
+            <tr><td colspan="4" class="text-xs-center multi-row">{{noDataText}}</td></tr>
           </template>
         </v-data-table>
       </v-flex>
