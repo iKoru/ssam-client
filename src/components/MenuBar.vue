@@ -228,7 +228,7 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 1px;
+  /*margin-top: 1px;*/
 }
 #menubarContainer {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
