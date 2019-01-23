@@ -75,7 +75,7 @@
 <script>
 const reserved = ["document", "documents", "profile", "profiles", "auth", "user", "users", "comment", "comments", "vote", "votes", "report", "reports", "index", "scraps", "scrap", "board", "boards", "manage", "manages", "chat", "chats", "message", "messages", "group", "groups", "event", "events", "signup", "signin", "signout", "resetPassword", "notification", "notifications", "survey", "list", "admin", "ADMIN", "ADMINISTRATOR", "administrator", "attach", "profiles", "animal", "loungeBest", "topicBest", "lounge", "topic", "type", "best", "sanction", "userId", "nickName", "myPage", "myBoard", "myCommunity", "pedagy", "myPedagy", "Pedagy"];
 const boardIdRegex = [/^(?:[a-zA-Z]+)(?:[a-zA-Z0-9\-_]{0,15})$/, /^((?!(--|__)).)*$/];
-const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", Z:'인증'};
+const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", Z: "인증"};
 export default {
   name: "topicCreator",
   data() {
@@ -91,13 +91,13 @@ export default {
       allGroupAuthItems: [{value: "READWRITE", text: "전체구독허용"}, {value: "READONLY", text: "읽기공개"}, {value: "NONE", text: "비공개"}],
       ownerNickName: null,
       groupItems: [],
-      boardIdRules: [v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => (!v || (v.length > 3 && v.length < 16)) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, 알파벳이 아닌 문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
+      boardIdRules: [v => !reserved.includes(v) || "사용할 수 없는 ID입니다.", v => !v || (v.length > 3 && v.length < 16) || "4~15자로 입력해주세요.", v => boardIdRegex[0].test(v) || "토픽ID의 길이가 너무 길거나, 알파벳이 아닌 문자가 있습니다.", v => boardIdRegex[1].test(v) || "토픽ID에 연속된 [_, -]가 있습니다."],
       boardNameRules: [v => !!v || "토픽 이름을 입력해주세요."],
-      boardMemberItems:[],
+      boardMemberItems: [],
       boardIdErrors: []
     };
   },
-  props:['board'],
+  props: ["board"],
   computed: {
     allGroupAuthDescription() {
       switch (this.allGroupAuth) {
@@ -109,70 +109,74 @@ export default {
           return "모든 회원이 토픽을 구독할 수 있습니다.<br>구독하지 않아도 글을 볼 수 있습니다.<br>핫토픽에 글이 노출됩니다.";
       }
     },
-    reservedContents(){
-      if(this.board && this.board.reservedContents){
-        let reservedContents = this.board.reservedContents
+    reservedContents() {
+      if (this.board && this.board.reservedContents) {
+        let reservedContents = this.board.reservedContents;
         let string = "";
-        for(let key in reservedContents){
-          switch(key){
-            case 'boardName':
-              string += `토픽 이름 : ${reservedContents[key]}\n`
+        for (let key in reservedContents) {
+          switch (key) {
+            case "boardName":
+              string += `토픽 이름 : ${reservedContents[key]}\n`;
               break;
-            case 'boardDescription':
-              string += `토픽 설명 : ${reservedContents[key]}\n`
+            case "boardDescription":
+              string += `토픽 설명 : ${reservedContents[key]}\n`;
               break;
-            case 'allowAnonymous':
-              string += `익명글 허용 여부 : ${reservedContents[key]?'허용':'비허용'}\n`
+            case "allowAnonymous":
+              string += `익명글 허용 여부 : ${reservedContents[key] ? "허용" : "비허용"}\n`;
               break;
-            case 'useCategory':
-              string += `카테고리 : ${reservedContents[key]?'사용':'미사용'}\n`
+            case "useCategory":
+              string += `카테고리 : ${reservedContents[key] ? "사용" : "미사용"}\n`;
               break;
-            case 'allGroupAuth':
-              string += `토픽 공개/비공개 : ${this.allGroupAuthItems[reservedContents[key]]}\n`
+            case "allGroupAuth":
+              string += `토픽 공개/비공개 : ${this.allGroupAuthItems[reservedContents[key]]}\n`;
               break;
-            case 'ownerNickName':
-              string += `토픽지기 : ${reservedContents[key]}\n`
+            case "ownerNickName":
+              string += `토픽지기 : ${reservedContents[key]}\n`;
               break;
-            case 'auth':
-              string += `구독 권한 : ${reservedContents[key].filter(x=>this.groupItems.some(y=>y.value === x.groupId)).map(x=>this.groupItems.find(y=>y.value === x.groupId).text + (x.command === 'INSERT'?' 추가':(x.command === 'DELETE'?' 삭제':''))).join(', ')}`
+            case "auth":
+              string += `구독 권한 : ${reservedContents[key]
+                .filter(x => this.groupItems.some(y => y.value === x.groupId))
+                .map(x => this.groupItems.find(y => y.value === x.groupId).text + (x.command === "INSERT" ? " 추가" : x.command === "DELETE" ? " 삭제" : ""))
+                .join(", ")}`;
               break;
-            case 'status':
-              string += reservedContents[key] === 'DELETED'? '토픽 삭제 예정' : ''
+            case "status":
+              string += reservedContents[key] === "DELETED" ? "토픽 삭제 예정" : "";
               break;
           }
         }
         return string;
-      }else{
+      } else {
         return null;
       }
     }
   },
   methods: {
     reset(skipGetInformationFormServer) {
-      if(this.board){
-        if(!skipGetInformationFormServer){
+      if (this.board) {
+        if (!skipGetInformationFormServer) {
           this.loading = true;
-          this.$axios.get('/board/member', {params:{boardId:this.board.boardId}, headers:{silent:true}})
-          .then(response => {
-            const myNickName = this.$store.getters.profile.topicNickName
-            this.boardMemberItems = response.data.filter(x=>x.nickName !== myNickName).map(x => x.nickName);
-            this.loading = false;
-          })
-          .catch(error => {
-            console.log(error.response);
-            this.loading = false;
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽 구성원을 불러오지 못했습니다.", color: "error"});
-          })
+          this.$axios
+            .get("/board/member", {params: {boardId: this.board.boardId}, headers: {silent: true}})
+            .then(response => {
+              const myNickName = this.$store.getters.profile.topicNickName;
+              this.boardMemberItems = response.data.filter(x => x.nickName !== myNickName).map(x => x.nickName);
+              this.loading = false;
+            })
+            .catch(error => {
+              console.log(error.response);
+              this.loading = false;
+              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽 구성원을 불러오지 못했습니다.", color: "error"});
+            });
         }
         this.boardId = this.board.boardId;
         this.boardName = this.board.boardName;
         this.boardDescription = this.board.boardDescription;
         this.allGroupAuth = this.board.allGroupAuth;
         this.allowAnonymous = this.board.allowAnonymous;
-        this.useCategory = this.board.categories?this.board.categories.filter(x=>x).length > 0 : false;
-        this.allowedGroups = this.board.boardAuth.map(x=>x.groupId);
+        this.useCategory = this.board.categories ? this.board.categories.filter(x => x).length > 0 : false;
+        this.allowedGroups = this.board.boardAuth.map(x => x.groupId);
         this.ownerNickName = this.board.ownerNickName;
-      }else{
+      } else {
         this.boardId = null;
         this.boardName = null;
         this.boardDescription = null;
@@ -208,9 +212,9 @@ export default {
       }
     },
     save() {
-      if(this.board){
+      if (this.board) {
         if (this.$refs.form.validate() && this.boardIdErrors.length === 0) {
-          if(confirm('변경 내용은 1개월 뒤에 반영됩니다. 계속하시겠습니까?')){
+          if (confirm("변경 내용은 1개월 뒤에 반영됩니다. 계속하시겠습니까?")) {
             this.loading = true;
             this.$axios
               .put("/board", {
@@ -234,11 +238,11 @@ export default {
                 this.loading = false;
                 this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
               });
-            }
-          } else {
-            this.$store.dispatch("showSnackbar", {text: "토픽 정보를 정확히 입력해주세요.", color: "error"});
           }
-      }else{
+        } else {
+          this.$store.dispatch("showSnackbar", {text: "토픽 정보를 정확히 입력해주세요.", color: "error"});
+        }
+      } else {
         this.checkBoardId(() => {
           if (this.$refs.form.validate() && this.boardIdErrors.length === 0) {
             this.loading = true;
@@ -287,53 +291,59 @@ export default {
         });
       }
     },
-    deleteBoard(){
-      if(confirm('토픽 삭제는 1개월 유예기간 후에 이루어지고,\n삭제 후에는 모든 글에 접근이 불가능합니다. 계속하시겠습니까?')){
-        this.$axios.put('/board', {boardId:this.boardId, status:'DELETED'})
-        .then(response => {
-          this.$emit("resetBoard");
-          this.$emit("closeDialog");
-          this.$store.dispatch("showSnackbar", {text: "토픽 삭제를 예약하였습니다.", color: "success"});
-        })
-        .catch(error => {
-          console.log(error.response);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
-        })
+    deleteBoard() {
+      if (confirm("토픽 삭제는 1개월 유예기간 후에 이루어지고,\n삭제 후에는 모든 글에 접근이 불가능합니다. 계속하시겠습니까?")) {
+        this.$axios
+          .put("/board", {boardId: this.boardId, status: "DELETED"})
+          .then(response => {
+            this.$emit("resetBoard");
+            this.$emit("closeDialog");
+            this.$store.dispatch("showSnackbar", {text: "토픽 삭제를 예약하였습니다.", color: "success"});
+          })
+          .catch(error => {
+            console.log(error.response);
+            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message : "토픽을 만들지 못했습니다.", color: "error"});
+          });
       }
     }
   },
   created() {
-    this.$axios
-      .get("/group", {headers: {silent: true}})
-      .then(response => {
-        response.data.forEach(x=>{
-          if(x.groupType === 'N' || x.groupType === 'D' || x.groupType === 'E'){
-            x.groupType = 'Z'
-          }
-        })
-        this.groupItems = response.data.sort((a, b) => a.groupType < b.groupType ? -1 : (a.groupType === b.groupType ? 0 : 1));
-        let previous = null;
-        let i = 0;
-        while (i < this.groupItems.length) {
-          if (previous !== this.groupItems[i].groupType) {
-            if (previous) {
-              previous = this.groupItems[i].groupType;
-              this.groupItems.splice(i, 0, {divider: true});
-              i++;
-            } else {
-              previous = this.groupItems[i].groupType;
+    if (this.$store.getters.groups) {
+      this.groupItems = this.$store.getters.groups;
+    } else {
+      this.$axios
+        .get("/group", {headers: {silent: true}})
+        .then(response => {
+          response.data.forEach(x => {
+            if (x.groupType === "N" || x.groupType === "D" || x.groupType === "E") {
+              x.groupType = "Z";
             }
-            this.groupItems.splice(i, 0, {header: groupName[previous]});
+          });
+          this.groupItems = response.data.sort((a, b) => (a.groupType < b.groupType ? -1 : a.groupType === b.groupType ? 0 : 1));
+          let previous = null;
+          let i = 0;
+          while (i < this.groupItems.length) {
+            if (previous !== this.groupItems[i].groupType) {
+              if (previous) {
+                previous = this.groupItems[i].groupType;
+                this.groupItems.splice(i, 0, {divider: true});
+                i++;
+              } else {
+                previous = this.groupItems[i].groupType;
+              }
+              this.groupItems.splice(i, 0, {header: groupName[previous]});
+              i++;
+            }
             i++;
           }
-          i++;
-        }
-        this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
-      })
-      .catch(error => {
-        this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
-      });
-    this.reset()
+          this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
+          this.$store.dispatch("setGroups", this.groupItems);
+        })
+        .catch(error => {
+          this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+        });
+    }
+    this.reset();
   },
   watch: {
     boardId() {
@@ -341,11 +351,11 @@ export default {
         this.boardIdErrors = [];
       }
     },
-    board:{
+    board: {
       handler() {
-        this.reset()
+        this.reset();
       },
-      deep:true
+      deep: true
     }
   }
 };
