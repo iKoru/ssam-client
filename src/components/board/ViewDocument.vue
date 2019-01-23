@@ -191,7 +191,7 @@ export default {
       this.$axios
         .post("/vote/document", {documentId: this.$route.params.documentId}, {headers: {silent: true}})
         .then(res => {
-          document.voteUpCount = res.data.voteUpCount;
+          this.document.voteUpCount = res.data.voteUpCount;
         })
         .catch(error => {
           console.log(error.response);

@@ -5,7 +5,7 @@
     </component>
     <v-progress-circular v-show="$store.getters.spinner" indeterminate color="primary" id="spinner"></v-progress-circular>
     <v-snackbar :timeout="snackbar.color === 'success'?3000:5000" bottom left :color="snackbar.color" v-model="showSnackbar">
-      {{ snackbar.text }}
+      <span>{{ snackbar.text }}</span>
       <v-btn dark flat @click="showSnackbar = false" icon>
         <v-icon>close</v-icon>
       </v-btn>
@@ -59,5 +59,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.v-snack-content span{
+  word-break: break-all;
 }
 </style>

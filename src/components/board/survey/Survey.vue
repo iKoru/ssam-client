@@ -4,7 +4,7 @@
       <v-layout row align-center mx-2>
         <span class="subheading">설문조사</span>
         <v-spacer/>
-        <span v-show="finalResults">
+        <span v-show="finalResults" style="white-space:nowrap;">
           {{survey.participants}}명 참여
         </span>
       </v-layout>
