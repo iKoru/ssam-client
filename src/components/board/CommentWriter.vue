@@ -24,9 +24,8 @@
         <v-btn @click="$refs.imageAttach.click()" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
           <v-icon>image</v-icon>이미지
         </v-btn>
-
         <v-spacer/>
-        <v-btn small @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">쓰기</v-btn>
+        <v-btn small @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">등록</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>

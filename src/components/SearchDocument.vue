@@ -7,11 +7,11 @@
             <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
               <v-container fluid grid-list-xs>
                 <v-layout row>
-                  <v-flex xs3>
-                    <v-autocomplete ref="searchBoard" class="dense" placeholder="검색할 게시판" v-model="boardId" :items="boardItems"></v-autocomplete>
+                  <v-flex xs4>
+                    <v-autocomplete ref="searchBoard" class="dense ellipsis" id="searchBoard" placeholder="검색할 게시판" v-model="boardId" :items="boardItems"></v-autocomplete>
                   </v-flex>
-                  <v-flex xs9 pl-3>
-                    <v-text-field ref="searchQuery" placeholder="글의 제목, 내용으로 검색할 수 있습니다." v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
+                  <v-flex xs8 pl-3>
+                    <v-text-field ref="searchQuery" placeholder="제목, 내용으로 검색할 수 있습니다." v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -32,11 +32,9 @@
                       [{{ boards.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boards.find(x=>x.boardId === props.item.boardId).boardName:boards.find(x=>x.boardId === props.item.boardId).boardName.replace(/\s/g, '').substring(0,2)):'' }}]
                     </v-layout>
                   </td>
-                  <td class="text-xs-left pa-1 multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
-                    <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
-                      {{props.item.title}}
-                      <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
-                    </a>
+                  <td class="text-xs-left pa-1 multi-row cursor-pointer" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+                    {{props.item.title}}
+                    <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                   </td>
                   <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
                   <td class="text-xs-right pa-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('M/D') }}</td>
@@ -73,13 +71,23 @@ export default {
       },
       boardId: null,
       targetYear: new Date().getFullYear(),
-      searchQuery: "",
+      searchQuery: null,
       groupItems: [],
       documents:[],
       totalDocuments:0,
       searched: false,
-      pagination:{}
+      pagination:{},
+      currentSearchQuery: null
     };
+  },
+  mounted(){
+    if(this.$route.query.boardId && this.boardItems.some(x=>x.value === this.$route.query.boardId)){
+      this.boardId = this.$route.query.boardId
+      if(this.$route.query.searchQuery){
+        this.searchQuery = this.$route.query.searchQuery;
+        this.search();
+      }
+    }
   },
   computed: {
     boards(){
@@ -99,21 +107,22 @@ export default {
       return [{text: "게시판", align: "center", sortable: false, value: "boardId", width: this.$vuetify.breakpoint.smAndUp ? "100" : "50"}, {text: "제목", sortable: false, align: "center", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount", width: "30"}, {text: "날짜", sortable: false, align: "right", value: "writeDateTime", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
     },
     pages() {
-      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 0;
+      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
     search(){
-      if(!this.searchQuery){
+      if(!this.searchQuery || this.searchQuery === ''){
         this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
         return;
       }
       this.targetYear = new Date().getFullYear()
+      this.currentSearchQuery = this.searchQuery;
       this.getDocuments(this.targetYear);
       this.searched = true;
     },
     searchMore(){
-      if(!this.searchQuery){
+      if(!this.currentSearchQuery){
         this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
         return;
       }
@@ -121,7 +130,7 @@ export default {
     },
     getDocuments(targetYear){
       this.loading = true;
-      this.$axios.get('/document', {params:{targetYear:targetYear, boardId:this.boardId, searchQuery:this.searchQuery, searchTarget:'titleContents', page:this.pagination.page}, headers:{silent:true}})
+      this.$axios.get('/document', {params:{targetYear:targetYear, boardId:this.boardId, searchQuery:this.currentSearchQuery, searchTarget:'titleContents', page:this.pagination.page}, headers:{silent:true}})
       .then(response => {
         this.documents = Array.isArray(response.data)?response.data : [];
         this.totalDocuments = this.documents[0]?this.documents[0].totalCount:0
@@ -137,7 +146,9 @@ export default {
   watch:{
     pagination: {
       handler() {
-        this.getDocuments(this.targetYear);
+        if(this.currentSearchQuery && this.currentSearchQuery !== ''){
+          this.getDocuments(this.targetYear);
+        }
       },
       deep: true
     }
@@ -161,5 +172,8 @@ export default {
   font-size: 16px;
   background-color: white !important;
   border-color: white !important;
+}
+#searchBoard{
+  text-overflow:ellipsis;
 }
 </style>

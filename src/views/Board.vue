@@ -37,7 +37,7 @@
       <router-view :board="board"/>
     </v-card>
     <v-card flat v-show="!$route.path.endsWith('write')">
-      <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1"/>
+      <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1" @write="moveToWriteDocument"/>
     </v-card>
     <v-dialog v-model="dialog" max-width="800" lazy>
       <board-information :board="selected" @closeDialog="closeDialog"></board-information>

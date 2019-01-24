@@ -5,7 +5,7 @@
         <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
-              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">{{header.text}}</th>
+              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text body-2':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">{{header.text}}</th>
             </tr>
           </template>
           <template slot="items" slot-scope="props">
@@ -35,6 +35,15 @@
           </template>
         </v-data-table>
       </v-flex>
+      <v-flex>
+        <v-layout row pa-2 align-center>
+          <v-spacer/>
+          <v-flex xs6 sm4>
+            <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
+          </v-flex>
+          <v-btn v-show="$route.params.documentId" depressed small class="short" color="primary" @click="$emit('write')">쓰기</v-btn>
+        </v-layout>
+      </v-flex>
       <v-flex text-xs-center mt-2 xs12>
         <v-pagination id="documentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
       </v-flex>
@@ -55,7 +64,8 @@ export default {
       pagination: {}, // page object for data table component
       page: null, // page element for pagination component
       boardId: null, //local current boardId,
-      noDataText: "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!"
+      noDataText: "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!",
+      searchQuery: null
     };
   },
   computed: {
@@ -96,6 +106,11 @@ export default {
           this.noDataText = error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다.";
           this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다."}`, color: "error"});
         });
+    },
+    search(){
+      if(this.searchQuery){
+        this.$router.push(`/searchDocument?boardId=${this.board.boardId}&searchQuery=${this.searchQuery}`);
+      }
     }
   },
   created() {
