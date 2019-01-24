@@ -19,9 +19,9 @@
     <v-flex>
       <v-layout row align-center>
         <span class="ml-3" v-show="allowAnonymous">
-          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0"></v-checkbox>
+          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
-        <v-btn @click="$refs.imageAttach.click()" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}">
+        <v-btn @click="$refs.imageAttach.click()" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
           <v-icon>image</v-icon>이미지
         </v-btn>
 

@@ -13,7 +13,7 @@
                     <span v-html="reservedContents"></span>
                   </v-tooltip>
                   <span class="ml-2" v-if="childBoardItems.length > 1">
-                    <v-select id="childBoardSelector" class="hideLine dense childBoardSelector cursor-pointer mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
+                    <v-select id="childBoardSelector" class="hideLine dense childBoardSelector mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
                   </span>
                   <v-btn small depressed class="short" color="secondary" v-else-if="board.boardType === 'T' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
                 </v-layout>
@@ -340,12 +340,15 @@ export default {
 }
 .childBoardSelector {
   font-size: 14px;
-  cursor: pointer;
 }
 .childBoardSelector .v-input__append-inner {
   margin-left: -16px;
+  cursor:pointer;
 }
 .childBoardSelector .v-input__slot {
   padding-bottom: 0;
+}
+.childBoardSelector .v-select__selection{
+  cursor:pointer;
 }
 </style>

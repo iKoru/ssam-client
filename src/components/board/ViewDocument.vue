@@ -43,25 +43,27 @@
               <span>수정</span>
             </v-btn>
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
-            <v-menu open-on-hover bottom offset-y lazy>
+            <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="scrapMenu" open-on-hover bottom lazy offset-y>
               <v-btn slot="activator" class="short">스크랩</v-btn>
               <v-list dense>
+                <div class="v-list__tile font-weight-bold" @click.stop>스크랩 그룹 선택</div>
                 <v-list-tile v-for="item in scrapGroups" :key="item.scrapGroupId" @click="scrapDocument(item)">
                   <v-list-tile-title>{{ item.scrapGroupName }}</v-list-tile-title>
                 </v-list-tile>
               </v-list>
-            </v-menu>
-            <v-menu open-on-hover bottom offset-y lazy>
+            </component>
+            <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="reportMenu" open-on-hover bottom lazy offset-y>
               <v-btn slot="activator" class="short" v-show="!document.isWriter">신고</v-btn>
               <v-list two-line>
-                <v-list-tile v-for="(item, index) in reportTypes" :key="item.reportTypeId" @click="reportDocument(item)" :class="{'mt-2':index>0}">
+                <div class="font-weight-bold mx-3 my-2" @click.stop>신고사유 선택</div>
+                <v-list-tile v-for="item in reportTypes" :key="item.reportTypeId" @click="reportDocument(item)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{ item.reportTypeName }}</v-list-tile-title>
                     <v-list-tile-sub-title>{{item.reportTypeDescription}}</v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
-            </v-menu>
+            </component>
           </v-btn-toggle>
         </v-flex>
       </v-layout>
@@ -96,7 +98,9 @@ export default {
       showAttach: false,
       scrapGroups: null,
       reportTypes: null,
-      currentBoard: null
+      currentBoard: null,
+      scrapMenu: false,
+      reportMenu: false
     };
   },
   components: {
@@ -235,13 +239,16 @@ export default {
       this.$axios
         .post("/report/document", {documentId: this.document.documentId, reportTypeId: item.reportTypeId})
         .then(response => {
+          this.reportMenu = false;
           this.$store.dispatch("showSnackbar", {text: "이 글을 신고하였습니다.", color: "success"});
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
+            this.reportMenu = false;
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "info"});
           } else {
             console.log(error);
+            this.reportMenu = false;
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "error"});
           }
         });
@@ -250,13 +257,16 @@ export default {
       this.$axios
         .post("/scrap", {scrapGroupId: item.scrapGroupId, documentId: this.document.documentId})
         .then(response => {
+          this.scrapMenu = false;
           this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩하였습니다.", color: "success"});
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
+            this.scrapMenu = false;
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
           } else {
             console.log(error);
+            this.scrapMenu = false;
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
           }
         });

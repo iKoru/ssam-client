@@ -112,4 +112,7 @@ export default {
 #mainToolbarMenu {
   white-space: nowrap;
 }
+#mainToolbarMenu .v-list__tile__content{
+  align-items:flex-end;
+}
 </style>

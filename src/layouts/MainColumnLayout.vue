@@ -10,7 +10,7 @@
             <v-flex xs12>
               <v-card flat>
                 <v-card-title>
-                  <v-layout column class="elevation-1">
+                  <v-layout column class="border-light">
                     <v-flex class="pa-2 mb-2 font-weight-bold grey lighten-3">
                       <router-link to="/notice">
                         <span>공지사항</span>
