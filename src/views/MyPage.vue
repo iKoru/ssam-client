@@ -64,10 +64,10 @@
                       <span>다른 회원들이 내 프로필(사진, 필명, 지역, 학년, 전공)을 볼 수 있습니다.</span>
                     </v-tooltip>
                   </v-layout>
-                  <v-layout row>
+                  <v-layout row align-end>
                     <v-flex xs4>
                       <v-tooltip bottom>
-                        <v-text-field slot="activator" v-model="profile.region" label="지역" class="mt-0 pt-0" disabled hint="NEIS이메일로 자동선택됩니다." hide-details></v-text-field>
+                        <v-text-field slot="activator" v-model="profile.region" label="지역" class="mt-0 pt-0" disabled hint="NEIS이메일로 자동선택됩니다." placeholder="(미지정)" hide-details></v-text-field>
                         <span>NEIS이메일로 자동선택됩니다.</span>
                       </v-tooltip>
                     </v-flex>
@@ -450,5 +450,8 @@ export default {
 <style>
 .v-subheader {
   height: 32px;
+}
+.container.grid-list-xs .layout .flex {
+  padding: 1px 8px;
 }
 </style>
