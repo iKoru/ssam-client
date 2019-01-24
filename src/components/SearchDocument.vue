@@ -83,8 +83,8 @@ export default {
   mounted(){
     if(this.$route.query.boardId && this.boardItems.some(x=>x.value === this.$route.query.boardId)){
       this.boardId = this.$route.query.boardId
-      if(this.$route.query.searchQuery){
-        this.searchQuery = this.$route.query.searchQuery;
+      if(this.$route.query.searchQuery && this.$route.query.searchQuery.trim() !== ''){
+        this.searchQuery = this.$route.query.searchQuery.trim();
         this.search();
       }
     }
@@ -112,12 +112,12 @@ export default {
   },
   methods: {
     search(){
-      if(!this.searchQuery || this.searchQuery === ''){
+      if(!this.searchQuery || this.searchQuery.trim() === ''){
         this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
         return;
       }
       this.targetYear = new Date().getFullYear()
-      this.currentSearchQuery = this.searchQuery;
+      this.currentSearchQuery = this.searchQuery.trim();
       this.getDocuments(this.targetYear);
       this.searched = true;
     },

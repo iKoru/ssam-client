@@ -54,7 +54,7 @@
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
-    <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-hwp, application/pdf, image/*" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
+    <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
     <v-layout py-2 ml-3 justify-center>
       <div class="mr-3">
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
@@ -133,6 +133,7 @@ export default {
           // // formdata 는 계속 append
           // console.log(this.attachedImages, this.attachedFilenames)
           // console.log(file.filename)
+          
           if (!this.formData) this.formData = new FormData();
           if (this.attachedFilenames.includes(file.name)) {
             this.formData.append("attach", file, file.name);
@@ -192,6 +193,13 @@ export default {
     },
     async post() {
       // manually add images as file
+      if(!this.title || this.title.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'제목을 입력해주세요.', color:'error'})
+        return;
+      }else if(!this.content || this.content.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
+        return;
+      }
       await this.handleProcessFile();
       await this.uploadDocument();
     },
@@ -202,8 +210,18 @@ export default {
       this.$refs.pond.getFiles();
     },
     handleFilePondAddFile: function(error, file) {
-      console.log(error);
-      this.attachedFilenames.push(file.filename);
+      console.log(file, error, file.getMetadata())
+      if(!error){
+        if (file.fileSize > 8 * 1024 * 1024) {
+          this.$store.dispatch("showSnackbar", {text: "8MB 이내의 파일만 업로드할 수 있습니다.", color: "error"});
+          file.abortLoad();
+          file.abortProcessing();
+          return;
+        }
+        this.attachedFilenames.push(file.filename);
+      }else{
+        this.$store.dispatch('showSnackbar', {text:file.main + ' ' + file.sub, color:'error'});
+      }
     },
     removeFile(filename) {
       let fileid = this.$refs.pond.getFiles().find(file => file.filename === filename).id;
@@ -283,7 +301,27 @@ export default {
     setOptions({
       labelIdle: "",
       stylePanelLayout: "integrated",
-      stylePanelAspectRatio: 0.0001
+      stylePanelAspectRatio: 0.0001,
+      labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
+      labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
+      labelFileLoading: "파일을 불러오는 중...",
+      labelFileLoadError: "파일을 불러오지 못헀습니다.",
+      labelFileProcessing: "서버로 업로드중...",
+      labelFileProcessingComplete: "파일을 서버로 업로드하였습니다.",
+      labelFileProcessingAborted: "업로드가 취소되었습니다.",
+      labelFileProcessingError: "파일을 업로드하지 못했습니다.",
+      labelTapToCancel: "",
+      labelTapToRetry: "재시도",
+      labelTapToUndo: "",
+      labelButtonRemoveItem: "삭제",
+      labelButtonAbortItemLoad: "중지",
+      labelButtonRetryItemLoad: "재시도",
+      labelButtonAbortItemProcessing: "취소",
+      labelButtonUndoItemProcessing: "재시도",
+      labelButtonProcessItem: "업로드",
+      labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
+      fileValidateTypeLabelExpectedTypes: "이미지, 문서 파일만 업로드가 가능합니다.",
+      allowRevert: false
     });
   }
 };
