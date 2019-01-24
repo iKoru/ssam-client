@@ -11,7 +11,8 @@
       <v-layout row class="body-1" wrap>
         <!--prettyhtml-ignore-->
         <v-flex text-xs-left>
-          <component :is="comment.nickName === ''?'span':'b'" :class="{'body--text':comment.nickName!==''}">{{comment.nickName === '' ? '익명' : comment.nickName}}</component>
+          <!--<component :is="comment.nickName === ''?'span':'b'" :class="{'body--text':comment.nickName!==''}">{{comment.nickName === '' ? '익명' : comment.nickName}}</component>-->
+          <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
           <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
           <b v-if="!children" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
             답글{{comment.childCount > 0? `(${comment.childCount})`:""}}
@@ -46,11 +47,15 @@
 
 <script>
 import BoardMixins from "@/components/mixins/BoardMixins";
+import UserLink from '@/components/UserLink';
 import Quill from "quill";
 
 export default {
   props: ["comment", "commentIndex", "children", "reportTypes"],
   mixins: [BoardMixins],
+  components:{
+    UserLink
+  },
   methods: {
     voteUp() {
       this.$axios

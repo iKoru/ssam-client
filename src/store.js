@@ -39,6 +39,9 @@ export default new Vuex.Store({
     status ({ profile }) {
       return profile ? profile.status : 'NORMAL';
     },
+    boardType({boardType}){
+      return boardType
+    },
     isLight ({ boardType }) {
       return boardType !== 'T'
     },

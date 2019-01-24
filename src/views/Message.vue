@@ -107,6 +107,21 @@ export default {
     this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
     this.getChatList();
   },
+  mounted(){
+    if(this.$route.query.chatId){
+      if(this.chats.some(x=>x.chatId === this.$route.query.chatId)){
+        this.getChat(this.chats.find(x=>x.chatId === this.$route.query.chatId))
+      }else{
+        this.$axios.get('/message/target', {params:{chatId:this.$route.query.chatId}, headers:{silent:true}})
+        .then(response => {
+          this.getChat(response.data);
+        })
+        .catch(error => {
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "채팅을 찾지 못했습니다."}`, color: "error"});
+        })
+      }
+    }
+  },
   methods: {
     getChatList() {
       this.loading = true;
@@ -119,7 +134,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `채팅 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "채팅 목록을 가져오지 못했습니다."}`, color: "error"});
           this.loading = false;
         });
       this.closeChat();
@@ -145,7 +160,7 @@ export default {
             })
             .catch(error => {
               console.log(error.response);
-              this.$store.dispatch("showSnackbar", {text: `메시지를 보내지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+              this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "메시지를 보내지 못했습니다."}`, color: "error"});
             });
         }
       })(message);

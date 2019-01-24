@@ -7,8 +7,9 @@
           <v-layout row mt-1>
             <v-spacer/>
             <v-flex text-xs-right>
-              <span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>
-              | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+              <!--<span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>-->
+              <user-link :nickName="document.nickName" :boardType="board.boardType"/>
+               | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
           </v-layout>
         </div>
@@ -85,6 +86,7 @@
 // import LinkPrevue from '@/components/LinkPrevue'
 import Survey from "@/components/board/survey/Survey";
 import CommentWriter from "@/components/board/CommentWriter";
+import UserLink from '@/components/UserLink';
 import ViewComments from "@/components/board/ViewComments";
 import BoardMixins from "@/components/mixins/BoardMixins";
 import Quill from "quill";
@@ -106,7 +108,8 @@ export default {
   components: {
     Survey,
     CommentWriter,
-    ViewComments
+    ViewComments,
+    UserLink
   },
   mixins: [BoardMixins],
   created() {
