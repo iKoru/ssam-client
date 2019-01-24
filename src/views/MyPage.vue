@@ -5,7 +5,7 @@
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">내 계정 정보</h3>
-            <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
+            <div :class="{'text-xs-center justify-center align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
               <p>
                 <component :is="$vuetify.breakpoint.xsOnly?'v-bottom-sheet':'v-menu'" v-model="bottomSheet" absolute offset-y v-if="profile.picturePath">
                   <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" slot="activator" title="클릭하여 이미지 변경 또는 삭제">

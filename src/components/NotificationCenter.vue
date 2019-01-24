@@ -96,25 +96,6 @@ export default {
 };
 </script>
 <style>
-.v_time_ago_a {
-  color: #657786;
-  cursor: pointer;
-  font-size: 14px;
-  text-decoration: none;
-}
-.v_time_ago_a:active,
-.v_time_ago_a:focus,
-.v_time_ago_a:hover {
-  color: #1b95e0;
-  text-decoration: underline;
-}
-.v_time_ago_span {
-  letter-spacing: 0.1px;
-  line-height: 20px;
-  list-style-image: none;
-  list-style-position: outside;
-  list-style-type: none;
-}
 .tooltip {
   display: inline-block;
   position: relative;
