@@ -7,7 +7,7 @@
             <v-layout row align-center>
               <v-flex>
                 <v-layout row align-center>
-                  <span class="title cursor-pointer" @click="$route.params.documentId?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
+                  <span class="title cursor-pointer" @click="$route.params.documentId || $route.path.endsWith('write')?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
                   <v-tooltip bottom v-if="reservedContents" close-delay="500">
                     <v-icon slot="activator" small class="ml-1" color="primary">calendar_today</v-icon>
                     <span v-html="reservedContents"></span>
@@ -15,7 +15,7 @@
                   <span class="ml-2" v-if="childBoardItems.length > 1">
                     <v-select id="childBoardSelector" class="hideLine dense childBoardSelector mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
                   </span>
-                  <v-btn small depressed class="short" color="secondary" v-else-if="board.boardType === 'T' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
+                  <v-btn small depressed class="short" color="accent" v-else-if="board.boardType === 'T' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
                 </v-layout>
               </v-flex>
               <v-spacer/>

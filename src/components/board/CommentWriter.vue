@@ -17,7 +17,7 @@
       </quill-editor>
     </v-flex>
     <v-flex>
-      <v-layout row align-center>
+      <v-layout row align-center py-2>
         <span class="ml-3" v-show="allowAnonymous">
           <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
@@ -43,6 +43,11 @@ export default {
       editorOption: {
         placeholder: this.isCommentWritable === 'AVAILABLE'?"댓글을 입력해주세요.":(this.isCommentWritable === 'UNAVAILABLE'?'댓글을 작성할 수 있는 권한이 없습니다.':(this.isCommentWritable === 'RESTRICTED'?'글쓰기가 제한되어 있습니다.':'토픽 구독 후 입력된 댓글이 등록됩니다.')),
         modules: {
+          magicUrl: {
+            urlRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            globalRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            normalizeRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/
+          },
           toolbar: ".commentToolbar",
           imageDrop: true,
           imageResize: true
@@ -59,14 +64,12 @@ export default {
   components: {},
   methods: {
     attachImages() {
-      console.log(this.$refs.commentEditor.quill.editor.delta);
       this.imageCount = this.$refs.commentEditor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty("image")).length;
       return this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           // random generated uuid should given here
           let imgSrc = item.insert.image;
           let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
-          console.log(imgSrc);
           this.formData.append("attach", this.dataURItoBlob(imgSrc), imageName);
           item.insert.image = imageName;
           this.originImages.push({name: imageName, src: imgSrc});
@@ -75,7 +78,6 @@ export default {
       });
     },
     revertImages() {
-      console.log(this.$refs.commentEditor);
       this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           // random generated uuid should given here
@@ -84,7 +86,6 @@ export default {
         }
       });
       this.originImages = [];
-      console.log(this.$refs.commentEditor.quill.editor.delta.ops);
     },
     async postComment() {
       this.loading = true;
@@ -92,18 +93,17 @@ export default {
         try{
           await this.$axios.post('/user/board', {boardId:this.boardId}, {headers:{silent:true}})
         }catch(error){
-          if(!error.response || error.response.status === 409){
+          if(!error.response || error.response.status !== 409){
             this.loading = false;
             this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || '댓글을 쓰기 위한 구독을 하지 못했습니다.' : "댓글을 쓰기 위한 구독을 하지 못했습니다."}`, color: "error"});
             return;
           }
         }
         this.$store.dispatch("addUserBoard", Object.assign({}, this.$store.getters.boards.find(x=>x.boardId === this.boardId)));
-        this.$store.dispatch("showSnackbar", {text: `${this.board.boardName} 토픽을 구독하였습니다.`, color: "info"});
+        this.$store.dispatch("showSnackbar", {text: `${this.$store.getters.boards.find(x=>x.boardId === this.boardId).boardName} 토픽을 구독하였습니다.`, color: "info"});
       }
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
-      console.log(this.$route.params.documentId);
       this.formData.append("documentId", this.$route.params.documentId);
       this.formData.append("contents", JSON.stringify(this.$refs.commentEditor.quill.editor.delta));
       this.formData.append("isAnonymous", this.anonymous);
@@ -111,20 +111,20 @@ export default {
         this.formData.append("parentCommentId", this.commentTo);
       }
       this.$axios
-        .post("/comment", this.formData)
+        .post("/comment", this.formData, {headers:{silent:true}})
         .then(res => {
-          console.log(res);
           this.$refs.commentEditor.quill.setText("");
           this.revertImages();
           this.loading = false;
           this.$emit("update");
           delete this.formData;
         })
-        .catch(err => {
-          console.log(err);
+        .catch(error => {
+          console.log(error);
           delete this.formData;
           this.revertImages();
           this.loading = false;
+          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "댓글을 등록하지 못했습니다."}`, color: "error"});
         });
     }
   }

@@ -77,7 +77,7 @@
       </v-slide-y-transition>
     </v-flex>
     <v-flex mb-4>
-      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes"/>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes" :boardId="document.boardId"/>
     </v-flex>
   </v-layout>
 </template>
@@ -229,7 +229,26 @@ export default {
         }
       });
       quill.setContents(delta);
-      return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
+      // Clean spaces between tags
+      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
+      
+      // Clean empty paragraphs before the content
+      // <p><br/><p> && <p></p>
+      let slicer;
+      while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
+        if (newText.slice(0,7) === '<p></p>') slicer = 7
+        else slicer = 11
+        newText = newText.substring(slicer, newText.length)
+      }
+    
+      // Clean empty paragraphs after the content
+      while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
+        if (newText.slice(-7) === '<p></p>') slicer = 7
+        else slicer = 11
+        newText = newText.substring(0, newText.length - slicer)
+      }
+      // Return the clean Text
+      return newText
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);

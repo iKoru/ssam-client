@@ -11,7 +11,6 @@
       <v-layout row class="body-1" wrap>
         <!--prettyhtml-ignore-->
         <v-flex text-xs-left>
-          <!--<component :is="comment.nickName === ''?'span':'b'" :class="{'body--text':comment.nickName!==''}">{{comment.nickName === '' ? '익명' : comment.nickName}}</component>-->
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
           <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
           <b v-if="!children" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
@@ -71,6 +70,7 @@ export default {
       this.$axios
         .put("/comment", {commentId: this.comment.commentId, isDeleted: true})
         .then(response => {
+          this.comment.contents = '삭제된 댓글입니다.'
           this.comment.isDeleted = true;
           this.$store.dispatch("showSnackbar", {text: "댓글을 삭제하였습니다.", color: "success"});
         })
@@ -113,7 +113,26 @@ export default {
         }
       });
       quill.setContents(delta);
-      return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
+       // Clean spaces between tags
+      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
+      
+      // Clean empty paragraphs before the content
+      // <p><br/><p> && <p></p>
+      let slicer;
+      while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
+        if (newText.slice(0,7) === '<p></p>') slicer = 7
+        else slicer = 11
+        newText = newText.substring(slicer, newText.length)
+      }
+    
+        // Clean empty paragraphs after the content
+      while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
+        if (newText.slice(-7) === '<p></p>') slicer = 7
+        else slicer = 11
+        newText = newText.substring(0, newText.length - slicer)
+      }
+      // Return the clean Text
+      return newText
     },
     getImagePath(imagePath) {
       console.log(this.comment);

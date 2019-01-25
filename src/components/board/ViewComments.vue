@@ -16,8 +16,8 @@
                 </v-list-tile>
               </div>
             </div>
-            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index">
-              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index" class="pl-5">
+              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :boardId="boardId"/>
             </v-list-tile>
             <v-divider :key="'divider'+index"></v-divider>
           </template>
@@ -40,7 +40,7 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes"],
+  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId"],
   data() {
     return {
       commentList: [],

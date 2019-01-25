@@ -109,9 +109,9 @@ export default {
         modules: {
           toolbar: "#toolbar",
           magicUrl: {
-            normalizeUrlOptions: {
-              stripWWW: false
-            }
+            urlRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            globalRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            normalizeRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
           },
           imageDrop: true,
           imageResize: true
