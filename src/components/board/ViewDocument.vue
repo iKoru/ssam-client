@@ -40,7 +40,7 @@
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
-            <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/edit/${document.documentId}`">
+            <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/${document.documentId}/edit`">
               <span>수정</span>
             </v-btn>
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>

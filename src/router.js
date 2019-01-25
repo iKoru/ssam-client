@@ -172,7 +172,7 @@ const router = new Router({
           component: () => import('@/components/board/WriteDocument')
         },
         {
-          path: 'edit/:documentId(\\d+)',
+          path: ':documentId(\\d+)/edit',
           name: 'editDocument',
           props:true,
           component: () => import('@/components/board/EditDocument')

@@ -94,6 +94,7 @@ export default {
     Survey,
     FilePond
   },
+  props: ['documentId', 'boardId'],
   mixins: [BoardMixins],
   data() {
     return {
@@ -176,20 +177,38 @@ export default {
       for (var pair of this.formData.entries()) {
         console.log(pair[0] + ", " + pair[1]);
       }
-      return this.$axios
-        .post("/document", this.formData)
+      if(this.boardId && this.documentId) {
+        this.formData.append("documentId", this.documentId)
+        return this.$axios
+        .put(`/document`, this.formData)
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-            this.revertImages();
+            // this.revertImages();
           }
         })
         .catch(error => {
           delete this.formData;
-          this.revertImages();
+          // this.revertImages();
           this.attachedFileNumber = 0;
           console.log(error.response);
         });
+      } else {
+        return this.$axios
+          .post("/document", this.formData)
+          .then(response => {
+            if (response.status === 200) {
+              this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
+              this.revertImages();
+            }
+          })
+          .catch(error => {
+            delete this.formData;
+            this.revertImages();
+            this.attachedFileNumber = 0;
+            console.log(error.response);
+          });
+      }
     },
     async post() {
       // manually add images as file
@@ -242,11 +261,13 @@ export default {
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
           // random generated uuid should given here
-          let imgSrc = item.insert.image;
-          let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
-          this.formData.append("attach", this.dataURItoBlob(imgSrc), imageName);
-          item.insert.image = imageName;
-          this.originImages.push({name: imageName, src: imgSrc});
+          if(item.insert.image.includes('data:image')) {
+            let imgSrc = item.insert.image;
+            let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
+            this.formData.append("attach", this.dataURItoBlob(imgSrc), imageName);
+            item.insert.image = imageName;
+            this.originImages.push({name: imageName, src: imgSrc});
+          }
           // 취소되었을 때 이미지 source restore해야함
         }
       });
@@ -283,6 +304,16 @@ export default {
         this.currentSurvey.questions = [];
         this.survey = undefined;
       }
+    },
+    parseDocument(data) {
+          this.boardId = data.boardId
+          this.title = data.title
+          this.contents = JSON.parse(data.contents)
+          this.$refs.editor.quill.setContents(this.contents)
+          this.isAnonymous = data.isAnonymous
+          if(data.survey) {
+            this.survey = JSON.parse(data.survey)
+          }
     }
   },
   computed: {
@@ -295,6 +326,26 @@ export default {
       handler(to) {
         if (to) this.disallowAnonymous = false;
       }
+    }
+  },
+  created() {
+    if(this.boardId && this.documentId) {
+      this.$axios
+        .get(`/${this.boardId}/${this.documentId}`)
+        .then(response => {
+          this.parseDocument(response.data)
+          // this.survey = JSON.parse(response.data.survey)
+          // if (Array.isArray(response.data.attach)) {
+          //   response.data.attach = response.data.attach.filter(x => x !== null);
+          // }
+          // this.document = response.data;
+          // this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
+          // this.showAttach = false;
+        })
+        .catch(error => {
+          console.log(error.response);
+          this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
+        }); 
     }
   },
   mounted() {
@@ -322,7 +373,7 @@ export default {
       labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
       fileValidateTypeLabelExpectedTypes: "이미지, 문서 파일만 업로드가 가능합니다.",
       allowRevert: false
-    });
+    })
   }
 };
 </script>
