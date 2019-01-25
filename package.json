@@ -24,7 +24,7 @@
     "moment": "^2.23.0",
     "quill-image-drop-module": "^1.0.3",
     "quill-image-resize-module": "^3.0.0",
-    "quill-magic-url": "^1.0.2",
+    "quill-magic-url": "github:iKoru/quill-magic-url",
     "register-service-worker": "^1.0.0",
     "surveyjs_vue_quickstart": "github:ngongon/surveyjs_vue_quickstart",
     "vue": "^2.5.17",
