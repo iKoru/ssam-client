@@ -14,8 +14,8 @@ import MagicUrl from 'quill-magic-url'
 import { ImageDrop } from 'quill-image-drop-module'
 import ImageResize from 'quill-image-resize-module'
 
-/*let BlockEmbed = Quill.import('blots/block/embed')
-class ImageBlot extends BlockEmbed {
+let BlockEmbed = Quill.import('blots/block/embed')
+/*class ImageBlot extends BlockEmbed {
     static create(value) {
         let node = super.create();
         console.log(value)
@@ -37,49 +37,51 @@ class ImageBlot extends BlockEmbed {
 ImageBlot.blotName = 'image';
 ImageBlot.tagName = 'img';
 Quill.register(ImageBlot);*/
-// class VideoBlot extends BlockEmbed {
-//     static create(url) {
-//         let node = super.create();
+class VideoBlot extends BlockEmbed {
+    static create(url) {
+        const node = super.create();
+        node.setAttribute('class', 'video-container');
+    
+        const child = document.createElement('iframe');
+        child.setAttribute('src', url);
+        child.setAttribute('frameborder', 0);
+        child.setAttribute('allowfullscreen', true);
+        node.appendChild(child);
+        return node;
+    }
 
-//         // Set non-format related attributes with static values
-//         node.setAttribute('frameborder', '0');
-//         node.setAttribute('allowfullscreen', true);
+    static formats(node) {
+        // We still need to report unregistered embed formats
+        let format = {};
+        if (node.hasAttribute('height')) {
+        format.height = node.getAttribute('height');
+        }
+        if (node.hasAttribute('width')) {
+        format.width = node.getAttribute('width');
+        }
+        return format;
+    }
 
-//         return node;
-//     }
+    static value(node) {
+      return node.firstChild.getAttribute('src');
+    }
 
-//     static formats(node) {
-//         // We still need to report unregistered embed formats
-//         let format = {};
-//         if (node.hasAttribute('height')) {
-//         format.height = node.getAttribute('height');
-//         }
-//         if (node.hasAttribute('width')) {
-//         format.width = node.getAttribute('width');
-//         }
-//         return format;
-//     }
-
-//     static value(node) {
-//         return node.getAttribute('src');
-//     }
-
-//     format(name, value) {
-//         // Handle unregistered embed formats
-//         if (name === 'height' || name === 'width') {
-//         if (value) {
-//             this.domNode.setAttribute(name, value);
-//         } else {
-//             this.domNode.removeAttribute(name, value);
-//         }
-//         } else {
-//         super.format(name, value);
-//         }
-//     }
-// }
-// VideoBlot.blotName = 'video';
-// VideoBlot.tagName = 'iframe';
-// Quill.register(VideoBlot)
+    format(name, value) {
+        // Handle unregistered embed formats
+        if (name === 'height' || name === 'width') {
+        if (value) {
+            this.domNode.setAttribute(name, value);
+        } else {
+            this.domNode.removeAttribute(name, value);
+        }
+        } else {
+        super.format(name, value);
+        }
+    }
+}
+VideoBlot.blotName = 'video';
+VideoBlot.tagName = 'div';
+Quill.register(VideoBlot)
 Quill.register('modules/magicUrl', MagicUrl)
 Quill.register('modules/imageDrop', ImageDrop)
 Quill.register('modules/imageResize', ImageResize)

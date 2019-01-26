@@ -145,4 +145,17 @@ export default {
 .comment-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
+.comment-editor .video-container{
+  position:relative;
+  height:0;
+  width:100%;
+  padding-bottom:56%;
+}
+.comment-editor .video-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 </style>

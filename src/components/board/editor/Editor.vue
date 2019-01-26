@@ -431,4 +431,17 @@ export default {
 #write-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
+#write-editor .video-container{
+  position:relative;
+  height:0;
+  width:100%;
+  padding-bottom:56%;
+}
+#write-editor .video-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 </style>

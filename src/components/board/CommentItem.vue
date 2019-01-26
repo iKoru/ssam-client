@@ -149,11 +149,32 @@ export default {
 .commentContents p img {
   max-width: 100%;
 }
+.commentContents .video-container{
+  position:relative;
+  height:0;
+  width:100%;
+  padding-bottom:56%;
+}
+.commentContents .video-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 @media (max-width: 600px) {
   .commentContents p img {
     max-width: calc(100% + 32px);
     margin-left: -16px;
     margin-right: -16px;
+  }
+  .commentContents .video-container{
+    position:relative;
+    height:0;
+    width:calc(100% + 32px);
+    margin-left:-16px;
+    margin-right:-16px;
+    padding-bottom:56%;
   }
 }
 </style>

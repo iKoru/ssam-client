@@ -349,11 +349,32 @@ export default {
 #documentContents p img, #documentContents img {
   max-width: 100%;
 }
+#documentContents .video-container{
+  position:relative;
+  height:0;
+  width:100%;
+  padding-bottom:56%;
+}
+#documentContents .video-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 @media (max-width: 600px) {
   #documentContents p img, #documentContents img {
     max-width: calc(100% + 32px);
     margin-left: -16px;
     margin-right: -16px;
+  }
+  #documentContents .video-container{
+    position:relative;
+    height:0;
+    width:calc(100% + 32px);
+    margin-left:-16px;
+    margin-right:-16px;
+    padding-bottom:56%;
   }
 }
 </style>
