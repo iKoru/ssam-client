@@ -20,7 +20,7 @@
               <td class="text-xs-left" v-if="$vuetify.breakpoint.mdAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
               <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
                 <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
-                  {{ getShortContents(props.item.contents) }}
+                  {{ selectContents(props.item.contents) }}
                   <span class="primary--text" title="대댓글 수">{{props.item.childCount > 0?'['+props.item.childCount+']':''}}</span>
                 </a>
               </td>
@@ -42,6 +42,8 @@
   </v-card>
 </template>
 <script>
+import Quill from "quill";
+
 export default {
   name: "MyComment",
   data() {
@@ -89,9 +91,6 @@ export default {
       const routeData = this.$router.resolve({path: path});
       window.open(routeData.href, "_blank");
     },
-    getShortContents(contents) {
-      return contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
-    },
     deleteRow() {
       if (this.selected !== null) {
         this.$axios
@@ -110,6 +109,18 @@ export default {
       } else {
         this.$store.dispatch("showSnackbar", {text: "삭제할 댓글을 선택해주세요.", color: "error"});
       }
+    },
+    selectContents(delta){
+      let object;
+      try{
+        object = JSON.parse(delta);
+      }catch(error){
+        return '';
+      }
+      let quill = new Quill(document.createElement("div"));
+      quill.setContents(object);
+      console.log('delta : ', delta, 'length : ', quill.getLength())
+      return quill.getText(0, 50) + (quill.getLength() > 50? '...' : '');
     }
   },
   watch: {
