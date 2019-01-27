@@ -119,7 +119,6 @@ export default {
       }
       let quill = new Quill(document.createElement("div"));
       quill.setContents(object);
-      console.log('delta : ', delta, 'length : ', quill.getLength())
       return quill.getText(0, 50) + (quill.getLength() > 50? '...' : '');
     }
   },

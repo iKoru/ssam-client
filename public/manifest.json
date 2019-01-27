@@ -1,20 +1,21 @@
 {
-  "name": "dev",
-  "short_name": "dev",
+  "short_name": "Pedagy",
+  "name": "선생님들의 노다지 - Pedagy",
   "icons": [
     {
       "src": "/img/icons/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "/img/icons/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
-  "start_url": "/index.html",
+  "start_url": "/index",
+  "background_color": "#FFFFFF",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#4DBA87"
+  "scope": "/",
+  "theme_color": "#3F51B5"
 }
