@@ -19,8 +19,10 @@ module.exports = {
       loader: ['style-loader', 'css-loader', 'stylus-loader']
     }
   },
+  publicPath: process.env.NODE_ENV === 'development'?'/':'/',
   transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]filepond-plugin-file-validate-type[/\\\\]/],
   chainWebpack: config => {
+    //config.plugin('workbox')
     config.module.rule('eslint').use('eslint-loader').options({
       fix: true
     })
@@ -38,5 +40,16 @@ module.exports = {
           // ...
         }
       }))
+  },
+  pwa: {
+    // configure the workbox plugin
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      // swSrc is required in InjectManifest mode.
+      swSrc: 'public/service-worker.js',
+      // ...other Workbox options...
+    },
+    name:'Pedagy',
+    msTileColor:'#3F51B5'
   }
 }
