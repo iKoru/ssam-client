@@ -1,9 +1,12 @@
 <template>
   <v-list-tile-content class="py-1 px-0">
     <v-list-tile-title>
-      <v-layout row>
+      <v-layout column>
         <v-flex>
-          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{commentContents:true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted, 'ql-editor':true, 'py-0':true, 'px-3':true}"></div>
+          <v-chip label small color="primary" class="white--text ml-0 my-0 ml-3" v-if="isBest">베스트</v-chip>
+        </v-flex>
+        <v-flex>
+          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted}"></div>
         </v-flex>
       </v-layout>
     </v-list-tile-title>
@@ -13,31 +16,37 @@
         <v-flex text-xs-left>
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
           <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
-          <b v-if="!children" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
+          <b v-if="!children && !isBest" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
             답글{{comment.childCount > 0? `(${comment.childCount})`:""}}
           </b>
         </v-flex>
         <v-spacer/>
         <v-flex text-xs-right px-2>
-          <span @click="voteUp" class="cursor-pointer" title="추천">
+          <span @click="voteUp" class="cursor-pointer" title="추천" v-if="isBest">
             <v-icon color="primary" small>thumb_up</v-icon>
-            <b class="mx-1 body--text">{{comment.voteUpCount}}</b> |
+            <b class="mx-1 body--text">{{comment.voteUpCount}}</b>
           </span>
-          <template v-if="comment.isWriter">
-            <span class="cursor-pointer" @click="updateComment">수정</span> |
-            <span class="cursor-pointer" @click="deleteComment">삭제</span>
+          <template v-else>
+            <span @click="voteUp" class="cursor-pointer" title="추천">
+              <v-icon color="primary" small>thumb_up</v-icon>
+              <b class="mx-1 body--text">{{comment.voteUpCount}}</b> |
+            </span>
+            <template v-if="comment.isWriter">
+              <span class="cursor-pointer" @click="updateComment">수정</span> |
+              <span class="cursor-pointer" @click="deleteComment">삭제</span>
+            </template>
+            <v-menu open-on-hover bottom offset-y lazy v-else>
+              <span class="cursor-pointer" slot="activator">신고</span>
+              <v-list two-line>
+                <v-list-tile v-for="(item, index) in reportTypes" :key="item.reportTypeId" @click="reportComment(item)" :class="{'mt-2':index>0}">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ item.reportTypeName }}</v-list-tile-title>
+                    <v-list-tile-sub-title>{{item.reportTypeDescription}}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
           </template>
-          <v-menu open-on-hover bottom offset-y lazy v-else>
-            <span class="cursor-pointer" slot="activator">신고</span>
-            <v-list two-line>
-              <v-list-tile v-for="(item, index) in reportTypes" :key="item.reportTypeId" @click="reportComment(item)" :class="{'mt-2':index>0}">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ item.reportTypeName }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{item.reportTypeDescription}}</v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-menu>
         </v-flex>
       </v-layout>
     </v-list-tile-sub-title>
@@ -50,7 +59,7 @@ import UserLink from '@/components/UserLink';
 import Quill from "quill";
 
 export default {
-  props: ["comment", "commentIndex", "children", "reportTypes"],
+  props: ["comment", "commentIndex", "children", "reportTypes", "isBest"],
   mixins: [BoardMixins],
   components:{
     UserLink
@@ -145,6 +154,7 @@ export default {
 <style>
 .commentContents p {
   margin-bottom: 3px;
+  word-break:break-all;
 }
 .commentContents p img {
   max-width: 100%;

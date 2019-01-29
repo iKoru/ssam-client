@@ -1,8 +1,18 @@
 <template>
   <v-layout row>
     <v-flex xs12>
-      <v-card>
+      <v-card class="mb-3 elevation-1" flat v-if="best && best.length > 0">
         <v-list two-line class="commentList py-0">
+          <template v-for="(item, index) in best">
+            <v-list-tile :key="'best'+index" class="bestComment">
+              <comment-item :comment="item" :commentIndex="index" @update="getCommentList" :reportTypes="reportTypes" :isBest="true"/>
+            </v-list-tile>
+            <v-divider :key="'bestDivider'+index"></v-divider>
+          </template>
+        </v-list>
+      </v-card>
+      <v-card>
+        <v-list two-line class="commentList py-0 pb-1">
           <template v-for="(item, index) in commentList">
             <v-list-tile :key="index">
               <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
@@ -22,7 +32,10 @@
             <v-divider :key="'divider'+index"></v-divider>
           </template>
         </v-list>
-        <div class="pt-3">
+        <v-flex text-xs-center mt-2 xs12 v-if="pages > 1">
+          <v-pagination id="commentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+        </v-flex>
+        <div class="pt-2">
           <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
         </div>
       </v-card>
@@ -40,18 +53,19 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId"],
+  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId", "best", "totalComments"],
   data() {
     return {
       commentList: [],
-      openRecommentIndex: -1
+      openRecommentIndex: -1,
+      page:this.pages
     };
   },
   methods: {
     getCommentList() {
       this.openRecommentIndex = -1;
       this.$axios
-        .get("/comment", {params: {documentId: this.$route.params.documentId}, headers: {silent: true}})
+        .get("/comment", {params: {documentId: this.$route.params.documentId, page:this.page}, headers: {silent: true}})
         .then(res => {
           res.data.forEach(x => {
             if (Array.isArray(x.attach)) {
@@ -67,13 +81,22 @@ export default {
       else this.openRecommentIndex = commentIndex;
     }
   },
+  computed:{
+    pages() {
+      return Math.ceil(this.totalComments / 10);
+    }
+  },
   watch: {
     "$route.params": {
       handler() {
+        this.page = this.pages;
         this.getCommentList();
       },
       deep: true,
       immediate: true
+    },
+    page(val){
+      this.getCommentList();
     }
   }
 };
@@ -91,5 +114,21 @@ export default {
 .commentList .v-list__tile__content {
   height: fit-content;
   padding: 0 16px;
+}
+.commentList .bestComment{
+  background-color:#B3E5FC;
+}
+#commentPagination .v-pagination__item,
+#commentPagination .v-pagination__item--active,
+#commentPagination .v-pagination__navigation {
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+#commentPagination .v-pagination__item--active {
+  color: black;
+  font-weight: bold;
+  background-color: white !important;
+  border-color: white !important;
 }
 </style>
