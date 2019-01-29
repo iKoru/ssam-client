@@ -164,7 +164,7 @@ export default {
       }
     },
     pages() {
-      return Math.ceil(this.document.commentCount / (process.env.NODE_ENV === 'development'?10:100));
+      return this.document.commentCount === 0? 1 : Math.ceil(this.document.commentCount / (process.env.NODE_ENV === 'development'?10:100));
     }
   },
   methods: {
