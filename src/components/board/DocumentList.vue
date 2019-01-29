@@ -17,10 +17,10 @@
                 </v-layout>
               </td>
               <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
-              <td :class="{'text-xs-left py-1 ellipsis cursor-pointer':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${props.item.boardId}/${props.item.documentId}`)">
+              <td :class="{'text-xs-left py-1 ellipsis cursor-pointer':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
-                    <router-link :to="`/${board.boardId}/${props.item.documentId}`">{{props.item.title}}</router-link>
+                    <router-link :to="`/${board.boardId}/${props.item.documentId}`" @click.native.stop>{{props.item.title}}</router-link>
                   </div>
                   <span class="accent--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </v-layout>
@@ -41,7 +41,7 @@
           <v-flex xs6 sm4>
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
           </v-flex>
-          <v-btn v-show="$route.params.documentId" depressed small class="short" color="primary" @click="$emit('write')">쓰기</v-btn>
+          <v-btn v-show="(($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short" color="primary" @click="$emit('write')">쓰기</v-btn>
         </v-layout>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
@@ -55,7 +55,7 @@ import BoardMixins from "@/components/mixins/BoardMixins";
 export default {
   name: "DocumentList",
   mixins: [BoardMixins],
-  props: ["board", "hasChildren"],
+  props: ["board", "hasChildren", "documentBoardId"],
   data() {
     return {
       documents: [],

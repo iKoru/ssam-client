@@ -15,11 +15,11 @@
                   <span class="ml-2" v-if="childBoardItems.length > 1">
                     <v-select id="childBoardSelector" class="hideLine dense childBoardSelector mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
                   </span>
-                  <v-btn small depressed class="short" color="accent" v-else-if="board.boardType === 'T' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
+                  <v-btn small depressed class="short" color="accent" v-else-if="board.boardType === 'T' && board.boardId !== 'topicBest' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
                 </v-layout>
               </v-flex>
               <v-spacer/>
-              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write')" :small="$vuetify.breakpoint.xsOnly">
+              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit') && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" :small="$vuetify.breakpoint.xsOnly">
                 <v-icon small>edit</v-icon>
               </v-btn>
             </v-layout>
@@ -33,11 +33,11 @@
         </v-layout>
       </v-card-title>
     </v-card>
-    <v-card flat :class="{'my-3':$route.path.endsWith('write')}">
-      <router-view :board="board"/>
+    <v-card flat :class="{'my-3':$route.path.endsWith('write') || $route.path.endsWith('edit')}">
+      <router-view :board="board" :documentBoardId.sync="documentBoardId"/>
     </v-card>
-    <v-card flat v-show="!$route.path.endsWith('write')">
-      <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1" @write="moveToWriteDocument"/>
+    <v-card flat v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit')">
+      <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1" @write="moveToWriteDocument" :documentBoardId.sync="documentBoardId"/>
     </v-card>
     <v-dialog v-model="dialog" max-width="800" lazy>
       <board-information :board="selected" @closeDialog="closeDialog"></board-information>
@@ -65,7 +65,8 @@ export default {
       D: "인증제한"
     },
     groupItems: [],
-    allGroupAuthItems: {"READWRITE": "전체구독허용", "READONLY": "읽기공개","NONE": "비공개"}
+    allGroupAuthItems: {"READWRITE": "전체구독허용", "READONLY": "읽기공개","NONE": "비공개"},
+    documentBoardId: null
   }),
   props: ["boardId"],
   mixins: [BoardMixins],
@@ -132,23 +133,39 @@ export default {
   },
   methods: {
     moveToWriteDocument() {
-      if (!this.board.parentBoardId && this.childBoardItems.length > 1) {
+      let board = this.board
+      let childBoardItems = this.childBoardItems
+      if((board.boardId === 'loungeBest' || board.boardId === 'topicBest') && this.documentBoardId){
+        board = this.$store.getters.boards.find(x=>x.boardId === this.documentBoardId);
+        if(!board){
+          board = this.board;
+        }
+        if (board.parentBoardId) {
+          childBoardItems = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.parentBoardId && x.boardId !== this.boardId);
+          childBoardItems.splice(0, 0, this.$store.getters.boards.find(x => x.boardId === this.board.parentBoardId));
+          childBoardItems.splice(0, 0, {boardId: null, boardName: this.childBoardLabel});
+        } else {
+          childBoardItems = this.$store.getters.boards.filter(x => x.parentBoardId === this.boardId);
+          childBoardItems.splice(0, 0, {boardId: null, boardName: this.childBoardLabel});
+        }
+      }
+      if (!board.parentBoardId && childBoardItems.length > 1) {
         const profile = this.$store.getters.profile;
-        const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
-        let available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth) && (this.board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : x.allowedGroups.some(y => y === profile.region || y === profile.major || y === profile.grade || profile.groups.includes(y)) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
+        const userBoard = this.$store.getters.userBoards.find(x => x.boardId === board.boardId);
+        let available = this.$store.getters.boards.filter(x => x.parentBoardId === board.boardId && x.statusAuth.write.includes(profile.auth) && (board.boardType === "T" ? userBoard && (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) : x.allowedGroups.some(y => y === profile.region || y === profile.major || y === profile.grade || profile.groups.includes(y)) && (!userBoard || !userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment()))));
         if (available.length > 0) {
           this.$router.push(`/${available[0].boardId}/write`);
           this.$store.dispatch("showSnackbar", {text: `글을 쓸 수 있는 ${available[0].boardName}에 작성됩니다.`, color: "info"});
         } else if (this.board.boardType === "T") {
           this.$store.dispatch("showSnackbar", {text: "글을 쓸 토픽을 선택하여 구독해주세요", color: "info"});
         } else {
-          available = this.$store.getters.boards.filter(x => x.parentBoardId === this.board.boardId && x.statusAuth.write.includes(profile.auth));
+          available = this.$store.getters.boards.filter(x => x.parentBoardId === board.boardId && x.statusAuth.write.includes(profile.auth));
           if (available.length === 0) {
             this.$store.dispatch("showSnackbar", {text: "인증 후에 글을 쓸 수 있습니다.", color: "info"});
           } else {
             available = available.filter(x => x.allowedGroups.some(y => y === profile.region || y === profile.major || y === profile.grade || profile.groups.includes(y)));
             if (available.length === 0) {
-              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly ? "학년, 전공을 지정해주세요." : "내 계정정보에서 학년, 전공을 지정해주세요."}`, color: "info"});
+              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[board.boardType]}가 없습니다. ${this.$vuetify.breakpoint.xsOnly ? "학년, 전공을 지정해주세요." : "내 계정정보에서 학년, 전공을 지정해주세요."}`, color: "info"});
             } else {
               this.$store.dispatch("showSnackbar", {text: `현재 ${available[0].boardName}에 글쓰기가 제한되어있습니다.`, color: "info"});
             }
@@ -156,25 +173,25 @@ export default {
         }
       } else {
         const profile = this.$store.getters.profile;
-        if (this.board.statusAuth.write.includes(profile.auth)) {
-          if (this.board.boardType === "T") {
-            if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
-              const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
+        if (board.statusAuth.write.includes(profile.auth)) {
+          if (board.boardType === "T") {
+            if (this.$store.getters.userBoards.some(x => x.boardId === board.boardId)) {
+              const userBoard = this.$store.getters.userBoards.find(x => x.boardId === board.boardId);
               if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-                this.$router.push(`/${this.board.boardId}/write`);
+                this.$router.push(`/${board.boardId}/write`);
               } else {
                 this.$store.dispatch("showSnackbar", {text: `글쓰기가 ${this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").format("Y/M/D")}까지 제한되었습니다.`});
               }
             } else {
               //need subscription
-              if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
+              if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
                 //i can subscribe this board!
                 this.$axios
-                  .post("/user/board", {boardId: this.board.boardId})
+                  .post("/user/board", {boardId: board.boardId})
                   .then(response => {
-                    this.$store.dispatch("addUserBoard", Object.assign({}, this.board));
-                    this.$store.dispatch("showSnackbar", {text: `${this.board.boardName} 토픽을 구독하였습니다.`, color: "info"});
-                    this.$router.push(`/${this.board.boardId}/write`);
+                    this.$store.dispatch("addUserBoard", Object.assign({}, board));
+                    this.$store.dispatch("showSnackbar", {text: `${board.boardName} 토픽을 구독하였습니다.`, color: "info"});
+                    this.$router.push(`/${board.boardId}/write`);
                   })
                   .catch(error => {
                     console.log(error);
@@ -185,23 +202,23 @@ export default {
               }
             }
           } else {
-            if (this.board.allGroupAuth === "READWRITE" || this.board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
-              if (this.$store.getters.userBoards.some(x => x.boardId === this.board.boardId)) {
-                const userBoard = this.$store.getters.userBoards.find(x => x.boardId === this.board.boardId);
+            if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
+              if (this.$store.getters.userBoards.some(x => x.boardId === board.boardId)) {
+                const userBoard = this.$store.getters.userBoards.find(x => x.boardId === board.boardId);
                 if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-                  this.$router.push(`/${this.board.boardId}/write`);
+                  this.$router.push(`/${board.boardId}/write`);
                 } else {
                   this.$store.dispatch("showSnackbar", {text: `글쓰기가 ${this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").format("Y/M/D")}까지 제한되었습니다.`});
                 }
               } else {
-                this.$router.push(`/${this.board.boardId}/write`);
+                this.$router.push(`/${board.boardId}/write`);
               }
             } else {
-              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[this.board.boardType]}가 아닙니다.`, color: "info"});
+              this.$store.dispatch("showSnackbar", {text: `현재 소속된 ${this.boardTypeItems[board.boardType]}가 아닙니다.`, color: "info"});
             }
           }
         } else {
-          this.$store.dispatch("showSnackbar", {text: `${this.board.statusAuth.write.map(x => this.userAuthItems[x]).join(", ")}회원만 글을 쓸 수 있습니다.`, color: "info"});
+          this.$store.dispatch("showSnackbar", {text: `${board.statusAuth.write.map(x => this.userAuthItems[x]).join(", ")}회원만 글을 쓸 수 있습니다.`, color: "info"});
         }
       }
     },

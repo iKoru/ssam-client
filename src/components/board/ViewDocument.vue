@@ -77,7 +77,7 @@
       </v-slide-y-transition>
     </v-flex>
     <v-flex mb-4>
-      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes" :boardId="document.boardId"/>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes" :boardId="document.boardId" :best="document.bestComments" :totalComments="document.commentCount"/>
     </v-flex>
   </v-layout>
 </template>
@@ -175,6 +175,7 @@ export default {
           this.document = response.data;
           this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
           this.showAttach = false;
+          this.$emit("update:documentBoardId", this.document.boardId);
         })
         .catch(error => {
           console.log(error);
@@ -187,7 +188,7 @@ export default {
           .put("/document", {documentId: this.documentId, isDeleted: true})
           .then(response => {
             this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
-            this.$router.push(`/${this.boardId}`);
+            this.$router.push(`/${this.$route.boardId}`);
           })
           .catch(error => {
             this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글을 삭제하지 못했습니다."}`, color: "error"});
