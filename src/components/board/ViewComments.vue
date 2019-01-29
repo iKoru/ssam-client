@@ -53,7 +53,7 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId", "best", "totalComments"],
+  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId", "best", "pages"],
   data() {
     return {
       commentList: [],
@@ -81,16 +81,14 @@ export default {
       else this.openRecommentIndex = commentIndex;
     }
   },
-  computed:{
-    pages() {
-      return Math.ceil(this.totalComments / 10);
-    }
-  },
   watch: {
     "$route.params": {
       handler() {
-        this.page = this.pages;
-        this.getCommentList();
+        this.$nextTick(() => {
+          this.page = this.pages
+          console.log('pages to ' + this.pages)
+          this.getCommentList();
+        });
       },
       deep: true,
       immediate: true

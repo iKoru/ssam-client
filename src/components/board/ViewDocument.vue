@@ -77,7 +77,7 @@
       </v-slide-y-transition>
     </v-flex>
     <v-flex mb-4>
-      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes" :boardId="document.boardId" :best="document.bestComments" :totalComments="document.commentCount"/>
+      <ViewComments :isAnonymous="document.isWriter && document.nickName === ''" :allowAnonymous="document.allowAnonymous" :isCommentWritable="isCommentWritable" :reportTypes="reportTypes" :boardId="document.boardId" :best="document.bestComments" :pages="pages"/>
     </v-flex>
   </v-layout>
 </template>
@@ -162,6 +162,9 @@ export default {
       } else {
         return "UNAVAILABLE";
       }
+    },
+    pages() {
+      return Math.ceil(this.document.commentCount / (process.env.NODE_ENV === 'development'?10:100));
     }
   },
   methods: {
