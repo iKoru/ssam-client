@@ -21,7 +21,7 @@
         </template>
         <template v-else>
           <div class="d-flex cover-title align-center text-xs-center">
-            <div class="my-auto flex d-inline-block">표시할 내용이 없습니다.</div>
+            <div class="my-auto flex d-inline-block pt-5">표시할 내용이 없습니다.</div>
           </div>
           <div class="pt-3 px-2 position-relative boardTitle">
             <router-link :to="'/'+recent.boardId">
@@ -56,7 +56,7 @@ export default {
   },
   mounted() {
     if (this.$store.getters.recents) {
-      this.recents = this.$store.getters.recents.filter(x => x.boardId !== "notice");
+      this.recents = this.$store.getters.recents.filter(x => x.boardId !== "notice" && x.boardId);
     } else {
       this.$axios
         .get("/recent", {headers: {silent: true}})
@@ -68,7 +68,7 @@ export default {
               }
             });
           });
-          this.recents = response.data.filter(x => x.boardId !== "notice");
+          this.recents = response.data.filter(x => x.boardId !== "notice" && x.boardId);
           this.$store.dispatch("setRecents", response.data);
         })
         .catch(error => {

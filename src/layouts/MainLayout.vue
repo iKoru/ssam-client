@@ -28,7 +28,7 @@ export default {
   computed: {
     lounges() {
       const lounges = this.$store.getters.boards.filter(x => x.boardType !== "T" && x.boardType !== "X" && !x.parentBoardId);
-      lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
+      //lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
       lounges.splice(2, 0, {boardName: null, boardId: null});
       return lounges;
     },
@@ -39,11 +39,13 @@ export default {
         .filter(x => x.boardType === "T")
         .concat(
           boards
-            .filter(x => x.boardType === "T" && x.allGroupAuth !== "NONE" && !userBoards.some(y => y.boardId === x.boardId))
+            .filter(x => x.boardType === "T" && x.allGroupAuth !== "NONE" && !userBoards.some(y => y.boardId === x.boardId) && x.boardId !== 'topicBest')
             .slice(0, 10)
             .map(x => ({...x, notJoined: true}))
         );
-      topics.splice(0, 0, {boardName: "핫 토픽", boardId: "topicBest"});
+      if(boards.some(x=>x.boardId === 'topicBest')){
+        topics.splice(0, 0, boards.find(x=>x.boardId === 'topicBest'));
+      }
       return topics;
     }
   },
@@ -53,9 +55,9 @@ export default {
       .then(response => {
         this.$store.dispatch("profile", response.data);
       })
-      .catch(err => {
-        console.log(err);
-        this.$store.dispatch("showSnackbar", {text: err && err.response ? err.response.data.message : "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.", color: "error"});
+      .catch(error => {
+        console.log(error);
+        this.$store.dispatch("showSnackbar", {text: error && error.response ? error.response.data.message : "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.", color: "error"});
       });
     this.$axios
       .get("/board/list", {headers: {silent: true}})

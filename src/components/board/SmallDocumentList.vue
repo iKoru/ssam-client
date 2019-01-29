@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="!list || list.length === 0">
-      <div>표시할 내용이 없습니다.</div>
+      <div class="my-2 text-xs-center">표시할 내용이 없습니다.</div>
     </template>
     <v-list v-else dense light class="dense-list">
       <template v-for="n in Math.min((maxCount || 10), list.length)">

@@ -11,15 +11,21 @@
               <v-card flat>
                 <v-card-title>
                   <v-layout column class="border-light">
-                    <v-flex class="pa-2 mb-2 font-weight-bold grey lighten-3">
+                    <v-flex class="pa-2 font-weight-bold grey lighten-3">
                       <router-link to="/notice">
                         <span>공지사항</span>
                       </router-link>
                     </v-flex>
                     <v-flex class="px-2">
-                      <small-document-list :list="notice.length > 0? notice[0].documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
+                      <small-document-list :list="notice? notice.documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
-                    <v-flex class="pa-2 mt-2 grey lighten-3 font-weight-bold">
+                    <v-flex class="pa-2 font-weight-bold grey lighten-3">
+                      <span>따끈따끈 베스트</span>
+                    </v-flex>
+                    <v-flex class="px-2">
+                      <small-document-list :list="best? best.documents : []" :maxCount="5" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
+                    </v-flex>
+                    <v-flex class="pa-2 grey lighten-3 font-weight-bold">
                       <router-link to="/tools">생활기록부 도구</router-link>
                     </v-flex>
                     <v-flex xs12 class="text-xs-center">광고가 들어갈것이다.</v-flex>
@@ -70,7 +76,8 @@ export default {
   },
   data() {
     return {
-      notice: {}
+      notice: {},
+      best: {}
     };
   },
   computed: {
@@ -80,7 +87,8 @@ export default {
   },
   mounted() {
     if (this.$store.getters.recents) {
-      this.notice = this.$store.getters.recents.filter(x => x.boardId === "notice");
+      this.notice = this.$store.getters.recents.find(x => x.boardId === "notice");
+      this.best = this.$store.getters.recents.find(x=>x.boardId === null);
     } else {
       this.$axios
         .get("/recent", {headers: {silent: true}})
@@ -92,7 +100,8 @@ export default {
               }
             });
           });
-          this.notice = response.data.filter(x => x.boardId === "notice");
+          this.notice = response.data.find(x => x.boardId === "notice");
+          this.best = response.data.find(x=>x.boardId === null);
           this.$store.dispatch("setRecents", response.data);
         })
         .catch(error => {
