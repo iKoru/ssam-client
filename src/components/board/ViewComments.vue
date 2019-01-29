@@ -58,7 +58,7 @@ export default {
     return {
       commentList: [],
       openRecommentIndex: -1,
-      page:this.pages
+      page:undefined
     };
   },
   methods: {
@@ -84,17 +84,20 @@ export default {
   watch: {
     "$route.params": {
       handler() {
-        this.$nextTick(() => {
-          this.page = this.pages
-          console.log('pages to ' + this.pages)
-          this.getCommentList();
-        });
+        if(!this.page){
+          this.$nextTick(() => {
+            this.page = this.pages;
+          })
+        }
       },
       deep: true,
       immediate: true
     },
     page(val){
       this.getCommentList();
+    },
+    pages(val){
+      this.page = this.pages
     }
   }
 };
