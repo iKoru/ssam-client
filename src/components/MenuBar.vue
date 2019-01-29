@@ -86,7 +86,7 @@
         </v-layout>
       </v-flex>
       <v-flex order-sm2 order-xs3>
-        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!$store.getters.isLight" :mandatory="false" touchless>
+        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!isLight" :mandatory="false" touchless>
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents':true}">
             <template v-show="menu===0">
               <v-flex class="scrollContainer" v-if="$vuetify.breakpoint.smAndUp">
@@ -193,6 +193,9 @@ export default {
   computed: {
     menuBar() {
       return this.$store.getters.menuBar;
+    },
+    isLight(){
+      return this.$store.getters.isLight
     }
   },
   methods: {
@@ -218,6 +221,11 @@ export default {
           });
         }
       }
+    }
+  },
+  watch:{
+    isLight(val){
+      this.menu = val?0:1;
     }
   }
 };
