@@ -36,7 +36,7 @@
         </v-btn>
       </div>
       <div>
-        <v-btn small flat @click="attachButtonClick">
+        <v-btn small flat @click="openFileDialog">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
           <input type="file" multiple id="file-upload" style="display:none" @change="onFileChange">
         </v-btn>
@@ -69,7 +69,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
     <v-layout py-2 ml-3 justify-center>
       <div class="mr-3">
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
@@ -86,29 +85,18 @@
         <v-btn v-else class="primary" @click="post()">등록</v-btn>
       </v-flex>
     </v-layout>
-
-    <!-- <div>viewer
-          {{surveyJSON}}
-          <survey :surveyJSON="surveyJSON"/>
-    </div>-->
   </v-layout>
 </template>
 <script>
 // Import plugins
 import Survey from "@/components/board/survey/Survey";
 import SurveyMaker from "@/components/board/survey/SurveyMaker";
-import vueFilePond, {setOptions} from "vue-filepond";
 import BoardMixins from "@/components/mixins/BoardMixins";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
-
-const FilePond = vueFilePond(FilePondPluginFileValidateType);
-
 export default {
   name: "Editor",
   components: {
     SurveyMaker,
     Survey,
-    FilePond
   },
   props: ['documentId', 'boardId'],
   mixins: [BoardMixins],
@@ -138,34 +126,17 @@ export default {
       },
       show: false,
       isAnonymous: false,
+      formData: undefined,
+      rawFileData: undefined,
       disallowAnonymous: false,
       attachedFilenames: [],
       deletedFilenames: [],
       attachedImages: [],
-      formData: undefined,
       modifyingFormData: undefined,
       attachedFileNumber: 0,
       attachFromServer: undefined,
       selectedFile: undefined,
       originImages: [],
-      server: {
-        process: (fieldName, file, metadata, load, error, progress, abort) => {
-          // const formData = new FormData();
-          // // formdata 는 계속 append
-          // console.log(this.attachedImages, this.attachedFilenames)
-          // console.log(file.filename)
-          
-          if (!this.formData) this.formData = new FormData();
-          if (this.attachedFilenames.includes(file.name)) {
-            this.formData.append("attach", file, file.name);
-            this.attachedFileNumber += 1;
-          }
-          if (this.attachedFileNumber === this.attachedFilenames.length) {
-            this.uploadDocument();
-          }
-          return {load, error, progress, abort};
-        }
-      }
     };
   },
   // manually control the data synchronization
@@ -188,6 +159,7 @@ export default {
       if (this.survey) {
         this.formData.append("survey", JSON.stringify(this.survey));
       }
+      await this.processUploadFiles()
       for (var pair of this.formData.entries()) {
         console.log(pair[0] + ", " + pair[1]);
       }
@@ -215,7 +187,7 @@ export default {
         this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
         return;
       }
-      await this.handleProcessFile();
+      // await this.handleProcessFile();
       await this.uploadDocument();
     },
     async modifyPost() {
@@ -225,19 +197,11 @@ export default {
       // check image and attach change
       // 이미지/파일 달라진 것 -> post/delete
       // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
-      console.log(this.documentId)
       let modifiedBody = {
         documentId: this.documentId,
         title: this.title,
         contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
       }
-      // let fileDeleteList = []
-      // let fileNewList = []
-      console.log(this.attachFromServer)
-      this.deletedFilenames.forEach(f => {
-        console.log(f)
-        
-      })
       return this.$axios
       .put(`/document`, modifiedBody)
       .then(response => {
@@ -245,7 +209,6 @@ export default {
           console.log(response)
 
           console.log(this.deletedFilenames)
-          // this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
         }
       })
       .catch(error => {
@@ -253,52 +216,6 @@ export default {
         this.attachedFileNumber = 0;
         console.log(error.response);
       });
-    },
-    handleFilePondInit: function() {
-      console.log("FilePond has initialized");
-
-      // example of instance method call on pond reference
-      this.$refs.pond.getFiles();
-    },
-    handleFilePondAddFile: function(error, file) {
-      console.log(file, error, file.getMetadata())
-      if(!error){
-        if (file.fileSize > 8 * 1024 * 1024) {
-          this.$store.dispatch("showSnackbar", {text: "8MB 이내의 파일만 업로드할 수 있습니다.", color: "error"});
-          file.abortLoad();
-          file.abortProcessing();
-          return;
-        }
-        this.attachedFilenames.push(file.filename);
-      }else{
-        this.$store.dispatch('showSnackbar', {text:file.main + ' ' + file.sub, color:'error'});
-      }
-    },
-    removeFile(filename) {
-      if(this.documentId) {
-        // when editing
-        this.deletedFilenames.push(filename)
-        this.attachedFilenames = this.attachedFilenames.filter(f => f !== filename)
-        // 없는 애들로 새로 생성해서 올려야 함.
-        // Display the key/value pairs
-        // for (var pair of this.modifyingFormData.entries()) {
-        //     console.log(pair[0]+ ', ' + pair[1]); 
-        //     console.log(pair[1].name)
-        // }
-      } else {
-        let fileid = this.$refs.pond.getFiles().find(file => file.filename === filename).id;
-        this.$refs.pond.removeFile(fileid);
-        this.show = false;
-      }
-    },
-    handleFilePondRemoveFile: function(file) {
-      this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename);
-    },
-    handleProcessFile: function() {
-      return this.$refs.pond
-        .processFiles()
-        .then(res => console.log(res))
-        .catch(err => console.error(err));
     },
     attachImages() {
       this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty("image")).length;
@@ -319,13 +236,11 @@ export default {
     revertImages() {
       this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          // random generated uuid should given here
           let imgName = item.insert.image;
           item.insert.image = this.originImages.find(img => img.name === imgName).src;
         }
       });
       this.originImages = [];
-      console.log(this.$refs.editor.quill.editor.delta.ops);
     },
     surveyButtonClick() {
       if (this.documentId && this.survey) {
@@ -339,10 +254,6 @@ export default {
         this.currentSurvey = JSON.parse(JSON.stringify(this.survey));
       }
       this.surveyDialog = true;
-    },
-    attachButtonClick() {
-      if(this.documentId) this.openFileDialog()
-      else this.$refs.pond.browse()
     },
     extractSurvey(survey) {
       this.surveyDialog = false;
@@ -384,20 +295,44 @@ export default {
             
           }
     },
+    attachButtonClick() {
+      if(this.documentId) this.openFileDialog()
+      else this.$refs.pond.browse()
+    },
     openFileDialog() {
       document.getElementById('file-upload').click();
     },
     onFileChange(e) {
-        if (!this.modifyingFormData) this.modifyingFormData = new FormData();
+        if (!this.rawFileData) this.rawFileData = new FormData();
         var self = this;
-        var files = e.target.files || e.dataTransfer.files;       
+        var files = e.target.files || e.dataTransfer.files;
+        console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
-                self.modifyingFormData.append("file", files[i], files[i].name);
-                self.attachedFilenames.push(files[i].name)
+                let sameNameCount = 0;
+                self.attachedFilenames.forEach(name => {
+                  if(name.toLowerCase() === files[i].name.toLowerCase()) sameNameCount++
+                })
+                let filename = files[i].name
+                if(sameNameCount > 0) filename = filename + ' (' + sameNameCount + ')'
+                self.rawFileData.append("file", files[i], filename);
+                self.attachedFilenames.push(filename)
+                // keep delete -> attach case
+                self.deletedFilenames = self.deletedFilenames.filter(f=>f!==filename)
             }
         }
     },
+    removeFile(filename) {
+      this.deletedFilenames.push(filename)
+      this.attachedFilenames = this.attachedFilenames.filter(f => f !== filename)
+    },
+    processUploadFiles() {
+      for (var pair of this.rawFileData.entries()) {
+          if(!this.deletedFilenames.includes(pair[1].name)) {
+            this.formData.append('attach', pair[1], pair[1].name)
+          }
+      }
+    }
   },
   computed: {
     editor() {
@@ -417,47 +352,12 @@ export default {
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
           this.parseDocument(response.data)
-          // this.survey = JSON.parse(response.data.survey)
-          // if (response.data.attach && Array.isArray(response.data.attach)) {
-          //   response.data.attach = response.data.attach.filter(x => x !== null);
-          // }
-          // this.document = response.data;
-          // this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
-          // this.showAttach = false;
         })
         .catch(error => {
-          console.log(error)
           console.log(error.response);
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 
     }
-  },
-  mounted() {
-    setOptions({
-      labelIdle: "",
-      stylePanelLayout: "integrated",
-      stylePanelAspectRatio: 0.0001,
-      labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
-      labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
-      labelFileLoading: "파일을 불러오는 중...",
-      labelFileLoadError: "파일을 불러오지 못헀습니다.",
-      labelFileProcessing: "서버로 업로드중...",
-      labelFileProcessingComplete: "파일을 서버로 업로드하였습니다.",
-      labelFileProcessingAborted: "업로드가 취소되었습니다.",
-      labelFileProcessingError: "파일을 업로드하지 못했습니다.",
-      labelTapToCancel: "",
-      labelTapToRetry: "재시도",
-      labelTapToUndo: "",
-      labelButtonRemoveItem: "삭제",
-      labelButtonAbortItemLoad: "중지",
-      labelButtonRetryItemLoad: "재시도",
-      labelButtonAbortItemProcessing: "취소",
-      labelButtonUndoItemProcessing: "재시도",
-      labelButtonProcessItem: "업로드",
-      labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
-      fileValidateTypeLabelExpectedTypes: "이미지, 문서 파일만 업로드가 가능합니다.",
-      allowRevert: false
-    })
   }
 };
 </script>
