@@ -36,8 +36,9 @@
         </v-btn>
       </div>
       <div>
-        <v-btn small flat @click="$refs.pond.browse()">
+        <v-btn small flat @click="attachButtonClick">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
+          <input type="file" multiple id="file-upload" style="display:none" @change="onFileChange">
         </v-btn>
       </div>
     </v-layout>
@@ -48,12 +49,26 @@
             <v-layout row align-center>
               <div class="ellipsis">{{item}}</div>
               <v-spacer/>
-              <v-btn small class="short" @click="removeFile(item)">삭제</v-btn>           
+              <v-btn small class="short" @click="removeFile(item)">삭제</v-btn>
             </v-layout>
           </v-slide-y-transition>
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
+    <v-dialog v-if="documentId && survey" v-model="surveyViewerDialog" max-width="500px" :fullscreen="$vuetify.breakpoint.xsOnly" scrollable>
+      <v-card>
+        <v-toolbar flat>
+          <v-toolbar-title>설문조사 확인</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn class="toolbar-btn-last" @click="surveyViewerDialog=false" icon><v-icon>close</v-icon></v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-layout column>
+            <survey :currentSurvey="survey" :onlyView="true"/>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
     <v-layout py-2 ml-3 justify-center>
       <div class="mr-3">
@@ -67,7 +82,8 @@
     <v-layout row>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn class="primary" @click="post()">등록</v-btn>
+        <v-btn v-if="documentId" class="primary" @click="modifyPost()">수정</v-btn>
+        <v-btn v-else class="primary" @click="post()">등록</v-btn>
       </v-flex>
     </v-layout>
 
@@ -104,6 +120,7 @@ export default {
       content: "",
       survey: undefined,
       surveyDialog: false,
+      surveyViewerDialog: false,
       currentSurvey: {questions: []},
       editorOption: {
         placeholder: "내용을 입력해주세요.",
@@ -123,9 +140,12 @@ export default {
       isAnonymous: false,
       disallowAnonymous: false,
       attachedFilenames: [],
+      deletedFilenames: [],
       attachedImages: [],
       formData: undefined,
+      modifyingFormData: undefined,
       attachedFileNumber: 0,
+      attachFromServer: undefined,
       selectedFile: undefined,
       originImages: [],
       server: {
@@ -150,12 +170,6 @@ export default {
   },
   // manually control the data synchronization
   methods: {
-    // onEditorBlur (quill) {
-    //   console.log('editor blur!', quill)
-    // },
-    // onEditorFocus (quill) {
-    //   console.log('editor focus!', quill)
-    // },
     onEditorReady(quill) {
       console.log("editor ready!", quill);
     },
@@ -177,38 +191,20 @@ export default {
       for (var pair of this.formData.entries()) {
         console.log(pair[0] + ", " + pair[1]);
       }
-      if(this.boardId && this.documentId) {
-        this.formData.append("documentId", this.documentId)
-        return this.$axios
-        .put(`/document`, this.formData)
+      return this.$axios
+        .post("/document", this.formData)
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-            // this.revertImages();
+            this.revertImages();
           }
         })
         .catch(error => {
           delete this.formData;
-          // this.revertImages();
+          this.revertImages();
           this.attachedFileNumber = 0;
           console.log(error.response);
         });
-      } else {
-        return this.$axios
-          .post("/document", this.formData)
-          .then(response => {
-            if (response.status === 200) {
-              this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-              this.revertImages();
-            }
-          })
-          .catch(error => {
-            delete this.formData;
-            this.revertImages();
-            this.attachedFileNumber = 0;
-            console.log(error.response);
-          });
-      }
     },
     async post() {
       // manually add images as file
@@ -221,6 +217,42 @@ export default {
       }
       await this.handleProcessFile();
       await this.uploadDocument();
+    },
+    async modifyPost() {
+      // edit given document put 한번 attach post delete한번
+      // if (!this.formData) this.formData = new FormData();
+
+      // check image and attach change
+      // 이미지/파일 달라진 것 -> post/delete
+      // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
+      console.log(this.documentId)
+      let modifiedBody = {
+        documentId: this.documentId,
+        title: this.title,
+        contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+      }
+      // let fileDeleteList = []
+      // let fileNewList = []
+      console.log(this.attachFromServer)
+      this.deletedFilenames.forEach(f => {
+        console.log(f)
+        
+      })
+      return this.$axios
+      .put(`/document`, modifiedBody)
+      .then(response => {
+        if (response.status === 200) {
+          console.log(response)
+
+          console.log(this.deletedFilenames)
+          // this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
+        }
+      })
+      .catch(error => {
+        delete this.formData;
+        this.attachedFileNumber = 0;
+        console.log(error.response);
+      });
     },
     handleFilePondInit: function() {
       console.log("FilePond has initialized");
@@ -243,9 +275,21 @@ export default {
       }
     },
     removeFile(filename) {
-      let fileid = this.$refs.pond.getFiles().find(file => file.filename === filename).id;
-      this.$refs.pond.removeFile(fileid);
-      this.show = false;
+      if(this.documentId) {
+        // when editing
+        this.deletedFilenames.push(filename)
+        this.attachedFilenames = this.attachedFilenames.filter(f => f !== filename)
+        // 없는 애들로 새로 생성해서 올려야 함.
+        // Display the key/value pairs
+        // for (var pair of this.modifyingFormData.entries()) {
+        //     console.log(pair[0]+ ', ' + pair[1]); 
+        //     console.log(pair[1].name)
+        // }
+      } else {
+        let fileid = this.$refs.pond.getFiles().find(file => file.filename === filename).id;
+        this.$refs.pond.removeFile(fileid);
+        this.show = false;
+      }
     },
     handleFilePondRemoveFile: function(file) {
       this.attachedFilenames = this.attachedFilenames.filter(filename => file.filename !== filename);
@@ -284,12 +328,21 @@ export default {
       console.log(this.$refs.editor.quill.editor.delta.ops);
     },
     surveyButtonClick() {
+      if (this.documentId && this.survey) {
+        // 글 수정시 설문 수정 불가
+        this.surveyViewerDialog = true
+        return;
+      }
       if (this.currentSurvey.questions.length === 0) {
         this.currentSurvey.questions.push({title: "", allowMultipleChoice: false, choices: ["", ""]});
       } else if(this.survey){
         this.currentSurvey = JSON.parse(JSON.stringify(this.survey));
       }
       this.surveyDialog = true;
+    },
+    attachButtonClick() {
+      if(this.documentId) this.openFileDialog()
+      else this.$refs.pond.browse()
     },
     extractSurvey(survey) {
       this.surveyDialog = false;
@@ -309,12 +362,42 @@ export default {
           this.boardId = data.boardId
           this.title = data.title
           this.contents = JSON.parse(data.contents)
+          this.attachFromServer = data.attach
           this.$refs.editor.quill.setContents(this.contents)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
-            this.survey = JSON.parse(data.survey)
+            this.survey = data.survey
           }
-    }
+          if(data.attach) {
+            console.log(data.attach)
+            console.log(this.contents)
+            let image;
+            this.contents.ops.forEach(item => {
+              if (item.insert.hasOwnProperty("image")) {
+                image = data.attach.find(x => x.attach_name === item.insert.image);
+                if (image) {
+                  image.insert = true;
+                }
+              }
+            })
+            this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
+            
+          }
+    },
+    openFileDialog() {
+      document.getElementById('file-upload').click();
+    },
+    onFileChange(e) {
+        if (!this.modifyingFormData) this.modifyingFormData = new FormData();
+        var self = this;
+        var files = e.target.files || e.dataTransfer.files;       
+        if(files.length > 0){
+            for(var i = 0; i < files.length; i++){
+                self.modifyingFormData.append("file", files[i], files[i].name);
+                self.attachedFilenames.push(files[i].name)
+            }
+        }
+    },
   },
   computed: {
     editor() {
@@ -335,7 +418,7 @@ export default {
         .then(response => {
           this.parseDocument(response.data)
           // this.survey = JSON.parse(response.data.survey)
-          // if (Array.isArray(response.data.attach)) {
+          // if (response.data.attach && Array.isArray(response.data.attach)) {
           //   response.data.attach = response.data.attach.filter(x => x !== null);
           // }
           // this.document = response.data;
@@ -343,6 +426,7 @@ export default {
           // this.showAttach = false;
         })
         .catch(error => {
+          console.log(error)
           console.log(error.response);
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 

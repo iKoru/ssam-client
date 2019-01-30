@@ -2,7 +2,8 @@
   <v-layout column class="border-light py-2" v-if="survey">
     <v-flex>
       <v-layout row align-center mx-2>
-        <span class="subheading">설문조사</span>
+        <span v-if="onlyView" class="subheading">글 작성 후에 수정/삭제가 불가능합니다.</span>
+        <span v-else class="subheading">설문조사</span>
         <v-spacer/>
         <span v-show="finalResults" style="white-space:nowrap;">
           {{survey.participants}}명 참여
@@ -32,7 +33,7 @@
       </div>
       <v-divider v-if="index + 1 !== survey.surveyContents.questions.length" :key="'divider'+index" class="mt-3"></v-divider>
     </v-flex>
-    <v-flex v-if="!survey.participated">
+    <v-flex v-if="!survey.participated && !onlyView">
       <v-layout justify-center my-2>
         <v-btn small @click="showSurveyResult = !showSurveyResult">
           {{showSurveyResult? '돌아가기':'결과보기'}}
@@ -45,7 +46,7 @@
 
 <script>
 export default {
-  props: ["currentSurvey"],
+  props: ["currentSurvey", "onlyView"],
   data() {
     return {
       showSurveyResult: false,
