@@ -54,6 +54,20 @@
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
+    <v-dialog v-if="documentId && survey" v-model="surveyViewerDialog" max-width="500px" :fullscreen="$vuetify.breakpoint.xsOnly" scrollable>
+      <v-card>
+        <v-toolbar flat>
+          <v-toolbar-title>설문조사 확인</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn class="toolbar-btn-last" @click="surveyViewerDialog=false" icon><v-icon>close</v-icon></v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-layout column>
+            <survey :currentSurvey="survey" :onlyView="true"/>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <file-pond name="attachment" ref="pond" instantUpload="false" allow-multiple="true" accepted-file-types="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" :server="server" @addfile="handleFilePondAddFile" @removefile="handleFilePondRemoveFile" v-on:init="handleFilePondInit"/>
     <v-layout py-2 ml-3 justify-center>
       <div class="mr-3">
@@ -105,6 +119,7 @@ export default {
       content: "",
       survey: undefined,
       surveyDialog: false,
+      surveyViewerDialog: false,
       currentSurvey: {questions: []},
       editorOption: {
         placeholder: "내용을 입력해주세요.",
@@ -287,6 +302,11 @@ export default {
       console.log(this.$refs.editor.quill.editor.delta.ops);
     },
     surveyButtonClick() {
+      if (this.documentId && this.survey) {
+        // 글 수정시 설문 수정 불가
+        this.surveyViewerDialog = true
+        return;
+      }
       if (this.currentSurvey.questions.length === 0) {
         this.currentSurvey.questions.push({title: "", allowMultipleChoice: false, choices: ["", ""]});
       } else if(this.survey){
@@ -315,7 +335,7 @@ export default {
           this.$refs.editor.quill.setContents(this.contents)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
-            this.survey = JSON.parse(data.survey)
+            this.survey = data.survey
           }
     }
   },
@@ -338,7 +358,7 @@ export default {
         .then(response => {
           this.parseDocument(response.data)
           // this.survey = JSON.parse(response.data.survey)
-          // if (Array.isArray(response.data.attach)) {
+          // if (response.data.attach && Array.isArray(response.data.attach)) {
           //   response.data.attach = response.data.attach.filter(x => x !== null);
           // }
           // this.document = response.data;
@@ -346,6 +366,7 @@ export default {
           // this.showAttach = false;
         })
         .catch(error => {
+          console.log(error)
           console.log(error.response);
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 
