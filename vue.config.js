@@ -12,14 +12,15 @@ module.exports = {
     devServer: {
       compress: true,
       disableHostCheck: true,
-      port: 8082
+      port: 8082,
+      https: true
     },
     loader: {
       test: /\.styl$/,
       loader: ['style-loader', 'css-loader', 'stylus-loader']
     }
   },
-  publicPath: process.env.NODE_ENV === 'development'?'/':'/',
+  //publicPath: process.env.NODE_ENV === 'development'?'/':'/',
   transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]filepond-plugin-file-validate-type[/\\\\]/],
   chainWebpack: config => {
     //config.plugin('workbox')
@@ -49,7 +50,7 @@ module.exports = {
       swSrc: 'public/service-worker.js',
       // ...other Workbox options...
     },
-    name:'Pedagy',
-    msTileColor:'#3F51B5'
+    name: 'Pedagy',
+    msTileColor: '#3F51B5'
   }
 }
