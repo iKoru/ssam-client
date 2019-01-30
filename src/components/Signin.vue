@@ -33,12 +33,12 @@
 import jwt from "jwt-decode";
 
 function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) === ' ') {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === " ") {
       c = c.substring(1);
     }
     if (c.indexOf(name) === 0) {
@@ -48,18 +48,18 @@ function getCookie(cname) {
   return "";
 }
 
-function deleteCookie( name ) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+function deleteCookie(name) {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 }
 
-function setCookie(name,value,days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    let date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 export default {
   name: "Signin",
@@ -81,11 +81,11 @@ export default {
       this.$axios({
         method: "POST",
         url: "/refresh",
-        headers: {silent:true}
+        headers: {silent: true}
       })
         .then(response => {
           this.loading = false;
-          this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
+          this.$axios.defaults.headers.common["csrf-token"] = response.data.csrfToken;
           this.$store.dispatch("setUserId", jwt(response.data.token).userId);
 
           const redirectTo = response.data.redirectTo;
@@ -94,7 +94,7 @@ export default {
           }
 
           if (redirectTo) {
-            if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
+            if (redirectTo === "/auth" && getCookie("authRequirement") && getCookie("authRequirement") >= this.$moment().format("YMMDD")) {
               this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
             } else {
               this.$router.push(redirectTo + window.location.search); //preserve original redirect options
@@ -154,13 +154,17 @@ export default {
         this.passwordError = false;
         this.loading = true;
         this.$axios
-          .post("/signin", {
-            userId: this.userId,
-            password: this.password,
-            rememberMe: this.rememberMe
-          }, {headers:{silent:true}})
+          .post(
+            "/signin",
+            {
+              userId: this.userId,
+              password: this.password,
+              rememberMe: this.rememberMe
+            },
+            {headers: {silent: true}}
+          )
           .then(response => {
-            this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
+            this.$axios.defaults.headers.common["csrf-token"] = response.data.csrfToken;
             this.$store.dispatch("setUserId", this.userId);
             const redirectTo = response.data.redirectTo;
             if (response.data.imminent || response.data.needEmail) {

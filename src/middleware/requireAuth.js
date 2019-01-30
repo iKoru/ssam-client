@@ -10,8 +10,6 @@ export default async (to, from, next) => {
     } else {
       next();
     }
-  } else if (typeof result === 'string') {
-    next(result);
   } else {
     next(result);
   }
