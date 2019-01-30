@@ -54,6 +54,11 @@
   </v-toolbar>
 </template>
 <script>
+
+function deleteCookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 export default {
   template: "#mainToolbar",
   name: "mainToolbar",
@@ -77,7 +82,7 @@ export default {
   },
   methods: {
     signout() {
-      this.$store.dispatch("signout");
+      deleteCookie('token');
       this.$router.push("/index");
     },
     goMain() {

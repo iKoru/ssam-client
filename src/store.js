@@ -5,7 +5,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    accessToken: null,
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
@@ -24,9 +23,6 @@ export default new Vuex.Store({
     groups: null
   },
   getters: {
-    accessToken ({ accessToken }) {
-      return accessToken
-    },
     userId ({ userId }) {
       return userId
     },
@@ -92,12 +88,8 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    SIGNIN (state, { accessToken, userId }) {
-      state.accessToken = accessToken
-      state.userId = userId
-    },
-    SIGNOUT (state) {
-      state.accessToken = null
+    SET_USER_ID (state, userId){
+      state.userId = userId 
     },
     PROFILE (state, profile) {
       state.profile = profile
@@ -184,17 +176,11 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    signin ({ commit }, { accessToken, userId }) {
-      Vue.axios.defaults.headers.common['x-auth'] = accessToken
-      commit('SIGNIN', { accessToken, userId })
+    setUserId({commit}, userId){
+      commit('SET_USER_ID', userId)
     },
     updateAuthInformation ({ commit }, update) {
       commit('UPDATE_AUTH_INFORMATION', update);
-    },
-    signout ({ commit }) {
-      localStorage.removeItem('accessToken')
-      Vue.axios.defaults.headers.common['x-auth'] = null
-      commit('SIGNOUT')
     },
     profile ({ commit }, profile) {
       commit('PROFILE', profile)

@@ -54,6 +54,16 @@
 
 <script>
 import MainLayout from "../layouts/MainLayout";
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
 export default {
   name: "Auth",
   created() {
@@ -77,7 +87,7 @@ export default {
       this.$router.push(redirectTo && redirectTo !== "/auth" ? redirectTo : "/");
     },
     notToday() {
-      localStorage.setItem("authRequirement", this.$moment(new Date()).format("YMMDD"));
+      setCookie("authRequirement", this.$moment(new Date()).format("YMMDD"), 1);
       this.goNext();
     },
     notAnymore() {
