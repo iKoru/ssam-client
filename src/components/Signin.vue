@@ -30,8 +30,37 @@
 </template>
 
 <script>
-/* global localStorage */
 import jwt from "jwt-decode";
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function deleteCookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
 export default {
   name: "Signin",
   data: () => ({
@@ -46,18 +75,16 @@ export default {
     passwordRules: [v => !!v || "비밀번호를 입력해주세요."]
   }),
   created() {
-    const token = localStorage.getItem("accessToken");
+    const token = getCookie("token");
     if (token) {
       this.loading = true;
       this.$axios({
         method: "POST",
         url: "/refresh",
-        headers: {"x-auth": token, silent:true}
+        headers: {silent:true}
       })
         .then(response => {
           this.loading = false;
-          localStorage.setItem("accessToken", response.data.token);
-          this.$axios.defaults.headers.common["x-auth"] = response.data.token;
           this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
           this.$store.dispatch("signin", {
             accessToken: response.data.token,
@@ -87,10 +114,10 @@ export default {
           } else {
             this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
           }
-          localStorage.removeItem("accessToken");
+          deleteCookie("token");
         });
-    } else if (localStorage.getItem("userId")) {
-      this.userId = localStorage.getItem("userId");
+    } else if (getCookie("userId")) {
+      this.userId = getCookie("userId");
     }
   },
 
@@ -124,7 +151,7 @@ export default {
           this.message = "아이디와 비밀번호를 입력해주세요.";
           return false;
         }
-        localStorage.setItem("userId", this.userId);
+        setCookie("userId", this.userId, 30);
         this.message = null;
         this.userIdError = false;
         this.passwordError = false;
@@ -136,8 +163,6 @@ export default {
             rememberMe: this.rememberMe
           }, {headers:{silent:true}})
           .then(response => {
-            localStorage.setItem("accessToken", response.data.token);
-            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
             this.$axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
             this.$store.dispatch("signin", {
               accessToken: response.data.token,
