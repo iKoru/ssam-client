@@ -67,7 +67,8 @@
     <v-layout row>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn class="primary" @click="post()">등록</v-btn>
+        <v-btn v-if="documentId" class="primary" @click="modifyPost()">수정</v-btn>
+        <v-btn v-else class="primary" @click="post()">등록</v-btn>
       </v-flex>
     </v-layout>
 
@@ -150,12 +151,6 @@ export default {
   },
   // manually control the data synchronization
   methods: {
-    // onEditorBlur (quill) {
-    //   console.log('editor blur!', quill)
-    // },
-    // onEditorFocus (quill) {
-    //   console.log('editor focus!', quill)
-    // },
     onEditorReady(quill) {
       console.log("editor ready!", quill);
     },
@@ -177,38 +172,20 @@ export default {
       for (var pair of this.formData.entries()) {
         console.log(pair[0] + ", " + pair[1]);
       }
-      if(this.boardId && this.documentId) {
-        this.formData.append("documentId", this.documentId)
-        return this.$axios
-        .put(`/document`, this.formData)
+      return this.$axios
+        .post("/document", this.formData)
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-            // this.revertImages();
+            this.revertImages();
           }
         })
         .catch(error => {
           delete this.formData;
-          // this.revertImages();
+          this.revertImages();
           this.attachedFileNumber = 0;
           console.log(error.response);
         });
-      } else {
-        return this.$axios
-          .post("/document", this.formData)
-          .then(response => {
-            if (response.status === 200) {
-              this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-              this.revertImages();
-            }
-          })
-          .catch(error => {
-            delete this.formData;
-            this.revertImages();
-            this.attachedFileNumber = 0;
-            console.log(error.response);
-          });
-      }
     },
     async post() {
       // manually add images as file
@@ -221,6 +198,32 @@ export default {
       }
       await this.handleProcessFile();
       await this.uploadDocument();
+    },
+    async modifyPost() {
+      // edit given document put 한번 attach post delete한번
+      if (!this.formData) this.formData = new FormData();
+      // check image and attach change
+      // 이미지/파일 달라진 것 -> post/delete
+      // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
+      console.log(this.documentId)
+      let modifiedBody = {
+        documentId: this.documentId,
+        title: this.title,
+        contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+      }
+      return this.$axios
+      .put(`/document`, modifiedBody)
+      .then(response => {
+        if (response.status === 200) {
+          console.log(response)
+          this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
+        }
+      })
+      .catch(error => {
+        delete this.formData;
+        this.attachedFileNumber = 0;
+        console.log(error.response);
+      });
     },
     handleFilePondInit: function() {
       console.log("FilePond has initialized");
