@@ -38,7 +38,7 @@
       <div>
         <v-btn small flat @click="openFileDialog">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
-          <input type="file" multiple id="file-upload" style="display:none" @change="onFileChange">
+          <input ref="fileInput" multiple id="file-upload" style="display:none" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange">
         </v-btn>
       </div>
     </v-layout>
@@ -49,7 +49,7 @@
             <v-layout row align-center>
               <div class="ellipsis">{{item}}</div>
               <v-spacer/>
-              <v-btn small class="short" @click="removeFile(item)">삭제</v-btn>
+              <v-btn small class="short" @click="removeFile(index)">삭제</v-btn>
             </v-layout>
           </v-slide-y-transition>
         </v-flex>
@@ -172,6 +172,7 @@ export default {
           }
         })
         .catch(error => {
+          console.log(error)
           delete this.formData;
           this.revertImages();
           this.attachedFileNumber = 0;
@@ -302,29 +303,43 @@ export default {
     openFileDialog() {
       document.getElementById('file-upload').click();
     },
-    onFileChange(e) {
+    async onFileChange(e) { 
         if (!this.rawFileData) this.rawFileData = new FormData();
         var self = this;
         var files = e.target.files || e.dataTransfer.files;
         console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
-                let sameNameCount = 0;
-                self.attachedFilenames.forEach(name => {
-                  if(name.toLowerCase() === files[i].name.toLowerCase()) sameNameCount++
-                })
-                let filename = files[i].name
-                if(sameNameCount > 0) filename = filename + ' (' + sameNameCount + ')'
-                self.rawFileData.append("file", files[i], filename);
-                self.attachedFilenames.push(filename)
+                // let sameNameCount = 0;
+                // let splitter = files[i].name.lastIndexOf('.')
+                // let fileExtension = files[i].name.substring(splitter, files[i].name.length)
+                // let filename = files[i].name.substring(0, splitter)
+                // console.log(filename)
+                // self.attachedFilenames.forEach(name => {
+                //   if(name.toLowerCase() === files[i].name.toLowerCase()) sameNameCount++
+                // }) // 나중에 올릴때만 (1) (2) 붙여준다.
+                // if(sameNameCount > 0) {
+                //   filename = filename + ' (' + sameNameCount + ')'
+                // }
+                await self.rawFileData.append("file", files[i], files[i].name);
+                await self.attachedFilenames.push(files[i].name)
                 // keep delete -> attach case
-                self.deletedFilenames = self.deletedFilenames.filter(f=>f!==filename)
             }
         }
     },
-    removeFile(filename) {
-      this.deletedFilenames.push(filename)
-      this.attachedFilenames = this.attachedFilenames.filter(f => f !== filename)
+    async removeFile(index) {
+      let newFileData = new FormData()
+      let i = 0
+      for (let pair of this.rawFileData.entries()) {
+        if(pair[0] ==='file') {
+          if(i !== Number(index)){
+            await newFileData.append(pair[0], pair[1], pair[1].name)
+          }
+          i += 1
+        }
+      }
+      this.rawFileData = newFileData
+      this.attachedFilenames.splice(index, 1)
     },
     processUploadFiles() {
       if(this.rawFileData){
