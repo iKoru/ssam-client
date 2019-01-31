@@ -25,7 +25,7 @@
           <v-icon>image</v-icon>이미지
         </v-btn>
         <v-spacer/>
-        <v-btn small @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">등록</v-btn>
+        <v-btn small depressed @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">등록</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -41,24 +41,24 @@ export default {
   data() {
     return {
       editorOption: {
-        placeholder: this.isCommentWritable === 'AVAILABLE'?"댓글을 입력해주세요.":(this.isCommentWritable === 'UNAVAILABLE'?'댓글을 작성할 수 있는 권한이 없습니다.':(this.isCommentWritable === 'RESTRICTED'?'글쓰기가 제한되어 있습니다.':'토픽 구독 후 입력된 댓글이 등록됩니다.')),
+        placeholder: this.isCommentWritable === "AVAILABLE" ? "댓글을 입력해주세요." : this.isCommentWritable === "UNAVAILABLE" ? "댓글을 작성할 수 있는 권한이 없습니다." : this.isCommentWritable === "RESTRICTED" ? "글쓰기가 제한되어 있습니다." : "토픽 구독 후 입력된 댓글이 등록됩니다.",
         modules: {
           magicUrl: {
-            urlRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
-            globalRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
-            normalizeRegularExpression:/(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/
+            urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            globalRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
+            normalizeRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/
           },
           toolbar: ".commentToolbar",
           imageDrop: true,
           imageResize: true
         },
         formData: undefined,
-        theme:'bubble'
+        theme: "bubble"
       },
       content: "",
       anonymous: this.isAnonymous,
       originImages: [],
-      loading:false
+      loading: false
     };
   },
   components: {},
@@ -89,18 +89,18 @@ export default {
     },
     async postComment() {
       this.loading = true;
-      if(this.isCommentWritable === 'NEEDSUBSCRIPTION'){
-        try{
-          await this.$axios.post('/user/board', {boardId:this.boardId}, {headers:{silent:true}})
-        }catch(error){
-          if(!error.response || error.response.status !== 409){
+      if (this.isCommentWritable === "NEEDSUBSCRIPTION") {
+        try {
+          await this.$axios.post("/user/board", {boardId: this.boardId}, {headers: {silent: true}});
+        } catch (error) {
+          if (!error.response || error.response.status !== 409) {
             this.loading = false;
-            this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || '댓글을 쓰기 위한 구독을 하지 못했습니다.' : "댓글을 쓰기 위한 구독을 하지 못했습니다."}`, color: "error"});
+            this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || "댓글을 쓰기 위한 구독을 하지 못했습니다." : "댓글을 쓰기 위한 구독을 하지 못했습니다."}`, color: "error"});
             return;
           }
         }
-        this.$store.dispatch("addUserBoard", Object.assign({}, this.$store.getters.boards.find(x=>x.boardId === this.boardId)));
-        this.$store.dispatch("showSnackbar", {text: `${this.$store.getters.boards.find(x=>x.boardId === this.boardId).boardName} 토픽을 구독하였습니다.`, color: "info"});
+        this.$store.dispatch("addUserBoard", Object.assign({}, this.$store.getters.boards.find(x => x.boardId === this.boardId)));
+        this.$store.dispatch("showSnackbar", {text: `${this.$store.getters.boards.find(x => x.boardId === this.boardId).boardName} 토픽을 구독하였습니다.`, color: "info"});
       }
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
@@ -111,7 +111,7 @@ export default {
         this.formData.append("parentCommentId", this.commentTo);
       }
       this.$axios
-        .post("/comment", this.formData, {headers:{silent:true}})
+        .post("/comment", this.formData, {headers: {silent: true}})
         .then(res => {
           this.$refs.commentEditor.quill.setText("");
           this.revertImages();
@@ -137,7 +137,7 @@ export default {
   border-top: 1px solid #e8e8e8;
 }
 .comment-editor .quill-editor .ql-bubble .ql-tooltip {
-  z-index:1
+  z-index: 1;
 }
 .comment-editor .ql-bubble .ql-picker.ql-size {
   width: 60px;
@@ -145,17 +145,17 @@ export default {
 .comment-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
-.comment-editor .video-container{
-  position:relative;
-  height:0;
-  width:100%;
-  padding-bottom:56%;
+.comment-editor .video-container {
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding-bottom: 56%;
 }
-.comment-editor .video-container iframe{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+.comment-editor .video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>

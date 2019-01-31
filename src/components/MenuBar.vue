@@ -128,20 +128,32 @@
                 <v-flex class="menuColumn topicColumn" sm2 v-for="n in (Math.floor(topics.length / 3))" :key="n">
                   <v-layout column>
                     <v-flex class="ellipsis">
-                      <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">{{topics[(n-1)*3].boardName}}</router-link>
+                      <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">
+                        {{topics[(n-1)*3].boardName}}
+                        <v-chip v-if="topics[(n-1)*3].notJoined" small label class="ma-0">추천</v-chip>
+                      </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
-                      <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 1].notJoined}" :title="topics[((n-1)*3) + 1].notJoined?'추천 토픽':topics[((n-1)*3) + 1].boardName" :to="'/'+topics[((n-1)*3)+1].boardId">{{topics[((n-1)*3)+1].boardName}}</router-link>
+                      <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 1].notJoined}" :title="topics[((n-1)*3) + 1].notJoined?'추천 토픽':topics[((n-1)*3) + 1].boardName" :to="'/'+topics[((n-1)*3)+1].boardId">
+                        {{topics[((n-1)*3)+1].boardName}}
+                        <v-chip v-if="topics[((n-1)*3)+1].notJoined" small label class="ma-0">추천</v-chip>
+                      </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
-                      <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 2].notJoined}" :title="topics[((n-1)*3) + 2].notJoined?'추천 토픽':topics[((n-1)*3) + 2].boardName" :to="'/'+topics[((n-1)*3)+2].boardId">{{topics[((n-1)*3)+2].boardName}}</router-link>
+                      <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 2].notJoined}" :title="topics[((n-1)*3) + 2].notJoined?'추천 토픽':topics[((n-1)*3) + 2].boardName" :to="'/'+topics[((n-1)*3)+2].boardId">
+                        {{topics[((n-1)*3)+2].boardName}}
+                        <v-chip v-if="topics[((n-1)*3)+2].notJoined" small label class="ma-0">추천</v-chip>
+                      </router-link>
                     </v-flex>
                   </v-layout>
                 </v-flex>
                 <v-flex class="menuColumn topicColumn" sm2 v-if="topics.length % 3 !== 0">
                   <v-layout column>
                     <v-flex v-for="n in topics.length % 3" :key="n" class="ellipsis">
-                      <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">{{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}</router-link>
+                      <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">
+                        {{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}
+                        <v-chip v-if="topics[topics.length - (topics.length % 3) + (n-1)].notJoined" small label class="ma-0">추천</v-chip>
+                      </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
                       <router-link class="white--text" to="/searchBoard">
@@ -165,7 +177,10 @@
               </v-flex>
               <v-flex class="scrollContainer" v-else>
                 <v-flex class="menuColumn topicColumn text-xs-center ellipsis px-1" xs4 v-for="topic in topics" :key="topic.boardId">
-                  <router-link :class="{'white--text':true, 'text-darken-1':topic.notJoined}" :title="topic.notJoined?'추천 토픽':topic.boardName" :to="'/'+topic.boardId">{{topic.boardName}}</router-link>
+                  <router-link :class="{'white--text':true, 'text-darken-1':topic.notJoined}" :title="topic.notJoined?'추천 토픽':topic.boardName" :to="'/'+topic.boardId">
+                    {{topic.boardName}}
+                    <v-chip v-if="topic.notJoined" small label class="ma-0">추천</v-chip>
+                  </router-link>
                 </v-flex>
               </v-flex>
             </template>
@@ -194,8 +209,8 @@ export default {
     menuBar() {
       return this.$store.getters.menuBar;
     },
-    isLight(){
-      return this.$store.getters.isLight
+    isLight() {
+      return this.$store.getters.isLight;
     }
   },
   methods: {
@@ -223,9 +238,9 @@ export default {
       }
     }
   },
-  watch:{
-    isLight(val){
-      this.menu = val?0:1;
+  watch: {
+    isLight(val) {
+      this.menu = val ? 0 : 1;
     }
   }
 };
@@ -236,7 +251,7 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: .1px;
+  margin-top: 0.1px;
 }
 #menubarContainer {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
@@ -354,5 +369,13 @@ export default {
   .menuBarContents {
     padding-top: 16px;
   }
+}
+.scrollContainer .v-chip.v-chip--small {
+  height: 18px;
+}
+.scrollContainer .v-chip.v-chip--small .v-chip__content {
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 12px;
 }
 </style>

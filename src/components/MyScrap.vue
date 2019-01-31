@@ -38,7 +38,7 @@
             <v-btn color="primary" @click="getMyScraps">새로고침</v-btn>
           </template>
           <template slot="actions-prepend">
-            <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
+            <v-btn color="error" @click="deleteRow" :disabled="selected === null" :small="$vuetify.breakpoint.xsOnly" :class="{short:$vuetify.breakpoint.xsOnly}">삭제</v-btn>
             <v-spacer></v-spacer>
           </template>
         </v-data-table>
@@ -116,19 +116,19 @@ export default {
         this.$store.dispatch("showSnackbar", {text: "삭제할 스크랩을 선택해주세요.", color: "error"});
       }
     },
-    resetScrapGroups(){
-      this.$store.dispatch('setScrapGroups', null);
+    resetScrapGroups() {
+      this.$store.dispatch("setScrapGroups", null);
       this.getScrapGroups();
     },
     getScrapGroups() {
-      if(this.$store.getters.scrapGroups){
-        this.scrapGroups = this.$store.getters.scrapGroups
+      if (this.$store.getters.scrapGroups) {
+        this.scrapGroups = this.$store.getters.scrapGroups;
         if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
           this.pagination.page = 1;
           this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
           this.getMyScraps();
         }
-      }else{
+      } else {
         this.$axios
           .get("/scrap/group", {headers: {silent: true}})
           .then(response => {
@@ -138,7 +138,7 @@ export default {
               this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
               this.getMyScraps();
             }
-            this.$store.dispatch('setScrapGroups', this.scrapGroups);
+            this.$store.dispatch("setScrapGroups", this.scrapGroups);
           })
           .catch(error => {
             this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});

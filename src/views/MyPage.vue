@@ -50,7 +50,7 @@
                       </div>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
-                      <v-subheader class="pr-0" @click="focus('password')">비밀번호 변경</v-subheader>
+                      <v-subheader class="pr-0 text-xs-left" @click="focus('password')">비밀번호 변경</v-subheader>
                     </v-flex>
                     <v-flex sm4 xs8 py-0>
                       <v-text-field ref="password" dense placeholder="변경할 비밀번호" type="password" @keydown.enter.stop="submit" :rules="passwordRules" v-model="password" hint="비워두면 현재 비밀번호가 유지됩니다." class="my-0 pt-0 dense"></v-text-field>
@@ -447,11 +447,3 @@ export default {
   }
 };
 </script>
-<style>
-.v-subheader {
-  height: 32px;
-}
-.container.grid-list-xs .layout .flex {
-  padding: 1px 8px;
-}
-</style>

@@ -17,15 +17,15 @@
               <td>
                 <v-checkbox :input-value="selected === props.index" primary hide-details></v-checkbox>
               </td>
-              <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
-              <td class="text-xs-left multi-row cursor-pointer" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
+              <td class="text-xs-left px-2" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
+              <td :class="{'text-xs-left multi-row cursor-pointer':true, 'px-0':$vuetify.breakpoint.xsOnly}" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
                 <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
                   {{props.item.title}}
                   <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </a>
               </td>
-              <td class="text-xs-right">{{ props.item.voteUpCount }}</td>
-              <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD') }}</td>
+              <td class="text-xs-right px-2">{{ props.item.voteUpCount }}</td>
+              <td class="text-xs-right px-2">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD') }}</td>
             </tr>
           </template>
           <template slot="no-data">
@@ -33,7 +33,7 @@
             <v-btn color="primary" @click="getMyDocuments">새로고침</v-btn>
           </template>
           <template slot="actions-prepend">
-            <v-btn color="error" @click="deleteRow" :disabled="selected === null">삭제</v-btn>
+            <v-btn color="error" @click="deleteRow" :disabled="selected === null" :small="$vuetify.breakpoint.xsOnly" :class="{short:$vuetify.breakpoint.xsOnly}">삭제</v-btn>
             <v-spacer></v-spacer>
           </template>
         </v-data-table>
@@ -61,7 +61,7 @@ export default {
       return this.loading ? "작성한 글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 작성한 글이 없으시군요!";
     },
     headers() {
-      return this.$vuetify.breakpoint.xsOnly ? [{text: "", sortable: false, value: ""}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+      return this.$vuetify.breakpoint.xsOnly ? [{text: "", sortable: false, value: ""}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", class: this.$vuetify.breakpoint.xsOnly ? "px-1" : undefined, sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
     }
   },
   methods: {

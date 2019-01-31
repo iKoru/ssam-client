@@ -31,17 +31,19 @@
             </tr>
           </template>
           <template slot="no-data">
-            <tr><td colspan="4" class="text-xs-center multi-row">{{noDataText}}</td></tr>
+            <tr>
+              <td :colspan="$vuetify.breakpoint.smAndUp?4:3" class="text-xs-center multi-row px-0">{{noDataText}}</td>
+            </tr>
           </template>
         </v-data-table>
       </v-flex>
       <v-flex>
         <v-layout row pa-2 align-center>
           <v-spacer/>
-          <v-flex xs6 sm4>
+          <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
           </v-flex>
-          <v-btn v-show="(($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short" color="primary" @click="$emit('write')">쓰기</v-btn>
+          <v-btn v-show="(($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short my-0" color="primary" @click="$emit('write')">쓰기</v-btn>
         </v-layout>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
@@ -107,8 +109,8 @@ export default {
           this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다."}`, color: "error"});
         });
     },
-    search(){
-      if(this.searchQuery){
+    search() {
+      if (this.searchQuery) {
         this.$router.push(`/searchDocument?boardId=${this.board.boardId}&searchQuery=${this.searchQuery}`);
       }
     }
@@ -174,5 +176,8 @@ export default {
   font-size: 16px;
   background-color: white !important;
   border-color: white !important;
+}
+#searchDocumentForm {
+  min-width: 200px;
 }
 </style>

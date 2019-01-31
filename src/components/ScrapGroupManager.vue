@@ -19,7 +19,7 @@
                 <v-edit-dialog :return-value.sync="props.item.scrapGroupName" lazy large cancel-text="취소" save-text="확인">
                   <span class="multi-row">{{props.item.scrapGroupName}}</span>
                   <v-icon small class="ml-1">edit</v-icon>
-                  <v-text-field slot="input" v-model="props.item.scrapGroupName" :rules="scrapGroupNameRules" label="스크랩 그룹 이름" single-line></v-text-field>
+                  <v-text-field slot="input" v-model="props.item.scrapGroupName" :rules="scrapGroupNameRules" label="스크랩 그룹 이름" class="dense pt-3" single-line></v-text-field>
                 </v-edit-dialog>
               </td>
               <td class="justify-center layout px-0">
@@ -34,16 +34,16 @@
               <v-spacer></v-spacer>
             </template>
           </v-data-table>
-          <v-layout row v-if="$vuetify.breakpoint.smAndUp">
-            <v-btn id="largeCreateBtn" class="mb-3" @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
+          <v-layout row v-if="$vuetify.breakpoint.smAndUp" align-center>
+            <v-btn id="largeCreateBtn" class="mb-3" :color="showCreateField?null:'primary'" flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
             <template v-if="showCreateField">
               <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter="addNewRow"></v-text-field>
-              <v-btn flat color="primary" class="short" @click="addNewRow">등록</v-btn>
+              <v-btn flat color="primary" @click="addNewRow">등록</v-btn>
             </template>
             <v-spacer/>
             <v-btn color="primary" @click="save" :loading="loading">저장</v-btn>
           </v-layout>
-          <v-layout row v-show="showCreateField" v-else>
+          <v-layout row v-show="showCreateField" align-center v-else>
             <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter="addNewRow"></v-text-field>
             <v-btn small flat color="primary" @click="addNewRow">등록</v-btn>
           </v-layout>

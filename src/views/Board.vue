@@ -8,14 +8,14 @@
               <v-flex>
                 <v-layout row align-center>
                   <span class="title cursor-pointer" @click="$route.params.documentId || $route.path.endsWith('write')?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
-                  <v-tooltip bottom v-if="reservedContents" close-delay="500">
-                    <v-icon slot="activator" small class="ml-1" color="primary">calendar_today</v-icon>
+                  <v-tooltip bottom v-if="reservedContents" close-delay="500" class="cursor-default">
+                    <v-icon slot="activator" class="ml-1 vertical-align-middle" color="primary">event_note</v-icon>
                     <span v-html="reservedContents"></span>
                   </v-tooltip>
                   <span class="ml-2" v-if="childBoardItems.length > 1">
                     <v-select id="childBoardSelector" class="hideLine dense childBoardSelector mt-0 pt-0" flat dense v-model="childBoardId" :items="childBoardItems" item-text="boardName" item-value="boardId" single-line hide-details @input="childBoardChanged"></v-select>
                   </span>
-                  <v-btn small depressed class="short" color="accent" v-else-if="board.boardType === 'T' && board.boardId !== 'topicBest' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
+                  <v-btn small depressed class="short my-0" color="accent" v-else-if="board.boardType === 'T' && board.boardId !== 'topicBest' && !$store.getters.userBoards.some(x=>x.boardId === board.boardId)" @click="openDialog">구독</v-btn>
                 </v-layout>
               </v-flex>
               <v-spacer/>
@@ -65,7 +65,7 @@ export default {
       D: "인증제한"
     },
     groupItems: [],
-    allGroupAuthItems: {"READWRITE": "전체구독허용", "READONLY": "읽기공개","NONE": "비공개"},
+    allGroupAuthItems: {READWRITE: "전체구독허용", READONLY: "읽기공개", NONE: "비공개"},
     documentBoardId: null
   }),
   props: ["boardId"],
@@ -133,11 +133,11 @@ export default {
   },
   methods: {
     moveToWriteDocument() {
-      let board = this.board
-      let childBoardItems = this.childBoardItems
-      if((board.boardId === 'loungeBest' || board.boardId === 'topicBest') && this.documentBoardId){
-        board = this.$store.getters.boards.find(x=>x.boardId === this.documentBoardId);
-        if(!board){
+      let board = this.board;
+      let childBoardItems = this.childBoardItems;
+      if ((board.boardId === "loungeBest" || board.boardId === "topicBest") && this.documentBoardId) {
+        board = this.$store.getters.boards.find(x => x.boardId === this.documentBoardId);
+        if (!board) {
           board = this.board;
         }
         if (board.parentBoardId) {
@@ -360,12 +360,12 @@ export default {
 }
 .childBoardSelector .v-input__append-inner {
   margin-left: -16px;
-  cursor:pointer;
+  cursor: pointer;
 }
 .childBoardSelector .v-input__slot {
   padding-bottom: 0;
 }
-.childBoardSelector .v-select__selection{
-  cursor:pointer;
+.childBoardSelector .v-select__selection {
+  cursor: pointer;
 }
 </style>

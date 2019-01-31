@@ -42,11 +42,11 @@
             <v-divider class="my-3"/>
             <draggable v-model="topics" v-if="topics.length > 0">
               <transition-group>
-                <v-layout class="cursor-move" row v-for="(topic, index) in topics" :key="topic.boardId">
-                  <v-flex class="ellipsis">
-                    <div class="vertical-center ellipsis">
+                <v-layout class="cursor-move align-center" row v-for="(topic, index) in topics" :key="topic.boardId">
+                  <v-flex class="ellipsis align-center">
+                    <div class="align-center ellipsis">
                       {{topic.boardName}}
-                      <v-icon v-if="topic.isOwner" title="토픽지기">person</v-icon>
+                      <v-icon v-if="topic.isOwner" class="vertical-align-middle" title="토픽지기">person</v-icon>
                     </div>
                   </v-flex>
                   <v-spacer/>
