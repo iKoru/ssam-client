@@ -1,13 +1,12 @@
 <template>
   <v-card tile>
-    <v-toolbar card color="primary">
-      <v-btn icon @click="$emit('closeDialog', null)">
-        <v-icon>close</v-icon>
-      </v-btn>
+    <v-toolbar card color="white">
       <v-toolbar-title>{{board?'토픽 관리':'새로운 토픽 만들기'}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items v-if="$vuetify.breakpoint.xsOnly">
-        <v-btn flat @click="save" :loading="loading">{{board?'저장':'등록'}}</v-btn>
+      <v-toolbar-items>
+        <v-btn icon @click="$emit('closeDialog', null)">
+          <v-icon>close</v-icon>
+        </v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-card-text>
@@ -63,10 +62,8 @@
         <v-layout row>
           <v-btn flat @click="reset(true)">초기화</v-btn>
           <v-btn color="error" @click="deleteBoard" v-if="board">삭제</v-btn>
-          <template v-if="$vuetify.breakpoint.smAndUp">
-            <v-spacer/>
-            <v-btn color="primary" @click="save" :loading="loading">등록</v-btn>
-          </template>
+          <v-spacer/>
+          <v-btn color="primary" @click="save" :loading="loading">등록</v-btn>
         </v-layout>
       </v-form>
     </v-card-text>
@@ -128,7 +125,7 @@ export default {
               string += `카테고리 : ${reservedContents[key] ? "사용" : "미사용"}\n`;
               break;
             case "allGroupAuth":
-              string += `토픽 공개/비공개 : ${this.allGroupAuthItems.some(x=>x.value === reservedContents[key])?this.allGroupAuthItems.find(x=>x.value === reservedContents[key]).text:'(알 수 없음)'}\n`;
+              string += `토픽 공개/비공개 : ${this.allGroupAuthItems.some(x => x.value === reservedContents[key]) ? this.allGroupAuthItems.find(x => x.value === reservedContents[key]).text : "(알 수 없음)"}\n`;
               break;
             case "ownerNickName":
               string += `토픽지기 : ${reservedContents[key]}\n`;
