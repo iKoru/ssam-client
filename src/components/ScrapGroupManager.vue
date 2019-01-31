@@ -1,13 +1,12 @@
 <template>
   <v-card tile>
-    <v-toolbar card color="primary">
-      <v-btn icon @click="$emit('closeDialog', null)">
-        <v-icon>close</v-icon>
-      </v-btn>
+    <v-toolbar card color="white">
       <v-toolbar-title>스크랩 그룹 관리</v-toolbar-title>
       <v-spacer/>
-      <v-toolbar-items v-if="$vuetify.breakpoint.xsOnly">
-        <v-btn flat @click="save" :loading="loading">저장</v-btn>
+      <v-toolbar-items>
+        <v-btn icon @click="$emit('closeDialog', null)">
+          <v-icon>close</v-icon>
+        </v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-card-text>
@@ -28,7 +27,10 @@
               </td>
             </template>
             <template slot="actions-prepend">
-              <v-btn class="short" v-if="$vuetify.breakpoint.xsOnly" :color="showCreateField?null:'primary'" small @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
+              <template v-if="$vuetify.breakpoint.xsOnly">
+                <v-btn class="short" :color="showCreateField?null:'primary'" small flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
+                <v-btn class="short" color="primary" small @click="save" :loading="loading">저장</v-btn>
+              </template>
               <v-spacer></v-spacer>
             </template>
           </v-data-table>
@@ -137,8 +139,8 @@ export default {
     dialog(val) {
       if (val) {
         this.resetScrapGroups();
-        document.body.style.position = "fixed"
-      }else{
+        document.body.style.position = "fixed";
+      } else {
         document.body.style.position = "initial";
       }
     }
