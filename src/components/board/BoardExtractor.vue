@@ -59,6 +59,9 @@ export default {
 .periodBestCarousel {
   box-shadow: none;
 }
+.periodBestCarousel .v-carousel__item, .periodBestCarousel .v-carousel__item .v-responsive__content{
+  width:100%;
+}
 .periodBestCarousel .v-carousel__controls__item {
   margin: 0 !important;
 }

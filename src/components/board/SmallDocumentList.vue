@@ -19,7 +19,7 @@
                   <small>{{list[n-1].writeDateTime.fromNow()}}</small>
                 </v-subheader>
                 <span class="tiny align-center" v-if="showVoteUpCount">
-                  <v-icon small color="red darken-2">favorite</v-icon>
+                  <v-icon small color="primary">thumb_up</v-icon>
                   {{list[n-1].voteUpCount}}
                 </span>
               </v-layout>
