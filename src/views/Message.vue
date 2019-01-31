@@ -18,8 +18,8 @@
                           <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
                         </v-avatar>
                       </td>
-                      <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.otherNickName }}</td>
-                      <td class="text-xs-left multi-row">{{getShortContents(props.item.lastContents)}}</td>
+                      <td class="text-xs-left px-1" v-if="$vuetify.breakpoint.smAndUp" :title="props.item.chatType === 'T'?'토픽 닉네임':'라운지 필명'">{{ props.item.otherNickName }}</td>
+                      <td class="text-xs-left multi-row px-2">{{getShortContents(props.item.lastContents)}}</td>
                       <td class="text-xs-right">{{props.item.lastSendTimestamp.fromNow()}}</td>
                       <td>
                         <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
@@ -127,9 +127,9 @@ export default {
       this.loading = true;
       this.$axios
         .get("/message/list", {params: {page: this.pagination.page}, headers: {silent: true}})
-        .then(response => {
+        .then(response => {console.log(response.data, 'list')
           this.chats = response.data.map(x => ({...x, lastSendTimestamp: this.$moment(x.lastSendTimestamp, "YYYYMMDDHHmmss")}));
-          this.totalChats = response.data.length > 0 ? response.data[0].totalCount : 0;
+          this.totalChats = response.data.length > 0 ? response.data[0].totalCount : 0;console.log(response.data, 'list222')
           this.loading = false;
         })
         .catch(error => {
@@ -153,7 +153,7 @@ export default {
                 console.log(response.data.messageList);
                 this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})));
                 if (response.data.messageList.length > 0) {
-                  chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss").toDate();
+                  chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss");
                   chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents;
                 }
               }
@@ -182,8 +182,8 @@ export default {
       this.disabled = item.otherStatus === "DELETED";
       this.axios
         .get("/message", {params: {chatId: item.chatId}})
-        .then(response => {
-          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}}));
+        .then(response => {console.log(response.data, 'message');
+          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}}));console.log(this.messageList, 'messageList');
           this.messageList.reverse();
           if (this.disabled) {
             this.messageList.push({type: "system", data: {text: `${item.otherNickName} 님이 채팅을 나갔습니다.`}});
@@ -271,7 +271,7 @@ export default {
       })();
     },
     getShortContents(contents) {
-      return contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
+      return contents && contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
     }
   },
   watch: {

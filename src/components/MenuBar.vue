@@ -130,19 +130,19 @@
                     <v-flex class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[(n-1)*3].notJoined}" :title="topics[(n-1)*3].notJoined?'추천 토픽':topics[(n-1)*3].boardName" :to="'/'+topics[(n-1)*3].boardId">
                         {{topics[(n-1)*3].boardName}}
-                        <v-chip v-if="topics[(n-1)*3].notJoined" small label class="ma-0">추천</v-chip>
+                        <v-chip v-if="topics[(n-1)*3].notJoined" label class="ma-0">추천</v-chip>
                       </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 1].notJoined}" :title="topics[((n-1)*3) + 1].notJoined?'추천 토픽':topics[((n-1)*3) + 1].boardName" :to="'/'+topics[((n-1)*3)+1].boardId">
                         {{topics[((n-1)*3)+1].boardName}}
-                        <v-chip v-if="topics[((n-1)*3)+1].notJoined" small label class="ma-0">추천</v-chip>
+                        <v-chip v-if="topics[((n-1)*3)+1].notJoined" label class="ma-0">추천</v-chip>
                       </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[((n-1)*3) + 2].notJoined}" :title="topics[((n-1)*3) + 2].notJoined?'추천 토픽':topics[((n-1)*3) + 2].boardName" :to="'/'+topics[((n-1)*3)+2].boardId">
                         {{topics[((n-1)*3)+2].boardName}}
-                        <v-chip v-if="topics[((n-1)*3)+2].notJoined" small label class="ma-0">추천</v-chip>
+                        <v-chip v-if="topics[((n-1)*3)+2].notJoined" label class="ma-0">추천</v-chip>
                       </router-link>
                     </v-flex>
                   </v-layout>
@@ -152,7 +152,7 @@
                     <v-flex v-for="n in topics.length % 3" :key="n" class="ellipsis">
                       <router-link :class="{'white--text':true, 'text-darken-1':topics[topics.length - (topics.length %3) + n - 1].notJoined}" :title="topics[topics.length - (topics.length %3) + n - 1].notJoined?'추천 토픽':topics[topics.length - (topics.length %3) + n - 1].boardName" :to="'/'+topics[topics.length - (topics.length %3) + n - 1].boardId">
                         {{(topics[topics.length - (topics.length % 3) + (n-1)]).boardName}}
-                        <v-chip v-if="topics[topics.length - (topics.length % 3) + (n-1)].notJoined" small label class="ma-0">추천</v-chip>
+                        <v-chip v-if="topics[topics.length - (topics.length % 3) + (n-1)].notJoined" label class="ma-0">추천</v-chip>
                       </router-link>
                     </v-flex>
                     <v-flex class="ellipsis">
@@ -179,7 +179,7 @@
                 <v-flex class="menuColumn topicColumn text-xs-center ellipsis px-1" xs4 v-for="topic in topics" :key="topic.boardId">
                   <router-link :class="{'white--text':true, 'text-darken-1':topic.notJoined}" :title="topic.notJoined?'추천 토픽':topic.boardName" :to="'/'+topic.boardId">
                     {{topic.boardName}}
-                    <v-chip v-if="topic.notJoined" small label class="ma-0">추천</v-chip>
+                    <v-chip v-if="topic.notJoined" label class="ma-0">추천</v-chip>
                   </router-link>
                 </v-flex>
               </v-flex>
@@ -370,10 +370,13 @@ export default {
     padding-top: 16px;
   }
 }
-.scrollContainer .v-chip.v-chip--small {
+.scrollContainer .v-chip {
   height: 18px;
+  background: #e0e0e0;
+  color: rgba(0,0,0,0.87);
 }
-.scrollContainer .v-chip.v-chip--small .v-chip__content {
+.scrollContainer .v-chip .v-chip__content {
+  cursor:pointer;
   padding-left: 2px;
   padding-right: 2px;
   font-size: 12px;
