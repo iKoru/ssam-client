@@ -13,7 +13,7 @@ module.exports = {
       compress: true,
       disableHostCheck: true,
       port: 8082,
-      https: true
+      https: !!process.env.IS_LOCAL
     },
     loader: {
       test: /\.styl$/,
