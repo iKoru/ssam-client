@@ -12,7 +12,7 @@
                 <v-data-table xs12 :items="chats" id="chatTable" hide-headers :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalChats === 0, 'mt-5':true}">
                   <template slot="items" slot-scope="props">
                     <tr class="cursor-pointer" @click="getChat(props.item)">
-                      <td>
+                      <td class="px-2">
                         <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
                           <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.png')">
                           <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
@@ -20,8 +20,8 @@
                       </td>
                       <td class="text-xs-left px-1" v-if="$vuetify.breakpoint.smAndUp" :title="props.item.chatType === 'T'?'토픽 닉네임':'라운지 필명'">{{ props.item.otherNickName }}</td>
                       <td class="text-xs-left multi-row px-2">{{getShortContents(props.item.lastContents)}}</td>
-                      <td class="text-xs-right">{{props.item.lastSendTimestamp.fromNow()}}</td>
-                      <td>
+                      <td class="text-xs-right px-2">{{props.item.lastSendTimestamp.fromNow()}}</td>
+                      <td class="px-2">
                         <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
                       </td>
                     </tr>
@@ -284,18 +284,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-table.v-table thead td:not(:nth-child(1)),
-table.v-table tbody td:not(:nth-child(1)),
-table.v-table thead th:not(:nth-child(1)),
-table.v-table tbody th:not(:nth-child(1)),
-table.v-table thead td:first-child,
-table.v-table tbody td:first-child,
-table.v-table thead th:first-child,
-table.v-table tbody th:first-child {
-  padding: 0 12px;
-}
-td:first-child {
-  padding: 0 12px;
-}
-</style>
