@@ -160,9 +160,9 @@ export default {
         this.formData.append("survey", JSON.stringify(this.survey));
       }
       await this.processUploadFiles()
-      for (var pair of this.formData.entries()) {
+      /*for (var pair of this.formData.entries()) {
         console.log(pair[0] + ", " + pair[1]);
-      }
+      }*/
       return this.$axios
         .post("/document", this.formData)
         .then(response => {
@@ -327,10 +327,12 @@ export default {
       this.attachedFilenames = this.attachedFilenames.filter(f => f !== filename)
     },
     processUploadFiles() {
-      for (var pair of this.rawFileData.entries()) {
-          if(!this.deletedFilenames.includes(pair[1].name)) {
-            this.formData.append('attach', pair[1], pair[1].name)
-          }
+      if(this.rawFileData){
+        for (var pair of this.rawFileData.entries()) {
+            if(!this.deletedFilenames.includes(pair[1].name)) {
+              this.formData.append('attach', pair[1], pair[1].name)
+            }
+        }
       }
     }
   },
