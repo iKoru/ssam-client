@@ -85,7 +85,6 @@ export default {
       })
         .then(response => {
           this.loading = false;
-          this.$axios.defaults.headers.common["csrf-token"] = response.data.csrfToken;
           this.$store.dispatch("setUserId", jwt(response.data.token).userId);
 
           const redirectTo = response.data.redirectTo;
@@ -164,7 +163,6 @@ export default {
             {headers: {silent: true}}
           )
           .then(response => {
-            this.$axios.defaults.headers.common["csrf-token"] = response.data.csrfToken;
             this.$store.dispatch("setUserId", this.userId);
             const redirectTo = response.data.redirectTo;
             if (response.data.imminent || response.data.needEmail) {

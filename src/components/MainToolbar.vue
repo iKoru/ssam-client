@@ -56,7 +56,7 @@
 <script>
 
 function deleteCookie( name ) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export default {
@@ -83,7 +83,11 @@ export default {
   methods: {
     signout() {
       deleteCookie('token');
-      this.$router.push("/index");
+      deleteCookie('_csrf');
+      deleteCookie('CSRF-TOKEN');
+      this.$nextTick(() => {
+        this.$router.push("/index");
+      })
     },
     goMain() {
       this.$router.push("/");

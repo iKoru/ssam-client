@@ -11,7 +11,7 @@ axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || '
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-const _axios = axios.create({withCredentials:true})
+const _axios = axios.create({withCredentials:true, xsrfCookieName:'CSRF-TOKEN', xsrfHeaderName:'CSRF-TOKEN'})
 
 _axios.interceptors.request.use(
   function (config) {
@@ -21,6 +21,7 @@ _axios.interceptors.request.use(
     } else {
       store.dispatch('showSpinner');
     }
+    config.headers['CSRF-TOKEN'] = getCookie('CSRF-TOKEN')
     return config
   },
   function (error) {
@@ -42,7 +43,7 @@ function getCookie(cname) {
       return c.substring(name.length, c.length);
     }
   }
-  return "";
+  return undefined;
 }
 
 function deleteCookie( name ) {
@@ -72,12 +73,10 @@ _axios.interceptors.response.use(
           //headers: { 'x-auth': token }
         })
           .then(response => { // success to refresh
-            _axios.defaults.headers.common['csrf-token'] = response.data.csrfToken;
             store.dispatch('signin', {
               accessToken: response.data.token,
               userId: jwt(response.data.token).userId
             });
-            //error.config.headers['x-auth'] = response.data.token;
             isRefreshing = false;
             return _axios.request(error.config);
           })
