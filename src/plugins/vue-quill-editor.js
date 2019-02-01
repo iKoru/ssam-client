@@ -38,46 +38,47 @@ ImageBlot.blotName = 'image';
 ImageBlot.tagName = 'img';
 Quill.register(ImageBlot);*/
 class VideoBlot extends BlockEmbed {
-    static create(url) {
-        const node = super.create();
-        node.setAttribute('class', 'video-container');
-    
-        const child = document.createElement('iframe');
-        child.setAttribute('src', url);
-        child.setAttribute('frameborder', 0);
-        child.setAttribute('allowfullscreen', true);
-        node.appendChild(child);
-        return node;
-    }
 
-    static formats(node) {
-        // We still need to report unregistered embed formats
-        let format = {};
-        if (node.hasAttribute('height')) {
-        format.height = node.getAttribute('height');
-        }
-        if (node.hasAttribute('width')) {
-        format.width = node.getAttribute('width');
-        }
-        return format;
-    }
+  static create(url) {
+    const node = super.create();
+    node.setAttribute('class', 'video-container');
+    this.url = url;
+    const child = document.createElement('iframe');
+    child.setAttribute('src', url);
+    child.setAttribute('frameborder', 0);
+    child.setAttribute('allowfullscreen', true);
+    node.appendChild(child);
+    return node;
+  }
 
-    static value(node) {
-      return node.firstChild.getAttribute('src');
+  static formats(node) {
+    // We still need to report unregistered embed formats
+    let format = {};
+    if (node.hasAttribute('height')) {
+      format.height = node.getAttribute('height');
     }
+    if (node.hasAttribute('width')) {
+      format.width = node.getAttribute('width');
+    }
+    return format;
+  }
 
-    format(name, value) {
-        // Handle unregistered embed formats
-        if (name === 'height' || name === 'width') {
-        if (value) {
-            this.domNode.setAttribute(name, value);
-        } else {
-            this.domNode.removeAttribute(name, value);
-        }
-        } else {
-        super.format(name, value);
-        }
+  static value(node) {
+    return this.url
+  }
+
+  format(name, value) {
+    // Handle unregistered embed formats
+    if (name === 'height' || name === 'width') {
+      if (value) {
+        this.domNode.setAttribute(name, value);
+      } else {
+        this.domNode.removeAttribute(name, value);
+      }
+    } else {
+      super.format(name, value);
     }
+  }
 }
 VideoBlot.blotName = 'video';
 VideoBlot.tagName = 'div';

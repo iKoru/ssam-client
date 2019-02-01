@@ -70,11 +70,16 @@ td.ellipsis
   margin-top:0
 .v-text-field.dense .v-label, .v-select.dense .v-label, .v-input.dense input
   font-size: 16px
+// .v-text-field .v-input__slot
+//   padding-bottom:8px
 .v-text-field .v-input__slot
-  padding-bottom:8px
-.v-text-field.dense .v-input__slot
   padding-bottom:4px
-  margin-bottom:0
+// .v-text-field.dense .v-input__slot
+//   padding-bottom:4px
+//   margin-bottom:0
+.v-text-field.dense:not(.v-select) .v-input__slot
+  padding-bottom: 0
+  margin-bottom:4px
 .v-text-field.dense input, .v-select.dense input
   max-height: 28px
   padding-bottom: 0px
@@ -83,6 +88,8 @@ td.ellipsis
   animation: cubic-bezier(0.25, 0.8, 0.5, 1);
 .v-input.v-select.v-input--is-disabled .v-input__append-inner
   display:none
+.v-text-field > .v-input__control > .v-input__slot:before, .v-text-field > .v-input__control > .v-input__slot:after
+  bottom:-3px
 @media(max-width:600px)
   .container, .v-form > .container, .v-subheader
     padding:0
@@ -108,6 +115,10 @@ table.v-table th:not(.multi-row), table.v-table td:not(.multi-row)
   padding-bottom:4px
 .v-text-field__slot input[type=text], .v-text-field__slot input[type=password]
   margin-bottom: 4px
+.v-subheader
+  height: 32px
+.container.grid-list-xs .layout .flex
+  padding: 1px 8px
 //file-pond
 .filepond--drop-label label
   cursor:pointer

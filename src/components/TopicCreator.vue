@@ -40,7 +40,7 @@
             </v-layout>
           </v-flex>
           <v-flex xs12>
-            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독 권한" hint="(최소) 내가 구독할 수 있도록 선택해야 합니다." persistent-hint :menu-props="{closeOnContentClick:$vuetify.breakpoint.xsOnly}">
+            <component :is="$vuetify.breakpoint.xsOnly?'v-select':'v-autocomplete'" name="allowedGroups" chips multiple item-text="text" dense item-value="value" v-model="allowedGroups" :disabled="allGroupAuth === 'READWRITE'" :items="groupItems" label="구독 권한" :hint="'내가 구독할 수 있도록 선택해야 합니다.' + (myGroup !== ''? ' 나의 구독가능 정보 : ' + myGroup : '')" persistent-hint :menu-props="{closeOnContentClick:$vuetify.breakpoint.xsOnly}">
               <template slot="selection" slot-scope="props">
                 <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, allowedGroups)">{{props.item.text}}</v-chip>
               </template>
@@ -96,6 +96,13 @@ export default {
   },
   props: ["board"],
   computed: {
+    myGroup() {
+      const profile = this.$store.getters.profile;
+      return this.groupItems
+        .filter(x => profile.groups.some(y => y === x.value))
+        .map(x => x.text)
+        .join(", ");
+    },
     allGroupAuthDescription() {
       switch (this.allGroupAuth) {
         case "READONLY":

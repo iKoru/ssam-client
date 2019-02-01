@@ -1,49 +1,44 @@
  <template>
   <v-container>
     <v-layout row justify-center align-center>
-      <v-card width="100%" flat>
-        <v-card-title primary-title>
-          <v-layout row>
-            <v-flex xs12 sm10 lg8 class="mx-auto">
-              <v-layout row>
-                <h3 class="headline">채팅 목록</h3>
-              </v-layout>
-              <v-flex xs12>
-                <v-data-table xs12 :items="chats" id="chatTable" hide-headers :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{customAction:true, 'noResult':totalChats === 0, 'mt-5':true}">
-                  <template slot="items" slot-scope="props">
-                    <tr class="cursor-pointer" @click="getChat(props.item)">
-                      <td>
-                        <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
-                          <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.png')">
-                          <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
-                        </v-avatar>
-                      </td>
-                      <td class="text-xs-left" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.otherNickName }}</td>
-                      <td class="text-xs-left multi-row">{{getShortContents(props.item.lastContents)}}</td>
-                      <td class="text-xs-right">{{props.item.lastSendTimestamp.fromNow()}}</td>
-                      <td>
-                        <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
-                      </td>
-                    </tr>
-                  </template>
-                  <template slot="no-data">{{this.noresult}}</template>
-                  <template slot="actions-prepend">
-                    <v-btn color="primary" @click="getChatList" :loading="loading">새로고침</v-btn>
-                    <v-spacer></v-spacer>
-                  </template>
-                </v-data-table>
-              </v-flex>
-            </v-flex>
-          </v-layout>
-          <component :is="$vuetify.breakpoint.xsOnly?'v-dialog':'div'" full-screen v-model="isChatOpen">
-            <beautiful-chat :participants="participants" :onMessageWasSent="sendMessage" :loadPreviousMessages="loadPreviousMessages" :loadNewMessages="loadNewMessages" :loading="loadingMessages" :messageList="messageList" :newMessagesCount="newMessagesCount" :isOpen="isChatOpen" :close="closeChat" :open="openChat" placeholder="대화 내용을 입력해주세요." :showEmoji="false" :has-user-list="false" :showFile="false" :colors="colors" :alwaysScrollToBottom="scrollToBottom" :showLauncher="false" :messageStyling="false" :title="title" :disabled="disabled"></beautiful-chat>
-          </component>
-        </v-card-title>
-      </v-card>
+      <v-flex xs12 sm10 lg8 class="mx-auto" :px-3="$vuetify.breakpoint.xsOnly">
+        <v-layout row wrap>
+          <v-flex xs12>
+            <h3 class="headline">채팅 목록</h3>
+          </v-flex>
+          <v-flex xs12>
+            <v-data-table xs12 :items="chats" id="chatTable" hide-headers :rows-per-page-items="[15]" :loading="loading" :total-items="totalChats" :pagination.sync="pagination" :class="{'customAction mt-4':true, 'noResult':totalChats === 0}">
+              <template slot="items" slot-scope="props">
+                <tr class="cursor-pointer" @click="getChat(props.item)">
+                  <td class="px-2">
+                    <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
+                      <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.png')">
+                      <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
+                    </v-avatar>
+                  </td>
+                  <td class="text-xs-left px-1" v-if="$vuetify.breakpoint.smAndUp" :title="props.item.chatType === 'T'?'토픽 닉네임':'라운지 필명'">{{ props.item.otherNickName }}</td>
+                  <td class="text-xs-left multi-row px-2">{{getShortContents(props.item.lastContents)}}</td>
+                  <td class="text-xs-right px-2">{{props.item.lastSendTimestamp.fromNow()}}</td>
+                  <td class="px-2">
+                    <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
+                  </td>
+                </tr>
+              </template>
+              <template slot="no-data">{{this.noresult}}</template>
+              <template slot="actions-prepend">
+                <v-btn color="primary" @click="getChatList" :loading="loading">새로고침</v-btn>
+                <v-spacer></v-spacer>
+              </template>
+            </v-data-table>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <component :is="$vuetify.breakpoint.xsOnly?'v-dialog':'div'" full-screen v-model="isChatOpen">
+        <beautiful-chat :participants="participants" :onMessageWasSent="sendMessage" :loadPreviousMessages="loadPreviousMessages" :loadNewMessages="loadNewMessages" :loading="loadingMessages" :messageList="messageList" :newMessagesCount="newMessagesCount" :isOpen="isChatOpen" :close="closeChat" :open="openChat" placeholder="대화 내용을 입력해주세요." :showEmoji="false" :has-user-list="false" :showFile="false" :colors="colors" :alwaysScrollToBottom="scrollToBottom" :showLauncher="false" :messageStyling="false" :title="title" :disabled="disabled"></beautiful-chat>
+      </component>
     </v-layout>
   </v-container>
 </template>
-
 <script>
 import MainLayout from "../layouts/MainLayout";
 
@@ -150,10 +145,9 @@ export default {
             .then(response => {
               if (Array.isArray(response.data.messageList)) {
                 response.data.messageList.reverse();
-                console.log(response.data.messageList);
                 this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})));
                 if (response.data.messageList.length > 0) {
-                  chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss").toDate();
+                  chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss");
                   chat.lastContents = response.data.messageList[response.data.messageList.length - 1].contents;
                 }
               }
@@ -170,12 +164,10 @@ export default {
       this.messageList = [...this.messageList, message];
     },
     openChat() {
-      // called when the user clicks on the fab button to open the chat
       this.isChatOpen = true;
       this.newMessagesCount = 0;
     },
     closeChat() {
-      // called when the user clicks on the botton to close the chat
       this.isChatOpen = false;
     },
     getChat(item) {
@@ -183,7 +175,7 @@ export default {
       this.axios
         .get("/message", {params: {chatId: item.chatId}})
         .then(response => {
-          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}}));
+          this.messageList = response.data.map(x => ({author: x.isSender ? "me" : item.otherNickName, type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}}));console.log(this.messageList, 'messageList');
           this.messageList.reverse();
           if (this.disabled) {
             this.messageList.push({type: "system", data: {text: `${item.otherNickName} 님이 채팅을 나갔습니다.`}});
@@ -271,7 +263,7 @@ export default {
       })();
     },
     getShortContents(contents) {
-      return contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
+      return contents && contents.length > 50 ? contents.substring(0, 50) + "..." : contents;
     }
   },
   watch: {
@@ -280,22 +272,12 @@ export default {
         this.getChatList();
       },
       deep: true
+    },
+    isChatOpen(val){
+      if(this.$vuetify.breakpoint.xsOnly){
+        document.body.style.position = val?'fixed':"initial";
+      }
     }
   }
 };
 </script>
-<style scoped>
-table.v-table thead td:not(:nth-child(1)),
-table.v-table tbody td:not(:nth-child(1)),
-table.v-table thead th:not(:nth-child(1)),
-table.v-table tbody th:not(:nth-child(1)),
-table.v-table thead td:first-child,
-table.v-table tbody td:first-child,
-table.v-table thead th:first-child,
-table.v-table tbody th:first-child {
-  padding: 0 12px;
-}
-td:first-child {
-  padding: 0 12px;
-}
-</style>

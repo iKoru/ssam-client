@@ -18,10 +18,9 @@
                 <v-subheader class="tiny align-center mx-1 px-0" v-if="showDateTime">
                   <small>{{list[n-1].writeDateTime.fromNow()}}</small>
                 </v-subheader>
-                <span class="tiny align-center" v-if="showVoteUpCount">
-                  <v-icon small color="primary">thumb_up</v-icon>
-                  {{list[n-1].voteUpCount}}
-                </span>
+                <v-subheader class="tiny align-center mx-1 px-0" v-if="showVoteUpCount">
+                  <small>추천 {{list[n-1].voteUpCount}}</small>
+                </v-subheader>
               </v-layout>
             </v-list-tile-title>
           </v-list-tile-content>

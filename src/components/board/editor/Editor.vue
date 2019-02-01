@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-layout column :mx-1="$vuetify.breakpoint.smAndUp" :mt-1="$vuetify.breakpoint.smAndUp">
     <v-flex id="title" class="mb-0 pb-0">
       <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" solo v-model="title" hide-details></v-text-field>
     </v-flex>

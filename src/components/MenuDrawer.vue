@@ -10,7 +10,7 @@
           </v-list>
         </v-toolbar>
 
-        <v-list>
+        <v-list dense class="pt-0">
           <v-list-group v-model="openLounge" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-title>
@@ -31,8 +31,10 @@
 
             <v-list-tile v-for="(topic, i) in topics" :key="i" @click="drawerChanged(false)" :to="`/${topic.boardId}`" :class="{recommand:topic.notJoined}">
               <v-layout column>
-                <v-list-tile-title v-text="topic.boardName"></v-list-tile-title>
-                <small v-if="topic.notJoined">추천 토픽</small>
+                <v-list-tile-title>
+                  {{topic.boardName}}
+                  <v-chip v-if="topic.notJoined" small label class="ma-0">추천</v-chip>
+                </v-list-tile-title>
               </v-layout>
             </v-list-tile>
 

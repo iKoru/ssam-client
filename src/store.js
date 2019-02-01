@@ -121,6 +121,7 @@ export default new Vuex.Store({
     },
     TOGGLE_MENUDRAWER (state) {
       state.menuDrawer = !state.menuDrawer
+      document.body.style.position = state.menuDrawer?'fixed':"initial";
     },
     SET_MENUBAR (state, menuBar) {
       state.menuBar = menuBar
