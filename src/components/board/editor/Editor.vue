@@ -38,10 +38,10 @@
       <div>
         <v-btn small flat @click="openFileDialog">
           <v-icon id="attach-button">attach_file</v-icon>파일첨부
-          <input ref="fileInput" multiple id="file-upload" style="display:none" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange">
         </v-btn>
       </div>
     </v-layout>
+    <input style="diplay:none!important; height:0px; width:0px;"  ref="fileInput" multiple id="file-upload" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
     <v-slide-y-transition>
       <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
         <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
