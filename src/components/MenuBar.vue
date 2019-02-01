@@ -341,6 +341,7 @@ export default {
   padding: 0 20px;
   min-width: 100px;
   border-right: 1px solid #e8e8e8;
+  align-self:center;
 }
 .menuColumn .flex {
   margin: 2px 0;

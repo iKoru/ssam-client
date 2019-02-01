@@ -71,7 +71,7 @@ export default {
 .periodBestCarousel .v-btn--active:before,
 .periodBestCarousel .v-btn:hover:before,
 .periodBestCarousel .v-btn:focus:before {
-  background-color: unset;
+  background-color: transparent;
 }
 .periodBestCarousel .v-carousel__controls__item .v-icon {
   opacity: 0.1;
