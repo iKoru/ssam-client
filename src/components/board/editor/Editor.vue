@@ -275,26 +275,26 @@ export default {
           this.title = data.title
           this.contents = JSON.parse(data.contents)
           this.attachFromServer = data.attach
-          this.$refs.editor.quill.setContents(this.contents)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
             this.survey = data.survey
           }
           if(data.attach) {
-            console.log(data.attach)
-            console.log(this.contents)
             let image;
             this.contents.ops.forEach(item => {
               if (item.insert.hasOwnProperty("image")) {
                 image = data.attach.find(x => x.attach_name === item.insert.image);
+                console.log(image)
                 if (image) {
                   image.insert = true;
                 }
+                item.insert.image = this.webUrl + "/" + image.attach_path
               }
             })
             this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
-            
           }
+          
+          this.$refs.editor.quill.setContents(this.contents)
     },
     attachButtonClick() {
       if(this.documentId) this.openFileDialog()
@@ -310,6 +310,10 @@ export default {
         console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
+              if(files[i].size > 1024 * 1024 * 8) {
+                alert('8MB 이하의 파일만 첨부가능합니다.')
+                break;
+              }
                 // let sameNameCount = 0;
                 // let splitter = files[i].name.lastIndexOf('.')
                 // let fileExtension = files[i].name.substring(splitter, files[i].name.length)
@@ -364,7 +368,7 @@ export default {
         reader.onload = function () {
           // file type is only image.
           if (/^image\//.test(file.type)) {
-            console.log('이게 이미지다')
+            console.log('이미지다')
             let range = self.$refs.editor.quill.getSelection()
             console.log(range)
             console.log(file)
