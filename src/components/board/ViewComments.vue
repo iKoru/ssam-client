@@ -18,7 +18,7 @@
               <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
-              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action>
+              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action v-if="item.children.length > 5">
                 <v-list-tile slot="activator" avatar>
                   <v-list-tile-action></v-list-tile-action>
                   <v-list-tile-title class="text-xs-center"><small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small></v-list-tile-title>
