@@ -150,4 +150,9 @@ export default {
 .commentList.v-list .v-list__group--active:before, .commentList.v-list .v-list__group--active:after{
   display:none;
 }
+@media(max-width:599px){
+  .commentList.theme--light.v-list .v-list__group__header:hover {
+    background-color:#fff;
+  }
+}
 </style>

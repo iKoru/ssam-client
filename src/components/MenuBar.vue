@@ -326,6 +326,7 @@ export default {
   flex-direction: row;
   overflow-x: auto;
   height: 32px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scrollContainer.topicTab.hide-menuBar,
