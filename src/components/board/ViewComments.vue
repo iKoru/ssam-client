@@ -18,7 +18,22 @@
               <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
-              <div v-for="(childItem, childIndex) in item.children" :key="childIndex">
+              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action>
+                <v-list-tile slot="activator" avatar>
+                  <v-list-tile-action></v-list-tile-action>
+                  <v-list-tile-title class="text-xs-center"><small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small></v-list-tile-title>
+                </v-list-tile>
+                <div v-for="(childItem, childIndex) in item.children.filter((x, y) => y < (item.children.length - 5))" :key="'hidden'+childIndex">
+                  <v-divider inset/>
+                  <v-list-tile avatar>
+                    <v-list-tile-action></v-list-tile-action>
+                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes"/>
+                  </v-list-tile>
+                </div>
+              </v-list-group>
+              <template v-if="item.children.length > 5">
+              </template>
+              <div v-for="(childItem, childIndex) in (item.children.length > 5 ? item.children.filter((x, y) => y >= (item.children.length - 5)) : item.children)" :key="childIndex">
                 <v-divider inset/>
                 <v-list-tile avatar>
                   <v-list-tile-action></v-list-tile-action>
@@ -131,5 +146,8 @@ export default {
   font-weight: bold;
   background-color: white !important;
   border-color: white !important;
+}
+.commentList.v-list .v-list__group--active:before, .commentList.v-list .v-list__group--active:after{
+  display:none;
 }
 </style>

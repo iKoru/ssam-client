@@ -10,7 +10,7 @@
           </v-list>
         </v-toolbar>
 
-        <v-list dense>
+        <v-list dense class="pt-0">
           <v-list-group v-model="openLounge" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-title>

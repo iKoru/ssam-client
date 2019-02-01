@@ -39,7 +39,6 @@
     </v-layout>
   </v-container>
 </template>
-
 <script>
 import MainLayout from "../layouts/MainLayout";
 
@@ -146,7 +145,6 @@ export default {
             .then(response => {
               if (Array.isArray(response.data.messageList)) {
                 response.data.messageList.reverse();
-                console.log(response.data.messageList);
                 this.messageList = this.messageList.concat(response.data.messageList.filter(x => x.sendTimestamp > lastSendTimestamp).map(x => ({author: x.isSender ? "me" : chat ? chat.otherNickName : "(알 수 없음)", type: "text", data: {text: x.contents, meta: this.$moment(x.sendTimestamp, "YYYYMMDDHHmmss").format("Y.M.D hh:mm:ss a")}})));
                 if (response.data.messageList.length > 0) {
                   chat.lastSendTimestamp = this.$moment(response.data.messageList[response.data.messageList.length - 1].sendTimestamp, "YYYYMMDDHHmmss");
@@ -166,12 +164,10 @@ export default {
       this.messageList = [...this.messageList, message];
     },
     openChat() {
-      // called when the user clicks on the fab button to open the chat
       this.isChatOpen = true;
       this.newMessagesCount = 0;
     },
     closeChat() {
-      // called when the user clicks on the botton to close the chat
       this.isChatOpen = false;
     },
     getChat(item) {
@@ -276,6 +272,11 @@ export default {
         this.getChatList();
       },
       deep: true
+    },
+    isChatOpen(val){
+      if(this.$vuetify.breakpoint.xsOnly){
+        document.body.style.position = val?'fixed':"initial";
+      }
     }
   }
 };
