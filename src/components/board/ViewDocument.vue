@@ -9,7 +9,7 @@
             <v-flex text-xs-right>
               <!--<span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>-->
               <user-link :nickName="document.nickName" :boardType="board.boardType"/>
-               | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+              | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
           </v-layout>
         </div>
@@ -69,10 +69,13 @@
         </v-flex>
       </v-layout>
       <v-slide-y-transition>
-        <v-layout row v-show="showAttach" mt-2 wrap>
-          <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
-            <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
-          </v-flex>
+        <v-layout column>
+          <v-layout row v-show="showAttach" mt-2 wrap>
+            <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
+              <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
+            </v-flex>
+          </v-layout>
+          <v-divider v-show="showAttach" class="mb-2"/>
         </v-layout>
       </v-slide-y-transition>
     </v-flex>
@@ -86,7 +89,7 @@
 // import LinkPrevue from '@/components/LinkPrevue'
 import Survey from "@/components/board/survey/Survey";
 import CommentWriter from "@/components/board/CommentWriter";
-import UserLink from '@/components/UserLink';
+import UserLink from "@/components/UserLink";
 import ViewComments from "@/components/board/ViewComments";
 import BoardMixins from "@/components/mixins/BoardMixins";
 import Quill from "quill";
@@ -164,7 +167,7 @@ export default {
       }
     },
     pages() {
-      return this.document.commentCount === 0? 1 : Math.ceil(this.document.commentCount / (process.env.NODE_ENV === 'development'?10:100));
+      return this.document.commentCount === 0 ? 1 : Math.ceil(this.document.commentCount / (process.env.NODE_ENV === "development" ? 10 : 100));
     }
   },
   methods: {
@@ -176,7 +179,7 @@ export default {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
           this.document = response.data;
-          this.documentHTML = this.document.isDeleted?this.document.contents:this.deltaToHTML(JSON.parse(this.document.contents));
+          this.documentHTML = this.document.isDeleted ? this.document.contents : this.deltaToHTML(JSON.parse(this.document.contents));
           this.showAttach = false;
           this.$emit("update:documentBoardId", this.document.boardId);
         })
@@ -222,7 +225,7 @@ export default {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + "/" + image.attach_path
+            item.insert.image = this.webUrl + "/" + image.attach_path;
             /*item.insert.image = {
               src: this.webUrl + "/" + image.attach_path,
               download: item.insert.image,
@@ -234,25 +237,25 @@ export default {
       });
       quill.setContents(delta);
       // Clean spaces between tags
-      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
-      
+      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3");
+
       // Clean empty paragraphs before the content
       // <p><br/><p> && <p></p>
       let slicer;
-      while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
-        if (newText.slice(0,7) === '<p></p>') slicer = 7
-        else slicer = 11
-        newText = newText.substring(slicer, newText.length)
+      while (newText.slice(0, 7) === "<p></p>" || newText.slice(0, 11) === "<p><br></p>") {
+        if (newText.slice(0, 7) === "<p></p>") slicer = 7;
+        else slicer = 11;
+        newText = newText.substring(slicer, newText.length);
       }
-    
+
       // Clean empty paragraphs after the content
-      while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
-        if (newText.slice(-7) === '<p></p>') slicer = 7
-        else slicer = 11
-        newText = newText.substring(0, newText.length - slicer)
+      while (newText.slice(-7) === "<p></p>" || newText.slice(-11) === "<p><br></p>") {
+        if (newText.slice(-7) === "<p></p>") slicer = 7;
+        else slicer = 11;
+        newText = newText.substring(0, newText.length - slicer);
       }
       // Return the clean Text
-      return newText
+      return newText;
     },
     saveddocument(to, from) {
       let href = to.match(/\bhttps?:\/\/\S+/gi);
@@ -350,35 +353,37 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
-#documentContents p img, #documentContents img {
+#documentContents p img,
+#documentContents img {
   max-width: 100%;
 }
-#documentContents .video-container{
-  position:relative;
-  height:0;
-  width:100%;
-  padding-bottom:56%;
+#documentContents .video-container {
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding-bottom: 56%;
 }
-#documentContents .video-container iframe{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+#documentContents .video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 @media (max-width: 600px) {
-  #documentContents p img, #documentContents img {
+  #documentContents p img,
+  #documentContents img {
     max-width: calc(100% + 32px);
     margin-left: -16px;
     margin-right: -16px;
   }
-  #documentContents .video-container{
-    position:relative;
-    height:0;
-    width:calc(100% + 32px);
-    margin-left:-16px;
-    margin-right:-16px;
-    padding-bottom:56%;
+  #documentContents .video-container {
+    position: relative;
+    height: 0;
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-bottom: 56%;
   }
 }
 </style>

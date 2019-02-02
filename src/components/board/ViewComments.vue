@@ -18,10 +18,12 @@
               <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
-              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action v-if="item.children.length > 5">
+              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" v-if="item.children.length > 5" lazy>
                 <v-list-tile slot="activator" avatar>
                   <v-list-tile-action></v-list-tile-action>
-                  <v-list-tile-title class="text-xs-center"><small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small></v-list-tile-title>
+                  <v-list-tile-title class="text-xs-center">
+                    <small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small>
+                  </v-list-tile-title>
                 </v-list-tile>
                 <div v-for="(childItem, childIndex) in item.children.filter((x, y) => y < (item.children.length - 5))" :key="'hidden'+childIndex">
                   <v-divider inset/>
@@ -31,8 +33,7 @@
                   </v-list-tile>
                 </div>
               </v-list-group>
-              <template v-if="item.children.length > 5">
-              </template>
+              <template v-if="item.children.length > 5"></template>
               <div v-for="(childItem, childIndex) in (item.children.length > 5 ? item.children.filter((x, y) => y >= (item.children.length - 5)) : item.children)" :key="childIndex">
                 <v-divider inset/>
                 <v-list-tile avatar>
@@ -73,14 +74,14 @@ export default {
     return {
       commentList: [],
       openRecommentIndex: -1,
-      page:undefined
+      page: undefined
     };
   },
   methods: {
     getCommentList() {
       this.openRecommentIndex = -1;
       this.$axios
-        .get("/comment", {params: {documentId: this.$route.params.documentId, page:this.page}, headers: {silent: true}})
+        .get("/comment", {params: {documentId: this.$route.params.documentId, page: this.page}, headers: {silent: true}})
         .then(res => {
           res.data.forEach(x => {
             if (Array.isArray(x.attach)) {
@@ -99,20 +100,20 @@ export default {
   watch: {
     "$route.params": {
       handler() {
-        if(!this.page){
+        if (!this.page) {
           this.$nextTick(() => {
             this.page = this.pages;
-          })
+          });
         }
       },
       deep: true,
       immediate: true
     },
-    page(val){
+    page(val) {
       this.getCommentList();
     },
-    pages(val){
-      this.page = this.pages
+    pages(val) {
+      this.page = this.pages;
     }
   }
 };
@@ -131,8 +132,8 @@ export default {
   height: fit-content;
   padding: 0 16px;
 }
-.commentList .bestComment{
-  background-color:#B3E5FC;
+.commentList .bestComment {
+  background-color: #b3e5fc;
 }
 #commentPagination .v-pagination__item,
 #commentPagination .v-pagination__item--active,
@@ -147,12 +148,13 @@ export default {
   background-color: white !important;
   border-color: white !important;
 }
-.commentList.v-list .v-list__group--active:before, .commentList.v-list .v-list__group--active:after{
-  display:none;
+.commentList.v-list .v-list__group--active:before,
+.commentList.v-list .v-list__group--active:after {
+  display: none;
 }
-@media(max-width:599px){
+@media (max-width: 599px) {
   .commentList.theme--light.v-list .v-list__group__header:hover {
-    background-color:#fff;
+    background-color: #fff;
   }
 }
 </style>
