@@ -125,16 +125,12 @@ export default {
       },
       show: false,
       isAnonymous: false,
-      formData: undefined,
-      rawFileData: undefined,
       disallowAnonymous: false,
-      attachedFilenames: [],
-      deletedFilenames: [],
-      attachedImages: [],
-      modifyingFormData: undefined,
-      attachFromServer: undefined,
-      selectedFile: undefined,
-      originImages: [],
+      formData: undefined,
+      rawFileData: undefined, 
+      attachedFilenames: [], // for easy check
+      attachFromServer: undefined, // for keeping attaches when modifying document
+      originImages: [], // for Revert Imaage
     };
   },
   methods: {
@@ -174,7 +170,6 @@ export default {
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-            this.revertImages();
           }
         })
         .catch(error => {
@@ -193,9 +188,17 @@ export default {
       // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
       
       // Convert Images And Upload First
-      if (!this.formData) this.formData = new FormData();
-      await this.attachImages(); // change image url here
-      this.processFileChange()
+      try {
+        if (!this.formData) this.formData = new FormData();
+        this.formData.append('documentId', this.documentId)
+        await this.attachImages(); // change image url here
+        await this.processFileChange()
+        
+      } catch (err){
+        console.log(err)
+        this.revertImages();
+        delete this.formData
+      }
       // let modifiedBody = {
       //   documentId: this.documentId,
       //   title: this.title,
@@ -251,48 +254,59 @@ export default {
           }
         }
       });
+      let deleteImageP, deleteFileP, uploadFileP
+      this.attachFromServer = this.attachFromServer.filter(a => a!==null)
       this.attachFromServer.forEach(a => {
         if(a.insert && !currentImageId.filter(i=>i!==undefined).includes(a.attach_id)) {
-          console.log(a)
-          this.$axios
-            .delete(`/attach/${this.documentId}/${a.attach_id}`)
+          deleteImageP = this.$axios
+            .delete(`/document/attach/${this.documentId}/${a.attach_id}`)
             .then(response => {
-              console.log(response)
               if (response.status === 200) {
                 console.log(response)
               }
             })
             .catch(error => {
-              console.log(error)
               console.log(error.response);
             });
         } else if(!this.attachedFilenames.includes(a.attach_name) && !a.insert){
-          this.$axios
-            .delete(`/attach/${this.documentId}/${a.attach_id}`)
+          deleteFileP = this.$axios
+            .delete(`/document/attach/${this.documentId}/${a.attach_id}`)
             .then(response => {
-              console.log(response)
               if (response.status === 200) {
                 console.log(response)
               }
             })
             .catch(error => {
-              console.log(error)
               console.log(error.response);
           });
         }
       })
-      // return this.$axios
-            // .post(`/attach/${this.documentId}`, this.formData)
-            // .then(response => {
-            //   console.log(response)
-            //   if (response.status === 200) {
-            //     console.log(response)
-            //   }
-            // })
-            // .catch(error => {
-            //   console.log(error)
-            //   console.log(error.response);
-            // });
+      await this.processUploadFiles()
+      let fileCount = 0;
+      for (let pair of this.formData.entries()) {
+        if(pair[0] === 'attach') fileCount += 1;
+      }
+      if(fileCount > 0) {
+        uploadFileP = this.$axios
+          .post(`/document/attach`, this.formData)
+          .then(response => {
+            if (response.status === 200) {
+              console.log(response)
+            }
+          })
+          .catch(error => {
+            console.log(error)
+            console.log(error.response);
+          });
+      }
+      await Promise.all([deleteImageP, deleteFileP, uploadFileP])
+        .then(res => {
+          console.log(res)
+          this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     surveyButtonClick() {
       if (this.documentId && this.survey) {
@@ -368,17 +382,6 @@ export default {
                 alert('8MB 이하의 파일만 첨부가능합니다.')
                 break;
               }
-                // let sameNameCount = 0;
-                // let splitter = files[i].name.lastIndexOf('.')
-                // let fileExtension = files[i].name.substring(splitter, files[i].name.length)
-                // let filename = files[i].name.substring(0, splitter)
-                // console.log(filename)
-                // self.attachedFilenames.forEach(name => {
-                //   if(name.toLowerCase() === files[i].name.toLowerCase()) sameNameCount++
-                // }) // 나중에 올릴때만 (1) (2) 붙여준다.
-                // if(sameNameCount > 0) {
-                //   filename = filename + ' (' + sameNameCount + ')'
-                // }
                 await self.rawFileData.append("file", files[i], files[i].name);
                 await self.attachedFilenames.push(files[i].name)
                 // keep delete -> attach case
@@ -399,15 +402,30 @@ export default {
         }
         this.rawFileData = newFileData
       }
+      
       this.attachedFilenames.splice(index, 1)
     },
     processUploadFiles() {
-      if(this.rawFileData){
-        for (var pair of this.rawFileData.entries()) {
-            if(!this.deletedFilenames.includes(pair[1].name)) {
-              this.formData.append('attach', pair[1], pair[1].name)
-            }
+      if(!this.rawFileData ) this.rawFileData = new FormData()
+      let namesCount = {}
+      for (let pair of this.rawFileData.entries()) {
+        namesCount[pair[1].name] = {
+          count: namesCount[pair[1].name] ? (namesCount[pair[1].name].count + 1) : 1,
+          index: 0
         }
+      }
+      console.log(namesCount)
+      for (let pair of this.rawFileData.entries()) {
+        
+        let splitter = pair[1].name.lastIndexOf('.')
+        let fileExtension = pair[1].name.substring(splitter, pair[1].name.length)
+        let filename = pair[1].name.substring(0, splitter)
+        let suffix = ''
+        if( namesCount[pair[1].name].count > 0) {
+          suffix = namesCount[pair[1].name].index === 0 ? '' : ` (${namesCount[pair[1].name].index})`
+          namesCount[pair[1].name].index += 1
+        }
+        this.formData.append('attach', pair[1], filename + suffix + fileExtension)
       }
     },
     selectImage() {
