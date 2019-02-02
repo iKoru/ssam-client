@@ -193,34 +193,34 @@ export default {
         this.formData.append('documentId', this.documentId)
         await this.attachImages(); // change image url here
         await this.processFileChange()
-        
+          let modifiedBody = {
+            documentId: this.documentId,
+            title: this.title,
+            contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+          }
+    
+          return this.$axios
+          .put(`/document`, modifiedBody)
+          .then(response => {
+            if (response.status === 200) {
+              this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
+            }
+          })
+          .catch(error => {
+            delete this.formData;
+            console.log(error.response);
+            this.revertImages();
+          })
       } catch (err){
         console.log(err)
         this.revertImages();
         delete this.formData
       }
-      // let modifiedBody = {
-      //   documentId: this.documentId,
-      //   title: this.title,
-      //   contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
-      // }
-
-      // return this.$axios
-      // .put(`/document`, modifiedBody)
-      // .then(response => {
-      //   if (response.status === 200) {
-      //     this.processFileChange()
-      //   }
-      // })
-      // .catch(error => {
-      //   delete this.formData;
-      //   console.log(error.response);
-      //   this.revertImages();
-      // })
     },
     attachImages() {
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
+          console.log(item.insert)
           if(item.insert.image.includes('data:image')) {
             let imgSrc = item.insert.image;
             let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
@@ -228,7 +228,7 @@ export default {
             item.insert.image = imageName;
             this.originImages.push({name: imageName, src: imgSrc});
           }
-          // 취소되었을 때 이미지 source restore해야함
+          console.log(item.insert)
         }
       });
     },
@@ -246,6 +246,8 @@ export default {
       
       // new images are already in formdata
       // process deleted images
+            console.log(this.attachFromServer)
+
       let currentImageId = this.$refs.editor.quill.editor.delta.ops.map(item => {
         if (item.insert.hasOwnProperty("image")) {
           if(item.insert.image.startsWith('/attach')) {
@@ -254,9 +256,12 @@ export default {
           }
         }
       });
+      console.log(currentImageId)
       let deleteImageP, deleteFileP, uploadFileP
+      console.log(this.attachFromServer)
       this.attachFromServer = this.attachFromServer.filter(a => a!==null)
       this.attachFromServer.forEach(a => {
+        console.log(a.attach_name)
         if(a.insert && !currentImageId.filter(i=>i!==undefined).includes(a.attach_id)) {
           deleteImageP = this.$axios
             .delete(`/document/attach/${this.documentId}/${a.attach_id}`)
@@ -302,7 +307,6 @@ export default {
       await Promise.all([deleteImageP, deleteFileP, uploadFileP])
         .then(res => {
           console.log(res)
-          this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
         })
         .catch(err => {
           console.log(err)
@@ -340,6 +344,7 @@ export default {
           this.title = data.title
           this.contents = JSON.parse(data.contents)
           this.attachFromServer = data.attach
+          console.log(data.attach)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
             this.survey = data.survey
@@ -414,7 +419,6 @@ export default {
           index: 0
         }
       }
-      console.log(namesCount)
       for (let pair of this.rawFileData.entries()) {
         
         let splitter = pair[1].name.lastIndexOf('.')
