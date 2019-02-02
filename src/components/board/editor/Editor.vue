@@ -4,7 +4,7 @@
       <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" solo v-model="title" hide-details></v-text-field>
     </v-flex>
     <v-flex xs12 id="write-editor">
-      <quill-editor v-model="content" ref="editor" :options="editorOption" @ready="onEditorReady($event)">
+      <quill-editor v-model="content" ref="editor" :options="editorOption">
         <div id="toolbar" slot="toolbar">
           <button class="ql-bold">Bold</button>
           <button class="ql-italic">Italic</button>
@@ -81,8 +81,7 @@
     <v-layout row>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn v-if="documentId" class="primary" @click="modifyPost()">수정</v-btn>
-        <v-btn v-else class="primary" @click="post()">등록</v-btn>
+        <v-btn class="primary" @click="post()">{{documentId?'수정하기':'등록'}}</v-btn>
       </v-flex>
     </v-layout>
   </v-layout>
@@ -133,20 +132,27 @@ export default {
       deletedFilenames: [],
       attachedImages: [],
       modifyingFormData: undefined,
-      attachedFileNumber: 0,
       attachFromServer: undefined,
       selectedFile: undefined,
       originImages: [],
     };
   },
-  // manually control the data synchronization
   methods: {
-    onEditorReady(quill) {
-      console.log("editor ready!", quill);
-    },
     onEditorChange({quill, html, text}) {
       console.log("editor change!", quill, html, text);
       this.content = html;
+    },
+    async post() {
+      // manually add images as file
+      if(!this.title || this.title.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'제목을 입력해주세요.', color:'error'})
+        return;
+      }else if(!this.content || this.content.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
+        return;
+      }
+      if (this.documentId) await this.uploadModifiedDocument();
+      else await this.uploadDocument();
     },
     async uploadDocument() {
       if (!this.formData) this.formData = new FormData();
@@ -175,54 +181,43 @@ export default {
           console.log(error)
           delete this.formData;
           this.revertImages();
-          this.attachedFileNumber = 0;
           console.log(error.response);
         });
     },
-    async post() {
-      // manually add images as file
-      if(!this.title || this.title.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'제목을 입력해주세요.', color:'error'})
-        return;
-      }else if(!this.content || this.content.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
-        return;
-      }
-      // await this.handleProcessFile();
-      await this.uploadDocument();
-    },
-    async modifyPost() {
+    async uploadModifiedDocument() {
       // edit given document put 한번 attach post delete한번
       // if (!this.formData) this.formData = new FormData();
 
       // check image and attach change
       // 이미지/파일 달라진 것 -> post/delete
       // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
-      let modifiedBody = {
-        documentId: this.documentId,
-        title: this.title,
-        contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
-      }
-      return this.$axios
-      .put(`/document`, modifiedBody)
-      .then(response => {
-        if (response.status === 200) {
-          console.log(response)
+      
+      // Convert Images And Upload First
+      if (!this.formData) this.formData = new FormData();
+      await this.attachImages(); // change image url here
+      this.processFileChange()
+      // let modifiedBody = {
+      //   documentId: this.documentId,
+      //   title: this.title,
+      //   contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+      // }
 
-          console.log(this.deletedFilenames)
-        }
-      })
-      .catch(error => {
-        delete this.formData;
-        this.attachedFileNumber = 0;
-        console.log(error.response);
-      });
+      // return this.$axios
+      // .put(`/document`, modifiedBody)
+      // .then(response => {
+      //   if (response.status === 200) {
+      //     this.processFileChange()
+      //   }
+      // })
+      // .catch(error => {
+      //   delete this.formData;
+      //   console.log(error.response);
+      //   this.revertImages();
+      // })
     },
     attachImages() {
-      this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty("image")).length;
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          // random generated uuid should given here
           if(item.insert.image.includes('data:image')) {
             let imgSrc = item.insert.image;
             let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
@@ -242,6 +237,62 @@ export default {
         }
       });
       this.originImages = [];
+    },
+    async processFileChange() {
+      // let serverPaths = this.attachFromServer.map(a => '/' + a.attach_path)
+      
+      // new images are already in formdata
+      // process deleted images
+      let currentImageId = this.$refs.editor.quill.editor.delta.ops.map(item => {
+        if (item.insert.hasOwnProperty("image")) {
+          if(item.insert.image.startsWith('/attach')) {
+            // '/attach/:documentId(^[\\d]+$)/:attachId
+            return this.attachFromServer.find(a => item.insert.image === '/' + a.attach_path).attach_id
+          }
+        }
+      });
+      this.attachFromServer.forEach(a => {
+        if(a.insert && !currentImageId.filter(i=>i!==undefined).includes(a.attach_id)) {
+          console.log(a)
+          this.$axios
+            .delete(`/attach/${this.documentId}/${a.attach_id}`)
+            .then(response => {
+              console.log(response)
+              if (response.status === 200) {
+                console.log(response)
+              }
+            })
+            .catch(error => {
+              console.log(error)
+              console.log(error.response);
+            });
+        } else if(!this.attachedFilenames.includes(a.attach_name) && !a.insert){
+          this.$axios
+            .delete(`/attach/${this.documentId}/${a.attach_id}`)
+            .then(response => {
+              console.log(response)
+              if (response.status === 200) {
+                console.log(response)
+              }
+            })
+            .catch(error => {
+              console.log(error)
+              console.log(error.response);
+          });
+        }
+      })
+      // return this.$axios
+            // .post(`/attach/${this.documentId}`, this.formData)
+            // .then(response => {
+            //   console.log(response)
+            //   if (response.status === 200) {
+            //     console.log(response)
+            //   }
+            // })
+            // .catch(error => {
+            //   console.log(error)
+            //   console.log(error.response);
+            // });
     },
     surveyButtonClick() {
       if (this.documentId && this.survey) {
@@ -279,7 +330,11 @@ export default {
           if(data.survey) {
             this.survey = data.survey
           }
+          if (Array.isArray(data.attach)) {
+            data.attach = data.attach.filter(x => x !== null);
+          }
           if(data.attach) {
+            console.log(data.attach)
             let image;
             this.contents.ops.forEach(item => {
               if (item.insert.hasOwnProperty("image")) {
@@ -287,8 +342,8 @@ export default {
                 console.log(image)
                 if (image) {
                   image.insert = true;
+                  item.insert.image = this.webUrl + "/" + image.attach_path
                 }
-                item.insert.image = this.webUrl + "/" + image.attach_path
               }
             })
             this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
@@ -307,7 +362,6 @@ export default {
         if (!this.rawFileData) this.rawFileData = new FormData();
         var self = this;
         var files = e.target.files || e.dataTransfer.files;
-        console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
               if(files[i].size > 1024 * 1024 * 8) {
@@ -332,17 +386,19 @@ export default {
         }
     },
     async removeFile(index) {
-      let newFileData = new FormData()
-      let i = 0
-      for (let pair of this.rawFileData.entries()) {
-        if(pair[0] ==='file') {
-          if(i !== Number(index)){
-            await newFileData.append(pair[0], pair[1], pair[1].name)
+      if (this.rawFileData) {
+        let newFileData = new FormData()
+        let i = 0
+        for (let pair of this.rawFileData.entries()) {
+          if(pair[0] ==='file') {
+            if(i !== Number(index)){
+              await newFileData.append(pair[0], pair[1], pair[1].name)
+            }
+            i += 1
           }
-          i += 1
         }
+        this.rawFileData = newFileData
       }
-      this.rawFileData = newFileData
       this.attachedFilenames.splice(index, 1)
     },
     processUploadFiles() {
@@ -404,6 +460,7 @@ export default {
           this.parseDocument(response.data)
         })
         .catch(error => {
+          console.log(error)
           console.log(error.response);
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 

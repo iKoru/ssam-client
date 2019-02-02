@@ -172,6 +172,7 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
+          console.log(response.data.attach)
           if (Array.isArray(response.data.attach)) {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
