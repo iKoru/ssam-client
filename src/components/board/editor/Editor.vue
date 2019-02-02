@@ -151,6 +151,7 @@ export default {
       else await this.uploadDocument();
     },
     async uploadDocument() {
+      console.log(this.$refs.editor.quill.editor.delta)
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
       this.formData.append("boardId", this.$route.params.boardId);
@@ -173,20 +174,16 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error)
+          this.$store.dispatch('showSnackbar', {text:'게시물 작성이 실패하였습니다. 다시 시도해주세요', color:'error'})
           delete this.formData;
           this.revertImages();
           console.log(error.response);
         });
     },
     async uploadModifiedDocument() {
-      // edit given document put 한번 attach post delete한번
-      // if (!this.formData) this.formData = new FormData();
-
-      // check image and attach change
-      // 이미지/파일 달라진 것 -> post/delete
-      // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
-      
+      if(!confirm('게시물을 수정하시겠습니까?')) {
+        return;
+      }
       // Convert Images And Upload First
       try {
         if (!this.formData) this.formData = new FormData();
@@ -196,23 +193,24 @@ export default {
           let modifiedBody = {
             documentId: this.documentId,
             title: this.title,
-            contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+            contents: JSON.stringify(this.$refs.editor.quill.editor.delta),
           }
-    
+          
           return this.$axios
           .put(`/document`, modifiedBody)
           .then(response => {
             if (response.status === 200) {
+              this.$store.dispatch('showSnackbar', {text:'게시물을 수정하였습니다', color:'success'})
               this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
             }
           })
           .catch(error => {
-            delete this.formData;
+            this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
             console.log(error.response);
-            this.revertImages();
           })
       } catch (err){
         console.log(err)
+        this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
         this.revertImages();
         delete this.formData
       }
@@ -300,7 +298,6 @@ export default {
             }
           })
           .catch(error => {
-            console.log(error)
             console.log(error.response);
           });
       }
@@ -310,12 +307,18 @@ export default {
         })
         .catch(err => {
           console.log(err)
+          this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
         })
     },
     surveyButtonClick() {
       if (this.documentId && this.survey) {
         // 글 수정시 설문 수정 불가
         this.surveyViewerDialog = true
+        return;
+      }
+      if (this.documentId && !this.survey) {
+        // 글 작성 후 설문 추가 불가
+        this.$store.dispatch('showSnackbar', {text:'게시물 작성 후 설문을 추가할 수 없습니다.', color:'error'})
         return;
       }
       if (this.currentSurvey.questions.length === 0) {
@@ -384,7 +387,7 @@ export default {
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
               if(files[i].size > 1024 * 1024 * 8) {
-                alert('8MB 이하의 파일만 첨부가능합니다.')
+                this.$store.dispatch('showSnackbar', {text:'8MB 이하의 파일만 첨부가능합니다.', color:'error'})
                 break;
               }
                 await self.rawFileData.append("file", files[i], files[i].name);
@@ -453,7 +456,7 @@ export default {
             self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index , 'image', reader.result);
   
           } else {
-            alert('이미지 파일만 올릴 수 있습니다.');
+            this.$store.dispatch('showSnackbar', {text:'이미지 파일만 업로드할 수 있습니다.', color:'error'})
           }
         };
         reader.onerror = function (error) {
@@ -484,6 +487,7 @@ export default {
         .catch(error => {
           console.log(error)
           console.log(error.response);
+          this.$store.dispatch('showSnackbar', {text:'게시물을 불러오는데 실패했습니다.', color:'error'})
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 
     }

@@ -172,7 +172,6 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
-          console.log(response.data.attach)
           if (Array.isArray(response.data.attach)) {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
@@ -192,7 +191,7 @@ export default {
           .put("/document", {documentId: this.documentId, isDeleted: true})
           .then(response => {
             this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
-            this.$router.push(`/${this.$route.boardId}`);
+            this.$router.push(`/${this.boardId}`);
           })
           .catch(error => {
             this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글을 삭제하지 못했습니다."}`, color: "error"});

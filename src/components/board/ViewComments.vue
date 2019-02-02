@@ -15,7 +15,7 @@
         <v-list two-line class="commentList py-0 pb-1">
           <template v-for="(item, index) in commentList">
             <v-list-tile :key="index">
-              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes"/>
+              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
               <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action v-if="item.children.length > 5">
@@ -27,7 +27,7 @@
                   <v-divider inset/>
                   <v-list-tile avatar>
                     <v-list-tile-action></v-list-tile-action>
-                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes"/>
+                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
                   </v-list-tile>
                 </div>
               </v-list-group>
@@ -37,7 +37,7 @@
                 <v-divider inset/>
                 <v-list-tile avatar>
                   <v-list-tile-action></v-list-tile-action>
-                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes"/>
+                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
                 </v-list-tile>
               </div>
             </div>
@@ -78,6 +78,7 @@ export default {
   },
   methods: {
     getCommentList() {
+      console.log('getcomments')
       this.openRecommentIndex = -1;
       this.$axios
         .get("/comment", {params: {documentId: this.$route.params.documentId, page:this.page}, headers: {silent: true}})
