@@ -2,6 +2,7 @@ var webpack = require('webpack')
 
 module.exports = {
   outputDir: '../client',
+  mode:process.env.NODE_ENV,
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({
