@@ -14,7 +14,7 @@
             <option value="large">크게</option>
             <option value="huge">더 크게</option>
           </select>
-          <button ref="imageAttach" class="ql-image" value="image" v-show="$vuetify.breakpoint.smAndUp"></button>
+          <!--<button ref="imageAttach" class="ql-image" value="image" v-show="$vuetify.breakpoint.smAndUp"></button>-->
         </div>
       </quill-editor>
     </v-flex>
@@ -31,7 +31,7 @@
         </v-btn>
       </div>
       <div>
-        <v-btn small flat @click="$refs.imageAttach.click()">
+        <v-btn small flat @click="selectImage">
           <v-icon id="attach-button">image</v-icon>이미지
         </v-btn>
       </div>
@@ -41,7 +41,7 @@
         </v-btn>
       </div>
     </v-layout>
-    <input style="diplay:none!important; height:0px; width:0px;"  ref="fileInput" multiple id="file-upload" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
+    <input style="diplay:none!important; height:0px; width:0px;"  ref="fileInput" multiple id="file-upload" accept="image/*" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
     <v-slide-y-transition>
       <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
         <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
@@ -275,26 +275,26 @@ export default {
           this.title = data.title
           this.contents = JSON.parse(data.contents)
           this.attachFromServer = data.attach
-          this.$refs.editor.quill.setContents(this.contents)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
             this.survey = data.survey
           }
           if(data.attach) {
-            console.log(data.attach)
-            console.log(this.contents)
             let image;
             this.contents.ops.forEach(item => {
               if (item.insert.hasOwnProperty("image")) {
                 image = data.attach.find(x => x.attach_name === item.insert.image);
+                console.log(image)
                 if (image) {
                   image.insert = true;
                 }
+                item.insert.image = this.webUrl + "/" + image.attach_path
               }
             })
             this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
-            
           }
+          
+          this.$refs.editor.quill.setContents(this.contents)
     },
     attachButtonClick() {
       if(this.documentId) this.openFileDialog()
@@ -310,6 +310,10 @@ export default {
         console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
+              if(files[i].size > 1024 * 1024 * 8) {
+                alert('8MB 이하의 파일만 첨부가능합니다.')
+                break;
+              }
                 // let sameNameCount = 0;
                 // let splitter = files[i].name.lastIndexOf('.')
                 // let fileExtension = files[i].name.substring(splitter, files[i].name.length)
@@ -349,6 +353,35 @@ export default {
             }
         }
       }
+    },
+    selectImage() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+      let self = this;
+      // Listen upload local image and save to server
+      input.onchange = () => {
+        const file = input.files[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+          // file type is only image.
+          if (/^image\//.test(file.type)) {
+            console.log('이미지다')
+            let range = self.$refs.editor.quill.getSelection()
+            console.log(range)
+            console.log(file)
+            self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index , 'image', reader.result);
+  
+          } else {
+            alert('이미지 파일만 올릴 수 있습니다.');
+          }
+        };
+        reader.onerror = function (error) {
+         console.log('Error: ', error);
+        };
+      };
     }
   },
   computed: {
