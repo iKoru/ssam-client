@@ -6,16 +6,12 @@ import store from '../store'
 import router from '../router'
 import qs from 'querystring'
 import jwt from 'jwt-decode'
-// Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const _axios = axios.create({withCredentials:true, xsrfCookieName:'CSRF-TOKEN', xsrfHeaderName:'CSRF-TOKEN'})
 
 _axios.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
     if (config.headers.silent) {
       delete config.headers.silent
     } else {
@@ -25,7 +21,6 @@ _axios.interceptors.request.use(
     return config
   },
   function (error) {
-    // Do something with request error
     return Promise.reject(error)
   }
 )
@@ -50,16 +45,12 @@ function deleteCookie( name ) {
   document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-// Add a response interceptor
 _axios.interceptors.response.use(
   function (response) {
-    // Do something with response data
     store.dispatch('hideSpinner')
     return response
   },
   function (error) {
-    // Do something with response error
-
     store.dispatch('hideSpinner')
     if (error.response && error.response.status === 401) {
       let query = location.search !== '' ? qs.parse(location.search.substring(1)) : {};
@@ -69,8 +60,7 @@ _axios.interceptors.response.use(
       if (token) {
         return _axios({
           method: 'POST',
-          url: '/refresh',
-          //headers: { 'x-auth': token }
+          url: '/refresh'
         })
           .then(response => { // success to refresh
             store.dispatch('signin', {
@@ -98,7 +88,7 @@ _axios.interceptors.response.use(
   }
 )
 
-Plugin.install = function (Vue, options) {
+Plugin.install = function (Vue) {
   Vue.axios = _axios
   window.axios = _axios
   Object.defineProperties(Vue.prototype, {
@@ -117,5 +107,4 @@ Plugin.install = function (Vue, options) {
 
 Vue.use(Plugin)
 
-// export default Plugin;
 export default _axios
