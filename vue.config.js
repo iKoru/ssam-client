@@ -63,7 +63,7 @@ module.exports = {
       registry: undefined,
       awsProfile: 'default',
       region: 'northeast-2',
-      bucket: 'pedagy.com',
+      bucket: 'www.pedagy.com',
       createBucket: false,
       staticHosting: true,
       staticIndexPage: 'index.html',
