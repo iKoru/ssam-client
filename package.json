@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "deploy": "vue-cli-service s3-deploy",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "surveyjs_vue_quickstart": "github:ngongon/surveyjs_vue_quickstart",
     "vue": "^2.5.17",
     "vue-beautiful-chat": "github:iKoru/vue-beautiful-chat",
+    "vue-cli-plugin-s3-deploy": "^3.0.0",
     "vue-filepond": "^4.0.0",
     "vue-quill-editor": "github:ngongon/vue-quill-editor",
     "vue-router": "^3.0.1",
