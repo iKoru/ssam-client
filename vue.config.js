@@ -3,6 +3,7 @@ var webpack = require('webpack')
 module.exports = {
   outputDir: '../client',
   mode:process.env.NODE_ENV,
+
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({
@@ -21,8 +22,10 @@ module.exports = {
       loader: ['style-loader', 'css-loader', 'stylus-loader']
     }
   },
+
   //publicPath: process.env.NODE_ENV === 'development'?'/':'/',
   transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]filepond-plugin-file-validate-type[/\\\\]/, /node_modules[/\\\\]quill-magic-url[/\\\\]/],
+
   chainWebpack: config => {
     //config.plugin('workbox')
     config.module.rule('eslint').use('eslint-loader').options({
@@ -43,6 +46,7 @@ module.exports = {
         }
       }))
   },
+
   pwa: {
     // configure the workbox plugin
     workboxPluginMode: 'InjectManifest',
@@ -53,5 +57,27 @@ module.exports = {
     },
     name: 'Pedagy',
     msTileColor: '#3F51B5'
+  },
+
+  pluginOptions: {
+    s3Deploy: {
+      registry: undefined,
+      awsProfile: 'default',
+      region: 'northeast-2',
+      bucket: 'pedagy.com',
+      createBucket: false,
+      staticHosting: true,
+      staticIndexPage: 'index.html',
+      staticErrorPage: 'index.html',
+      assetPath: 'dist',
+      assetMatch: '**',
+      deployPath: '/',
+      acl: 'public-read',
+      pwa: true,
+      pwaFiles: 'service-worker.js',
+      enableCloudfront: false,
+      uploadConcurrency: 5,
+      pluginVersion: '3.0.0'
+    }
   }
 }
