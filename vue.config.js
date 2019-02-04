@@ -1,7 +1,7 @@
 var webpack = require('webpack')
 
 module.exports = {
-  outputDir: '../client',
+  outputDir: 'dist',
 
   configureWebpack: {
     plugins: [
