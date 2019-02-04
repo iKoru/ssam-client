@@ -1,4 +1,3 @@
-/* global localStorage */
 import qs from 'querystring'
 function getCookie(cname) {
   let name = cname + "=";

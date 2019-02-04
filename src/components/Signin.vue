@@ -43,7 +43,7 @@ function getCookie(cname) {
       return c.substring(name.length, c.length);
     }
   }
-  return "";
+  return undefined;
 }
 
 function setCookie(name, value, days) {
@@ -164,7 +164,7 @@ export default {
               this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
             }
             if (redirectTo) {
-              if (redirectTo === "/auth" && localStorage.getItem("authRequirement") && localStorage.getItem("authRequirement") >= this.$moment().format("YMMDD")) {
+              if (redirectTo === "/auth" && getCookie("authRequirement") && getCookie("authRequirement") >= this.$moment().format("YMMDD")) {
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
               } else {
                 this.$router.push(redirectTo + window.location.search); //preserve original redirect options

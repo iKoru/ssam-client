@@ -354,6 +354,16 @@
 
 <script>
 import PublicLayout from "../layouts/PublicLayout";
+
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    let date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
 export default {
   name: "Signup",
   created() {
@@ -408,7 +418,7 @@ export default {
               inviter: this.inviter
             })
             .then(response => {
-              localStorage.setItem("userId", this.userId);
+              setCookie("userId", this.userId, 30);
               this.step = 3;
             })
             .catch(error => {
