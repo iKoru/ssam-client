@@ -12,6 +12,8 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.1",
     "@babel/preset-env": "^7.2.3",
+    "@vue/cli-plugin-pwa": "^3.4.0",
+    "@vue/cli-plugin-unit-jest": "^3.4.0",
     "@vue/cli-service-global": "^3.2.1",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
@@ -29,7 +31,9 @@
     "surveyjs_vue_quickstart": "github:ngongon/surveyjs_vue_quickstart",
     "vue": "^2.5.17",
     "vue-beautiful-chat": "github:iKoru/vue-beautiful-chat",
+    "vue-cli-plugin-axios": "^0.0.4",
     "vue-cli-plugin-s3-deploy": "^3.0.0",
+    "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-filepond": "^4.0.0",
     "vue-quill-editor": "github:ngongon/vue-quill-editor",
     "vue-router": "^3.0.1",
@@ -41,8 +45,6 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.4",
     "@vue/cli-plugin-eslint": "^3.0.4",
-    "@vue/cli-plugin-pwa": "^3.0.4",
-    "@vue/cli-plugin-unit-jest": "^3.0.4",
     "@vue/cli-service": "^3.3.1",
     "@vue/eslint-config-standard": "^3.0.4",
     "@vue/test-utils": "^1.0.0-beta.20",
@@ -56,8 +58,6 @@
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "vue-cli-plugin-axios": "0.0.4",
-    "vue-cli-plugin-vuetify": "^0.2.1",
     "vue-template-compiler": "^2.5.17"
   },
   "resolutions": {
