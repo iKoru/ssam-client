@@ -32,6 +32,7 @@ export default async (to, from, app, store) => {
       deleteCookie('token')
       return (to.path === '/' ? '/index?' : '/signin?') + qs.stringify({ redirectTo: to.path })
     }
+    console.log(response);
     app.$store.dispatch('setUserId', jwt(response.data.token).userId);
     const redirectTo = response.data.redirectTo;
     if (response.data.imminent || response.data.needEmail) {
