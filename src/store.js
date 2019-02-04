@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    token: false,
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     groups: null
   },
   getters: {
+    token({token}){
+      return token
+    },
     userId ({ userId }) {
       return userId
     },
@@ -88,6 +92,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    SET_TOKEN(state, token){
+      state.token = token;
+    },
     SET_USER_ID (state, userId){
       state.userId = userId 
     },
@@ -177,6 +184,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setToken({commit}, token){
+      commit('SET_TOKEN', token)
+    },
     setUserId({commit}, userId){
       commit('SET_USER_ID', userId)
     },

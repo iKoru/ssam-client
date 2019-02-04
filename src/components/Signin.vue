@@ -30,8 +30,6 @@
 </template>
 
 <script>
-import jwt from "jwt-decode";
-
 function getCookie(cname) {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
@@ -46,10 +44,6 @@ function getCookie(cname) {
     }
   }
   return "";
-}
-
-function deleteCookie(name) {
-  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 }
 
 function setCookie(name, value, days) {
@@ -75,7 +69,7 @@ export default {
     passwordRules: [v => !!v || "비밀번호를 입력해주세요."]
   }),
   created() {
-    const token = getCookie("token");
+    const token = this.$store.getters.token;
     if (token) {
       this.loading = true;
       this.$axios({
@@ -85,7 +79,7 @@ export default {
       })
         .then(response => {
           this.loading = false;
-          this.$store.dispatch("setUserId", jwt(response.data.token).userId);
+          this.$store.dispatch("setUserId", response.data.userId);
 
           const redirectTo = response.data.redirectTo;
           if (response.data.imminent || response.data.needEmail) {
@@ -110,7 +104,7 @@ export default {
           } else {
             this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
           }
-          deleteCookie("token");
+          this.$store.dispatch('token', false)
         });
     } else if (getCookie("userId")) {
       this.userId = getCookie("userId");
@@ -163,6 +157,7 @@ export default {
             {headers: {silent: true}}
           )
           .then(response => {
+            this.$store.dispatch('setToken', true);
             this.$store.dispatch("setUserId", this.userId);
             const redirectTo = response.data.redirectTo;
             if (response.data.imminent || response.data.needEmail) {

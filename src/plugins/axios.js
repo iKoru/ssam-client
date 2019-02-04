@@ -5,7 +5,6 @@ import axios from 'axios'
 import store from '../store'
 import router from '../router'
 import qs from 'querystring'
-import jwt from 'jwt-decode'
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
 
 const _axios = axios.create({withCredentials:true, xsrfCookieName:'CSRF-TOKEN', xsrfHeaderName:'CSRF-TOKEN'})
@@ -41,10 +40,6 @@ function getCookie(cname) {
   return undefined;
 }
 
-function deleteCookie( name ) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
 _axios.interceptors.response.use(
   function (response) {
     store.dispatch('hideSpinner')
@@ -55,7 +50,7 @@ _axios.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       let query = location.search !== '' ? qs.parse(location.search.substring(1)) : {};
       query.redirectTo = location.pathname
-      const token = getCookie('token')
+      const token = store.getters.token
       let isRefreshing = true;
       if (token) {
         return _axios({
@@ -63,15 +58,13 @@ _axios.interceptors.response.use(
           url: '/refresh'
         })
           .then(response => { // success to refresh
-            store.dispatch('setUserId', jwt(response.data.token).userId);
+            store.dispatch('setUserId', response.data.userId);
             isRefreshing = false;
-            console.log(response);
-            alert(response);
             return _axios.request(error.config);
           })
           .catch(error2 => { // failed to refresh. redirect to signin page. save original request information only when get request
             if (isRefreshing) {
-              deleteCookie('token');
+              store.dispatch('setToken', false)
               store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
               return router.push('/signin?' + qs.stringify(query))
             } else {
