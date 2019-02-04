@@ -71,6 +71,7 @@ module.exports = {
       assetPath: 'dist',
       assetMatch: '**',
       deployPath: '/',
+      gzip: true,
       acl: 'public-read',
       pwa: true,
       pwaFiles: 'service-worker.js',
