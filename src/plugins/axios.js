@@ -63,11 +63,10 @@ _axios.interceptors.response.use(
           url: '/refresh'
         })
           .then(response => { // success to refresh
-            store.dispatch('signin', {
-              accessToken: response.data.token,
-              userId: jwt(response.data.token).userId
-            });
+            store.dispatch('setUserId', jwt(response.data.token).userId);
             isRefreshing = false;
+            console.log(response);
+            alert(response);
             return _axios.request(error.config);
           })
           .catch(error2 => { // failed to refresh. redirect to signin page. save original request information only when get request
