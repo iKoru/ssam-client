@@ -23,6 +23,7 @@ export default async (to, from, app, store) => {
   const token = getCookie('token')
   if (!token) {
     let response;
+    alert('토큰이 없습니다. 리프레시합니다.');
     try {
       response = await app.$axios({
         method: 'POST',
@@ -32,7 +33,7 @@ export default async (to, from, app, store) => {
       deleteCookie('token')
       return (to.path === '/' ? '/index?' : '/signin?') + qs.stringify({ redirectTo: to.path })
     }
-    console.log(response);
+    alert(response);
     app.$store.dispatch('setUserId', jwt(response.data.token).userId);
     const redirectTo = response.data.redirectTo;
     if (response.data.imminent || response.data.needEmail) {
