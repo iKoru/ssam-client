@@ -3,7 +3,7 @@
     <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title :class="{'ml-0 cursor-pointer':true, 'pl-3':$vuetify.breakpoint.smAndUp}" @click="goMain" title="Pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
-    <router-link to="/search" class="d-flex fill-height">
+    <router-link to="/search" class="d-flex fill-height align-center">
       <v-icon>search</v-icon>
     </router-link>
     <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
