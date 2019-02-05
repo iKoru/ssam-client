@@ -9,8 +9,10 @@
             <div class="text-xs-center justify-center align-center pa-3">
               <div v-if="$store.getters.auth.needEmail">
                 <p>
-                  아래에서 이메일을 등록하여 인증하시거나,
-                  <span>webmaster@pedagy.com</span>으로 정교사 자격증을 제출해서 인증해주세요.
+                  선생님들의 노다지, Pedagy에 오신 것을 환영합니다.
+                  <br>교사임을 인증하여 지역&middot;학년&middot;전공별 라운지, 학습자료가 모인 아카이브, 관심사별 토픽을 이용해보세요.
+                  <br>아래에서 NEIS 이메일을 등록하여 인증하시거나,
+                  <span>webmaster@pedagy.com</span>으로 정교사 자격증을 보내어 인증하실 수 있습니다.
                 </p>
                 <v-form ref="form" lazy-validation>
                   <v-layout row xs12 wrap>
@@ -23,11 +25,11 @@
                   </v-layout>
                 </v-form>
               </div>
-              <p v-else-if="$store.getters.auth.imminent">등록된 이메일로 인증을 해야합니다. 안쓰면 사용이 곧 제한될거에용
-                <br>히히히
+              <p v-else-if="$store.getters.auth.imminent">{{$store.getters.profile.loungeNickName}}님, 이메일을 통한 정기 인증 기간의 만료일이 {{$store.getters.profile.emailVerifiedDate?$moment($store.getters.profile.emailVerifiedDate, 'YYYYMMDD').add(1, 'years').format('Y년 M월 D일까지로 '):''}}얼마 남지 않았습니다.
+                <br>인증 메일 전송 버튼을 눌러 인증을 연장해주세요.
               </p>
-              <p v-else>인증을 해야합니다. 시간끌어서 이미 만료되었어요.
-                <br>히히히
+              <p v-else>{{$store.getters.profile.loungeNickName}}님, 이메일을 통한 정기 인증이 {{$store.getters.profile.emailVerifiedDate?$moment($store.getters.profile.emailVerifiedDate, 'YYYYMMDD').add(1, 'years').format('Y년 M월 D일까지로 '):''}}만료되었습니다.
+                <br>아래에서 인증 메일을 전송하여 다시 인증해주세요.
               </p>
             </div>
           </v-flex>
@@ -91,7 +93,7 @@ export default {
       this.goNext();
     },
     notAnymore() {
-      if (confirm("더이상 인증을 하지 않으면 다양한 라운지와 토픽에 들어갈 수 없습니다.\n정말 더이상 인증을 하지 않으시겠습니까?")) {
+      if (confirm("더이상 인증을 하지 않으면 다양한 라운지와 아카이브, 그리고 토픽을 이용할 수 없습니다.\n정말 더이상 인증을 하지 않으시겠습니까?")) {
         this.$axios
           .put("/user", {emailVerifiedDate: null})
           .then(response => {

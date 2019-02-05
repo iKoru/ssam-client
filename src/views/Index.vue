@@ -1,5 +1,5 @@
  <template>
-  <div>
+  <div class="fill-height">
     <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown">
       <v-flex>
         <div id="indexContents">
@@ -9,8 +9,21 @@
               <h4 class="subheading">선생님들의 노다지</h4>
             </v-layout>
           </v-parallax>
-          <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center fill-height>
-            <div>사이트 소개 글 내용이 들어갈 자리입니당.</div>
+          <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center fill-height row wrap class="px-5" style="height:calc(100% - 500px);min-height:236px;">
+            <v-flex my-auto>
+              <p>
+                <span class="title">전국 초, 중, 고등학교 교사들이 모인다, <span class="primary--text font-weight-bold">페다지</span></span>
+              </p>
+              <p>
+                <span class="body-1">페다지는 <b>인증</b>을 거친 전 &middot; 현직 교사들만의 대화를 위한 <b>지역, 학년, 전공별 라운지</b>와<br>각종 학습자료들을 공유하는 <b>아카이브</b>,<br>그리고 관심사에 대한 게시판을 직접 만들고 운영할 수 있는 <b>토픽</b>으로 구성된 커뮤니티 플랫폼입니다.<br>여기에 예비 교사들이 현직 교사들에게 하는 질문에 조언을 해줄 수도 있습니다.</span>
+              </p>
+              <p>
+                <span class="title"><span class="primary--text font-weight-bold">페다지</span>란?</span>
+              </p>
+              <p>
+                <span class="body-1">교육을 근대과학적 방법으로 연구하고, 그 성과를 체계화하여 정리한 교육학이라는 의미의<br>영어 '<b>pedagogy</b>'의 줄임말입니다.</span>
+              </p>
+            </v-flex>
           </v-layout>
         </div>
         <main-footer :class="{withAside:$vuetify.breakpoint.mdAndUp}"></main-footer>
