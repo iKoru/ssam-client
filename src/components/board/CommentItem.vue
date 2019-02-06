@@ -5,13 +5,13 @@
         <v-flex>
           <v-chip label small color="primary" class="white--text ml-0 my-0 ml-3" v-if="isBest">베스트</v-chip>
         </v-flex>
-        <v-flex>
+        <v-flex v-if="!updatingComment">
           <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted}"></div>
         </v-flex>
       </v-layout>
     </v-list-tile-title>
     <v-list-tile-sub-title v-if="!comment.isDeleted" class="px-3">
-      <v-layout row class="body-1" wrap>
+      <v-layout v-if="!updatingComment" row class="body-1" wrap>
         <!--prettyhtml-ignore-->
         <v-flex text-xs-left>
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
@@ -49,6 +49,9 @@
           </template>
         </v-flex>
       </v-layout>
+      <v-layout v-else>
+        <comment-writer :defaultComment="comment" @revokeUpdate="updatingComment=false" @update="updatingComment=false; $emit('update')" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+      </v-layout>
     </v-list-tile-sub-title>
   </v-list-tile-content>
 </template>
@@ -56,13 +59,19 @@
 <script>
 import BoardMixins from "@/components/mixins/BoardMixins";
 import UserLink from '@/components/UserLink';
+import CommentWriter from "./CommentWriter";
 import Quill from "quill";
 
 export default {
-  props: ["comment", "commentIndex", "children", "reportTypes", "isBest"],
+  props: ["comment", "commentIndex", "children", "reportTypes", "isBest", "isAnonymous", "allowAnonymous", "isCommentWritable"],
   mixins: [BoardMixins],
   components:{
-    UserLink
+    UserLink, CommentWriter
+  },
+  data () {
+    return {
+      updatingComment: false
+    }
   },
   methods: {
     voteUp() {
@@ -89,7 +98,7 @@ export default {
         });
     },
     updateComment() {
-      console.log("update");
+      this.updatingComment = true
     },
     reportComment(item) {
       this.$axios

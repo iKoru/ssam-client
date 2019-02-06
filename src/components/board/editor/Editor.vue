@@ -4,7 +4,7 @@
       <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" solo v-model="title" hide-details></v-text-field>
     </v-flex>
     <v-flex xs12 id="write-editor">
-      <quill-editor v-model="content" ref="editor" :options="editorOption" @ready="onEditorReady($event)">
+      <quill-editor v-model="content" ref="editor" :options="editorOption">
         <div id="toolbar" slot="toolbar">
           <button class="ql-bold">Bold</button>
           <button class="ql-italic">Italic</button>
@@ -81,8 +81,7 @@
     <v-layout row>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn v-if="documentId" class="primary" @click="modifyPost()">수정</v-btn>
-        <v-btn v-else class="primary" @click="post()">등록</v-btn>
+        <v-btn class="primary" @click="post()">{{documentId?'수정하기':'등록'}}</v-btn>
       </v-flex>
     </v-layout>
   </v-layout>
@@ -126,29 +125,33 @@ export default {
       },
       show: false,
       isAnonymous: false,
-      formData: undefined,
-      rawFileData: undefined,
       disallowAnonymous: false,
-      attachedFilenames: [],
-      deletedFilenames: [],
-      attachedImages: [],
-      modifyingFormData: undefined,
-      attachedFileNumber: 0,
-      attachFromServer: undefined,
-      selectedFile: undefined,
-      originImages: [],
+      formData: undefined,
+      rawFileData: undefined, 
+      attachedFilenames: [], // for easy check
+      attachFromServer: undefined, // for keeping attaches when modifying document
+      originImages: [], // for Revert Imaage
     };
   },
-  // manually control the data synchronization
   methods: {
-    onEditorReady(quill) {
-      console.log("editor ready!", quill);
-    },
     onEditorChange({quill, html, text}) {
       console.log("editor change!", quill, html, text);
       this.content = html;
     },
+    async post() {
+      // manually add images as file
+      if(!this.title || this.title.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'제목을 입력해주세요.', color:'error'})
+        return;
+      }else if(!this.content || this.content.trim() === ''){
+        this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
+        return;
+      }
+      if (this.documentId) await this.uploadModifiedDocument();
+      else await this.uploadDocument();
+    },
     async uploadDocument() {
+      console.log(this.$refs.editor.quill.editor.delta)
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
       this.formData.append("boardId", this.$route.params.boardId);
@@ -168,61 +171,54 @@ export default {
         .then(response => {
           if (response.status === 200) {
             this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-            this.revertImages();
           }
         })
         .catch(error => {
-          console.log(error)
+          this.$store.dispatch('showSnackbar', {text:'게시물 작성이 실패하였습니다. 다시 시도해주세요', color:'error'})
           delete this.formData;
           this.revertImages();
-          this.attachedFileNumber = 0;
           console.log(error.response);
         });
     },
-    async post() {
-      // manually add images as file
-      if(!this.title || this.title.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'제목을 입력해주세요.', color:'error'})
-        return;
-      }else if(!this.content || this.content.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'내용을 입력해주세요.', color:'error'})
+    async uploadModifiedDocument() {
+      if(!confirm('게시물을 수정하시겠습니까?')) {
         return;
       }
-      // await this.handleProcessFile();
-      await this.uploadDocument();
-    },
-    async modifyPost() {
-      // edit given document put 한번 attach post delete한번
-      // if (!this.formData) this.formData = new FormData();
-
-      // check image and attach change
-      // 이미지/파일 달라진 것 -> post/delete
-      // 이전 파일 올릴 때 동일이름 체크 필요(이미지는 uid부여중)
-      let modifiedBody = {
-        documentId: this.documentId,
-        title: this.title,
-        contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
+      // Convert Images And Upload First
+      try {
+        if (!this.formData) this.formData = new FormData();
+        this.formData.append('documentId', this.documentId)
+        await this.attachImages(); // change image url here
+        await this.processFileChange()
+          let modifiedBody = {
+            documentId: this.documentId,
+            title: this.title,
+            contents: JSON.stringify(this.$refs.editor.quill.editor.delta),
+          }
+          
+          return this.$axios
+          .put(`/document`, modifiedBody)
+          .then(response => {
+            if (response.status === 200) {
+              this.$store.dispatch('showSnackbar', {text:'게시물을 수정하였습니다', color:'success'})
+              this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
+            }
+          })
+          .catch(error => {
+            this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
+            console.log(error.response);
+          })
+      } catch (err){
+        console.log(err)
+        this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
+        this.revertImages();
+        delete this.formData
       }
-      return this.$axios
-      .put(`/document`, modifiedBody)
-      .then(response => {
-        if (response.status === 200) {
-          console.log(response)
-
-          console.log(this.deletedFilenames)
-        }
-      })
-      .catch(error => {
-        delete this.formData;
-        this.attachedFileNumber = 0;
-        console.log(error.response);
-      });
     },
     attachImages() {
-      this.imageCount = this.$refs.editor.quill.editor.delta.ops.filter(item => item.insert.hasOwnProperty("image")).length;
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty("image")) {
-          // random generated uuid should given here
+          console.log(item.insert)
           if(item.insert.image.includes('data:image')) {
             let imgSrc = item.insert.image;
             let imageName = this.uuid() + "." + imgSrc.substring("data:image/".length, imgSrc.indexOf(";base64"));
@@ -230,7 +226,7 @@ export default {
             item.insert.image = imageName;
             this.originImages.push({name: imageName, src: imgSrc});
           }
-          // 취소되었을 때 이미지 source restore해야함
+          console.log(item.insert)
         }
       });
     },
@@ -243,10 +239,86 @@ export default {
       });
       this.originImages = [];
     },
+    async processFileChange() {
+      // let serverPaths = this.attachFromServer.map(a => '/' + a.attach_path)
+      
+      // new images are already in formdata
+      // process deleted images
+            console.log(this.attachFromServer)
+
+      let currentImageId = this.$refs.editor.quill.editor.delta.ops.map(item => {
+        if (item.insert.hasOwnProperty("image")) {
+          if(item.insert.image.startsWith('/attach')) {
+            // '/attach/:documentId(^[\\d]+$)/:attachId
+            return this.attachFromServer.find(a => item.insert.image === '/' + a.attach_path).attach_id
+          }
+        }
+      });
+      console.log(currentImageId)
+      let deleteImageP, deleteFileP, uploadFileP
+      console.log(this.attachFromServer)
+      this.attachFromServer = this.attachFromServer.filter(a => a!==null)
+      this.attachFromServer.forEach(a => {
+        console.log(a.attach_name)
+        if(a.insert && !currentImageId.filter(i=>i!==undefined).includes(a.attach_id)) {
+          deleteImageP = this.$axios
+            .delete(`/document/attach/${this.documentId}/${a.attach_id}`)
+            .then(response => {
+              if (response.status === 200) {
+                console.log(response)
+              }
+            })
+            .catch(error => {
+              console.log(error.response);
+            });
+        } else if(!this.attachedFilenames.includes(a.attach_name) && !a.insert){
+          deleteFileP = this.$axios
+            .delete(`/document/attach/${this.documentId}/${a.attach_id}`)
+            .then(response => {
+              if (response.status === 200) {
+                console.log(response)
+              }
+            })
+            .catch(error => {
+              console.log(error.response);
+          });
+        }
+      })
+      await this.processUploadFiles()
+      let fileCount = 0;
+      for (let pair of this.formData.entries()) {
+        if(pair[0] === 'attach') fileCount += 1;
+      }
+      if(fileCount > 0) {
+        uploadFileP = this.$axios
+          .post(`/document/attach`, this.formData)
+          .then(response => {
+            if (response.status === 200) {
+              console.log(response)
+            }
+          })
+          .catch(error => {
+            console.log(error.response);
+          });
+      }
+      await Promise.all([deleteImageP, deleteFileP, uploadFileP])
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+          this.$store.dispatch('showSnackbar', {text:'게시물 수정에 실패했습니다. 다시 시도해주세요', color:'error'})
+        })
+    },
     surveyButtonClick() {
       if (this.documentId && this.survey) {
         // 글 수정시 설문 수정 불가
         this.surveyViewerDialog = true
+        return;
+      }
+      if (this.documentId && !this.survey) {
+        // 글 작성 후 설문 추가 불가
+        this.$store.dispatch('showSnackbar', {text:'게시물 작성 후 설문을 추가할 수 없습니다.', color:'error'})
         return;
       }
       if (this.currentSurvey.questions.length === 0) {
@@ -275,11 +347,16 @@ export default {
           this.title = data.title
           this.contents = JSON.parse(data.contents)
           this.attachFromServer = data.attach
+          console.log(data.attach)
           this.isAnonymous = data.isAnonymous
           if(data.survey) {
             this.survey = data.survey
           }
+          if (Array.isArray(data.attach)) {
+            data.attach = data.attach.filter(x => x !== null);
+          }
           if(data.attach) {
+            console.log(data.attach)
             let image;
             this.contents.ops.forEach(item => {
               if (item.insert.hasOwnProperty("image")) {
@@ -287,8 +364,8 @@ export default {
                 console.log(image)
                 if (image) {
                   image.insert = true;
+                  item.insert.image = this.webUrl + "/" + image.attach_path
                 }
-                item.insert.image = this.webUrl + "/" + image.attach_path
               }
             })
             this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
@@ -307,24 +384,12 @@ export default {
         if (!this.rawFileData) this.rawFileData = new FormData();
         var self = this;
         var files = e.target.files || e.dataTransfer.files;
-        console.log(files)
         if(files.length > 0){
             for(var i = 0; i < files.length; i++){
               if(files[i].size > 1024 * 1024 * 8) {
-                alert('8MB 이하의 파일만 첨부가능합니다.')
+                this.$store.dispatch('showSnackbar', {text:'8MB 이하의 파일만 첨부가능합니다.', color:'error'})
                 break;
               }
-                // let sameNameCount = 0;
-                // let splitter = files[i].name.lastIndexOf('.')
-                // let fileExtension = files[i].name.substring(splitter, files[i].name.length)
-                // let filename = files[i].name.substring(0, splitter)
-                // console.log(filename)
-                // self.attachedFilenames.forEach(name => {
-                //   if(name.toLowerCase() === files[i].name.toLowerCase()) sameNameCount++
-                // }) // 나중에 올릴때만 (1) (2) 붙여준다.
-                // if(sameNameCount > 0) {
-                //   filename = filename + ' (' + sameNameCount + ')'
-                // }
                 await self.rawFileData.append("file", files[i], files[i].name);
                 await self.attachedFilenames.push(files[i].name)
                 // keep delete -> attach case
@@ -332,26 +397,42 @@ export default {
         }
     },
     async removeFile(index) {
-      let newFileData = new FormData()
-      let i = 0
-      for (let pair of this.rawFileData.entries()) {
-        if(pair[0] ==='file') {
-          if(i !== Number(index)){
-            await newFileData.append(pair[0], pair[1], pair[1].name)
+      if (this.rawFileData) {
+        let newFileData = new FormData()
+        let i = 0
+        for (let pair of this.rawFileData.entries()) {
+          if(pair[0] ==='file') {
+            if(i !== Number(index)){
+              await newFileData.append(pair[0], pair[1], pair[1].name)
+            }
+            i += 1
           }
-          i += 1
         }
+        this.rawFileData = newFileData
       }
-      this.rawFileData = newFileData
+      
       this.attachedFilenames.splice(index, 1)
     },
     processUploadFiles() {
-      if(this.rawFileData){
-        for (var pair of this.rawFileData.entries()) {
-            if(!this.deletedFilenames.includes(pair[1].name)) {
-              this.formData.append('attach', pair[1], pair[1].name)
-            }
+      if(!this.rawFileData ) this.rawFileData = new FormData()
+      let namesCount = {}
+      for (let pair of this.rawFileData.entries()) {
+        namesCount[pair[1].name] = {
+          count: namesCount[pair[1].name] ? (namesCount[pair[1].name].count + 1) : 1,
+          index: 0
         }
+      }
+      for (let pair of this.rawFileData.entries()) {
+        
+        let splitter = pair[1].name.lastIndexOf('.')
+        let fileExtension = pair[1].name.substring(splitter, pair[1].name.length)
+        let filename = pair[1].name.substring(0, splitter)
+        let suffix = ''
+        if( namesCount[pair[1].name].count > 0) {
+          suffix = namesCount[pair[1].name].index === 0 ? '' : ` (${namesCount[pair[1].name].index})`
+          namesCount[pair[1].name].index += 1
+        }
+        this.formData.append('attach', pair[1], filename + suffix + fileExtension)
       }
     },
     selectImage() {
@@ -375,7 +456,7 @@ export default {
             self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index , 'image', reader.result);
   
           } else {
-            alert('이미지 파일만 올릴 수 있습니다.');
+            this.$store.dispatch('showSnackbar', {text:'이미지 파일만 업로드할 수 있습니다.', color:'error'})
           }
         };
         reader.onerror = function (error) {
@@ -404,7 +485,9 @@ export default {
           this.parseDocument(response.data)
         })
         .catch(error => {
+          console.log(error)
           console.log(error.response);
+          this.$store.dispatch('showSnackbar', {text:'게시물을 불러오는데 실패했습니다.', color:'error'})
           this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
         }); 
     }
