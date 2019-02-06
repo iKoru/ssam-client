@@ -12,16 +12,32 @@
           <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center row wrap class="px-5" style="height:calc(100% - 500px);min-height:236px;">
             <v-flex my-auto py-3>
               <p>
-                <span class="title">전국 초, 중, 고등학교 교사들이 모인다, <span class="primary--text font-weight-bold">페다지</span></span>
+                <span class="title">
+                  전국 초&middot;중&middot;고등학교 교사들이 모인다,
+                  <span class="primary--text font-weight-bold">페다지</span>
+                </span>
               </p>
               <p>
-                <span class="body-1">페다지는 <b>인증</b>을 거친 전 &middot; 현직 교사들만의 대화를 위한 <b>지역, 학년, 전공별 라운지</b>와<br>각종 학습자료들을 공유하는 <b>아카이브</b>,<br>그리고 관심사에 대한 게시판을 직접 만들고 운영할 수 있는 <b>토픽</b>으로 구성된 커뮤니티 플랫폼입니다.<br>여기에 예비 교사들이 현직 교사들에게 하는 질문에 조언을 해줄 수도 있습니다.</span>
+                <span class="body-1">
+                  페다지는
+                  <b>인증</b>을 거친 전 &middot; 현직 교사들만의 대화를 위한
+                  <b>지역&middot;학년&middot;전공별 라운지</b>와
+                  <br>각종 학습자료들을 공유하는
+                  <b>아카이브</b>,
+                  <br>그리고 관심사에 대한 게시판을 직접 만들고 운영할 수 있는
+                  <b>토픽</b>으로 구성된 커뮤니티 플랫폼입니다.
+                </span>
               </p>
-              <p>
-                <span class="title"><span class="primary--text font-weight-bold">페다지</span>란?</span>
+              <p class="pt-3">
+                <span class="title">
+                  <span class="primary--text font-weight-bold">페다지</span>란?
+                </span>
               </p>
               <p class="mb-0">
-                <span class="body-1">교육을 근대과학적 방법으로 연구하고, 그 성과를 체계화하여 정리한 교육학이라는 의미의<br>영어 '<b>pedagogy</b>'의 줄임말입니다.</span>
+                <!--prettyhtml-ignore-->
+                <span class="body-1">교육을 근대과학적 방법으로 연구하고, 그 성과를 체계화하여 정리한 교육학이라는 의미의
+                  <br>영어 '<b>pedagogy</b>'의 줄임말입니다.
+                </span>
               </p>
             </v-flex>
           </v-layout>
@@ -44,19 +60,19 @@
 </template>
 
 <script>
-import IndexLayout from "../layouts/IndexLayout";
-import MainFooter from "../components/MainFooter";
+import IndexLayout from '../layouts/IndexLayout';
+import MainFooter from '../components/MainFooter';
 export default {
   components: {
-    Signin: () => import("@/components/Signin.vue"),
-    BoardExtractor: () => import("@/components/board/BoardExtractor.vue"),
+    Signin: () => import('@/components/Signin.vue'),
+    BoardExtractor: () => import('@/components/board/BoardExtractor.vue'),
     MainFooter
   },
-  name: "Index",
-  created() {
-    this.$emit("update:layout", IndexLayout);
+  name: 'Index',
+  created () {
+    this.$emit('update:layout', IndexLayout);
   },
-  data() {
+  data () {
     return {};
   },
   methods: {}
@@ -79,7 +95,7 @@ export default {
   }
   #indexContents {
     margin-right: 350px;
-    margin-bottom: 52px;
+    height: 100%;
   }
   .withAside {
     width: calc(100% - 350px);
