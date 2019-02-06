@@ -228,6 +228,7 @@ export default {
         response = await this.$axios.get(`/board?boardId=${boardId}`);
       } catch (error) {
         console.log(error);
+        this.$store.dispatch("showSnackbar", {text: `${error && error.response && error.response.data ? error.response.data.message || '게시판 정보를 가져오지 못했습니다.' : '게시판 정보를 가져오지 못했습니다.'}`, color: "error"});
         return false;
       }
       this.setBoard(response.data);

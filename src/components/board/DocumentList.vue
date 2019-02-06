@@ -9,7 +9,7 @@
             </tr>
           </template>
           <template slot="items" slot-scope="props">
-            <tr>
+            <tr v-if="!props.items.isNotice">
               <td class="pa-1 grey--text lighten-1" v-if="hasChildren">
                 <!--prettyhtml-ignore-->
                 <v-layout row justify-center>
@@ -28,6 +28,15 @@
               <td class="text-xs-center pa-1 ellipsis" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
+            </tr>
+            <tr v-else class="grey">
+              <td :colspan="headers.length" class="font-weight-bold px-2 cursor-pointer py-1" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
+                <v-layout row>
+                  <div class="ellipsis text-xs-left">
+                    <router-link :to="`/${board.boardId}/${props.item.documentId}`" @click.native.stop>[공지] {{props.item.title}}</router-link>
+                  </div>
+                </v-layout>
+              </td>
             </tr>
           </template>
           <template slot="no-data">
@@ -98,7 +107,13 @@ export default {
         .get(`/${this.boardId}`, {params: {page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20}, headers: {silent: true}})
         .then(response => {
           this.documents = response.data;
-          this.totalDocuments = this.documents.length > 0 ? this.documents[0].totalCount : 0;
+          this.totalDocuments = response.data.length > 0 ? response.data[0].totalCount : 0;
+          if(this.board.notices.length > 0){
+            let i=0;
+            while(i < this.board.notices.length){
+              this.documents.splice(i, 0, this.board.notices[i]);
+            }
+          }
           this.noDataText = "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!";
           this.loading = false;
         })
