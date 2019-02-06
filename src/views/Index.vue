@@ -3,14 +3,14 @@
     <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown">
       <v-flex>
         <div id="indexContents">
-          <v-parallax id="indexImage" src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp">
+          <v-parallax id="indexImage" src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp" height="500">
             <v-layout align-center column justify-center>
               <h1 class="display-2 font-weight-thin mb-3">Pedagy</h1>
               <h4 class="subheading">선생님들의 노다지</h4>
             </v-layout>
           </v-parallax>
-          <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center fill-height row wrap class="px-5" style="height:calc(100% - 500px);min-height:236px;">
-            <v-flex my-auto>
+          <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center row wrap class="px-5" style="height:calc(100% - 500px);min-height:236px;">
+            <v-flex my-auto py-3>
               <p>
                 <span class="title">전국 초, 중, 고등학교 교사들이 모인다, <span class="primary--text font-weight-bold">페다지</span></span>
               </p>
@@ -20,7 +20,7 @@
               <p>
                 <span class="title"><span class="primary--text font-weight-bold">페다지</span>란?</span>
               </p>
-              <p>
+              <p class="mb-0">
                 <span class="body-1">교육을 근대과학적 방법으로 연구하고, 그 성과를 체계화하여 정리한 교육학이라는 의미의<br>영어 '<b>pedagogy</b>'의 줄임말입니다.</span>
               </p>
             </v-flex>
