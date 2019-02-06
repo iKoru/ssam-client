@@ -9,7 +9,7 @@
             </tr>
           </template>
           <template slot="items" slot-scope="props">
-            <tr v-if="!props.items.isNotice">
+            <tr v-if="!props.item.isNotice">
               <td class="pa-1 grey--text lighten-1" v-if="hasChildren">
                 <!--prettyhtml-ignore-->
                 <v-layout row justify-center>
@@ -29,7 +29,7 @@
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
-            <tr v-else class="grey">
+            <tr v-else class="grey lighten-3">
               <td :colspan="headers.length" class="font-weight-bold px-2 cursor-pointer py-1" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
@@ -62,80 +62,81 @@
   </v-flex>
 </template>
 <script>
-import BoardMixins from "@/components/mixins/BoardMixins";
+import BoardMixins from '@/components/mixins/BoardMixins';
 export default {
-  name: "DocumentList",
+  name: 'DocumentList',
   mixins: [BoardMixins],
-  props: ["board", "hasChildren", "documentBoardId"],
-  data() {
+  props: ['board', 'hasChildren', 'documentBoardId'],
+  data () {
     return {
       documents: [],
       totalDocuments: 0,
       loading: false,
       pagination: {}, // page object for data table component
       page: null, // page element for pagination component
-      boardId: null, //local current boardId,
-      noDataText: "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!",
+      boardId: null, // local current boardId,
+      noDataText: '아직 작성된 글이 없습니다. 첫 글을 작성해보세요!',
       searchQuery: null
     };
   },
   computed: {
-    headers() {
-      let headers = [{text: "제목", value: "title", sortable: false, align: "center"}, {text: "추천", value: "voteUpCount", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "30" : "50"}, {text: "날짜", value: "writeDateTime", sortable: false, align: "right", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
+    headers () {
+      let headers = [{ text: '제목', value: 'title', sortable: false, align: 'center' }, { text: '추천', value: 'voteUpCount', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '30' : '50' }, { text: '날짜', value: 'writeDateTime', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
       if (this.$vuetify.breakpoint.smAndUp) {
-        headers.splice(1, 0, {text: "글쓴이", value: "nickName", sortable: false, align: "center", width: "100"});
+        headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
       }
       if (!this.hasChildren && this.board.category) {
-        headers.splice(0, 0, {text: "카테고리", value: "category", sortable: false, align: "left"});
+        headers.splice(0, 0, { text: '카테고리', value: 'category', sortable: false, align: 'left' });
       }
       if (this.hasChildren) {
-        headers.splice(0, 0, {text: this.boardTypeItems[this.board.boardType], value: "boardId", sortable: false, align: "center", width: this.$vuetify.breakpoint.smAndUp ? "100" : "50"});
+        headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
       }
       return headers;
     },
-    boardItems() {
+    boardItems () {
       return this.$store.getters.boards;
     },
-    pages() {
+    pages () {
       return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
-    getDocuments() {
+    getDocuments () {
       this.loading = true;
       this.$axios
-        .get(`/${this.boardId}`, {params: {page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20}, headers: {silent: true}})
+        .get(`/${this.boardId}`, { params: { page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20 }, headers: { silent: true } })
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = response.data.length > 0 ? response.data[0].totalCount : 0;
-          if(this.board.notices.length > 0){
-            let i=0;
-            while(i < this.board.notices.length){
+          if (this.board.notices.length > 0) {
+            let i = 0;
+            while (i < this.board.notices.length) {
               this.documents.splice(i, 0, this.board.notices[i]);
+              i++;
             }
           }
-          this.noDataText = "아직 작성된 글이 없습니다. 첫 글을 작성해보세요!";
+          this.noDataText = '아직 작성된 글이 없습니다. 첫 글을 작성해보세요!';
           this.loading = false;
         })
         .catch(error => {
           this.loading = false;
           console.log(error);
-          this.noDataText = error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다.";
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글 목록을 가져오지 못했습니다."}`, color: "error"});
+          this.noDataText = error.response ? error.response.data.message : '글 목록을 가져오지 못했습니다.';
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글 목록을 가져오지 못했습니다.'}`, color: 'error' });
         });
     },
-    search() {
+    search () {
       if (this.searchQuery) {
         this.$router.push(`/searchDocument?boardId=${this.board.boardId}&searchQuery=${this.searchQuery}`);
       }
     }
   },
-  created() {
-    this.page = this.$route.query.page * 1 > 0 && Number.isInteger(this.$route.query.page * 1) ? this.$route.query.page * 1 : 1; //set page and trigger the watch function
+  created () {
+    this.page = this.$route.query.page * 1 > 0 && Number.isInteger(this.$route.query.page * 1) ? this.$route.query.page * 1 : 1; // set page and trigger the watch function
   },
   watch: {
-    "$route.params": {
-      handler(val) {
+    '$route.params': {
+      handler (val) {
         if (this.boardId !== val.boardId) {
           this.documents = [];
           this.totalDocuments = 0;
@@ -151,7 +152,7 @@ export default {
       deep: true,
       immediate: true
     },
-    page(val) {
+    page (val) {
       if (this.pagination.page !== val) {
         this.pagination.page = val;
         this.getDocuments();
