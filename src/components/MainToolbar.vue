@@ -54,48 +54,54 @@
   </v-toolbar>
 </template>
 <script>
-
-function deleteCookie( name ) {
+function deleteCookie (name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export default {
-  template: "#mainToolbar",
-  name: "mainToolbar",
-  components: {NotificationCenter: () => import("./NotificationCenter")},
-  data() {
+  template: '#mainToolbar',
+  name: 'mainToolbar',
+  components: { NotificationCenter: () => import('./NotificationCenter') },
+  data () {
     return {
       notification: false,
       menu: false
     };
   },
   computed: {
-    nickName() {
+    nickName () {
       return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
-    totalNotifications() {
+    totalNotifications () {
       return this.$store.getters.totalNotifications;
     },
-    showNotificationBadge() {
+    showNotificationBadge () {
       return this.totalNotifications > 0;
     }
   },
   methods: {
-    signout() {
+    signout () {
       deleteCookie('token');
       deleteCookie('_csrf');
       deleteCookie('CSRF-TOKEN');
-      this.$nextTick(() => {
-        this.$router.push("/index");
-      })
+      this.$axios
+        .post('/signout', undefined, { headers: { silent: true } })
+        .then(response => {
+          this.$nextTick(() => {
+            this.$router.push('/index');
+          });
+        })
+        .catch(error => {
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '로그아웃하지 못했습니다.'}`, color: 'error' });
+        });
     },
-    goMain() {
-      this.$router.push("/");
+    goMain () {
+      this.$router.push('/');
     },
-    openDialog() {
+    openDialog () {
       this.notification = true;
     },
-    closeDialog() {
+    closeDialog () {
       this.notification = false;
     }
   }
@@ -121,7 +127,7 @@ export default {
 #mainToolbarMenu {
   white-space: nowrap;
 }
-#mainToolbarMenu .v-list__tile__content{
-  align-items:flex-end;
+#mainToolbarMenu .v-list__tile__content {
+  align-items: flex-end;
 }
 </style>
