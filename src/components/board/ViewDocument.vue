@@ -179,7 +179,7 @@ export default {
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
           if (response.data.isDeleted) {
-            this.$router.push('/' + this.boardId);
+            this.$router.replace('/' + this.boardId);
             this.$store.dispatch('showSnackbar', { text: '삭제된 글입니다.', color: 'warning' })
             return;
           }
