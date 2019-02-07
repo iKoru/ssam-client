@@ -14,6 +14,7 @@ import MagicUrl from 'quill-magic-url'
 import { ImageDrop } from 'quill-image-drop-module'
 import ImageResize from 'quill-image-resize-module'
 
+Quill.debug(process.env.NODE_ENV === 'development' ? 'warn' : 'error')
 let BlockEmbed = Quill.import('blots/block/embed')
 
 class VideoBlot extends BlockEmbed {

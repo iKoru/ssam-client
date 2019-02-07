@@ -7,7 +7,6 @@
           <v-layout row mt-1>
             <v-spacer/>
             <v-flex text-xs-right>
-              <!--<span :class="{'font-weight-bold':document.nickName !== ''}">{{document.nickName === ''? '(익명)' : document.nickName}}</span>-->
               <user-link :nickName="document.nickName" :boardType="board.boardType"/>
               | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
@@ -182,7 +181,7 @@ export default {
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
           if (response.data.isDeleted) {
-            this.$router.push("/" + this.boardId);
+            this.$router.replace("/" + this.boardId);
             this.$store.dispatch("showSnackbar", {text: "삭제된 글입니다.", color: "warning"});
             return;
           }
