@@ -44,19 +44,19 @@
 </template>
 
 <script>
-import IndexLayout from "../layouts/IndexLayout";
-import MainFooter from "../components/MainFooter";
+import IndexLayout from '../layouts/IndexLayout';
+import MainFooter from '../components/MainFooter';
 export default {
   components: {
-    Signin: () => import("@/components/Signin.vue"),
-    BoardExtractor: () => import("@/components/board/BoardExtractor.vue"),
+    Signin: () => import('@/components/Signin.vue'),
+    BoardExtractor: () => import('@/components/board/BoardExtractor.vue'),
     MainFooter
   },
-  name: "Index",
-  created() {
-    this.$emit("update:layout", IndexLayout);
+  name: 'Index',
+  created () {
+    this.$emit('update:layout', IndexLayout);
   },
-  data() {
+  data () {
     return {};
   },
   methods: {}
@@ -79,7 +79,7 @@ export default {
   }
   #indexContents {
     margin-right: 350px;
-    margin-bottom: 52px;
+    height:100%;
   }
   .withAside {
     width: calc(100% - 350px);
