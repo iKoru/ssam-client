@@ -1,8 +1,6 @@
-/* global localStorage */
 import qs from 'querystring'
-import jwt from 'jwt-decode'
-function getCookie(cname) {
-  let name = cname + "=";
+function getCookie (cname) {
+  let name = cname + '=';
   let decodedCookie = decodeURIComponent(document.cookie);
   let ca = decodedCookie.split(';');
   for (let i = 0; i < ca.length; i++) {
@@ -14,13 +12,10 @@ function getCookie(cname) {
       return c.substring(name.length, c.length);
     }
   }
-  return "";
-}
-function deleteCookie(name) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  return '';
 }
 export default async (to, from, app, store) => {
-  const token = getCookie('token')
+  const token = app.$store.getters.token
   if (!token) {
     let response;
     try {
@@ -29,10 +24,10 @@ export default async (to, from, app, store) => {
         url: '/refresh'
       })
     } catch (error) {
-      deleteCookie('token')
       return (to.path === '/' ? '/index?' : '/signin?') + qs.stringify({ redirectTo: to.path })
     }
-    app.$store.dispatch('setUserId', jwt(response.data.token).userId);
+    app.$store.dispatch('setToken', true);
+    app.$store.dispatch('setUserId', response.data.userId);
     const redirectTo = response.data.redirectTo;
     if (response.data.imminent || response.data.needEmail) {
       store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail })
@@ -54,7 +49,6 @@ export default async (to, from, app, store) => {
       return true;
     }
   } else {
-    //return (to.path === '/' ? '/index?' : '/signin?') + qs.stringify({ redirectTo: to.path })
     return true;
   }
 }

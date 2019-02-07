@@ -46,14 +46,14 @@
 
 <script>
 export default {
-  props: ["currentSurvey", "onlyView"],
-  data() {
+  props: ['currentSurvey', 'onlyView'],
+  data () {
     return {
       showSurveyResult: false,
       survey: null
     };
   },
-  created(){
+  created () {
     this.survey = this.formatSurvey(this.currentSurvey);
   },
   computed: {
@@ -71,7 +71,7 @@ export default {
         q.choices.forEach((choice, choiceIndex) => {
           if (otherAnswers.length > qIndex) {
             objectArray.push({ 'text': choice, 'selected': false, 'votes': otherAnswers[qIndex][choiceIndex] })
-            if(otherAnswers[qIndex][choiceIndex] > max){
+            if (otherAnswers[qIndex][choiceIndex] > max) {
               max = otherAnswers[qIndex][choiceIndex];
             }
             totalVotes += otherAnswers[qIndex][choiceIndex];
@@ -85,10 +85,10 @@ export default {
           objectArray.forEach(choice => {
             choice.percent = '0%'
           })
-        }else{
+        } else {
           // Calculate percent
           objectArray.forEach(choice => {
-            choice.percent = !isNaN(choice.votes) && choice.votes > 0?(Math.round((parseInt(choice.votes) / totalVotes) * 100)) + '%':'0%'
+            choice.percent = !isNaN(choice.votes) && choice.votes > 0 ? (Math.round((parseInt(choice.votes) / totalVotes) * 100)) + '%' : '0%'
           })
         }
         q.choices = objectArray
@@ -98,22 +98,22 @@ export default {
     getAnswerArray (questions) {
       let answers = [];
       questions.forEach(q => {
-        if(!q.allowMultipleChoice) {
+        if (!q.allowMultipleChoice) {
           answers.push(q.choices.findIndex(c => c.selected))
         } else {
           let answerArray = []
           q.choices.forEach((c, cIndex) => {
-            if(c.selected) answerArray.push(cIndex)
+            if (c.selected) answerArray.push(cIndex)
           })
           answers.push(answerArray)
         }
       })
       return answers;
     },
-    completeSurvey() {
-      if(this.survey.surveyContents.questions.every(question => question.choices.some(choice => choice.selected))){
-        if(this.survey.participated){
-          this.$store.dispatch('showSnackbar', {text:'이미 참여한 설문입니다.', color:'info'});
+    completeSurvey () {
+      if (this.survey.surveyContents.questions.every(question => question.choices.some(choice => choice.selected))) {
+        if (this.survey.participated) {
+          this.$store.dispatch('showSnackbar', { text: '이미 참여한 설문입니다.', color: 'info' });
           return;
         }
         let answer = this.getAnswerArray(this.survey.surveyContents.questions)
@@ -124,7 +124,7 @@ export default {
           })
           .then(response => {
             console.log(response);
-            if(!response.data.survey) {
+            if (!response.data.survey) {
               this.$axios
                 .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
                 .then(response => {
@@ -134,21 +134,21 @@ export default {
                 })
                 .catch(error => {
                   console.log(error);
-               });
-            }else{
+                });
+            } else {
               this.survey = this.formatSurvey(response.data.survey)
               this.showSurveyResult = true
             }
           })
           .catch(error => {
-            if(error.response && error.response.status === 409){
-              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "설문 응답을 등록하지 못했습니다." : "설문 응답을 등록하지 못했습니다.", color: "info"});
-            }else{
-              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "설문 응답을 등록하지 못했습니다." : "설문 응답을 등록하지 못했습니다.", color: "error"});
+            if (error.response && error.response.status === 409) {
+              this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '설문 응답을 등록하지 못했습니다.' : '설문 응답을 등록하지 못했습니다.', color: 'info' });
+            } else {
+              this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '설문 응답을 등록하지 못했습니다.' : '설문 응답을 등록하지 못했습니다.', color: 'error' });
             }
           });
       } else {
-        this.$store.dispatch('showSnackbar', {text:(this.survey.surveyContents.questions.findIndex(question => !question.choices.some(choice => choice.selected)) + 1) + '번 질문의 응답을 선택해주세요.', color:'warning'});
+        this.$store.dispatch('showSnackbar', { text: (this.survey.surveyContents.questions.findIndex(question => !question.choices.some(choice => choice.selected)) + 1) + '번 질문의 응답을 선택해주세요.', color: 'warning' });
       }
     },
     handleVote (questionIndex, a) {

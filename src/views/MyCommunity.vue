@@ -28,23 +28,23 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from '../layouts/MainLayout';
 export default {
-  name: "MyCommunity",
-  data() {
+  name: 'MyCommunity',
+  data () {
     return {
-      tab: "myBoard"
+      tab: 'myBoard'
     };
   },
-  created() {
-    this.$emit("update:layout", MainLayout);
+  created () {
+    this.$emit('update:layout', MainLayout);
     this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
   },
   watch: {
     $route: {
       immediate: true,
-      handler() {
-        if (this.$route.name === "myCommunity") this.$router.push("myBoard");
+      handler () {
+        if (this.$route.name === 'myCommunity') this.$router.push('myBoard');
       }
     }
   }

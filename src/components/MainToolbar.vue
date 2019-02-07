@@ -3,10 +3,10 @@
     <v-toolbar-side-icon @click.stop="$store.dispatch('toggleMenuDrawer')" v-if="$vuetify.breakpoint.xsOnly"></v-toolbar-side-icon>
     <v-toolbar-title :class="{'ml-0 cursor-pointer':true, 'pl-3':$vuetify.breakpoint.smAndUp}" @click="goMain" title="Pedagy 메인">Pedagy</v-toolbar-title>
     <v-spacer></v-spacer>
-    <router-link to="/search" class="d-flex fill-height">
+    <router-link to="/search" class="d-flex fill-height align-center">
       <v-icon>search</v-icon>
     </router-link>
-    <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
+    <v-menu offset-y left nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'primary'">
           <img v-if="$store.getters.isLight" :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
@@ -55,47 +55,47 @@
 </template>
 <script>
 
-function deleteCookie( name ) {
+function deleteCookie (name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export default {
-  template: "#mainToolbar",
-  name: "mainToolbar",
-  components: {NotificationCenter: () => import("./NotificationCenter")},
-  data() {
+  template: '#mainToolbar',
+  name: 'mainToolbar',
+  components: { NotificationCenter: () => import('./NotificationCenter') },
+  data () {
     return {
       notification: false,
       menu: false
     };
   },
   computed: {
-    nickName() {
+    nickName () {
       return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
-    totalNotifications() {
+    totalNotifications () {
       return this.$store.getters.totalNotifications;
     },
-    showNotificationBadge() {
+    showNotificationBadge () {
       return this.totalNotifications > 0;
     }
   },
   methods: {
-    signout() {
+    signout () {
       deleteCookie('token');
       deleteCookie('_csrf');
       deleteCookie('CSRF-TOKEN');
       this.$nextTick(() => {
-        this.$router.push("/index");
+        this.$router.push('/index');
       })
     },
-    goMain() {
-      this.$router.push("/");
+    goMain () {
+      this.$router.push('/');
     },
-    openDialog() {
+    openDialog () {
       this.notification = true;
     },
-    closeDialog() {
+    closeDialog () {
       this.notification = false;
     }
   }

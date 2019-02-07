@@ -8,8 +8,8 @@
   </div>
 </template>
 <script>
-import PublicToolbar from "../components/PublicToolbar";
-import MainFooter from "../components/MainFooter";
+import PublicToolbar from '../components/PublicToolbar';
+import MainFooter from '../components/MainFooter';
 export default {
   components: {
     PublicToolbar,

@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    token: false,
     userId: null,
     boardType: 'L', // L : lounge, archive || T : topic,
     profile: {},
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     groups: null
   },
   getters: {
+    token ({ token }) {
+      return token
+    },
     userId ({ userId }) {
       return userId
     },
@@ -35,7 +39,7 @@ export default new Vuex.Store({
     status ({ profile }) {
       return profile ? profile.status : 'NORMAL';
     },
-    boardType({boardType}){
+    boardType ({ boardType }) {
       return boardType
     },
     isLight ({ boardType }) {
@@ -88,8 +92,11 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    SET_USER_ID (state, userId){
-      state.userId = userId 
+    SET_TOKEN (state, token) {
+      state.token = token;
+    },
+    SET_USER_ID (state, userId) {
+      state.userId = userId
     },
     PROFILE (state, profile) {
       state.profile = profile
@@ -121,7 +128,7 @@ export default new Vuex.Store({
     },
     TOGGLE_MENUDRAWER (state) {
       state.menuDrawer = !state.menuDrawer
-      document.body.style.position = state.menuDrawer?'fixed':"initial";
+      document.body.style.position = state.menuDrawer ? 'fixed' : 'initial';
     },
     SET_MENUBAR (state, menuBar) {
       state.menuBar = menuBar
@@ -177,7 +184,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    setUserId({commit}, userId){
+    setToken ({ commit }, token) {
+      commit('SET_TOKEN', token)
+    },
+    setUserId ({ commit }, userId) {
       commit('SET_USER_ID', userId)
     },
     updateAuthInformation ({ commit }, update) {

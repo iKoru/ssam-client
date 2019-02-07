@@ -42,7 +42,7 @@
                 </v-list-tile>
               </div>
             </div>
-            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index" class="pl-5">
+            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index && isCommentWritable !== 'DELETED'" class="pl-5">
               <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :boardId="boardId"/>
             </v-list-tile>
             <v-divider :key="'divider'+index"></v-divider>
@@ -51,7 +51,7 @@
         <v-flex text-xs-center mt-2 xs12 v-if="pages > 1">
           <v-pagination id="commentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
         </v-flex>
-        <div class="pt-2">
+        <div class="pt-2" v-if="isCommentWritable !== 'DELETED'">
           <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
         </div>
       </v-card>
@@ -74,12 +74,12 @@ export default {
     return {
       commentList: [],
       openRecommentIndex: -1,
-      page: undefined
+      page: undefined,
+      documentId: this.$route.params.documentId
     };
   },
   methods: {
     getCommentList() {
-      console.log('getcomments')
       this.openRecommentIndex = -1;
       this.$axios
         .get("/comment", {params: {documentId: this.$route.params.documentId, page: this.page}, headers: {silent: true}})
@@ -101,8 +101,9 @@ export default {
   watch: {
     "$route.params": {
       handler() {
-        if (!this.page) {
+        if (!this.page || this.documentId !== this.$route.params.documentId) {
           this.$nextTick(() => {
+            this.documentId = this.$route.params.documentId;
             this.page = this.pages;
           });
         }
@@ -111,6 +112,9 @@ export default {
       immediate: true
     },
     page(val) {
+      this.getCommentList();
+    },
+    documentId(val) {
       this.getCommentList();
     },
     pages(val) {

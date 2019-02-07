@@ -15,31 +15,9 @@ import { ImageDrop } from 'quill-image-drop-module'
 import ImageResize from 'quill-image-resize-module'
 
 let BlockEmbed = Quill.import('blots/block/embed')
-/*class ImageBlot extends BlockEmbed {
-    static create(value) {
-        let node = super.create();
-        console.log(value)
-        node.setAttribute('alt', value.alt);
-        node.setAttribute('src', value.src);
-        node.setAttribute('download', value.src);
-        return node;
-      }
-    
-    static value(node) {
-        return {
-            alt: node.getAttribute('alt'),
-            src: node.getAttribute('src'),
-            download: node.getAttribute('download')
-        };
-    }
-}
 
-ImageBlot.blotName = 'image';
-ImageBlot.tagName = 'img';
-Quill.register(ImageBlot);*/
 class VideoBlot extends BlockEmbed {
-
-  static create(url) {
+  static create (url) {
     const node = super.create();
     node.setAttribute('class', 'video-container');
     this.url = url;
@@ -51,7 +29,7 @@ class VideoBlot extends BlockEmbed {
     return node;
   }
 
-  static formats(node) {
+  static formats (node) {
     // We still need to report unregistered embed formats
     let format = {};
     if (node.hasAttribute('height')) {
@@ -63,11 +41,11 @@ class VideoBlot extends BlockEmbed {
     return format;
   }
 
-  static value(node) {
+  static value (node) {
     return this.url
   }
 
-  format(name, value) {
+  format (name, value) {
     // Handle unregistered embed formats
     if (name === 'height' || name === 'width') {
       if (value) {

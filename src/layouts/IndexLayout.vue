@@ -1,6 +1,6 @@
 <template>
   <div class="indexLayout">
-    <main class="indexLayout__main">
+    <main class="indexLayout__main fill-height">
       <slot></slot>
     </main>
   </div>
@@ -9,7 +9,7 @@
 export default {};
 </script>
 <style>
-.application--wrap {
-  background-color: white;
+.indexLayout{
+  height:calc(100% - 53px)
 }
 </style>

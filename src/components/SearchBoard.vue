@@ -57,93 +57,93 @@
 
 <script>
 export default {
-  name: "SearchBoard",
+  name: 'SearchBoard',
   components: {
-    TopicCreator: () => import("../components/TopicCreator"),
-    BoardInformation: () => import("../components/BoardInformation")
+    TopicCreator: () => import('../components/TopicCreator'),
+    BoardInformation: () => import('../components/BoardInformation')
   },
-  data() {
+  data () {
     return {
       loading: false,
       loadingJoin: false,
       dialog: false,
       topicCreator: false,
       boardTypeItems: {
-        T: "토픽",
-        L: "라운지",
-        D: "아카이브",
-        X: "기타",
-        E: "전직교사",
-        N: "예비교사"
+        T: '토픽',
+        L: '라운지',
+        D: '아카이브',
+        X: '기타',
+        E: '전직교사',
+        N: '예비교사'
       },
-      searchQuery: "",
-      selected: {boardAuth: []},
+      searchQuery: '',
+      selected: { boardAuth: [] },
       groupItems: [],
       pagination: {},
-      headers: [{text: "구분", value: "boardType", sortable: false}, {text: "이름", value: "boardName", sortable: false}, {text: "주소", value: "boardId", sortable: false}, {text: "설명", value: "boardDescription", sortable: false}]
+      headers: [{ text: '구분', value: 'boardType', sortable: false }, { text: '이름', value: 'boardName', sortable: false }, { text: '주소', value: 'boardId', sortable: false }, { text: '설명', value: 'boardDescription', sortable: false }]
     };
   },
   computed: {
-    boards() {
+    boards () {
       const original = this.$store.getters.boards;
       return original.filter(x => x.parentBoardId || !original.some(y => y.parentBoardId === x.boardId));
     },
-    userBoards() {
+    userBoards () {
       return this.$store.getters.userBoards;
     },
-    userGroups() {
+    userGroups () {
       return this.$store.getters.profile.groups;
     },
-    totalBoards() {
+    totalBoards () {
       return this.boards.length;
     }
   },
-  created() {
+  created () {
     this.$axios
-      .get("/group", {params: {groupType: ["N", "R", "M", "G"]}, headers: {silent: true}})
+      .get('/group', { params: { groupType: ['N', 'R', 'M', 'G'] }, headers: { silent: true } })
       .then(response => {
         this.groupItems = response.data;
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+        this.$store.dispatch('showSnackbar', { text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
       });
   },
   methods: {
-    openDialog(item, join) {
+    openDialog (item, join) {
       if (this.selected && this.selected.boardId === item.boardId) {
         this.dialog = true;
       } else {
         this.$axios
-          .get("/board", {params: {boardId: item.boardId}})
+          .get('/board', { params: { boardId: item.boardId } })
           .then(response => {
             this.selected = response.data;
             this.dialog = true;
           })
           .catch(error => {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: `정보를 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+            this.$store.dispatch('showSnackbar', { text: `정보를 가져오지 못했습니다.${error && error.response && error.response.data ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
           });
       }
     },
-    closeTopicDialog() {
+    closeTopicDialog () {
       this.topicCreator = false;
     },
-    openTopicDialog() {
-      if (this.$store.getters.profile.auth !== "A") {
-        this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
+    openTopicDialog () {
+      if (this.$store.getters.profile.auth !== 'A') {
+        this.$store.dispatch('showSnackbar', { text: '인증을 받은 회원만 토픽을 만들 수 있습니다.', color: 'error' });
         return;
       }
       this.topicCreator = true;
     },
-    resetBoard() {},
-    closeDialog() {
+    resetBoard () {},
+    closeDialog () {
       this.dialog = false;
     }
   },
   watch: {
-    topicCreator(val) {
-      document.body.style.position = val ? "fixed" : "initial";
+    topicCreator (val) {
+      document.body.style.position = val ? 'fixed' : 'initial';
     }
   }
 };

@@ -34,7 +34,12 @@
     </v-flex>
     <v-divider/>
     <v-flex class="my-2">
-      <v-layout row text-xs-right>
+      <v-layout row>
+        <v-flex v-if="board.isOwner">
+          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)">공지지정</v-btn>
+        </v-flex>
+        <v-spacer/>
         <v-flex pr-2>
           <v-btn-toggle id="bottomBottons">
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
@@ -103,7 +108,6 @@ export default {
       showAttach: false,
       scrapGroups: null,
       reportTypes: null,
-      currentBoard: null,
       scrapMenu: false,
       reportMenu: false
     };
@@ -124,6 +128,8 @@ export default {
       let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x => x.boardId === this.document.boardId);
       if (!board) {
         return "UNAVAILABLE";
+      } else if (this.document.isDeleted) {
+        return "DELETED";
       }
 
       const profile = this.$store.getters.profile;
@@ -138,9 +144,9 @@ export default {
               return "RESTRICTED";
             }
           } else {
-            //need subscription
+            // need subscription
             if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
-              //i can subscribe this board!
+              // i can subscribe this board!
               return "NEEDSUBSCRIPTION";
             } else {
               return "UNAVAILABLE";
@@ -175,6 +181,11 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
+          if (response.data.isDeleted) {
+            this.$router.push("/" + this.boardId);
+            this.$store.dispatch("showSnackbar", {text: "삭제된 글입니다.", color: "warning"});
+            return;
+          }
           if (Array.isArray(response.data.attach)) {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
@@ -226,11 +237,11 @@ export default {
               alt: item.insert.image
             };
             item.insert.image = this.webUrl + "/" + image.attach_path;
-            /*item.insert.image = {
+            /* item.insert.image = {
               src: this.webUrl + "/" + image.attach_path,
               download: item.insert.image,
               alt: item.insert.image
-            }*/
+            } */
             item.attributes.link = item.insert.image;
           }
         }
@@ -335,6 +346,23 @@ export default {
             });
         }
       }
+    },
+    setNotice(isAdd) {
+      this.$axios
+        .put("/board/notice", {boardId: this.document.boardId, documentId: this.document.documentId, isAdd: isAdd})
+        .then(response => {
+          this.$store.dispatch("showSnackbar", {text: isAdd ? "이 글을 공지로 지정했습니다." : "이 글을 공지에서 해제했습니다.", color: "success"});
+          if (isAdd) {
+            this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({documentId: this.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title});
+          } else {
+            const notices = this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices;
+            notices.splice(notices.findIndex(x => x.documentId === this.documentId), 1);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 공지로 지정하지 못했습니다." : "글을 공지로 지정하지 못했습니다.", color: "error"});
+        });
     }
   },
   watch: {

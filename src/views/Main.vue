@@ -38,42 +38,42 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from '../layouts/MainLayout';
 export default {
-  name: "Main",
+  name: 'Main',
   components: {
-    BoardExtractor: () => import("@/components/board/BoardExtractor.vue"),
-    SmallDocumentList: () => import("@/components/board/SmallDocumentList.vue")
+    BoardExtractor: () => import('@/components/board/BoardExtractor.vue'),
+    SmallDocumentList: () => import('@/components/board/SmallDocumentList.vue')
   },
-  data() {
+  data () {
     return {
       recents: []
     };
   },
-  created() {
-    this.$emit("update:layout", MainLayout);
-    this.$store.dispatch("setColumnType", "SHOW_ALWAYS");
+  created () {
+    this.$emit('update:layout', MainLayout);
+    this.$store.dispatch('setColumnType', 'SHOW_ALWAYS');
   },
-  mounted() {
+  mounted () {
     if (this.$store.getters.recents) {
-      this.recents = this.$store.getters.recents.filter(x => x.boardId !== "notice" && x.boardId);
+      this.recents = this.$store.getters.recents.filter(x => x.boardId !== 'notice' && x.boardId);
     } else {
       this.$axios
-        .get("/recent", {headers: {silent: true}})
+        .get('/recent', { headers: { silent: true } })
         .then(response => {
           response.data.forEach(x => {
             x.documents.forEach(y => {
               if (y.writeDateTime) {
-                y.writeDateTime = this.$moment(y.writeDateTime, "YYYYMMDDHHmmss");
+                y.writeDateTime = this.$moment(y.writeDateTime, 'YYYYMMDDHHmmss');
               }
             });
           });
-          this.recents = response.data.filter(x => x.boardId !== "notice" && x.boardId);
-          this.$store.dispatch("setRecents", response.data);
+          this.recents = response.data.filter(x => x.boardId !== 'notice' && x.boardId);
+          this.$store.dispatch('setRecents', response.data);
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `최근 게시물을 가져오지 못했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `최근 게시물을 가져오지 못했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
         });
     }
   },

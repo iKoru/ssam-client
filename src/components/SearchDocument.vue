@@ -59,61 +59,61 @@
 
 <script>
 export default {
-  name: "SearchDocument",
-  data() {
+  name: 'SearchDocument',
+  data () {
     return {
       loading: false,
       boardTypeItems: {
-        T: "토픽",
-        L: "라운지",
-        D: "아카이브",
-        E: "기타"
+        T: '토픽',
+        L: '라운지',
+        D: '아카이브',
+        E: '기타'
       },
       boardId: null,
       targetYear: new Date().getFullYear(),
       searchQuery: null,
       groupItems: [],
-      documents:[],
-      totalDocuments:0,
+      documents: [],
+      totalDocuments: 0,
       searched: false,
-      pagination:{},
+      pagination: {},
       currentSearchQuery: null
     };
   },
-  mounted(){
-    if(this.$route.query.boardId && this.boardItems.some(x=>x.value === this.$route.query.boardId)){
+  mounted () {
+    if (this.$route.query.boardId && this.boardItems.some(x => x.value === this.$route.query.boardId)) {
       this.boardId = this.$route.query.boardId
-      if(this.$route.query.searchQuery && this.$route.query.searchQuery.trim() !== ''){
+      if (this.$route.query.searchQuery && this.$route.query.searchQuery.trim() !== '') {
         this.searchQuery = this.$route.query.searchQuery.trim();
         this.search();
       }
     }
   },
   computed: {
-    boards(){
+    boards () {
       return this.$store.getters.boards;
     },
-    boardItems() {
+    boardItems () {
       const auth = this.$store.getters.profile.auth
       const userBoards = this.$store.getters.userBoards;
-      let boardItems = this.boards.filter(x=>(x.boardType !== 'T' && x.statusAuth.read.includes(auth)) || (x.boardType === 'T' && userBoards.some(y=>y.boardId === x.boardId && y.boardType === 'T'))).map(x=>({text:x.boardName, value:x.boardId}));
-      boardItems.splice(0, 0, {text:'(공개 게시판 전체)', value:null})
+      let boardItems = this.boards.filter(x => (x.boardType !== 'T' && x.statusAuth.read.includes(auth)) || (x.boardType === 'T' && userBoards.some(y => y.boardId === x.boardId && y.boardType === 'T'))).map(x => ({ text: x.boardName, value: x.boardId }));
+      boardItems.splice(0, 0, { text: '(공개 게시판 전체)', value: null })
       return boardItems
     },
-    noresult(){
-      return this.targetYear + '년을 대상으로 검색한 결과입니다.' + (this.targetYear > 2018? ' 이전 연도로 계속 검색할 수 있습니다.' : '')
+    noresult () {
+      return this.targetYear + '년을 대상으로 검색한 결과입니다.' + (this.targetYear > 2018 ? ' 이전 연도로 계속 검색할 수 있습니다.' : '')
     },
-    headers() {
-      return [{text: "게시판", align: "center", sortable: false, value: "boardId", width: this.$vuetify.breakpoint.smAndUp ? "100" : "50"}, {text: "제목", sortable: false, align: "center", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount", width: "30"}, {text: "날짜", sortable: false, align: "right", value: "writeDateTime", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
+    headers () {
+      return [{ text: '게시판', align: 'center', sortable: false, value: 'boardId', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' }, { text: '제목', sortable: false, align: 'center', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount', width: '30' }, { text: '날짜', sortable: false, align: 'right', value: 'writeDateTime', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
     },
-    pages() {
+    pages () {
       return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
-    search(){
-      if(!this.searchQuery || this.searchQuery.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+    search () {
+      if (!this.searchQuery || this.searchQuery.trim() === '') {
+        this.$store.dispatch('showSnackbar', { text: '검색할 단어를 입력해주세요.', color: 'error' });
         return;
       }
       this.targetYear = new Date().getFullYear()
@@ -121,32 +121,32 @@ export default {
       this.getDocuments(this.targetYear);
       this.searched = true;
     },
-    searchMore(){
-      if(!this.currentSearchQuery){
-        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+    searchMore () {
+      if (!this.currentSearchQuery) {
+        this.$store.dispatch('showSnackbar', { text: '검색할 단어를 입력해주세요.', color: 'error' });
         return;
       }
       this.getDocuments(--this.targetYear);
     },
-    getDocuments(targetYear){
+    getDocuments (targetYear) {
       this.loading = true;
-      this.$axios.get('/document', {params:{targetYear:targetYear, boardId:this.boardId, searchQuery:this.currentSearchQuery, searchTarget:'titleContents', page:this.pagination.page}, headers:{silent:true}})
-      .then(response => {
-        this.documents = Array.isArray(response.data)?response.data : [];
-        this.totalDocuments = this.documents[0]?this.documents[0].totalCount:0
-        this.loading = false;
-      })
-      .catch(error => {
-        this.loading = false;
-        console.log(error);
-        this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 검색하지 못했습니다." : "글을 검색하지 못했습니다.", color: "error"});
-      })
+      this.$axios.get('/document', { params: { targetYear: targetYear, boardId: this.boardId, searchQuery: this.currentSearchQuery, searchTarget: 'titleContents', page: this.pagination.page }, headers: { silent: true } })
+        .then(response => {
+          this.documents = Array.isArray(response.data) ? response.data : [];
+          this.totalDocuments = this.documents[0] ? this.documents[0].totalCount : 0
+          this.loading = false;
+        })
+        .catch(error => {
+          this.loading = false;
+          console.log(error);
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 검색하지 못했습니다.' : '글을 검색하지 못했습니다.', color: 'error' });
+        })
     }
   },
-  watch:{
+  watch: {
     pagination: {
-      handler() {
-        if(this.currentSearchQuery && this.currentSearchQuery !== ''){
+      handler () {
+        if (this.currentSearchQuery && this.currentSearchQuery !== '') {
           this.getDocuments(this.targetYear);
         }
       },

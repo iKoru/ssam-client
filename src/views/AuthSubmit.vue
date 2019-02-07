@@ -31,31 +31,31 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from '../layouts/PublicLayout';
 export default {
-  data() {
+  data () {
     return {
       result: null
     };
   },
-  created() {
-    this.$emit("update:layout", PublicLayout);
+  created () {
+    this.$emit('update:layout', PublicLayout);
     const userId = this.$route.query.userId;
     const authKey = this.$route.query.authKey;
-    if (!userId || userId === "" || !authKey || authKey === "") {
-      this.result = "잘못된 접근입니다.";
+    if (!userId || userId === '' || !authKey || authKey === '') {
+      this.result = '잘못된 접근입니다.';
     } else {
       this.$axios
-        .post("/auth/submit", {userId: userId, authKey: authKey})
+        .post('/auth/submit', { userId: userId, authKey: authKey })
         .then(response => {
-          this.result = "인증이 정상적으로 처리되었습니다.";
+          this.result = '인증이 정상적으로 처리되었습니다.';
         })
         .catch(error => {
-          this.result = `인증 처리 과정에서 오류가 발생했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`;
+          this.result = `인증 처리 과정에서 오류가 발생했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`;
         });
     }
   },
-  name: "AuthSubmit",
+  name: 'AuthSubmit',
   methods: {}
 };
 </script>

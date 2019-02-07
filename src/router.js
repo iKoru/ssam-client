@@ -162,25 +162,25 @@ const router = new Router({
     { // should be placed at the last of array
       path: '/:boardId', // eslint-disable-line no-useless-escape
       component: () => import('@/views/Board'),
-      props:true,
+      props: true,
       beforeEnter: requireAuth,
       children: [
         {
           path: 'write',
           name: 'writeDocument',
-          props:true,
+          props: true,
           component: () => import('@/components/board/WriteDocument')
         },
         {
           path: ':documentId(\\d+)/edit',
           name: 'editDocument',
-          props:true,
+          props: true,
           component: () => import('@/components/board/EditDocument')
         },
         {
           path: ':documentId(\\d+)',
           name: 'viewDocument',
-          props:true,
+          props: true,
           component: () => import('@/components/board/ViewDocument')
         }
       ]

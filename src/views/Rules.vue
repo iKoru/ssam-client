@@ -86,11 +86,11 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from '../layouts/PublicLayout';
 export default {
-  created() {
-    this.$emit("update:layout", PublicLayout);
+  created () {
+    this.$emit('update:layout', PublicLayout);
   },
-  name: "Rules",
+  name: 'Rules'
 };
 </script>

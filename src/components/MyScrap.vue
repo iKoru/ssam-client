@@ -48,11 +48,11 @@
 </template>
 <script>
 export default {
-  name: "MyScrap",
+  name: 'MyScrap',
   components: {
-    ScrapGroupManager: () => import("./ScrapGroupManager")
+    ScrapGroupManager: () => import('./ScrapGroupManager')
   },
-  data() {
+  data () {
     return {
       dialog: false,
       selected: null,
@@ -65,21 +65,21 @@ export default {
     };
   },
   computed: {
-    boardItems() {
+    boardItems () {
       return this.$store.getters.boards;
     },
-    noresult() {
-      return this.loading ? "스크랩한 글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 스크랩한 글이 없으시군요!";
+    noresult () {
+      return this.loading ? '스크랩한 글을 불러오고 있습니다. 잠시만 기다려주세요...' : '아직 스크랩한 글이 없으시군요!';
     },
-    headers() {
-      return this.$vuetify.breakpoint.xsOnly ? [{text: "", sortable: false, value: ""}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+    headers () {
+      return this.$vuetify.breakpoint.xsOnly ? [{ text: '', sortable: false, value: '' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'left', sortable: false, value: 'boardId' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
     }
   },
   methods: {
-    getMyScraps() {
+    getMyScraps () {
       this.loading = true;
       this.$axios
-        .get("/scrap", {
+        .get('/scrap', {
           params: {
             scrapGroupId: this.scrapGroupId,
             page: this.pagination.page
@@ -92,35 +92,34 @@ export default {
         })
         .catch(err => {
           this.loading = false;
-          this.$router.app.$emit("showSnackbar", `스크랩 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-          return;
+          this.$router.app.$emit('showSnackbar', `스크랩 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ''}]`, 'error');
         });
     },
-    openLink(path) {
-      const routeData = this.$router.resolve({path: path});
-      window.open(routeData.href, "_blank");
+    openLink (path) {
+      const routeData = this.$router.resolve({ path: path });
+      window.open(routeData.href, '_blank');
     },
-    deleteRow() {
+    deleteRow () {
       if (this.selected !== null) {
         this.$axios
           .delete(`/scrap/${this.scrapGroupId}/${this.userScraps[this.selected].documentId}`)
           .then(response => {
             this.getMyScraps();
             this.selected = null;
-            this.$store.dispatch("showSnackbar", {text: "스크랩을 삭제하였습니다.", color: "success"});
+            this.$store.dispatch('showSnackbar', { text: '스크랩을 삭제하였습니다.', color: 'success' });
           })
           .catch(error => {
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩을 삭제하지 못했습니다." : "스크랩을 삭제하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '스크랩을 삭제하지 못했습니다.' : '스크랩을 삭제하지 못했습니다.', color: 'error' });
           });
       } else {
-        this.$store.dispatch("showSnackbar", {text: "삭제할 스크랩을 선택해주세요.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '삭제할 스크랩을 선택해주세요.', color: 'error' });
       }
     },
-    resetScrapGroups() {
-      this.$store.dispatch("setScrapGroups", null);
+    resetScrapGroups () {
+      this.$store.dispatch('setScrapGroups', null);
       this.getScrapGroups();
     },
-    getScrapGroups() {
+    getScrapGroups () {
       if (this.$store.getters.scrapGroups) {
         this.scrapGroups = this.$store.getters.scrapGroups;
         if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
@@ -130,7 +129,7 @@ export default {
         }
       } else {
         this.$axios
-          .get("/scrap/group", {headers: {silent: true}})
+          .get('/scrap/group', { headers: { silent: true } })
           .then(response => {
             this.scrapGroups = response.data;
             if (this.scrapGroupId !== this.scrapGroups[0].scrapGroupId || this.pagination.page !== 1) {
@@ -138,40 +137,40 @@ export default {
               this.scrapGroupId = this.scrapGroups[0].scrapGroupId;
               this.getMyScraps();
             }
-            this.$store.dispatch("setScrapGroups", this.scrapGroups);
+            this.$store.dispatch('setScrapGroups', this.scrapGroups);
           })
           .catch(error => {
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '스크랩 그룹 목록을 가져오지 못했습니다.' : '스크랩 그룹 목록을 가져오지 못했습니다.', color: 'error' });
           });
       }
     },
-    openDialog() {
+    openDialog () {
       this.dialog = true;
-      document.body.style.position = "fixed";
+      document.body.style.position = 'fixed';
     },
-    closeDialog() {
-      document.body.style.position = "initial";
+    closeDialog () {
+      document.body.style.position = 'initial';
       this.dialog = false;
     }
   },
   watch: {
     pagination: {
-      handler(val) {
+      handler (val) {
         if (this.scrapGroupId) {
           this.getMyScraps();
         }
       },
       deep: true
     },
-    scrapGroupId(val) {
+    scrapGroupId (val) {
       this.$nextTick(() => {
         this.pagination.page = 1;
         this.getMyScraps();
       });
     },
-    dialog(val) {}
+    dialog (val) {}
   },
-  created() {
+  created () {
     this.getScrapGroups();
   }
 };

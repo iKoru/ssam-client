@@ -16,7 +16,7 @@
         <v-flex text-xs-left>
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
           <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
-          <b v-if="!children && !isBest" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
+          <b v-if="!children && !isBest && isCommentWritable !== 'DELETED'" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
             답글{{comment.childCount > 0? `(${comment.childCount})`:""}}
           </b>
         </v-flex>
@@ -49,7 +49,7 @@
           </template>
         </v-flex>
       </v-layout>
-      <v-layout v-else>
+      <v-layout v-else-if="isCommentWritable !== 'DELETED'">
         <comment-writer :defaultComment="comment" @revokeUpdate="updatingComment=false" @update="updatingComment=false; $emit('update')" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
       </v-layout>
     </v-list-tile-sub-title>
@@ -57,15 +57,15 @@
 </template>
 
 <script>
-import BoardMixins from "@/components/mixins/BoardMixins";
+import BoardMixins from '@/components/mixins/BoardMixins';
 import UserLink from '@/components/UserLink';
-import CommentWriter from "./CommentWriter";
-import Quill from "quill";
+import CommentWriter from './CommentWriter';
+import Quill from 'quill';
 
 export default {
-  props: ["comment", "commentIndex", "children", "reportTypes", "isBest", "isAnonymous", "allowAnonymous", "isCommentWritable"],
+  props: ['comment', 'commentIndex', 'children', 'reportTypes', 'isBest', 'isAnonymous', 'allowAnonymous', 'isCommentWritable'],
   mixins: [BoardMixins],
-  components:{
+  components: {
     UserLink, CommentWriter
   },
   data () {
@@ -74,76 +74,76 @@ export default {
     }
   },
   methods: {
-    voteUp() {
+    voteUp () {
       this.$axios
-        .post("/vote/comment", {commentId: this.comment.commentId}, {headers: {silent: true}})
+        .post('/vote/comment', { commentId: this.comment.commentId }, { headers: { silent: true } })
         .then(response => {
           this.comment.voteUpCount = response.data.voteUpCount;
         })
         .catch(error => {
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "추천하지 못했습니다."}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '추천하지 못했습니다.'}`, color: 'error' });
         });
     },
-    deleteComment() {
+    deleteComment () {
       this.$axios
-        .put("/comment", {commentId: this.comment.commentId, isDeleted: true})
+        .put('/comment', { commentId: this.comment.commentId, isDeleted: true })
         .then(response => {
           this.comment.contents = '삭제된 댓글입니다.'
           this.comment.isDeleted = true;
-          this.$store.dispatch("showSnackbar", {text: "댓글을 삭제하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '댓글을 삭제하였습니다.', color: 'success' });
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "댓글을 삭제하지 못했습니다."}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 삭제하지 못했습니다.'}`, color: 'error' });
         });
     },
-    updateComment() {
+    updateComment () {
       this.updatingComment = true
     },
-    reportComment(item) {
+    reportComment (item) {
       this.$axios
-        .post("/report/comment", {commentId: this.comment.commentId, reportTypeId: item.reportTypeId})
+        .post('/report/comment', { commentId: this.comment.commentId, reportTypeId: item.reportTypeId })
         .then(response => {
-          this.$store.dispatch("showSnackbar", {text: "댓글을 신고하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '댓글을 신고하였습니다.', color: 'success' });
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "댓글을 신고하지 못했습니다." : "댓글을 신고하지 못했습니다.", color: "info"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '댓글을 신고하지 못했습니다.' : '댓글을 신고하지 못했습니다.', color: 'info' });
           } else {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "댓글을 신고하지 못했습니다." : "댓글을 신고하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '댓글을 신고하지 못했습니다.' : '댓글을 신고하지 못했습니다.', color: 'error' });
           }
         });
     },
-    deltaToHTML(delta) {
-      var tempCont = document.createElement("div");
+    deltaToHTML (delta) {
+      var tempCont = document.createElement('div');
       let quill = new Quill(tempCont);
       delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty("image")) {
+        if (item.insert.hasOwnProperty('image')) {
           if (this.comment.attach.some(x => x.attach_name === item.insert.image)) {
             item.attributes = {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + "/" + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
+            item.insert.image = this.webUrl + '/' + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
             item.attributes.link = item.insert.image;
           }
         }
       });
       quill.setContents(delta);
-       // Clean spaces between tags
-      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3")
-      
+      // Clean spaces between tags
+      let newText = tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, '$1$3')
+
       // Clean empty paragraphs before the content
       // <p><br/><p> && <p></p>
       let slicer;
       while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
-        if (newText.slice(0,7) === '<p></p>') slicer = 7
+        if (newText.slice(0, 7) === '<p></p>') slicer = 7
         else slicer = 11
         newText = newText.substring(slicer, newText.length)
       }
-    
-        // Clean empty paragraphs after the content
+
+      // Clean empty paragraphs after the content
       while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
         if (newText.slice(-7) === '<p></p>') slicer = 7
         else slicer = 11
@@ -152,7 +152,7 @@ export default {
       // Return the clean Text
       return newText
     },
-    getImagePath(imagePath) {
+    getImagePath (imagePath) {
       console.log(this.comment);
       let attach = this.comment.attach;
       return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;

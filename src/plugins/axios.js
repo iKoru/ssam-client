@@ -5,17 +5,12 @@ import axios from 'axios'
 import store from '../store'
 import router from '../router'
 import qs from 'querystring'
-import jwt from 'jwt-decode'
-// Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-const _axios = axios.create({withCredentials:true, xsrfCookieName:'CSRF-TOKEN', xsrfHeaderName:'CSRF-TOKEN'})
+const _axios = axios.create({ withCredentials: true, xsrfCookieName: 'CSRF-TOKEN', xsrfHeaderName: 'CSRF-TOKEN' })
 
 _axios.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
     if (config.headers.silent) {
       delete config.headers.silent
     } else {
@@ -25,16 +20,15 @@ _axios.interceptors.request.use(
     return config
   },
   function (error) {
-    // Do something with request error
     return Promise.reject(error)
   }
 )
 
-function getCookie(cname) {
-  var name = cname + "=";
+function getCookie (cname) {
+  var name = cname + '=';
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
+  for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) === ' ') {
       c = c.substring(1);
@@ -46,43 +40,31 @@ function getCookie(cname) {
   return undefined;
 }
 
-function deleteCookie( name ) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
-// Add a response interceptor
 _axios.interceptors.response.use(
   function (response) {
-    // Do something with response data
     store.dispatch('hideSpinner')
     return response
   },
   function (error) {
-    // Do something with response error
-
     store.dispatch('hideSpinner')
     if (error.response && error.response.status === 401) {
       let query = location.search !== '' ? qs.parse(location.search.substring(1)) : {};
       query.redirectTo = location.pathname
-      const token = getCookie('token')
+      const token = store.getters.token
       let isRefreshing = true;
       if (token) {
         return _axios({
           method: 'POST',
-          url: '/refresh',
-          //headers: { 'x-auth': token }
+          url: '/refresh'
         })
           .then(response => { // success to refresh
-            store.dispatch('signin', {
-              accessToken: response.data.token,
-              userId: jwt(response.data.token).userId
-            });
+            store.dispatch('setUserId', response.data.userId);
             isRefreshing = false;
             return _axios.request(error.config);
           })
           .catch(error2 => { // failed to refresh. redirect to signin page. save original request information only when get request
             if (isRefreshing) {
-              deleteCookie('token');
+              store.dispatch('setToken', false)
               store.dispatch('showSnackbar', { text: '세션이 만료되었습니다.', color: 'error' })
               return router.push('/signin?' + qs.stringify(query))
             } else {
@@ -98,7 +80,7 @@ _axios.interceptors.response.use(
   }
 )
 
-Plugin.install = function (Vue, options) {
+Plugin.install = function (Vue) {
   Vue.axios = _axios
   window.axios = _axios
   Object.defineProperties(Vue.prototype, {
@@ -117,5 +99,4 @@ Plugin.install = function (Vue, options) {
 
 Vue.use(Plugin)
 
-// export default Plugin;
 export default _axios

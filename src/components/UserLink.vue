@@ -67,7 +67,7 @@
                   <div v-else class="text-xs-center flex mt-3">상세 프로필이 비공개로 설정되어 있습니다.</div>
                 </v-layout>
               </div>
-              
+
             </v-flex>
           </v-card-text>
           <v-card-actions>
@@ -84,67 +84,67 @@
   </span>
 </template>
 <script>
-const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", Z: "인증"};
-import BoardMixins from "@/components/mixins/BoardMixins";
+import BoardMixins from '@/components/mixins/BoardMixins';
+const groupName = { M: '전공', G: '학년', N: '일반', R: '지역', Z: '인증' };
 export default {
-  name: "UserLink",
-  props: ["nickName", "boardType"],
-  data() {
+  name: 'UserLink',
+  props: ['nickName', 'boardType'],
+  data () {
     return {
-      userLinkMenu:false,
-      dialog:false,
-      profile:{},
+      userLinkMenu: false,
+      dialog: false,
+      profile: {},
       groupItems: [],
       userAuthItems: {
-        N: "예비교사(미인증)",
-        A: "현직교사(인증)",
-        E: "전직교사(인증 만료)",
-        D: "인증제한"
+        N: '예비교사(미인증)',
+        A: '현직교사(인증)',
+        E: '전직교사(인증 만료)',
+        D: '인증제한'
       }
     };
   },
   mixins: [BoardMixins],
-  methods:{
-    sendMessage(){
-      this.$axios.post('/message/list', {nickName:this.nickName, chatType:this.boardType === 'T'?'T':'L'})
-      .then(response => {
-          this.$router.push('/message?chatId='+response.data.chatId);
-      })
-      .catch(error => {
-        if(error.response && error.response.status === 409 && error.response.data.chatId){
-          this.$router.push('/message?chatId='+error.response.data.chatId);
-        }else{
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "채팅을 만들지 못했습니다."}`, color: "error"});
-        }
-      })
-    },
-    showProfile(){
-      if(this.profile && this.profile.nickName === this.nickName){
-        this.dialog = true;
-      }else{
-        this.$axios.get('/profile', {params:{nickName:this.nickName}})
+  methods: {
+    sendMessage () {
+      this.$axios.post('/message/list', { nickName: this.nickName, chatType: this.boardType === 'T' ? 'T' : 'L' })
         .then(response => {
-          this.profile = response.data
-          this.dialog = true;
+          this.$router.push('/message?chatId=' + response.data.chatId);
         })
         .catch(error => {
-          console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필을 불러오지 못했습니다."}`, color: "error"});
+          if (error.response && error.response.status === 409 && error.response.data.chatId) {
+            this.$router.push('/message?chatId=' + error.response.data.chatId);
+          } else {
+            console.log(error);
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '채팅을 만들지 못했습니다.'}`, color: 'error' });
+          }
         })
+    },
+    showProfile () {
+      if (this.profile && this.profile.nickName === this.nickName) {
+        this.dialog = true;
+      } else {
+        this.$axios.get('/profile', { params: { nickName: this.nickName } })
+          .then(response => {
+            this.profile = response.data
+            this.dialog = true;
+          })
+          .catch(error => {
+            console.log(error);
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '프로필을 불러오지 못했습니다.'}`, color: 'error' });
+          })
       }
     }
   },
-  created(){
+  created () {
     if (this.$store.getters.groups) {
       this.groupItems = this.$store.getters.groups;
     } else {
       this.$axios
-        .get("/group", {headers: {silent: true}})
+        .get('/group', { headers: { silent: true } })
         .then(response => {
           response.data.forEach(x => {
-            if (x.groupType === "N" || x.groupType === "D" || x.groupType === "E") {
-              x.groupType = "Z";
+            if (x.groupType === 'N' || x.groupType === 'D' || x.groupType === 'E') {
+              x.groupType = 'Z';
             }
           });
           this.groupItems = response.data.sort((a, b) => (a.groupType < b.groupType ? -1 : a.groupType === b.groupType ? 0 : 1));
@@ -154,21 +154,21 @@ export default {
             if (previous !== this.groupItems[i].groupType) {
               if (previous) {
                 previous = this.groupItems[i].groupType;
-                this.groupItems.splice(i, 0, {divider: true});
+                this.groupItems.splice(i, 0, { divider: true });
                 i++;
               } else {
                 previous = this.groupItems[i].groupType;
               }
-              this.groupItems.splice(i, 0, {header: groupName[previous]});
+              this.groupItems.splice(i, 0, { header: groupName[previous] });
               i++;
             }
             i++;
           }
-          this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
-          this.$store.dispatch("setGroups", this.groupItems);
+          this.groupItems = this.groupItems.map(x => (x.groupName ? { text: x.groupName, value: x.groupId } : x));
+          this.$store.dispatch('setGroups', this.groupItems);
         })
         .catch(error => {
-          this.$store.dispatch("showSnackbar", {text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`});
+          this.$store.dispatch('showSnackbar', { text: `그룹 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? '[' + error.response.data.message + ']' : ''}` });
         });
     }
   }
