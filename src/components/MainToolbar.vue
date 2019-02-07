@@ -6,7 +6,7 @@
     <router-link to="/search" class="d-flex fill-height align-center">
       <v-icon>search</v-icon>
     </router-link>
-    <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
+    <v-menu offset-y left nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'primary'">
           <img v-if="$store.getters.isLight" :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
