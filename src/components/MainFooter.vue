@@ -16,8 +16,8 @@
 </template>
 <script>
 export default {
-  template: "#mainFooter",
-  name: "mainFooter"
+  template: '#mainFooter',
+  name: 'mainFooter'
 };
 </script>
 <style>

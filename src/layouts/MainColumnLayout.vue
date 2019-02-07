@@ -70,43 +70,43 @@
 
 <script>
 export default {
-  name: "MainColumnLayout",
+  name: 'MainColumnLayout',
   components: {
-    SmallDocumentList: () => import("@/components/board/SmallDocumentList.vue")
+    SmallDocumentList: () => import('@/components/board/SmallDocumentList.vue')
   },
-  data() {
+  data () {
     return {
       notice: {},
       best: {}
     };
   },
   computed: {
-    columnType() {
+    columnType () {
       return this.$store.getters.columnType;
     }
   },
-  mounted() {
+  mounted () {
     if (this.$store.getters.recents) {
-      this.notice = this.$store.getters.recents.find(x => x.boardId === "notice");
-      this.best = this.$store.getters.recents.find(x=>x.boardId === null);
+      this.notice = this.$store.getters.recents.find(x => x.boardId === 'notice');
+      this.best = this.$store.getters.recents.find(x => x.boardId === null);
     } else {
       this.$axios
-        .get("/recent", {headers: {silent: true}})
+        .get('/recent', { headers: { silent: true } })
         .then(response => {
           response.data.forEach(x => {
             x.documents.forEach(y => {
               if (y.writeDateTime) {
-                y.writeDateTime = this.$moment(y.writeDateTime, "YYYYMMDDHHmmss");
+                y.writeDateTime = this.$moment(y.writeDateTime, 'YYYYMMDDHHmmss');
               }
             });
           });
-          this.notice = response.data.find(x => x.boardId === "notice");
-          this.best = response.data.find(x=>x.boardId === null);
-          this.$store.dispatch("setRecents", response.data);
+          this.notice = response.data.find(x => x.boardId === 'notice');
+          this.best = response.data.find(x => x.boardId === null);
+          this.$store.dispatch('setRecents', response.data);
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `최근 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `최근 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
         });
     }
   },

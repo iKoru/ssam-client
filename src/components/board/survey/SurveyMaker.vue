@@ -48,7 +48,7 @@
       <v-spacer/>
       <v-btn color="error" depressed @click="$emit('deleteSurvey')">설문 삭제</v-btn>
       <v-btn color="primary" depressed @click="extractSurvey">저장</v-btn>
-    </v-card-actions>     
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -57,7 +57,7 @@ export default {
   props: ['survey', 'surveyDialog'],
   data () {
     return {
-      currentSurvey:{}
+      currentSurvey: {}
     }
   },
   methods: {
@@ -66,66 +66,66 @@ export default {
     },
     deleteAnswer: function (questionIndex, answerIndex) {
       if (this.currentSurvey.questions[questionIndex].choices.length < 3) {
-        if(this.currentSurvey.questions[questionIndex].choices[answerIndex] && this.currentSurvey.questions[questionIndex].choices[answerIndex].length > 0){
+        if (this.currentSurvey.questions[questionIndex].choices[answerIndex] && this.currentSurvey.questions[questionIndex].choices[answerIndex].length > 0) {
           this.currentSurvey.questions[questionIndex].choices[answerIndex] = '';
           this.$forceUpdate();
-        }else{
-          this.$store.dispatch('showSnackbar', {text:'선택지는 2개 이상이어야 합니다.', color:'info'})
+        } else {
+          this.$store.dispatch('showSnackbar', { text: '선택지는 2개 이상이어야 합니다.', color: 'info' })
         }
-      }else{
+      } else {
         this.currentSurvey.questions[questionIndex].choices.splice(answerIndex, 1)
       }
     },
     pushQuestion () {
-      this.currentSurvey.questions.push({title: '', allowMultipleChoice: false, choices: ['', '']})
+      this.currentSurvey.questions.push({ title: '', allowMultipleChoice: false, choices: ['', ''] })
     },
     deleteQuestion (index) {
-      if(this.currentSurvey.questions.length === 1) {
-        if((this.currentSurvey.questions[index].title && this.currentSurvey.questions[index].title.length > 0) || (this.currentSurvey.questions[index].choices.some(choice => choice && choice.length > 0))){
+      if (this.currentSurvey.questions.length === 1) {
+        if ((this.currentSurvey.questions[index].title && this.currentSurvey.questions[index].title.length > 0) || (this.currentSurvey.questions[index].choices.some(choice => choice && choice.length > 0))) {
           this.currentSurvey.questions.splice(index, 1)
-          this.currentSurvey.questions.push({title: '', allowMultipleChoice: false, choices: ['', '']})
-        }else{
-          this.$store.dispatch('showSnackbar', {text:'최소 하나 이상의 질문을 입력해주세요', color:'warning'})
+          this.currentSurvey.questions.push({ title: '', allowMultipleChoice: false, choices: ['', ''] })
+        } else {
+          this.$store.dispatch('showSnackbar', { text: '최소 하나 이상의 질문을 입력해주세요', color: 'warning' })
         }
       } else {
         this.currentSurvey.questions.splice(index, 1)
       }
     },
     extractSurvey () {
-      let i=0;
-      while(i<this.currentSurvey.questions.length){
-        if(this.currentSurvey.questions[i].title && this.currentSurvey.questions[i].title.length > 0){
-          if(this.currentSurvey.questions[i].choices.filter(choice => choice && choice.length > 0).length > 1){//safe
+      let i = 0;
+      while (i < this.currentSurvey.questions.length) {
+        if (this.currentSurvey.questions[i].title && this.currentSurvey.questions[i].title.length > 0) {
+          if (this.currentSurvey.questions[i].choices.filter(choice => choice && choice.length > 0).length > 1) { // safe
             this.currentSurvey.questions[i].choices = this.currentSurvey.questions[i].choices.filter(choice => choice && choice.length > 0);
-          }else{
-            this.$store.dispatch('showSnackbar', {text:(i+1)+'번째 질문의 응답을 2개 이상으로 입력해주세요.', color:'info'})
+          } else {
+            this.$store.dispatch('showSnackbar', { text: (i + 1) + '번째 질문의 응답을 2개 이상으로 입력해주세요.', color: 'info' })
             return;
           }
-        }else{
-          if(this.currentSurvey.questions[i].choices.some(choice => choice && choice.length > 0)){
-            this.$store.dispatch('showSnackbar', {text:(i+1)+'번째 질문의 제목을 입력해주세요.', color:'info'});
+        } else {
+          if (this.currentSurvey.questions[i].choices.some(choice => choice && choice.length > 0)) {
+            this.$store.dispatch('showSnackbar', { text: (i + 1) + '번째 질문의 제목을 입력해주세요.', color: 'info' });
             return;
-          }else{
+          } else {
             this.currentSurvey.questions.splice(i, 1);
             continue;
           }
         }
         i++;
       }
-      if(i === 0){
-        this.$store.dispatch('showSnackbar', {text:'질문을 1개 이상 입력해주세요.', color:'warning'})
+      if (i === 0) {
+        this.$store.dispatch('showSnackbar', { text: '질문을 1개 이상 입력해주세요.', color: 'warning' })
         return;
       }
       this.$emit('extractSurvey', this.currentSurvey)
     }
   },
-  watch:{
-    survey:{
-      handler(to){
+  watch: {
+    survey: {
+      handler (to) {
         this.currentSurvey = to;
       },
-      deep:true,
-      immediate:true
+      deep: true,
+      immediate: true
     }
   }
 }

@@ -76,75 +76,75 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from '../layouts/MainLayout';
 
 export default {
-  name: "Tools",
+  name: 'Tools',
   components: {
-    Editor: () => import("@/components/board/editor/Editor")
+    Editor: () => import('@/components/board/editor/Editor')
   },
-  data() {
+  data () {
     return {
-      text: "",
-      filtered: "금지어, 주의어가 입력되면 강조되어 표시됩니다.",
+      text: '',
+      filtered: '금지어, 주의어가 입력되면 강조되어 표시됩니다.',
       debounce: null,
-      forbidden: ["금지어", "호호"],
-      defaultForbidden: ["금지어", "호호"],
-      warning: ["주의어", "키키"],
-      defaultWarning: ["주의어", "키키"],
+      forbidden: ['금지어', '호호'],
+      defaultForbidden: ['금지어', '호호'],
+      warning: ['주의어', '키키'],
+      defaultWarning: ['주의어', '키키'],
       candidate: null,
       warningCandidate: null
     };
   },
   computed: {
-    byteLength() {
-      return (function(s, b, i, c) {
+    byteLength () {
+      return (function (s, b, i, c) {
         for (b = i = 0; (c = s.charCodeAt(i++)); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
         return b;
       })(this.text);
     },
-    withoutSpace() {
-      return this.text.replace(/\s/g, "");
+    withoutSpace () {
+      return this.text.replace(/\s/g, '');
     },
-    byteLengthWithoutSpace() {
-      return (function(s, b, i, c) {
+    byteLengthWithoutSpace () {
+      return (function (s, b, i, c) {
         for (b = i = 0; (c = s.charCodeAt(i++)); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
         return b;
       })(this.withoutSpace);
     }
   },
-  created() {
-    this.$emit("update:layout", MainLayout);
-    this.$store.dispatch("setColumnType", "HIDE_SM");
+  created () {
+    this.$emit('update:layout', MainLayout);
+    this.$store.dispatch('setColumnType', 'HIDE_SM');
   },
   methods: {
-    inputChanged() {
+    inputChanged () {
       if (!this.debounce) {
         clearTimeout(this.debounce);
       }
       this.debounce = setTimeout(() => {
         let words = this.text;
         if (this.forbidden.length > 0) {
-          words = this.text.replace(new RegExp("(" + this.forbidden.join("|") + ")", "g"), '<span class="error--text">$1</span>');
+          words = this.text.replace(new RegExp('(' + this.forbidden.join('|') + ')', 'g'), '<span class="error--text">$1</span>');
         }
         if (this.warning.length > 0) {
-          words = words.replace(new RegExp("(" + this.warning.join("|") + ")", "g"), '<span class="warning--text">$1</span>');
+          words = words.replace(new RegExp('(' + this.warning.join('|') + ')', 'g'), '<span class="warning--text">$1</span>');
         }
-        words = words.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        words = words.replace(/(?:\r\n|\r|\n)/g, '<br>');
         this.filtered = words;
       }, 500);
     },
-    itemRemoved(index) {
+    itemRemoved (index) {
       this.forbidden.splice(index, 1);
     },
-    warningItemRemoved(index) {
+    warningItemRemoved (index) {
       this.warning.splice(index, 1);
     },
-    addItems() {
-      if (typeof this.candidate === "string") {
-        this.candidate.split(",").forEach(x => {
-          x = x.replace(/(<|>)/g, "");
-          if (x !== "") {
+    addItems () {
+      if (typeof this.candidate === 'string') {
+        this.candidate.split(',').forEach(x => {
+          x = x.replace(/(<|>)/g, '');
+          if (x !== '') {
             if (this.forbidden.indexOf(x) >= 0) {
               return;
             }
@@ -155,11 +155,11 @@ export default {
         this.candidate = null;
       }
     },
-    addWarningItems() {
-      if (typeof this.warningCandidate === "string") {
-        this.warningCandidate.split(",").forEach(x => {
-          x = x.replace(/(<|>)/g, "");
-          if (x !== "") {
+    addWarningItems () {
+      if (typeof this.warningCandidate === 'string') {
+        this.warningCandidate.split(',').forEach(x => {
+          x = x.replace(/(<|>)/g, '');
+          if (x !== '') {
             if (this.warning.indexOf(x) >= 0) {
               return;
             }
@@ -170,21 +170,21 @@ export default {
         this.warningCandidate = null;
       }
     },
-    copy() {
-      let testingCodeToCopy = document.querySelector("#text");
+    copy () {
+      let testingCodeToCopy = document.querySelector('#text');
       testingCodeToCopy.select();
 
       try {
-        document.execCommand("copy");
-        this.$store.dispatch("showSnackbar", {text: "내용이 복사되었습니다.", color: "success"});
+        document.execCommand('copy');
+        this.$store.dispatch('showSnackbar', { text: '내용이 복사되었습니다.', color: 'success' });
       } catch (error) {
         console.log(error);
       }
 
       window.getSelection().removeAllRanges();
     },
-    reset() {
-      this.text = "";
+    reset () {
+      this.text = '';
       this.forbidden = this.defaultForbidden.slice();
       this.warning = this.defaultWarning.slice();
       this.inputChanged();

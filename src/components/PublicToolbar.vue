@@ -6,13 +6,13 @@
 </template>
 <script>
 export default {
-  name: "publicToolbar",
+  name: 'publicToolbar',
   methods: {
-    goIndex() {
+    goIndex () {
       if (this.$store.getters.accessToken) {
-        this.$router.push("/");
+        this.$router.push('/');
       } else {
-        this.$router.push("/index");
+        this.$router.push('/index');
       }
     }
   }

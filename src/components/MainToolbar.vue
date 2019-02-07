@@ -55,47 +55,47 @@
 </template>
 <script>
 
-function deleteCookie( name ) {
+function deleteCookie (name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export default {
-  template: "#mainToolbar",
-  name: "mainToolbar",
-  components: {NotificationCenter: () => import("./NotificationCenter")},
-  data() {
+  template: '#mainToolbar',
+  name: 'mainToolbar',
+  components: { NotificationCenter: () => import('./NotificationCenter') },
+  data () {
     return {
       notification: false,
       menu: false
     };
   },
   computed: {
-    nickName() {
+    nickName () {
       return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
-    totalNotifications() {
+    totalNotifications () {
       return this.$store.getters.totalNotifications;
     },
-    showNotificationBadge() {
+    showNotificationBadge () {
       return this.totalNotifications > 0;
     }
   },
   methods: {
-    signout() {
+    signout () {
       deleteCookie('token');
       deleteCookie('_csrf');
       deleteCookie('CSRF-TOKEN');
       this.$nextTick(() => {
-        this.$router.push("/index");
+        this.$router.push('/index');
       })
     },
-    goMain() {
-      this.$router.push("/");
+    goMain () {
+      this.$router.push('/');
     },
-    openDialog() {
+    openDialog () {
       this.notification = true;
     },
-    closeDialog() {
+    closeDialog () {
       this.notification = false;
     }
   }

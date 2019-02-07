@@ -29,28 +29,28 @@
   </div>
 </template>
 <script>
-import SmallDocumentList from "./SmallDocumentList";
+import SmallDocumentList from './SmallDocumentList';
 export default {
-  name: "BoardExtractor",
+  name: 'BoardExtractor',
   components: {
     SmallDocumentList
   },
-  props: ["boardType", "maxCount"],
-  data() {
+  props: ['boardType', 'maxCount'],
+  data () {
     return {
       period: 0,
-      items: {daily: [], weekly: [], monthly: []}
+      items: { daily: [], weekly: [], monthly: [] }
     };
   },
-  created() {
+  created () {
     this.$axios
-      .get("/best", {params: {boardType: this.boardType}, headers: {silent: true}})
+      .get('/best', { params: { boardType: this.boardType }, headers: { silent: true } })
       .then(response => {
         this.items = response.data;
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `베스트 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+        this.$store.dispatch('showSnackbar', { text: `베스트 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
       });
   }
 };

@@ -128,42 +128,42 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from '../layouts/MainLayout';
 
-import "filepond-polyfill";
-import vueFilePond, {setOptions} from "vue-filepond";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js";
+import 'filepond-polyfill';
+import vueFilePond, { setOptions } from 'vue-filepond';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js';
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
 setOptions({
-  labelIdle: "이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(200KB 이내)",
-  labelFileWaitingForSize: "파일의 크기를 확인중입니다...",
-  labelFileSizeNotAvailable: "파일의 크기를 확인할 수 없습니다.",
-  labelFileLoading: "이미지를 불러오는 중...",
-  labelFileLoadError: "이미지를 불러오지 못헀습니다.",
-  labelFileProcessing: "서버로 업로드중...",
-  labelFileProcessingComplete: "이미지를 서버로 업로드하였습니다.",
-  labelFileProcessingAborted: "업로드가 취소되었습니다.",
-  labelFileProcessingError: "이미지를 업로드하지 못했습니다.",
-  labelTapToCancel: "",
-  labelTapToRetry: "재시도",
-  labelTapToUndo: "",
-  labelButtonRemoveItem: "삭제",
-  labelButtonAbortItemLoad: "중지",
-  labelButtonRetryItemLoad: "재시도",
-  labelButtonAbortItemProcessing: "취소",
-  labelButtonUndoItemProcessing: "재시도",
-  labelButtonProcessItem: "업로드",
-  labelFileTypeNotAllowed: "허용된 파일 형식이 아닙니다.",
-  fileValidateTypeLabelExpectedTypes: "jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다.",
+  labelIdle: '이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(200KB 이내)',
+  labelFileWaitingForSize: '파일의 크기를 확인중입니다...',
+  labelFileSizeNotAvailable: '파일의 크기를 확인할 수 없습니다.',
+  labelFileLoading: '이미지를 불러오는 중...',
+  labelFileLoadError: '이미지를 불러오지 못헀습니다.',
+  labelFileProcessing: '서버로 업로드중...',
+  labelFileProcessingComplete: '이미지를 서버로 업로드하였습니다.',
+  labelFileProcessingAborted: '업로드가 취소되었습니다.',
+  labelFileProcessingError: '이미지를 업로드하지 못했습니다.',
+  labelTapToCancel: '',
+  labelTapToRetry: '재시도',
+  labelTapToUndo: '',
+  labelButtonRemoveItem: '삭제',
+  labelButtonAbortItemLoad: '중지',
+  labelButtonRetryItemLoad: '재시도',
+  labelButtonAbortItemProcessing: '취소',
+  labelButtonUndoItemProcessing: '재시도',
+  labelButtonProcessItem: '업로드',
+  labelFileTypeNotAllowed: '허용된 파일 형식이 아닙니다.',
+  fileValidateTypeLabelExpectedTypes: 'jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다.',
   allowRevert: false
 });
 
 export default {
-  name: "MyPage",
+  name: 'MyPage',
   components: {
     FilePond
   },
-  data() {
+  data () {
     return {
       loading: false,
       dialog: false,
@@ -174,98 +174,98 @@ export default {
       majorItems: [],
       loungeNickNameErrors: [],
       topicNickNameErrors: [],
-      passwordRules: [v => !v || (v.length > 3 && v.length < 26) || "4~25자"],
-      nickNameRules: [v => (!!v && v !== "") || "닉네임/필명을 입력해주세요.", v => (!!v && v.length > 3 && v.length <= 50) || "4~50자로 입력해주세요."],
+      passwordRules: [v => !v || (v.length > 3 && v.length < 26) || '4~25자'],
+      nickNameRules: [v => (!!v && v !== '') || '닉네임/필명을 입력해주세요.', v => (!!v && v.length > 3 && v.length <= 50) || '4~50자로 입력해주세요.'],
       bottomSheet: false,
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
           if (file.size > 200 * 1024) {
-            this.$store.dispatch("showSnackbar", {text: "이미지는 200KB 이내만 업로드할 수 있습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: '이미지는 200KB 이내만 업로드할 수 있습니다.', color: 'error' });
             abort();
             return;
           }
           const formData = new FormData();
-          formData.append("picture", file, file.name);
+          formData.append('picture', file, file.name);
           this.$axios
-            .post("/user/picture", formData)
+            .post('/user/picture', formData)
             .then(response => {
               this.profile.picturePath = response.data.picturePath;
               this.dialog = false;
-              this.$store.dispatch("updateProfile", {picturePath: this.profile.picturePath});
+              this.$store.dispatch('updateProfile', { picturePath: this.profile.picturePath });
               load();
             })
             .catch(error => {
               abort();
-              this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 업로드하지 못했습니다."}`, color: "error"});
+              this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '프로필 이미지를 업로드하지 못했습니다.'}`, color: 'error' });
             });
-          return {load, error, progress, abort};
+          return { load, error, progress, abort };
         }
       },
       labels: {},
       userAuthItems: {
-        N: "미인증(예비교사)",
-        A: "인증",
-        E: "인증만료(전직교사)",
-        D: "인증제한"
+        N: '미인증(예비교사)',
+        A: '인증',
+        E: '인증만료(전직교사)',
+        D: '인증제한'
       }
     };
   },
   computed: {
-    isMarch() {
-      return process.env.NODE_ENV === "development" || new Date().getMonth() === 2;
+    isMarch () {
+      return process.env.NODE_ENV === 'development' || new Date().getMonth() === 2;
     },
-    checkProfileUpdatable() {
-      return (!this.profile.infoModifiedDate || this.$moment(this.profile.infoModifiedDate, "YYYYMMDD").year() < new Date().getYear()) && this.isMarch;
+    checkProfileUpdatable () {
+      return (!this.profile.infoModifiedDate || this.$moment(this.profile.infoModifiedDate, 'YYYYMMDD').year() < new Date().getYear()) && this.isMarch;
     },
-    checkLoungeNickNameUpdatable() {
+    checkLoungeNickNameUpdatable () {
       return (
         !this.profile.loungeNickNameModifiedDate ||
-        this.$moment(this.profile.loungeNickNameModifiedDate, "YYYYMMDD")
-          .add(1, "months")
+        this.$moment(this.profile.loungeNickNameModifiedDate, 'YYYYMMDD')
+          .add(1, 'months')
           .isBefore(this.$moment())
       );
     },
-    checkTopicNickNameUpdatable() {
+    checkTopicNickNameUpdatable () {
       return (
         !this.profile.topicNickNameModifiedDate ||
-        this.$moment(this.profile.topicNickNameModifiedDate, "YYYYMMDD")
-          .add(1, "months")
+        this.$moment(this.profile.topicNickNameModifiedDate, 'YYYYMMDD')
+          .add(1, 'months')
           .isBefore(this.$moment())
       );
     },
-    webUrl() {
+    webUrl () {
       return process.env.VUE_APP_WEB_URL;
     },
-    profile() {
+    profile () {
       return Object.assign({}, this.$store.getters.profile);
     }
   },
-  created() {
-    this.$emit("update:layout", MainLayout);
-    this.$store.dispatch("setColumnType", "HIDE_ALWAYS");
+  created () {
+    this.$emit('update:layout', MainLayout);
+    this.$store.dispatch('setColumnType', 'HIDE_ALWAYS');
     this.reset();
     this.$axios
-      .get("/group", {params: {groupType: ["M", "G"]}, headers: {silent: true}})
+      .get('/group', { params: { groupType: ['M', 'G'] }, headers: { silent: true } })
       .then(response => {
         if (this.checkProfileUpdatable) {
-          this.majorItems = response.data.filter(x => x.groupType === "M").map(x => ({text: x.groupName, value: x.groupId}));
-          this.majorItems.splice(0, 0, {text: "(미지정)", value: null});
-          this.gradeItems = response.data.filter(x => x.groupType === "G").map(x => ({text: x.groupName, value: x.groupId}));
-          this.gradeItems.splice(0, 0, {text: "(미지정)", value: null});
+          this.majorItems = response.data.filter(x => x.groupType === 'M').map(x => ({ text: x.groupName, value: x.groupId }));
+          this.majorItems.splice(0, 0, { text: '(미지정)', value: null });
+          this.gradeItems = response.data.filter(x => x.groupType === 'G').map(x => ({ text: x.groupName, value: x.groupId }));
+          this.gradeItems.splice(0, 0, { text: '(미지정)', value: null });
         } else {
-          this.majorItems = response.data.filter(x => x.groupType === "M" && x.groupId === this.profile.major).map(x => ({text: x.groupName, value: x.groupId}));
-          this.majorItems.splice(0, 0, {text: "(미지정)", value: null});
-          this.gradeItems = response.data.filter(x => x.groupType === "G" && x.groupId === this.profile.grade).map(x => ({text: x.groupName, value: x.groupId}));
-          this.gradeItems.splice(0, 0, {text: "(미지정)", value: null});
+          this.majorItems = response.data.filter(x => x.groupType === 'M' && x.groupId === this.profile.major).map(x => ({ text: x.groupName, value: x.groupId }));
+          this.majorItems.splice(0, 0, { text: '(미지정)', value: null });
+          this.gradeItems = response.data.filter(x => x.groupType === 'G' && x.groupId === this.profile.grade).map(x => ({ text: x.groupName, value: x.groupId }));
+          this.gradeItems.splice(0, 0, { text: '(미지정)', value: null });
         }
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch("showSnackbar", {text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+        this.$store.dispatch('showSnackbar', { text: `전공, 학년 목록을 가져오지 못했습니다.${error && error.response && error.response.data ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
       });
   },
   methods: {
-    reset() {
+    reset () {
       if (this.profile.major === undefined) {
         this.major = null;
       } else {
@@ -278,61 +278,61 @@ export default {
       }
       this.password = null;
     },
-    checkNickName(target, callback) {
+    checkNickName (target, callback) {
       let errors, nickName;
       switch (target) {
-        case "loungeNickName":
+        case 'loungeNickName':
           errors = this.loungeNickNameErrors;
           nickName = this.profile.loungeNickName;
           this.$refs.loungeNickName.validate();
           break;
-        case "topicNickName":
+        case 'topicNickName':
           errors = this.topicNickNameErrors;
           nickName = this.profile.topicNickName;
           this.$refs.topicNickName.validate();
           break;
         default:
-          if (typeof callback === "function") {
+          if (typeof callback === 'function') {
             callback.call(this);
           }
           return;
       }
       if (errors.length === 0 && nickName !== this.$store.getters.profile[target]) {
         this.$axios
-          .get("/nickName", {params: {nickName: nickName}, headers: {silent: true}})
+          .get('/nickName', { params: { nickName: nickName }, headers: { silent: true } })
           .then(() => {
-            if (typeof callback === "function") {
+            if (typeof callback === 'function') {
               callback.call(this);
             }
           })
           .catch(error => {
-            errors.push(error.response ? error.response.data.message || "사용할 수 없는 닉네임/필명입니다." : "사용할 수 없는 닉네임/필명입니다.");
-            if (typeof callback === "function") {
+            errors.push(error.response ? error.response.data.message || '사용할 수 없는 닉네임/필명입니다.' : '사용할 수 없는 닉네임/필명입니다.');
+            if (typeof callback === 'function') {
               callback.call(this);
             }
           });
-      } else if (typeof callback === "function") {
+      } else if (typeof callback === 'function') {
         callback.call(this);
       }
     },
-    focus(target) {
+    focus (target) {
       if (this.$refs[target]) {
         this.$refs[target].focus();
       }
     },
-    submit() {
+    submit () {
       if (this.$refs.form.validate()) {
-        this.checkNickName("topicNickName", () => {
-          this.checkNickName("loungeNickName", () => {
+        this.checkNickName('topicNickName', () => {
+          this.checkNickName('loungeNickName', () => {
             if (this.loungeNickNameErrors.length === 0 && this.topicNickNameErrors.length === 0) {
               let params = {};
               const origin = this.$store.getters.profile;
               if (this.profile.topicNickName !== origin.topicNickName) {
-                this.checkNickName("topicNickName");
+                this.checkNickName('topicNickName');
                 params.topicNickName = this.profile.topicNickName;
               }
               if (this.profile.loungeNickName !== origin.loungeNickName) {
-                this.checkNickName("loungeNickName");
+                this.checkNickName('loungeNickName');
                 params.loungeNickName = this.profile.loungeNickName;
               }
               if (this.profile.isOpenInfo !== origin.isOpenInfo) {
@@ -344,80 +344,80 @@ export default {
               if (this.grade !== origin.grade && !(this.grade === null && origin.grade === undefined) && this.checkProfileUpdatable) {
                 params.grade = this.grade;
               }
-              if (this.password && this.password !== "") {
+              if (this.password && this.password !== '') {
                 params.password = this.password;
               }
               if (Object.keys(params).length > 0) {
                 if (params.major !== undefined || params.grade !== undefined) {
-                  if (!confirm(`전공을 ${params.major && this.majorItems.find(x => x.value === params.major) ? this.majorItems.find(x => x.value === params.major).text + "로 지정" : "지정해제"}, 학년을 ${params.grade && this.gradeItems.find(x => x.value === params.grade) ? this.gradeItems.find(x => x.value === params.grade).text + "로 지정" : "지정해제"}하시겠습니까?\n한 번 변경하면 올해에는 추가로 변경이 불가능하니, 신중히 선택해주세요.`)) {
+                  if (!confirm(`전공을 ${params.major && this.majorItems.find(x => x.value === params.major) ? this.majorItems.find(x => x.value === params.major).text + '로 지정' : '지정해제'}, 학년을 ${params.grade && this.gradeItems.find(x => x.value === params.grade) ? this.gradeItems.find(x => x.value === params.grade).text + '로 지정' : '지정해제'}하시겠습니까?\n한 번 변경하면 올해에는 추가로 변경이 불가능하니, 신중히 선택해주세요.`)) {
                     return;
                   }
                 }
                 this.loading = true;
                 this.$axios
-                  .put("/user", params)
+                  .put('/user', params)
                   .then(response => {
                     this.password = null;
                     this.loading = false;
-                    this.$store.dispatch("showSnackbar", {text: "내 정보를 변경하였습니다.", color: "success"});
+                    this.$store.dispatch('showSnackbar', { text: '내 정보를 변경하였습니다.', color: 'success' });
                     if (params.major !== undefined || params.grade !== undefined) {
-                      params.infoModifiedDate = this.$moment().format("YMMDD");
+                      params.infoModifiedDate = this.$moment().format('YMMDD');
                       this.profile.infoModifiedDate = params.infoModifiedDate;
                     }
                     if (params.topicNickName) {
-                      params.topicNickNameModifiedDate = this.$moment().format("YMMDD");
+                      params.topicNickNameModifiedDate = this.$moment().format('YMMDD');
                       this.profile.topicNickNameModifiedDate = params.topicNickNameModifiedDate;
                     }
                     if (params.loungeNickName) {
-                      params.loungeNickNameModifiedDate = this.$moment().format("YMMDD");
+                      params.loungeNickNameModifiedDate = this.$moment().format('YMMDD');
                       this.profile.loungeNickNameModifiedDate = params.loungeNickNameModifiedDate;
                     }
-                    this.$store.dispatch("updateProfile", params);
+                    this.$store.dispatch('updateProfile', params);
                   })
                   .catch(error => {
                     this.loading = false;
-                    this.$store.dispatch("showSnackbar", {text: `정보를 변경하지 못했습니다.${error.response ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+                    this.$store.dispatch('showSnackbar', { text: `정보를 변경하지 못했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
                     console.log(error);
                   });
               } else {
-                this.$store.dispatch("showSnackbar", {text: "변경된 내용이 없습니다."});
+                this.$store.dispatch('showSnackbar', { text: '변경된 내용이 없습니다.' });
               }
             }
           });
         });
       } else {
-        this.$store.dispatch("showSnackbar", {text: "변경할 정보를 확인해주세요.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '변경할 정보를 확인해주세요.', color: 'error' });
       }
     },
-    deleteProfilePath() {
+    deleteProfilePath () {
       this.$axios
-        .put("/user", {picturePath: ""})
+        .put('/user', { picturePath: '' })
         .then(response => {
-          this.$store.dispatch("updateProfile", {picturePath: null});
+          this.$store.dispatch('updateProfile', { picturePath: null });
           this.profile.picturePath = null;
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "프로필 이미지를 삭제하지 못했습니다."}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '프로필 이미지를 삭제하지 못했습니다.'}`, color: 'error' });
         });
       this.bottomSheet = false;
     },
-    exit() {
-      if (confirm("정말 탈퇴하시겠습니까?\n등록한 이메일로의 재가입은 불가능합니다.")) {
+    exit () {
+      if (confirm('정말 탈퇴하시겠습니까?\n등록한 이메일로의 재가입은 불가능합니다.')) {
         this.$axios
-          .put("/user", {status: "DELETED"})
+          .put('/user', { status: 'DELETED' })
           .then(response => {
-            this.$store.dispatch("showSnackbar", {text: "정상적으로 탈퇴처리되었습니다. 이용해주셔서 감사합니다."});
-            this.$store.dispatch("signout");
-            this.$router.push("/index");
+            this.$store.dispatch('showSnackbar', { text: '정상적으로 탈퇴처리되었습니다. 이용해주셔서 감사합니다.' });
+            this.$store.dispatch('signout');
+            this.$router.push('/index');
           })
           .catch(error => {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "탈퇴하지 못했습니다. 관리자에게 문의해주세요."}`, color: "error"});
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '탈퇴하지 못했습니다. 관리자에게 문의해주세요.'}`, color: 'error' });
           });
       }
     },
-    openDialog() {
+    openDialog () {
       this.dialog = true;
       if (this.$refs.pond) {
         this.$refs.pond.browse();
@@ -432,12 +432,12 @@ export default {
     }
   },
   watch: {
-    "profile.loungeNickName"() {
+    'profile.loungeNickName' () {
       if (this.loungeNickNameErrors.length > 0) {
         this.loungeNickNameErrors = [];
       }
     },
-    "profile.topicNickName"() {
+    'profile.topicNickName' () {
       if (this.topicNickNameErrors.length > 0) {
         this.topicNickNameErrors = [];
       }

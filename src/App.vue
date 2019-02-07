@@ -15,36 +15,36 @@
 
 <script>
 export default {
-  name: "Pedagy",
+  name: 'Pedagy',
   data: () => ({
-    layout: "div",
+    layout: 'div',
     showSnackbar: false,
-    snackbar: {text: null, color: "info"}
+    snackbar: { text: null, color: 'info' }
   }),
   computed: {
-    snackbarList() {
+    snackbarList () {
       return this.$store.state.snackbarList;
     }
   },
   methods: {
-    showNextSnackbar() {
+    showNextSnackbar () {
       const nextSnackbar = this.$store.getters.nextSnackbar;
       if (nextSnackbar && nextSnackbar.text) {
         this.snackbar.text = nextSnackbar.text;
-        this.snackbar.color = nextSnackbar.color || "info";
+        this.snackbar.color = nextSnackbar.color || 'info';
         this.showSnackbar = true;
       }
-      this.$store.dispatch("dequeueSnackbar");
+      this.$store.dispatch('dequeueSnackbar');
     }
   },
   watch: {
-    showSnackbar(val) {
+    showSnackbar (val) {
       if (val && !this.snackbarList.length) return;
       this.$nextTick(() => {
         this.showNextSnackbar();
       });
     },
-    snackbarList() {
+    snackbarList () {
       if (!this.showSnackbar) {
         this.showNextSnackbar();
       }

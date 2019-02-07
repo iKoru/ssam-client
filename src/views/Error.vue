@@ -31,14 +31,14 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from '../layouts/PublicLayout';
 export default {
-  props: ["error"],
-  created() {
-    this.$emit("update:layout", PublicLayout);
+  props: ['error'],
+  created () {
+    this.$emit('update:layout', PublicLayout);
   },
   computed: {
-    errorCode() {
+    errorCode () {
       return this.error ? this.error * 1 : 500;
     }
   }

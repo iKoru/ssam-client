@@ -198,39 +198,39 @@
 
 <script>
 export default {
-  name: "MenuBar",
-  props: ["lounges", "topics"],
-  data() {
+  name: 'MenuBar',
+  props: ['lounges', 'topics'],
+  data () {
     return {
       menu: 0
     };
   },
   computed: {
-    menuBar() {
+    menuBar () {
       return this.$store.getters.menuBar;
     },
-    isLight() {
+    isLight () {
       return this.$store.getters.isLight;
     }
   },
   methods: {
-    toggleMenuBar(menu) {
-      if (menu === "lounge") {
+    toggleMenuBar (menu) {
+      if (menu === 'lounge') {
         if (this.menu === 0 && this.menuBar) {
-          this.$store.dispatch("setMenuBar", false);
+          this.$store.dispatch('setMenuBar', false);
           this.menu = null;
         } else {
-          this.$store.dispatch("setMenuBar", true);
+          this.$store.dispatch('setMenuBar', true);
           this.$nextTick(() => {
             this.menu = 0;
           });
         }
-      } else if (menu === "topic") {
+      } else if (menu === 'topic') {
         if (this.menu === 1 && this.menuBar) {
-          this.$store.dispatch("setMenuBar", false);
+          this.$store.dispatch('setMenuBar', false);
           this.menu = null;
         } else {
-          this.$store.dispatch("setMenuBar", true);
+          this.$store.dispatch('setMenuBar', true);
           this.$nextTick(() => {
             this.menu = 1;
           });
@@ -239,7 +239,7 @@ export default {
     }
   },
   watch: {
-    isLight(val) {
+    isLight (val) {
       this.menu = val ? 0 : 1;
     }
   }
