@@ -125,6 +125,8 @@ export default {
       let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x => x.boardId === this.document.boardId);
       if (!board) {
         return 'UNAVAILABLE';
+      } else if (this.document.isDeleted) {
+        return 'DELETED'
       }
 
       const profile = this.$store.getters.profile;
@@ -176,6 +178,11 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
+          if (response.data.isDeleted) {
+            this.$router.push('/' + this.boardId);
+            this.$store.dispatch('showSnackbar', { text: '삭제된 글입니다.', color: 'warning' })
+            return;
+          }
           if (Array.isArray(response.data.attach)) {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }

@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       editorOption: {
-        placeholder: this.isCommentWritable === 'AVAILABLE' ? '댓글을 입력해주세요.' : this.isCommentWritable === 'UNAVAILABLE' ? '댓글을 작성할 수 있는 권한이 없습니다.' : this.isCommentWritable === 'RESTRICTED' ? '글쓰기가 제한되어 있습니다.' : '토픽 구독 후 입력된 댓글이 등록됩니다.',
+        placeholder: this.isCommentWritable === 'AVAILABLE' ? '댓글을 입력해주세요.' : this.isCommentWritable === 'UNAVAILABLE' ? '댓글을 작성할 수 있는 권한이 없습니다.' : this.isCommentWritable === 'RESTRICTED' ? '글쓰기가 제한되어 있습니다.' : this.isCommentWritable === 'DELETED' ? '삭제된 글입니다.' : '토픽 구독 후 입력된 댓글이 등록됩니다.',
         modules: {
           magicUrl: {
             urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)|([\S]+.(?:com|kr|org|io|net|me))/,
