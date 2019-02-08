@@ -69,46 +69,44 @@ export default {
     passwordRules: [v => !!v || '비밀번호를 입력해주세요.']
   }),
   created () {
-    const token = this.$store.getters.token;
-    if (token) {
-      this.loading = true;
-      this.$axios({
-        method: 'POST',
-        url: '/refresh',
-        headers: { silent: true }
-      })
-        .then(response => {
-          this.loading = false;
-          this.$store.dispatch('setUserId', response.data.userId);
-
-          const redirectTo = response.data.redirectTo;
-          if (response.data.imminent || response.data.needEmail) {
-            this.$store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail });
-          }
-
-          if (redirectTo) {
-            if (redirectTo === '/auth' && getCookie('authRequirement') && getCookie('authRequirement') >= this.$moment().format('YMMDD')) {
-              this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/');
-            } else {
-              this.$router.push(redirectTo + window.location.search); // preserve original redirect options
-            }
-          } else {
-            const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
-            this.$router.push(searchRedirectTo !== '/index' && searchRedirectTo !== '/signin' && searchRedirectTo !== '' ? searchRedirectTo : '/');
-          }
-        })
-        .catch(err => {
-          this.loading = false;
-          if (err.response && err.response.data) {
-            this.message = err.response.data.message;
-          } else {
-            this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
-          }
-          this.$store.dispatch('token', false)
-        });
-    } else if (getCookie('userId')) {
+    if (getCookie('userId')) {
       this.userId = getCookie('userId');
     }
+    this.loading = true;
+    this.$axios({
+      method: 'POST',
+      url: '/refresh',
+      headers: { silent: true }
+    })
+      .then(response => {
+        this.loading = false;
+        this.$store.dispatch('setUserId', response.data.userId);
+
+        const redirectTo = response.data.redirectTo;
+        if (response.data.imminent || response.data.needEmail) {
+          this.$store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail });
+        }
+
+        if (redirectTo) {
+          if (redirectTo === '/auth' && getCookie('authRequirement') && getCookie('authRequirement') >= this.$moment().format('YMMDD')) {
+            this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/');
+          } else {
+            this.$router.push(redirectTo + window.location.search); // preserve original redirect options
+          }
+        } else {
+          const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+          this.$router.push(searchRedirectTo !== '/index' && searchRedirectTo !== '/signin' && searchRedirectTo !== '' ? searchRedirectTo : '/');
+        }
+      })
+      .catch(err => {
+        this.loading = false;
+        if (err.response && err.response.data) {
+          this.message = err.response.data.message;
+        } else {
+          this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
+        }
+        this.$store.dispatch('setToken', false)
+      });
   },
 
   watch: {
