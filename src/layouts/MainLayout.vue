@@ -7,6 +7,22 @@
       <main-column-layout>
         <slot></slot>
       </main-column-layout>
+      <v-dialog v-for="popup in popups" :key="popup.popupId" hide-overlay v-model="popup.popupActivated" content-class="popup" style="justify-content:flex-end" attach="">
+        <v-card flat>
+          <v-card-title>
+            <a :href="popup.popupHref" v-if="popup.popupType === 'image'">
+              <v-img :src="popup.popupContents"></v-img>
+            </a>
+            <div v-else-if="popup.popupType === 'html'" v-html="popup.popupContents"></div>
+            <div v-else-if="popup.popupType === 'text'">{{popup.popupContents}}</div>
+          </v-card-title>
+          <v-divider/>
+          <v-card-actions style="padding:10px 8px">
+            <v-checkbox hide-details label="7일간 그만보기" @click="dismiss(popup)" class="justify-end pt-0 mt-0"></v-checkbox>
+            <v-btn small flat class="short" @click="popup.popupActivated = false">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </main>
     <main-footer class="mainLayout__footer"></main-footer>
   </div>
@@ -24,6 +40,11 @@ export default {
     MenuDrawer,
     MenuBar,
     MainColumnLayout
+  },
+  data () {
+    return {
+      popups: []
+    }
   },
   computed: {
     lounges () {
@@ -75,6 +96,48 @@ export default {
       .catch(error => {
         this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '구독한 토픽 목록을 불러오지 못했습니다.'}`, color: 'error' });
       });
+    this.$axios
+      .get('/popup', { headers: { silent: true } })
+      .then(response => {
+        console.log(response.data);
+        let config = localStorage.getItem('popup');
+        if (config) {
+          try {
+            config = JSON.parse(config);
+            if (Array.isArray(config)) {
+              config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+              localStorage.setItem('popup', JSON.stringify(config));
+              response.data = response.data.filter(x => !config.some(y => y.popupId === x.popupId))
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        this.popups = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  methods: {
+    dismiss (popup) {
+      let config = localStorage.getItem('popup');
+      if (config) {
+        try {
+          config = JSON.parse(config);
+          if (Array.isArray(config)) {
+            config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+            config.push({ due: this.$moment().add(7, 'days').format('YMMDD'), popupId: popup.popupId })
+            localStorage.setItem('popup', JSON.stringify(config));
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      config = [{ due: this.$moment().add(7, 'days').format('YMMDD'), popupId: popup.popupId }]
+      localStorage.setItem('popup', JSON.stringify(config));
+    }
   }
 };
 </script>
@@ -98,5 +161,9 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+}
+.popup{
+  width:auto;
+  min-width:300px;
 }
 </style>
