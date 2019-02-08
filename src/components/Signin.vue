@@ -69,9 +69,6 @@ export default {
     passwordRules: [v => !!v || '비밀번호를 입력해주세요.']
   }),
   created () {
-    if (getCookie('userId')) {
-      this.userId = getCookie('userId');
-    }
     this.loading = true;
     this.$axios({
       method: 'POST',
@@ -81,6 +78,7 @@ export default {
       .then(response => {
         this.loading = false;
         this.$store.dispatch('setUserId', response.data.userId);
+        this.$store.dispatch('setToken', true)
 
         const redirectTo = response.data.redirectTo;
         if (response.data.imminent || response.data.needEmail) {
@@ -100,6 +98,9 @@ export default {
       })
       .catch(err => {
         this.loading = false;
+        if (getCookie('userId')) {
+          this.userId = getCookie('userId');
+        }
         if (err.response && err.response.data) {
           this.message = err.response.data.message;
         } else {
