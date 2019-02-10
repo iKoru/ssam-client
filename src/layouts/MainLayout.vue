@@ -7,6 +7,23 @@
       <main-column-layout>
         <slot></slot>
       </main-column-layout>
+      <v-dialog v-for="popup in popups" :key="popup.popupId" hide-overlay v-model="popup.popupActivated" content-class="popup">
+        <v-card flat>
+          <v-card-title :class="{'justify-center':true, 'pa-0':popup.popupType === 'image'}">
+            <a :href="popup.popupHref" class="w-100" target="_blank" v-if="popup.popupType === 'image'">
+              <v-img :src="popup.popupContents"></v-img>
+            </a>
+            <div v-else-if="popup.popupType === 'html'" v-html="popup.popupContents"></div>
+            <div v-else-if="popup.popupType === 'text'">{{popup.popupContents}}</div>
+          </v-card-title>
+          <v-divider/>
+          <v-card-actions style="padding:10px 8px">
+            <v-checkbox hide-details label="오늘 그만보기" @click="dismiss(popup)" class="pt-0 mt-0 dismiss"></v-checkbox>
+            <v-spacer/>
+            <v-btn small flat class="short" @click="popup.popupActivated = false">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </main>
     <main-footer class="mainLayout__footer"></main-footer>
   </div>
@@ -24,6 +41,11 @@ export default {
     MenuDrawer,
     MenuBar,
     MainColumnLayout
+  },
+  data () {
+    return {
+      popups: []
+    }
   },
   computed: {
     lounges () {
@@ -75,6 +97,50 @@ export default {
       .catch(error => {
         this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '구독한 토픽 목록을 불러오지 못했습니다.'}`, color: 'error' });
       });
+    this.$axios
+      .get('/popup', { headers: { silent: true } })
+      .then(response => {
+        console.log(response.data);
+        let config = localStorage.getItem('popup');
+        if (config) {
+          try {
+            config = JSON.parse(config);
+            if (Array.isArray(config)) {
+              config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+              localStorage.setItem('popup', JSON.stringify(config));
+              response.data = response.data.filter(x => !config.some(y => y.popupId === x.popupId))
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        this.popups = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  methods: {
+    dismiss (popup) {
+      let config = localStorage.getItem('popup');
+      if (config) {
+        try {
+          config = JSON.parse(config);
+          if (Array.isArray(config)) {
+            config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+            config.push({ due: this.$moment().format('YMMDD'), popupId: popup.popupId })
+            localStorage.setItem('popup', JSON.stringify(config));
+            popup.popupActivated = false;
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      config = [{ due: this.$moment().format('YMMDD'), popupId: popup.popupId }]
+      localStorage.setItem('popup', JSON.stringify(config));
+      popup.popupActivated = false;
+    }
   }
 };
 </script>
@@ -98,5 +164,19 @@ export default {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+}
+.popup{
+  width:auto;
+  min-width:300px;
+}
+.dismiss, .dismiss .v-icon{
+  font-size:20px;
+}
+.dismiss .v-input--selection-controls__input{
+  margin-right:0;
+}
+.dismiss .v-label{
+  font-size:14px;
+  color:#000;
 }
 </style>
