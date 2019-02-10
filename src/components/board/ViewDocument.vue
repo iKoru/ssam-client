@@ -34,9 +34,9 @@
     <v-divider/>
     <v-flex class="my-2">
       <v-layout row>
-        <v-flex v-if="board.isOwner" pl-2>
-          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 short px-2">공지해제</v-btn>
-          <v-btn v-else @click="setNotice(true)" class="ma-0 short px-2">공지로</v-btn>
+        <v-flex v-if="board.isOwner">
+          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 px-2 short">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)" class="ma-0 px-2 short">공지지정</v-btn>
         </v-flex>
         <v-spacer/>
         <v-flex pr-2 text-xs-right>
@@ -44,7 +44,7 @@
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
-            <v-btn class="short" v-show="document.isWriter" :to="`/${document.boardId}/${document.documentId}/edit`">
+            <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/${document.documentId}/edit`">
               <span>수정</span>
             </v-btn>
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
@@ -75,10 +75,11 @@
       <v-slide-y-transition>
         <v-layout column>
           <v-layout row v-show="showAttach" mt-2 wrap>
-            <v-flex px-2 xs6 md4 xl2 py-1 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
+            <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
               <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
             </v-flex>
           </v-layout>
+          <v-divider v-show="showAttach" class="mb-2"/>
         </v-layout>
       </v-slide-y-transition>
     </v-flex>
@@ -234,7 +235,7 @@ export default {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + '/' + image.attach_path;
+            item.insert.image = this.webUrl + image.attach_path;
             /* item.insert.image = {
               src: this.webUrl + "/" + image.attach_path,
               download: item.insert.image,
