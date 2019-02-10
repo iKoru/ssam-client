@@ -54,65 +54,53 @@
   </v-toolbar>
 </template>
 <script>
-function deleteCookie (name) {
-  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+function deleteCookie(name) {
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 }
 
 export default {
-  template: '#mainToolbar',
-  name: 'mainToolbar',
-  components: { NotificationCenter: () => import('./NotificationCenter') },
-  data () {
+  template: "#mainToolbar",
+  name: "mainToolbar",
+  components: {NotificationCenter: () => import("./NotificationCenter")},
+  data() {
     return {
       notification: false,
       menu: false
     };
   },
   computed: {
-    nickName () {
+    nickName() {
       return this.$store.getters.isLight ? this.$store.getters.loungeNickName : this.$store.getters.topicNickName;
     },
-    totalNotifications () {
+    totalNotifications() {
       return this.$store.getters.totalNotifications;
     },
-    showNotificationBadge () {
+    showNotificationBadge() {
       return this.totalNotifications > 0;
     }
   },
   methods: {
-    signout () {
-      deleteCookie('token');
-      deleteCookie('_csrf');
-      deleteCookie('CSRF-TOKEN');
-<<<<<<< HEAD
+    signout() {
+      deleteCookie("token");
+      deleteCookie("_csrf");
+      deleteCookie("CSRF-TOKEN");
       this.$axios
-        .post('/signout', undefined, { headers: { silent: true } })
-        .then(response => {
-          this.$nextTick(() => {
-            this.$router.push('/index');
-          });
-        })
-        .catch(error => {
-          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '로그아웃하지 못했습니다.'}`, color: 'error' });
-        });
-=======
-      this.$axios.post('/signout', null, { headers: { silent: true } })
+        .post("/signout", null, {headers: {silent: true}})
         .then(() => {
-          this.$store.dispatch('setToken', false);
-          this.$router.push('/index');
+          this.$store.dispatch("setToken", false);
+          this.$router.push("/index");
         })
         .catch(error => {
-          this.$store.dispatch('showSnackbar', { text: error && error.response ? error.response.data.message : '로그아웃하지 못했습니다.', color: 'error' });
-        })
->>>>>>> editor2
+          this.$store.dispatch("showSnackbar", {text: error && error.response ? error.response.data.message : "로그아웃하지 못했습니다.", color: "error"});
+        });
     },
-    goMain () {
-      this.$router.push('/');
+    goMain() {
+      this.$router.push("/");
     },
-    openDialog () {
+    openDialog() {
       this.notification = true;
     },
-    closeDialog () {
+    closeDialog() {
       this.notification = false;
     }
   }
