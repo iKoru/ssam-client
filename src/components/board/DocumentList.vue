@@ -48,6 +48,7 @@
       </v-flex>
       <v-flex>
         <v-layout row pa-2 align-center>
+          <v-btn flat small @click="getDocuments" class="grey--text short" color="secondary">새로고침</v-btn>
           <v-spacer/>
           <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>

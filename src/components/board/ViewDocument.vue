@@ -34,9 +34,9 @@
     <v-divider/>
     <v-flex class="my-2">
       <v-layout row>
-        <v-flex v-if="board.isOwner">
-          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 px-2 short">공지해제</v-btn>
-          <v-btn v-else @click="setNotice(true)" class="ma-0 px-2 short">공지지정</v-btn>
+        <v-flex v-if="board.isOwner" pl-2>
+          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 short px-2">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)" class="ma-0 short px-2">공지로</v-btn>
         </v-flex>
         <v-spacer/>
         <v-flex pr-2 text-xs-right>
