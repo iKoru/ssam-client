@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex row>
-      <Editor/>
+      <Editor :board="board"/>
     </v-flex>
   </v-layout>
 </template>
@@ -12,8 +12,8 @@ export default {
   components: {
     Editor: () => import('@/components/board/editor/Editor')
   },
+  props: ['board'],
   created () {
-    console.log('write document');
     this.$store.dispatch('setColumnType', 'HIDE_SM');
   }
 };
