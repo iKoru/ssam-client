@@ -59,9 +59,9 @@
   </v-layout>
 </template>
 <script>
-import BoardMixins from "@/components/mixins/BoardMixins";
-import CommentItem from "./CommentItem";
-import CommentWriter from "./CommentWriter";
+import BoardMixins from '@/components/mixins/BoardMixins';
+import CommentItem from './CommentItem';
+import CommentWriter from './CommentWriter';
 
 export default {
   mixins: [BoardMixins],
@@ -69,8 +69,8 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId", "best", "pages"],
-  data() {
+  props: ['isAnonymous', 'allowAnonymous', 'isCommentWritable', 'reportTypes', 'boardId', 'best', 'pages'],
+  data () {
     return {
       commentList: [],
       openRecommentIndex: -1,
@@ -79,10 +79,10 @@ export default {
     };
   },
   methods: {
-    getCommentList() {
+    getCommentList () {
       this.openRecommentIndex = -1;
       this.$axios
-        .get("/comment", {params: {documentId: this.$route.params.documentId, page: this.page}, headers: {silent: true}})
+        .get('/comment', { params: { documentId: this.$route.params.documentId, page: this.page }, headers: { silent: true } })
         .then(res => {
           res.data.forEach(x => {
             if (Array.isArray(x.attach)) {
@@ -93,14 +93,14 @@ export default {
         })
         .catch(err => console.log(err));
     },
-    openRecomment(commentIndex) {
+    openRecomment (commentIndex) {
       if (this.openRecommentIndex === commentIndex) this.openRecommentIndex = -1;
       else this.openRecommentIndex = commentIndex;
     }
   },
   watch: {
-    "$route.params": {
-      handler() {
+    '$route.params': {
+      handler () {
         if (!this.page || this.documentId !== this.$route.params.documentId) {
           this.$nextTick(() => {
             this.documentId = this.$route.params.documentId;
@@ -111,13 +111,13 @@ export default {
       deep: true,
       immediate: true
     },
-    page(val) {
+    page (val) {
       this.getCommentList();
     },
-    documentId(val) {
+    documentId (val) {
       this.getCommentList();
     },
-    pages(val) {
+    pages (val) {
       this.page = this.pages;
     }
   }

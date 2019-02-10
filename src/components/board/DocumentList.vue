@@ -29,7 +29,7 @@
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
-            <tr v-else class="grey">
+            <tr v-else class="grey lighten-3">
               <td :colspan="headers.length" class="font-weight-bold px-2 cursor-pointer py-1" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
@@ -48,6 +48,7 @@
       </v-flex>
       <v-flex>
         <v-layout row pa-2 align-center>
+          <v-btn flat small @click="getDocuments" class="grey--text short" color="secondary">새로고침</v-btn>
           <v-spacer/>
           <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
