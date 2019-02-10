@@ -14,7 +14,6 @@
             <option value="large">크게</option>
             <option value="huge">더 크게</option>
           </select>
-          <!--<button ref="imageAttach" class="ql-image" value="image" v-show="$vuetify.breakpoint.smAndUp"></button>-->
         </div>
       </quill-editor>
     </v-flex>
@@ -41,7 +40,7 @@
         </v-btn>
       </div>
     </v-layout>
-    <input style="diplay:none!important; height:0px; width:0px;"  ref="fileInput" multiple id="file-upload" accept="image/*" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
+    <input class="d-none" ref="fileInput" multiple id="file-upload" accept="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
     <v-slide-y-transition>
       <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
         <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
