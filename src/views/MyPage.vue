@@ -110,7 +110,7 @@
           </v-layout>
         </v-card-actions>
       </v-card>
-      <v-dialog v-model="dialog" width="500" lazy>
+      <v-dialog v-model="dialog" width="500" lazy content-class="overflow-hidden">
         <v-card>
           <v-card-title class="headline" primary-title>
             <span>{{profile.picturePath? '프로필 사진 변경':'프로필 사진 등록'}}</span>

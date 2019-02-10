@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-if="board">
+  <v-container fluid v-if="board" pt-2>
     <v-card flat class="mb-2">
       <v-card-title primary-title class="py-2">
         <v-layout column>
@@ -355,6 +355,7 @@ export default {
 <style>
 #childBoardSelector {
   width: 6px;
+  max-width: 6px;
 }
 .childBoardSelector {
   font-size: 14px;

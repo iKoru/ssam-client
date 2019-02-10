@@ -127,14 +127,14 @@ export default {
 .commentList .v-list__tile__title {
   white-space: unset;
   overflow: visible;
-  height: fit-content;
+  height:auto;
 }
 .commentList.v-list--two-line .v-list__tile {
-  height: fit-content;
+  height: auto;
   padding: 8px 0;
 }
 .commentList .v-list__tile__content {
-  height: fit-content;
+  height: auto;
   padding: 0 16px;
 }
 .commentList .bestComment {
