@@ -7,10 +7,10 @@
       <main-column-layout>
         <slot></slot>
       </main-column-layout>
-      <v-dialog v-for="popup in popups" :key="popup.popupId" hide-overlay v-model="popup.popupActivated" content-class="popup" style="justify-content:flex-end" attach="">
+      <v-dialog v-for="popup in popups" :key="popup.popupId" hide-overlay v-model="popup.popupActivated" content-class="popup">
         <v-card flat>
-          <v-card-title>
-            <a :href="popup.popupHref" v-if="popup.popupType === 'image'">
+          <v-card-title :class="{'justify-center':true, 'pa-0':popup.popupType === 'image'}">
+            <a :href="popup.popupHref" class="w-100" target="_blank" v-if="popup.popupType === 'image'">
               <v-img :src="popup.popupContents"></v-img>
             </a>
             <div v-else-if="popup.popupType === 'html'" v-html="popup.popupContents"></div>
@@ -18,7 +18,8 @@
           </v-card-title>
           <v-divider/>
           <v-card-actions style="padding:10px 8px">
-            <v-checkbox hide-details label="7일간 그만보기" @click="dismiss(popup)" class="justify-end pt-0 mt-0"></v-checkbox>
+            <v-checkbox hide-details label="오늘 그만보기" @click="dismiss(popup)" class="pt-0 mt-0 dismiss"></v-checkbox>
+            <v-spacer/>
             <v-btn small flat class="short" @click="popup.popupActivated = false">닫기</v-btn>
           </v-card-actions>
         </v-card>
@@ -127,16 +128,18 @@ export default {
           config = JSON.parse(config);
           if (Array.isArray(config)) {
             config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
-            config.push({ due: this.$moment().add(7, 'days').format('YMMDD'), popupId: popup.popupId })
+            config.push({ due: this.$moment().format('YMMDD'), popupId: popup.popupId })
             localStorage.setItem('popup', JSON.stringify(config));
+            popup.popupActivated = false;
             return;
           }
         } catch (error) {
           console.log(error);
         }
       }
-      config = [{ due: this.$moment().add(7, 'days').format('YMMDD'), popupId: popup.popupId }]
+      config = [{ due: this.$moment().format('YMMDD'), popupId: popup.popupId }]
       localStorage.setItem('popup', JSON.stringify(config));
+      popup.popupActivated = false;
     }
   }
 };
@@ -165,5 +168,15 @@ export default {
 .popup{
   width:auto;
   min-width:300px;
+}
+.dismiss, .dismiss .v-icon{
+  font-size:20px;
+}
+.dismiss .v-input--selection-controls__input{
+  margin-right:0;
+}
+.dismiss .v-label{
+  font-size:14px;
+  color:#000;
 }
 </style>

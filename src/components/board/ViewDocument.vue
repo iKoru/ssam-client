@@ -35,11 +35,11 @@
     <v-flex class="my-2">
       <v-layout row>
         <v-flex v-if="board.isOwner">
-          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)">공지해제</v-btn>
-          <v-btn v-else @click="setNotice(true)">공지지정</v-btn>
+          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 px-2 short">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)" class="ma-0 px-2 short">공지지정</v-btn>
         </v-flex>
         <v-spacer/>
-        <v-flex pr-2>
+        <v-flex pr-2 text-xs-right>
           <v-btn-toggle id="bottomBottons">
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
