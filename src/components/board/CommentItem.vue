@@ -125,7 +125,7 @@ export default {
               download: item.insert.image,
               alt: item.insert.image
             };
-            item.insert.image = this.webUrl + '/' + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
+            item.insert.image = this.webUrl + this.comment.attach.find(x => x.attach_name === item.insert.image).attach_path;
             item.attributes.link = item.insert.image;
           }
         }

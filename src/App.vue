@@ -4,7 +4,7 @@
       <router-view :layout.sync="layout"/>
     </component>
     <v-progress-circular v-show="$store.getters.spinner" indeterminate color="primary" id="spinner"></v-progress-circular>
-    <v-snackbar :timeout="snackbar.color === 'success'?3000:5000" bottom left :color="snackbar.color" v-model="showSnackbar">
+    <v-snackbar :timeout="snackbar.color === 'success'?2000:3000" bottom left :color="snackbar.color" v-model="showSnackbar">
       <span>{{ snackbar.text }}</span>
       <v-btn dark flat @click="showSnackbar = false" icon>
         <v-icon>close</v-icon>
