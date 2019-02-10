@@ -75,11 +75,10 @@
       <v-slide-y-transition>
         <v-layout column>
           <v-layout row v-show="showAttach" mt-2 wrap>
-            <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
+            <v-flex px-2 xs6 md4 xl2 py-1 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
               <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
             </v-flex>
           </v-layout>
-          <v-divider v-show="showAttach" class="mb-2"/>
         </v-layout>
       </v-slide-y-transition>
     </v-flex>

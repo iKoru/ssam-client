@@ -135,7 +135,7 @@ import vueFilePond, { setOptions } from 'vue-filepond';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js';
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
 setOptions({
-  labelIdle: '이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(200KB 이내)',
+  labelIdle: '이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(400KB 이내)',
   labelFileWaitingForSize: '파일의 크기를 확인중입니다...',
   labelFileSizeNotAvailable: '파일의 크기를 확인할 수 없습니다.',
   labelFileLoading: '이미지를 불러오는 중...',
@@ -179,8 +179,8 @@ export default {
       bottomSheet: false,
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
-          if (file.size > 200 * 1024) {
-            this.$store.dispatch('showSnackbar', { text: '이미지는 200KB 이내만 업로드할 수 있습니다.', color: 'error' });
+          if (file.size > 400 * 1024) {
+            this.$store.dispatch('showSnackbar', { text: '이미지는 400KB 이내만 업로드할 수 있습니다.', color: 'error' });
             abort();
             return;
           }

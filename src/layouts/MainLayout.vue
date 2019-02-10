@@ -17,8 +17,8 @@
             <div v-else-if="popup.popupType === 'text'">{{popup.popupContents}}</div>
           </v-card-title>
           <v-divider/>
-          <v-card-actions style="padding:10px 8px">
-            <v-checkbox hide-details label="오늘 그만보기" @click="dismiss(popup)" class="pt-0 mt-0 dismiss"></v-checkbox>
+          <v-card-actions style="padding:4px 8px">
+            <v-subheader @click="dismiss(popup)" class="pt-0 mt-0 dismiss body-1 cursor-pointer">오늘 하루 그만보기</v-subheader>
             <v-spacer/>
             <v-btn small flat class="short" @click="popup.popupActivated = false">닫기</v-btn>
           </v-card-actions>
@@ -50,7 +50,6 @@ export default {
   computed: {
     lounges () {
       const lounges = this.$store.getters.boards.filter(x => x.boardType !== 'T' && x.boardType !== 'X' && !x.parentBoardId);
-      // lounges.splice(0, 0, {boardName: "라운지 베스트", boardId: "loungeBest"});
       lounges.splice(2, 0, { boardName: null, boardId: null });
       return lounges;
     },
@@ -100,13 +99,12 @@ export default {
     this.$axios
       .get('/popup', { headers: { silent: true } })
       .then(response => {
-        console.log(response.data);
         let config = localStorage.getItem('popup');
         if (config) {
           try {
             config = JSON.parse(config);
             if (Array.isArray(config)) {
-              config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+              config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment(), 'day'));
               localStorage.setItem('popup', JSON.stringify(config));
               response.data = response.data.filter(x => !config.some(y => y.popupId === x.popupId))
             }
@@ -127,7 +125,7 @@ export default {
         try {
           config = JSON.parse(config);
           if (Array.isArray(config)) {
-            config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment()));
+            config = config.filter(x => this.$moment(x.due, 'YYYYMMDD').isSameOrAfter(this.$moment(), 'day'));
             config.push({ due: this.$moment().format('YMMDD'), popupId: popup.popupId })
             localStorage.setItem('popup', JSON.stringify(config));
             popup.popupActivated = false;

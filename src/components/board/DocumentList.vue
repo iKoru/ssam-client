@@ -29,7 +29,7 @@
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
-            <tr v-else class="grey">
+            <tr v-else class="grey lighten-3">
               <td :colspan="headers.length" class="font-weight-bold px-2 cursor-pointer py-1" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
