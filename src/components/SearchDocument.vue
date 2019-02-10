@@ -18,7 +18,7 @@
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table :headers="headers" xs12 :items="documents" id="searchDocumentTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" hide-actions>
+            <v-data-table :headers="headers" xs12 :items="documents" class="last-tr-border" :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" hide-actions>
               <template slot="headers" slot-scope="props">
                 <tr>
                   <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
@@ -49,7 +49,7 @@
             </v-data-table>
           </v-flex>
           <v-flex text-xs-center mt-2 xs12 v-if="currentSearchQuery">
-            <v-pagination id="searchDocumentPagination" v-model="pagination.page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+            <v-pagination v-model="pagination.page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
           </v-flex>
         </v-card-title>
       </v-card>
@@ -157,23 +157,6 @@ export default {
 };
 </script>
 <style>
-#searchDocumentTable tbody tr:last-child {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-#searchDocumentPagination .v-pagination__item,
-#searchDocumentPagination .v-pagination__item--active,
-#searchDocumentPagination .v-pagination__navigation {
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
-}
-#searchDocumentPagination .v-pagination__item--active {
-  color: black;
-  font-weight: bold;
-  font-size: 16px;
-  background-color: white !important;
-  border-color: white !important;
-}
 #searchBoard {
   text-overflow: ellipsis;
 }

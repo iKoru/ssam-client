@@ -11,7 +11,7 @@
       <template v-if="notifications.length > 0">
         <v-list-tile v-for="notification in notifications" :key="notification.notificationId" @click="notificationClicked(notification)">
           <v-list-tile-title>{{notification.message}}</v-list-tile-title>
-          <div class="timeago">
+          <div class="nowrap">
             <v-list-tile-sub-title>{{notification.createdDateTime.fromNow()}}</v-list-tile-sub-title>
           </div>
         </v-list-tile>
@@ -95,42 +95,3 @@ export default {
   }
 };
 </script>
-<style>
-.tooltip {
-  display: inline-block;
-  position: relative;
-}
-.tooltip .tooltiptext {
-  background-color: #555;
-  border-radius: 6px;
-  bottom: 125%;
-  color: #fff;
-  left: 50%;
-  margin-left: -60px;
-  opacity: 0;
-  padding: 5px 0;
-  position: absolute;
-  text-align: center;
-  transition: opacity 0.3s;
-  transition-delay: 0.5s;
-  visibility: hidden;
-  width: 150px;
-  z-index: 1;
-}
-.tooltip .tooltiptext:after {
-  border: 5px solid transparent;
-  border-top-color: #555;
-  content: "";
-  left: 50%;
-  margin-left: -5px;
-  position: absolute;
-  top: 100%;
-}
-.tooltip:hover .tooltiptext {
-  opacity: 1;
-  visibility: visible;
-}
-.timeago {
-  white-space: nowrap;
-}
-</style>

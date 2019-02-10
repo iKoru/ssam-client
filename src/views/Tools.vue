@@ -61,7 +61,7 @@
       </v-flex>
       <v-flex xs12 sm6 v-show="forbidden.length > 0" :class="{'pl-3':$vuetify.breakpoint.smAndUp, 'px-2':$vuetify.breakpoint.xsOnly, 'mt-3':$vuetify.breakpoint.xsOnly}" :style="{'border-left':$vuetify.breakpoint.smAndUp?'1px solid rgba(0,0,0,0.12)':'none'}">
         <span>금지어, 주의어 체크결과</span>
-        <div id="filtered" class="mt-2 px-3" v-html="filtered"></div>
+        <div id="filtered" :class="{'mt-3 subheading':true, 'pr-5':$vuetify.breakpoint.smAndUp, 'pr-4 pl-2':$vuetify.breakpoint.xsOnly}" v-html="filtered"></div>
       </v-flex>
       <v-flex v-if="$vuetify.breakpoint.xsOnly">
         <v-layout row>
@@ -80,9 +80,6 @@ import MainLayout from '../layouts/MainLayout';
 
 export default {
   name: 'Tools',
-  components: {
-    Editor: () => import('@/components/board/editor/Editor')
-  },
   data () {
     return {
       text: '',
@@ -193,10 +190,10 @@ export default {
 };
 </script>
 <style>
-#filtered {
-  font-size: 16px;
+#filtered{
+  line-height:18px;
 }
-textarea#text {
-  margin-top: 8px;
+#text {
+  margin-top: 4px;
 }
 </style>

@@ -2,7 +2,7 @@
   <v-flex>
     <v-layout column>
       <v-flex>
-        <v-data-table :headers="headers" xs12 :items="documents" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
+        <v-data-table :headers="headers" xs12 :items="documents" class="last-tr-border" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
               <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text body-2':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">{{header.text}}</th>
@@ -57,7 +57,7 @@
         </v-layout>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
-        <v-pagination id="documentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+        <v-pagination v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
       </v-flex>
     </v-layout>
   </v-flex>
@@ -176,23 +176,6 @@ export default {
 #documentTable tbody td,
 #documentTable tbody th {
   height: 32px;
-}
-#documentTable tbody tr:last-child {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-#documentPagination .v-pagination__item,
-#documentPagination .v-pagination__item--active,
-#documentPagination .v-pagination__navigation {
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
-}
-#documentPagination .v-pagination__item--active {
-  color: black;
-  font-weight: bold;
-  font-size: 16px;
-  background-color: white !important;
-  border-color: white !important;
 }
 #searchDocumentForm {
   min-width: 200px;

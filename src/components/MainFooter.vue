@@ -1,8 +1,8 @@
 <template id="mainFooter">
   <v-footer height="auto" class="pa-3 app--footer" absolute inset>
-    <v-layout :column="$vuetify.breakpoint.smAndDown" :reverse="$vuetify.breakpoint.smAndDown">
-      <v-flex class="copyright">
-        <div class="text-xs-center text-md-left">
+    <v-layout :column="$route.path === '/index'?$vuetify.breakpoint.mdAndDown:$vuetify.breakpoint.smAndDown" :reverse="$route.path === '/index'?$vuetify.breakpoint.mdAndDown:$vuetify.breakpoint.smAndDown">
+      <v-flex :class="{'position-absolute':$route.path === '/index'?$vuetify.breakpoint.lgAndUp:$vuetify.breakpoint.mdAndUp}">
+        <div class="text-xs-center text-lg-left">
           <span class="caption">Copyright &copy; {{ new Date().getFullYear() }} Pedagy. All rights reserved.</span>
         </div>
       </v-flex>
@@ -20,10 +20,3 @@ export default {
   name: 'mainFooter'
 };
 </script>
-<style>
-@media (min-width: 960px) {
-  .copyright {
-    position: absolute;
-  }
-}
-</style>

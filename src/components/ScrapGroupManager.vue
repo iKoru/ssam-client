@@ -148,17 +148,11 @@ export default {
 };
 </script>
 <style>
-.v-datatable__actions .v-btn:last-of-type {
+#scrapGroupTable .v-datatable__actions .v-btn:last-of-type {
   margin-left: 8px;
-}
-.v-datatable__actions__pagination {
-  margin: 0;
 }
 #largeCreateBtn + .v-input.dense {
   width: 0px;
-}
-table.v-table td.wrap {
-  white-space: normal;
 }
 #scrapGroupTable .v-small-dialog a > * {
   width: auto;

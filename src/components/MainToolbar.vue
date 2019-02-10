@@ -85,9 +85,14 @@ export default {
       deleteCookie('token');
       deleteCookie('_csrf');
       deleteCookie('CSRF-TOKEN');
-      this.$nextTick(() => {
-        this.$router.push('/index');
-      })
+      this.$axios.post('/signout', null, { headers: { silent: true } })
+        .then(() => {
+          this.$store.dispatch('setToken', false);
+          this.$router.push('/index');
+        })
+        .catch(error => {
+          this.$store.dispatch('showSnackbar', { text: error && error.response ? error.response.data.message : '로그아웃하지 못했습니다.', color: 'error' });
+        })
     },
     goMain () {
       this.$router.push('/');
@@ -102,9 +107,6 @@ export default {
 };
 </script>
 <style>
-.v-menu__content {
-  background-color: white;
-}
 .mainLayout .v-dialog__content {
   position: fixed;
   align-items: baseline;

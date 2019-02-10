@@ -134,21 +134,3 @@ export default {
   }
 };
 </script>
-<style>
-#userCommentTable.v-table thead td:not(:nth-child(1)),
-#userCommentTable.v-table tbody td:not(:nth-child(1)),
-#userCommentTable.v-table thead th:not(:nth-child(1)),
-#userCommentTable.v-table tbody th:not(:nth-child(1)),
-#userCommentTable.v-table thead td:first-child,
-#userCommentTable.v-table tbody td:first-child,
-#userCommentTable.v-table thead th:first-child,
-#userCommentTable.v-table tbody th:first-child {
-  padding: 0 12px;
-}
-#userCommentTable td:first-child {
-  padding: 0 12px;
-}
-#userCommentTable td:first-child .v-input--selection-controls__input {
-  margin-right: 0;
-}
-</style>

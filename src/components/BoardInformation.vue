@@ -147,8 +147,3 @@ export default {
   }
 };
 </script>
-<style>
-.v-subheader {
-  height: 32px;
-}
-</style>

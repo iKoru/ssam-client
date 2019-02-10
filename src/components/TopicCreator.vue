@@ -364,12 +364,3 @@ export default {
   }
 };
 </script>
-<style>
-form .flex {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-.v-list .v-subheader {
-  padding-left: 0.5rem;
-}
-</style>
