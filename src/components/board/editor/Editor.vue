@@ -128,10 +128,10 @@ export default {
     async post () {
       // manually add images as file
       if (!this.title || this.title.trim() === '') {
-        this.$store.dispatch('showSnackbar', { text: '제목을 입력해주세요.', color: 'error' })
+        this.$store.dispatch('showSnackbar', { text: '글 제목을 입력해주세요.', color: 'error' })
         return;
       } else if (!this.content || this.content.trim() === '') {
-        this.$store.dispatch('showSnackbar', { text: '내용을 입력해주세요.', color: 'error' })
+        this.$store.dispatch('showSnackbar', { text: '글 내용을 입력해주세요.', color: 'error' })
         return;
       }
       if (this.documentId) await this.uploadModifiedDocument();
@@ -180,7 +180,7 @@ export default {
           .put(`/document`, modifiedBody)
           .then(response => {
             if (response.status === 200) {
-              this.$store.dispatch('showSnackbar', { text: '게시물을 수정하였습니다', color: 'success' })
+              this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다', color: 'success' })
               this.$router.push(`/${this.boardId}/${this.documentId}`);
             }
           })
@@ -261,7 +261,7 @@ export default {
       await Promise.all([deleteImageP, deleteFileP, uploadFileP])
         .catch(error => {
           console.log(error)
-          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '게시물을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
         })
     },
     surveyButtonClick () {

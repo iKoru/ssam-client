@@ -102,7 +102,9 @@ export default {
           this.userId = getCookie('userId');
         }
         if (err.response && err.response.data) {
-          this.message = err.response.data.message;
+          if (err.response.data.message !== '로그인 정보가 없습니다.') {
+            this.message = err.response.data.message;
+          }
         } else {
           this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
         }

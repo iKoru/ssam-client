@@ -15,7 +15,7 @@
         <!--prettyhtml-ignore-->
         <v-flex text-xs-left>
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
-          <small class="accent--text">({{comment.animalName}})</small> {{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}
+          <small class="accent--text">({{comment.animalName}})</small><small class="ml-1">{{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}</small>
           <b v-if="!children && !isBest && isCommentWritable !== 'DELETED'" class="cursor-pointer" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
             답글{{comment.childCount > 0? `(${comment.childCount})`:""}}
           </b>

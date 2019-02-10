@@ -354,14 +354,14 @@ export default {
 </script>
 <style>
 #childBoardSelector {
-  width: 6px;
-  max-width: 6px;
+  display:none;
 }
 .childBoardSelector {
   font-size: 14px;
 }
 .childBoardSelector .v-input__append-inner {
-  margin-left: -16px;
+  margin-left: 0;
+  padding-left:0;
   cursor: pointer;
 }
 .childBoardSelector .v-input__slot {
@@ -369,5 +369,6 @@ export default {
 }
 .childBoardSelector .v-select__selection {
   cursor: pointer;
+  white-space:nowrap;
 }
 </style>

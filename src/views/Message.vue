@@ -1,6 +1,6 @@
  <template>
   <v-container>
-    <v-layout row justify-center align-center>
+    <v-layout row justify-center align-center class="d-block">
       <v-flex xs12 sm10 lg8 class="mx-auto" :px-3="$vuetify.breakpoint.xsOnly">
         <v-layout row wrap>
           <v-flex xs12>
