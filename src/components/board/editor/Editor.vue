@@ -86,7 +86,7 @@ export default {
     SurveyMaker,
     Survey
   },
-  props: ['documentId', 'boardId', 'board'],
+  props: ['documentId', 'board'],
   mixins: [BoardMixins],
   data () {
     return {
@@ -140,7 +140,7 @@ export default {
     async uploadDocument () {
       if (!this.formData) this.formData = new FormData();
       await this.attachImages();
-      this.formData.append('boardId', this.boardId);
+      this.formData.append('boardId', this.$route.params.boardId);
       this.formData.append('title', this.title);
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
       this.formData.append('isAnonymous', this.isAnonymous);
@@ -153,7 +153,7 @@ export default {
         .post('/document', this.formData)
         .then(response => {
           if (response.status === 200) {
-            this.$router.push(`/${this.boardId}/${response.data.documentId}`);
+            this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
           }
         })
         .catch(error => {
@@ -181,7 +181,7 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다', color: 'success' })
-              this.$router.push(`/${this.boardId}/${this.documentId}`);
+              this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
             }
           })
           .catch(error => {
@@ -413,9 +413,9 @@ export default {
     }
   },
   created () {
-    if (this.boardId && this.documentId) {
+    if (this.$route.params.boardId && this.documentId) {
       this.$axios
-        .get(`/${this.boardId}/${this.documentId}`)
+        .get(`/${this.$route.params.boardId}/${this.documentId}`)
         .then(response => {
           this.parseDocument(response.data)
         })
