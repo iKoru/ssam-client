@@ -80,6 +80,7 @@
 import Survey from '@/components/board/survey/Survey';
 import SurveyMaker from '@/components/board/survey/SurveyMaker';
 import BoardMixins from '@/components/mixins/BoardMixins';
+require('formdata-polyfill')
 export default {
   name: 'Editor',
   components: {

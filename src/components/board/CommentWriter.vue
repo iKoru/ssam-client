@@ -24,7 +24,7 @@
 
 <script>
 import BoardMixins from '@/components/mixins/BoardMixins';
-
+require('formdata-polyfill')
 export default {
   name: 'WriteComment',
   mixins: [BoardMixins],
