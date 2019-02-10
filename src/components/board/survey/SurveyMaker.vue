@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-btn class="toolbar-btn-last" @click="$emit('closeSurvey')" icon><v-icon>close</v-icon></v-btn>
     </v-toolbar>
-    <v-card-text>
+    <v-card-text class="pb-0">
       <v-layout column>
         <div class="border-light" id="surveyMaker">
           <v-flex :key="index" v-for="(question, index) in currentSurvey.questions">
@@ -17,13 +17,13 @@
               <v-card-text class="py-0">
                 <v-layout column>
                   <v-flex :key="answerIndex" v-for="(choice, answerIndex) in question.choices" class="mt-2">
-                    <v-text-field class="pt-1 dense" box single-line :placeholder="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="remove_circle_outline" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
+                    <v-text-field class="pt-1 dense" box single-line :placeholder="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="delete" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
                   </v-flex>
                   <v-flex>
                     <v-layout row align-center justify-space-around>
                       <v-flex text-xs-center>
                         <v-btn flat @click="addAnswer(index)">
-                          <v-icon small class="mr-1">add_circle_outline</v-icon>선택지 추가
+                          <v-icon small class="mr-1">add</v-icon>선택지 추가
                         </v-btn>
                       </v-flex>
                       <v-flex text-xs-center>
@@ -37,8 +37,8 @@
             <v-divider class="mx-4" v-if="index !== currentSurvey.questions.length - 1"/>
           </v-flex>
         </div>
-        <v-flex>
-          <v-btn block @click="pushQuestion">
+        <v-flex mt-3>
+          <v-btn block @click="pushQuestion" flat>
             <v-icon>playlist_add</v-icon><v-label size="24">질문추가</v-label>
           </v-btn>
         </v-flex>
@@ -46,7 +46,7 @@
     </v-card-text>
     <v-card-actions class="align-start">
       <v-spacer/>
-      <v-btn color="error" depressed @click="$emit('deleteSurvey')">설문 삭제</v-btn>
+      <v-btn color="error" depressed @click="$emit('deleteSurvey')" :disabled="!isSurveyDeletable">설문 삭제</v-btn>
       <v-btn color="primary" depressed @click="extractSurvey">저장</v-btn>
     </v-card-actions>
   </v-card>
@@ -54,7 +54,7 @@
 
 <script>
 export default {
-  props: ['survey', 'surveyDialog'],
+  props: ['survey', 'isSurveyDeletable', 'dialog'],
   data () {
     return {
       currentSurvey: {}
@@ -120,12 +120,10 @@ export default {
     }
   },
   watch: {
-    survey: {
-      handler (to) {
-        this.currentSurvey = to;
-      },
-      deep: true,
-      immediate: true
+    dialog (to) {
+      if (to) {
+        this.currentSurvey = JSON.parse(JSON.stringify(this.survey));
+      }
     }
   }
 }

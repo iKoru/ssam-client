@@ -19,12 +19,12 @@
     </v-flex>
     <div>{{savedContent}}</div>
     <v-dialog v-model="surveyDialog" max-width="500px" :fullscreen="$vuetify.breakpoint.xsOnly" scrollable v-if="!documentId">
-      <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :survey="currentSurvey"/>
+      <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :survey="survey" :isSurveyDeletable="isSurveyDeletable" :dialog="surveyDialog"/>
     </v-dialog>
 
     <v-layout pt-1 pl-2 align-center>
       <div>
-        <v-btn small flat @click="surveyButtonClick" :color="survey?'primary':'default'" v-if="!documentId">
+        <v-btn small flat @click="surveyButtonClick" :color="isSurveyDeletable?'primary':'default'" v-if="!documentId">
           <v-icon>how_to_vote</v-icon>
           <span>설문조사</span>
         </v-btn>
@@ -94,9 +94,9 @@ export default {
       link: undefined,
       title: null,
       content: '',
-      survey: undefined,
       surveyDialog: false,
-      currentSurvey: { questions: [] },
+      survey: { questions: [] },
+      isSurveyDeletable: false,
       editorOption: {
         placeholder: '내용을 입력해주세요.',
         modules: {
@@ -145,7 +145,7 @@ export default {
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
       this.formData.append('isAnonymous', this.isAnonymous);
       this.formData.append('allowAnonymous', this.isAnonymous ? true : !this.disallowAnonymous);
-      if (this.survey) {
+      if (this.isSurveyDeletable) {
         this.formData.append('survey', JSON.stringify(this.survey));
       }
       await this.processUploadFiles()
@@ -265,16 +265,15 @@ export default {
         })
     },
     surveyButtonClick () {
-      if (this.currentSurvey.questions.length === 0) {
-        this.currentSurvey.questions.push({ title: '', allowMultipleChoice: false, choices: ['', ''] });
-      } else if (this.survey) {
-        this.currentSurvey = JSON.parse(JSON.stringify(this.survey));
+      if (!this.isSurveyDeletable && this.survey.questions.length === 0) {
+        this.survey.questions.push({ title: '', allowMultipleChoice: false, choices: ['', ''] });
       }
       this.surveyDialog = true;
     },
     extractSurvey (survey) {
       this.surveyDialog = false;
       this.survey = JSON.parse(JSON.stringify(survey));
+      this.isSurveyDeletable = true;
     },
     closeSurvey () {
       this.surveyDialog = false;
@@ -282,8 +281,8 @@ export default {
     deleteSurvey () {
       if (confirm('작성된 질문 및 내용을 삭제할까요?')) {
         this.surveyDialog = false;
-        this.currentSurvey.questions = [];
-        this.survey = undefined;
+        this.survey.questions = [];
+        this.isSurveyDeletable = false;
       }
     },
     parseDocument (data) {
@@ -293,6 +292,7 @@ export default {
       this.isAnonymous = data.isAnonymous
       if (data.survey) {
         this.survey = data.survey
+        this.isSurveyDeletable = true
       }
       if (Array.isArray(data.attach)) {
         data.attach = data.attach.filter(x => x !== null);
