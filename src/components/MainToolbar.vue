@@ -6,7 +6,7 @@
     <router-link to="/search" class="d-flex fill-height align-center">
       <v-icon>search</v-icon>
     </router-link>
-    <v-menu offset-y right nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
+    <v-menu offset-y left nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
         <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'primary'">
           <img v-if="$store.getters.isLight" :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.png')" title="프로필 이미지">
@@ -84,6 +84,7 @@ export default {
       deleteCookie('token');
       deleteCookie('_csrf');
       deleteCookie('CSRF-TOKEN');
+<<<<<<< HEAD
       this.$axios
         .post('/signout', undefined, { headers: { silent: true } })
         .then(response => {
@@ -94,6 +95,16 @@ export default {
         .catch(error => {
           this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '로그아웃하지 못했습니다.'}`, color: 'error' });
         });
+=======
+      this.$axios.post('/signout', null, { headers: { silent: true } })
+        .then(() => {
+          this.$store.dispatch('setToken', false);
+          this.$router.push('/index');
+        })
+        .catch(error => {
+          this.$store.dispatch('showSnackbar', { text: error && error.response ? error.response.data.message : '로그아웃하지 못했습니다.', color: 'error' });
+        })
+>>>>>>> editor2
     },
     goMain () {
       this.$router.push('/');
@@ -108,9 +119,6 @@ export default {
 };
 </script>
 <style>
-.v-menu__content {
-  background-color: white;
-}
 .mainLayout .v-dialog__content {
   position: fixed;
   align-items: baseline;

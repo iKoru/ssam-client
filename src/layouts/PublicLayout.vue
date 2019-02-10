@@ -8,8 +8,8 @@
   </div>
 </template>
 <script>
-import PublicToolbar from "../components/PublicToolbar";
-import MainFooter from "../components/MainFooter";
+import PublicToolbar from '../components/PublicToolbar';
+import MainFooter from '../components/MainFooter';
 export default {
   components: {
     PublicToolbar,
@@ -24,6 +24,7 @@ export default {
 }
 .publicLayout__main {
   height:calc(100% - 174px);
+  margin-top:0;
 }
 .publicLayoutContents {
   max-width: 900px;

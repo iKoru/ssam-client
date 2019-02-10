@@ -34,9 +34,15 @@
     <v-divider/>
     <v-flex class="my-2">
       <v-layout row>
+<<<<<<< HEAD
         <v-flex v-if="board.isOwner">
           <v-btn v-if="board.notices.some(x=>x.documentId === document.documentId)" @click="setNotice(false)" class="ma-0 px-2 short">공지해제</v-btn>
           <v-btn v-else @click="setNotice(true)" class="ma-0 px-2 short">공지지정</v-btn>
+=======
+        <v-flex v-if="board.isOwner" pl-2>
+          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 short px-2">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)" class="ma-0 short px-2">공지로</v-btn>
+>>>>>>> editor2
         </v-flex>
         <v-spacer/>
         <v-flex pr-2 text-xs-right>
@@ -44,7 +50,7 @@
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
               <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
-            <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/${document.documentId}/edit`">
+            <v-btn class="short" v-show="document.isWriter" :to="`/${document.boardId}/${document.documentId}/edit`">
               <span>수정</span>
             </v-btn>
             <v-btn class="short" v-show="document.isWriter" @click="deleteDocument">삭제</v-btn>
@@ -73,10 +79,12 @@
         </v-flex>
       </v-layout>
       <v-slide-y-transition>
-        <v-layout row v-show="showAttach" mt-2 wrap>
-          <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
-            <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
-          </v-flex>
+        <v-layout column>
+          <v-layout row v-show="showAttach" mt-2 wrap>
+            <v-flex px-2 xs6 md4 xl2 py-1 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
+              <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
+            </v-flex>
+          </v-layout>
         </v-layout>
       </v-slide-y-transition>
     </v-flex>
@@ -124,6 +132,11 @@ export default {
       let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x => x.boardId === this.document.boardId);
       if (!board) {
         return 'UNAVAILABLE';
+<<<<<<< HEAD
+=======
+      } else if (this.document.isDeleted) {
+        return 'DELETED';
+>>>>>>> editor2
       }
 
       const profile = this.$store.getters.profile;
@@ -175,6 +188,11 @@ export default {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
+          if (response.data.isDeleted) {
+            this.$router.replace('/' + this.boardId);
+            this.$store.dispatch('showSnackbar', { text: '삭제된 글입니다.', color: 'warning' });
+            return;
+          }
           if (Array.isArray(response.data.attach)) {
             response.data.attach = response.data.attach.filter(x => x !== null);
           }
@@ -191,7 +209,11 @@ export default {
     deleteDocument () {
       if (confirm('이 글을 삭제하시겠습니까?')) {
         this.$axios
+<<<<<<< HEAD
           .put('/document', { documentId: this.document.documentId, isDeleted: true })
+=======
+          .put('/document', { documentId: this.documentId, isDeleted: true })
+>>>>>>> editor2
           .then(response => {
             this.$store.dispatch('showSnackbar', { text: '글을 삭제하였습니다.', color: 'success' });
             this.$router.push(`/${this.boardId}`);
@@ -203,7 +225,11 @@ export default {
     },
     voteDocument () {
       this.$axios
+<<<<<<< HEAD
         .post('/vote/document', { documentId: this.document.documentId }, { headers: { silent: true } })
+=======
+        .post('/vote/document', { documentId: this.$route.params.documentId }, { headers: { silent: true } })
+>>>>>>> editor2
         .then(res => {
           this.document.voteUpCount = res.data.voteUpCount;
         })
@@ -256,6 +282,16 @@ export default {
       }
       // Return the clean Text
       return newText;
+<<<<<<< HEAD
+=======
+    },
+    saveddocument (to, from) {
+      let href = to.match(/\bhttps?:\/\/\S+/gi);
+      if (href) {
+        this.link = href[0].substr(0, href[0].indexOf('<'));
+        console.log(this.link);
+      }
+>>>>>>> editor2
     },
     reportDocument (item) {
       this.$axios
@@ -335,10 +371,17 @@ export default {
         .then(response => {
           this.$store.dispatch('showSnackbar', { text: isAdd ? '이 글을 공지로 지정했습니다.' : '이 글을 공지에서 해제했습니다.', color: 'success' });
           if (isAdd) {
+<<<<<<< HEAD
             this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({ documentId: this.document.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title });
           } else {
             const notices = this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices;
             notices.splice(notices.findIndex(x => x.documentId === this.document.documentId), 1);
+=======
+            this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({ documentId: this.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title });
+          } else {
+            const notices = this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices;
+            notices.splice(notices.findIndex(x => x.documentId === this.documentId), 1);
+>>>>>>> editor2
           }
         })
         .catch(error => {

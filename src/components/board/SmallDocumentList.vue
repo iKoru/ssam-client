@@ -31,7 +31,7 @@
 </template>
 <script>
 export default {
-  name: "smallDocumentList",
-  props: ["list", "maxCount", "showDateTime", "showVoteUpCount"]
+  name: 'smallDocumentList',
+  props: ['list', 'maxCount', 'showDateTime', 'showVoteUpCount']
 };
 </script>

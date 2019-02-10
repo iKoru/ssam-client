@@ -42,11 +42,11 @@
   </v-card>
 </template>
 <script>
-import Quill from "quill";
+import Quill from 'quill';
 
 export default {
-  name: "MyComment",
-  data() {
+  name: 'MyComment',
+  data () {
     return {
       selected: null,
       userComments: [],
@@ -56,25 +56,25 @@ export default {
     };
   },
   computed: {
-    boardItems() {
+    boardItems () {
       return this.$store.getters.boards;
     },
-    noresult() {
-      return this.loading ? "작성한 댓글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 작성한 댓글이 없으시군요!";
+    noresult () {
+      return this.loading ? '작성한 댓글을 불러오고 있습니다. 잠시만 기다려주세요...' : '아직 작성한 댓글이 없으시군요!';
     },
-    headers() {
-      return this.$vuetify.breakpoint.smAndDown ? [{text: "", sortable: false, value: ""}, {text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, class: this.$vuetify.breakpoint.xsOnly ? "px-1" : undefined, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "내용", sortable: false, align: "left", value: "contents", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+    headers () {
+      return this.$vuetify.breakpoint.smAndDown ? [{ text: '', sortable: false, value: '' }, { text: '내용', sortable: false, align: 'left', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, class: this.$vuetify.breakpoint.xsOnly ? 'px-1' : undefined, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'left', sortable: false, value: 'boardId' }, { text: '내용', sortable: false, align: 'left', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
     }
   },
   methods: {
-    getMyComments() {
+    getMyComments () {
       this.loading = true;
       this.$axios
-        .get("/user/comment", {
+        .get('/user/comment', {
           params: {
             page: this.pagination.page
           },
-          headers: {silent: true}
+          headers: { silent: true }
         })
         .then(response => {
           this.userComments = response.data;
@@ -83,73 +83,54 @@ export default {
         })
         .catch(err => {
           this.loading = false;
-          this.$router.app.$emit("showSnackbar", `내가 쓴 댓글 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-          return;
+          this.$router.app.$emit('showSnackbar', `내가 쓴 댓글 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ''}]`, 'error');
         });
     },
-    openLink(path) {
-      const routeData = this.$router.resolve({path: path});
-      window.open(routeData.href, "_blank");
+    openLink (path) {
+      const routeData = this.$router.resolve({ path: path });
+      window.open(routeData.href, '_blank');
     },
-    deleteRow() {
+    deleteRow () {
       if (this.selected !== null) {
         this.$axios
-          .put("/comment", {commentId: this.userComments[this.selected].commentId, isDeleted: true})
+          .put('/comment', { commentId: this.userComments[this.selected].commentId, isDeleted: true })
           .then(response => {
             if (this.userComments.length === 1 && this.pagination.page > 1) {
               this.pagination.page--;
             }
             this.getMyComments();
             this.selected = null;
-            this.$store.dispatch("showSnackbar", {text: "댓글을 삭제하였습니다.", color: "success"});
+            this.$store.dispatch('showSnackbar', { text: '댓글을 삭제하였습니다.', color: 'success' });
           })
           .catch(error => {
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "댓글을 삭제하지 못했습니다." : "댓글을 삭제하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '댓글을 삭제하지 못했습니다.' : '댓글을 삭제하지 못했습니다.', color: 'error' });
           });
       } else {
-        this.$store.dispatch("showSnackbar", {text: "삭제할 댓글을 선택해주세요.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '삭제할 댓글을 선택해주세요.', color: 'error' });
       }
     },
-    selectContents(delta) {
+    selectContents (delta) {
       let object;
       try {
         object = JSON.parse(delta);
       } catch (error) {
-        return "";
+        return '';
       }
-      let quill = new Quill(document.createElement("div"));
+      let quill = new Quill(document.createElement('div'));
       quill.setContents(object);
-      return quill.getText(0, 50) + (quill.getLength() > 50 ? "..." : "");
+      return quill.getText(0, 50) + (quill.getLength() > 50 ? '...' : '');
     }
   },
   watch: {
     pagination: {
-      handler() {
+      handler () {
         this.getMyComments();
       },
       deep: true
     }
   },
-  created() {
+  created () {
     this.getMyComments();
   }
 };
 </script>
-<style>
-#userCommentTable.v-table thead td:not(:nth-child(1)),
-#userCommentTable.v-table tbody td:not(:nth-child(1)),
-#userCommentTable.v-table thead th:not(:nth-child(1)),
-#userCommentTable.v-table tbody th:not(:nth-child(1)),
-#userCommentTable.v-table thead td:first-child,
-#userCommentTable.v-table tbody td:first-child,
-#userCommentTable.v-table thead th:first-child,
-#userCommentTable.v-table tbody th:first-child {
-  padding: 0 12px;
-}
-#userCommentTable td:first-child {
-  padding: 0 12px;
-}
-#userCommentTable td:first-child .v-input--selection-controls__input {
-  margin-right: 0;
-}
-</style>

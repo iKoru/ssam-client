@@ -90,15 +90,15 @@
   </v-card>
 </template>
 <script>
-import draggable from "vuedraggable";
-import TopicCreator from "./TopicCreator";
+import draggable from 'vuedraggable';
+import TopicCreator from './TopicCreator';
 export default {
-  name: "MyBoard",
+  name: 'MyBoard',
   components: {
     draggable,
     TopicCreator
   },
-  data() {
+  data () {
     return {
       loading: false,
       dialog: false,
@@ -107,10 +107,10 @@ export default {
     };
   },
   methods: {
-    reset() {
+    reset () {
       this.topics = JSON.parse(JSON.stringify(this.originalTopics));
     },
-    isDirty() {
+    isDirty () {
       if (this.topics.length !== this.originalTopics.length) {
         return true;
       }
@@ -123,122 +123,122 @@ export default {
       }
       return false;
     },
-    save() {
+    save () {
       if (!this.isDirty()) {
-        this.$store.dispatch("showSnackbar", {text: "변경된 내용이 없습니다.", color: "info"});
+        this.$store.dispatch('showSnackbar', { text: '변경된 내용이 없습니다.', color: 'info' });
         return;
       }
       this.loading = true;
       this.$axios
-        .put("/user/board", {boards: this.topics.map((item, index) => ({orderNumber: index + 1, boardId: item.boardId}))})
+        .put('/user/board', { boards: this.topics.map((item, index) => ({ orderNumber: index + 1, boardId: item.boardId })) })
         .then(responose => {
           this.loading = false;
-          this.$store.dispatch("setUserBoards", JSON.parse(JSON.stringify(this.topics)).concat(this.userBoards.filter(x => x.boardType !== "T")));
-          this.$store.dispatch("showSnackbar", {text: "변경 내용을 반영하였습니다.", color: "success"});
+          this.$store.dispatch('setUserBoards', JSON.parse(JSON.stringify(this.topics)).concat(this.userBoards.filter(x => x.boardType !== 'T')));
+          this.$store.dispatch('showSnackbar', { text: '변경 내용을 반영하였습니다.', color: 'success' });
         })
         .catch(error => {
           console.log(error);
           this.loading = false;
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "변경 내용을 반영하지 못했습니다." : "변경내용을 반영하지 못했습니다.", color: "error"});
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '변경 내용을 반영하지 못했습니다.' : '변경내용을 반영하지 못했습니다.', color: 'error' });
         });
     },
-    removeItem(index) {
+    removeItem (index) {
       const topic = this.topics[index];
       if (topic) {
         this.$axios
-          .delete("/user/board/" + topic.boardId)
+          .delete('/user/board/' + topic.boardId)
           .then(response => {
-            this.$store.dispatch("removeUserBoard", topic.boardId);
+            this.$store.dispatch('removeUserBoard', topic.boardId);
             this.topics.splice(index, 1);
-            this.$store.dispatch("showSnackbar", {text: "토픽을 구독 해제하였습니다.", color: "success"});
+            this.$store.dispatch('showSnackbar', { text: '토픽을 구독 해제하였습니다.', color: 'success' });
           })
           .catch(error => {
             console.log(error.response);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽을 구독 해제하지 못했습니다." : "토픽을 구독 해제하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '토픽을 구독 해제하지 못했습니다.' : '토픽을 구독 해제하지 못했습니다.', color: 'error' });
           });
       }
     },
-    openDialog(item) {
+    openDialog (item) {
       if (item === null) {
-        if (this.$store.getters.profile.auth !== "A") {
-          this.$store.dispatch("showSnackbar", {text: "인증을 받은 회원만 토픽을 만들 수 있습니다.", color: "error"});
+        if (this.$store.getters.profile.auth !== 'A') {
+          this.$store.dispatch('showSnackbar', { text: '인증을 받은 회원만 토픽을 만들 수 있습니다.', color: 'error' });
           return;
         }
         this.editItem = null;
         this.dialog = true;
       } else if (item) {
         this.$axios
-          .get("/board", {params: {boardId: item.boardId}})
+          .get('/board', { params: { boardId: item.boardId } })
           .then(response => {
             this.editItem = response.data;
             this.dialog = true;
           })
           .catch(error => {
             console.log(error.response);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽 정보를 가져오지 못했습니다." : "토픽 정보를 가져오지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '토픽 정보를 가져오지 못했습니다.' : '토픽 정보를 가져오지 못했습니다.', color: 'error' });
           });
       }
     },
-    closeDialog() {
+    closeDialog () {
       this.dialog = false;
     },
-    resetBoard() {
+    resetBoard () {
       this.$axios
-        .get("/user/board")
+        .get('/user/board')
         .then(response => {
-          this.$store.dispatch("setUserBoards", response.data);
+          this.$store.dispatch('setUserBoards', response.data);
           this.$nextTick(this.reset);
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "구독 토픽 목록을 불러오지 못했습니다." : "구독 토픽 목록을 불러오지 못했습니다.", color: "error"});
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '구독 토픽 목록을 불러오지 못했습니다.' : '구독 토픽 목록을 불러오지 못했습니다.', color: 'error' });
         });
     }
   },
   computed: {
-    originalTopics() {
+    originalTopics () {
       return this.userBoards
-        .filter(x => x.boardType === "T")
+        .filter(x => x.boardType === 'T')
         .map(x => {
-          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
             delete x.readRestrictDate;
           }
-          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
             delete x.writeRestrictDate;
           }
           return x;
         });
     },
-    lounges() {
+    lounges () {
       return this.userBoards
         .map(x => {
-          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.readRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          if (!x.readRestrictDate || !this.$moment(x.readRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.readRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
             delete x.readRestrictDate;
           }
-          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, "YYYYMMDD").isValid() || this.$moment(x.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
+          if (!x.writeRestrictDate || !this.$moment(x.writeRestrictDate, 'YYYYMMDD').isValid() || this.$moment(x.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
             delete x.writeRestrictDate;
           }
           return x;
         })
-        .filter(x => x.boardType !== "T" && (x.writeRestrictDate || x.readRestrictDate));
+        .filter(x => x.boardType !== 'T' && (x.writeRestrictDate || x.readRestrictDate));
     },
-    userBoards() {
+    userBoards () {
       return this.$store.getters.userBoards;
     }
   },
-  mounted() {
+  mounted () {
     this.reset();
   },
   watch: {
-    userBoards() {
+    userBoards () {
       this.reset();
     },
-    dialog(val) {
-      document.body.style.position = val ? "fixed" : "initial";
+    dialog (val) {
+      document.body.style.position = val ? 'fixed' : 'initial';
     }
   },
-  render(h) {
-    return h("myBoard", {attrs: {id: "app"}}, this.draggable);
+  render (h) {
+    return h('myBoard', { attrs: { id: 'app' } }, this.draggable);
   }
 };
 </script>

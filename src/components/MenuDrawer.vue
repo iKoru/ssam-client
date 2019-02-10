@@ -54,38 +54,38 @@
 
 <script>
 export default {
-  name: "MenuDrawer",
-  props: ["lounges", "topics"],
+  name: 'MenuDrawer',
+  props: ['lounges', 'topics'],
   methods: {
-    myPage() {
-      this.$router.push("/myPage");
+    myPage () {
+      this.$router.push('/myPage');
       this.drawerChanged(false);
     },
-    drawerChanged(val) {
+    drawerChanged (val) {
       if (val !== this.$store.getters.menuDrawer) {
-        this.$store.dispatch("toggleMenuDrawer");
+        this.$store.dispatch('toggleMenuDrawer');
       }
     }
   },
-  data() {
+  data () {
     return {
       openLounge: true,
       openTopic: false
     };
   },
   watch: {
-    openLounge(val) {
+    openLounge (val) {
       if (val && this.openTopic) {
         this.openTopic = false;
       }
     },
-    openTopic(val) {
+    openTopic (val) {
       if (val && this.openLounge) {
         this.openLounge = false;
       }
     }
   },
-  mounted() {}
+  mounted () {}
 };
 </script>
 <style>

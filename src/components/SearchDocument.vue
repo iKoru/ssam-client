@@ -11,14 +11,14 @@
                     <v-autocomplete ref="searchBoard" class="dense ellipsis" id="searchBoard" placeholder="검색할 게시판" v-model="boardId" :items="boardItems"></v-autocomplete>
                   </v-flex>
                   <v-flex xs8 pl-3>
-                    <v-text-field ref="searchQuery" placeholder="제목, 내용으로 검색할 수 있습니다." v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
+                    <v-text-field ref="searchQuery" placeholder="제목, 내용으로 검색" v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
             </div>
           </v-flex>
           <v-flex xs12 sm11 md10 lg9 class="mx-auto">
-            <v-data-table :headers="headers" xs12 :items="documents" id="searchDocumentTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" hide-actions>
+            <v-data-table :headers="headers" xs12 :items="documents" class="last-tr-border" :rows-per-page-items="[10]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" hide-actions>
               <template slot="headers" slot-scope="props">
                 <tr>
                   <th v-for="header in props.headers" :key="header.value" :class="{'px-1':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right', 'font-weight-bold':true, 'black--text':true}" :width="header.width || false">{{header.text}}</th>
@@ -48,8 +48,8 @@
               </template>
             </v-data-table>
           </v-flex>
-          <v-flex text-xs-center mt-2 xs12>
-            <v-pagination id="searchDocumentPagination" v-model="pagination.page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+          <v-flex text-xs-center mt-2 xs12 v-if="currentSearchQuery">
+            <v-pagination v-model="pagination.page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
           </v-flex>
         </v-card-title>
       </v-card>
@@ -59,94 +59,95 @@
 
 <script>
 export default {
-  name: "SearchDocument",
-  data() {
+  name: 'SearchDocument',
+  data () {
     return {
       loading: false,
       boardTypeItems: {
-        T: "토픽",
-        L: "라운지",
-        D: "아카이브",
-        E: "기타"
+        T: '토픽',
+        L: '라운지',
+        D: '아카이브',
+        E: '기타'
       },
       boardId: null,
       targetYear: new Date().getFullYear(),
       searchQuery: null,
       groupItems: [],
-      documents:[],
-      totalDocuments:0,
+      documents: [],
+      totalDocuments: 0,
       searched: false,
-      pagination:{},
+      pagination: {},
       currentSearchQuery: null
     };
   },
-  mounted(){
-    if(this.$route.query.boardId && this.boardItems.some(x=>x.value === this.$route.query.boardId)){
-      this.boardId = this.$route.query.boardId
-      if(this.$route.query.searchQuery && this.$route.query.searchQuery.trim() !== ''){
+  mounted () {
+    if (this.$route.query.boardId && this.boardItems.some(x => x.value === this.$route.query.boardId)) {
+      this.boardId = this.$route.query.boardId;
+      if (this.$route.query.searchQuery && this.$route.query.searchQuery.trim() !== '') {
         this.searchQuery = this.$route.query.searchQuery.trim();
         this.search();
       }
     }
   },
   computed: {
-    boards(){
+    boards () {
       return this.$store.getters.boards;
     },
-    boardItems() {
-      const auth = this.$store.getters.profile.auth
+    boardItems () {
+      const auth = this.$store.getters.profile.auth;
       const userBoards = this.$store.getters.userBoards;
-      let boardItems = this.boards.filter(x=>(x.boardType !== 'T' && x.statusAuth.read.includes(auth)) || (x.boardType === 'T' && userBoards.some(y=>y.boardId === x.boardId && y.boardType === 'T'))).map(x=>({text:x.boardName, value:x.boardId}));
-      boardItems.splice(0, 0, {text:'(공개 게시판 전체)', value:null})
-      return boardItems
+      let boardItems = this.boards.filter(x => (x.boardType !== 'T' && x.statusAuth.read.includes(auth)) || (x.boardType === 'T' && userBoards.some(y => y.boardId === x.boardId && y.boardType === 'T'))).map(x => ({ text: x.boardName, value: x.boardId }));
+      boardItems.splice(0, 0, { text: this.$vuetify.breakpoint.xsOnly ? '(공개)' : '(공개 게시판 전체)', value: null });
+      return boardItems;
     },
-    noresult(){
-      return this.targetYear + '년을 대상으로 검색한 결과입니다.' + (this.targetYear > 2018? ' 이전 연도로 계속 검색할 수 있습니다.' : '')
+    noresult () {
+      return this.targetYear + '년을 대상으로 검색한 결과입니다.' + (this.targetYear > 2018 ? ' 이전 연도로 계속 검색할 수 있습니다.' : '');
     },
-    headers() {
-      return [{text: "게시판", align: "center", sortable: false, value: "boardId", width: this.$vuetify.breakpoint.smAndUp ? "100" : "50"}, {text: "제목", sortable: false, align: "center", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount", width: "30"}, {text: "날짜", sortable: false, align: "right", value: "writeDateTime", width: this.$vuetify.breakpoint.xsOnly ? "50" : "100"}];
+    headers () {
+      return [{ text: '게시판', align: 'center', sortable: false, value: 'boardId', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' }, { text: '제목', sortable: false, align: 'center', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount', width: '30' }, { text: '날짜', sortable: false, align: 'right', value: 'writeDateTime', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
     },
-    pages() {
+    pages () {
       return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
-    search(){
-      if(!this.searchQuery || this.searchQuery.trim() === ''){
-        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+    search () {
+      if (!this.searchQuery || this.searchQuery.trim() === '') {
+        this.$store.dispatch('showSnackbar', { text: '검색할 단어를 입력해주세요.', color: 'error' });
         return;
       }
-      this.targetYear = new Date().getFullYear()
+      this.targetYear = new Date().getFullYear();
       this.currentSearchQuery = this.searchQuery.trim();
       this.getDocuments(this.targetYear);
       this.searched = true;
     },
-    searchMore(){
-      if(!this.currentSearchQuery){
-        this.$store.dispatch('showSnackbar', {text:'검색할 단어를 입력해주세요.',color:'error'});
+    searchMore () {
+      if (!this.currentSearchQuery) {
+        this.$store.dispatch('showSnackbar', { text: '검색할 단어를 입력해주세요.', color: 'error' });
         return;
       }
       this.getDocuments(--this.targetYear);
     },
-    getDocuments(targetYear){
+    getDocuments (targetYear) {
       this.loading = true;
-      this.$axios.get('/document', {params:{targetYear:targetYear, boardId:this.boardId, searchQuery:this.currentSearchQuery, searchTarget:'titleContents', page:this.pagination.page}, headers:{silent:true}})
-      .then(response => {
-        this.documents = Array.isArray(response.data)?response.data : [];
-        this.totalDocuments = this.documents[0]?this.documents[0].totalCount:0
-        this.loading = false;
-      })
-      .catch(error => {
-        this.loading = false;
-        console.log(error);
-        this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 검색하지 못했습니다." : "글을 검색하지 못했습니다.", color: "error"});
-      })
+      this.$axios
+        .get('/document', { params: { targetYear: targetYear, boardId: this.boardId, searchQuery: this.currentSearchQuery, searchTarget: 'titleContents', page: this.pagination.page }, headers: { silent: true } })
+        .then(response => {
+          this.documents = Array.isArray(response.data) ? response.data : [];
+          this.totalDocuments = this.documents[0] ? this.documents[0].totalCount : 0;
+          this.loading = false;
+        })
+        .catch(error => {
+          this.loading = false;
+          console.log(error);
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 검색하지 못했습니다.' : '글을 검색하지 못했습니다.', color: 'error' });
+        });
     }
   },
-  watch:{
+  watch: {
     pagination: {
-      handler() {
-        if(this.currentSearchQuery && this.currentSearchQuery !== ''){
+      handler () {
+        if (this.currentSearchQuery && this.currentSearchQuery !== '') {
           this.getDocuments(this.targetYear);
         }
       },
@@ -156,24 +157,7 @@ export default {
 };
 </script>
 <style>
-#searchDocumentTable tbody tr:last-child {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-#searchDocumentPagination .v-pagination__item,
-#searchDocumentPagination .v-pagination__item--active,
-#searchDocumentPagination .v-pagination__navigation {
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
-}
-#searchDocumentPagination .v-pagination__item--active {
-  color: black;
-  font-weight: bold;
-  font-size: 16px;
-  background-color: white !important;
-  border-color: white !important;
-}
-#searchBoard{
-  text-overflow:ellipsis;
+#searchBoard {
+  text-overflow: ellipsis;
 }
 </style>

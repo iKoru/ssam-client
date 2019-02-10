@@ -30,13 +30,13 @@
 </template>
 
 <script>
-function getCookie(cname) {
-  let name = cname + "=";
+function getCookie (cname) {
+  let name = cname + '=';
   let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
+  let ca = decodedCookie.split(';');
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
-    while (c.charAt(0) === " ") {
+    while (c.charAt(0) === ' ') {
       c = c.substring(1);
     }
     if (c.indexOf(name) === 0) {
@@ -46,73 +46,74 @@ function getCookie(cname) {
   return undefined;
 }
 
-function setCookie(name, value, days) {
-  let expires = "";
+function setCookie (name, value, days) {
+  let expires = '';
   if (days) {
     let date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    expires = "; expires=" + date.toUTCString();
+    expires = '; expires=' + date.toUTCString();
   }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  document.cookie = name + '=' + (value || '') + expires + '; path=/';
 }
 export default {
-  name: "Signin",
+  name: 'Signin',
   data: () => ({
     loading: false,
     message: null,
     userIdError: false,
     passwordError: false,
-    userId: "",
-    password: "",
+    userId: '',
+    password: '',
     rememberMe: false,
-    userIdRules: [v => !!v || "아이디를 입력해주세요."],
-    passwordRules: [v => !!v || "비밀번호를 입력해주세요."]
+    userIdRules: [v => !!v || '아이디를 입력해주세요.'],
+    passwordRules: [v => !!v || '비밀번호를 입력해주세요.']
   }),
-  created() {
-    const token = this.$store.getters.token;
-    if (token) {
-      this.loading = true;
-      this.$axios({
-        method: "POST",
-        url: "/refresh",
-        headers: {silent: true}
+  created () {
+    this.loading = true;
+    this.$axios({
+      method: 'POST',
+      url: '/refresh',
+      headers: { silent: true }
+    })
+      .then(response => {
+        this.loading = false;
+        this.$store.dispatch('setUserId', response.data.userId);
+        this.$store.dispatch('setToken', true)
+
+        const redirectTo = response.data.redirectTo;
+        if (response.data.imminent || response.data.needEmail) {
+          this.$store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail });
+        }
+
+        if (redirectTo) {
+          if (redirectTo === '/auth' && getCookie('authRequirement') && getCookie('authRequirement') >= this.$moment().format('YMMDD')) {
+            this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/');
+          } else {
+            this.$router.push(redirectTo + window.location.search); // preserve original redirect options
+          }
+        } else {
+          const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+          this.$router.push(searchRedirectTo !== '/index' && searchRedirectTo !== '/signin' && searchRedirectTo !== '' ? searchRedirectTo : '/');
+        }
       })
-        .then(response => {
-          this.loading = false;
-          this.$store.dispatch("setUserId", response.data.userId);
-
-          const redirectTo = response.data.redirectTo;
-          if (response.data.imminent || response.data.needEmail) {
-            this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
-          }
-
-          if (redirectTo) {
-            if (redirectTo === "/auth" && getCookie("authRequirement") && getCookie("authRequirement") >= this.$moment().format("YMMDD")) {
-              this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
-            } else {
-              this.$router.push(redirectTo + window.location.search); //preserve original redirect options
-            }
-          } else {
-            const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-            this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
-          }
-        })
-        .catch(err => {
-          this.loading = false;
-          if (err.response && err.response.data) {
+      .catch(err => {
+        this.loading = false;
+        if (getCookie('userId')) {
+          this.userId = getCookie('userId');
+        }
+        if (err.response && err.response.data) {
+          if (err.response.data.message !== '로그인 정보가 없습니다.') {
             this.message = err.response.data.message;
-          } else {
-            this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
           }
-          this.$store.dispatch('token', false)
-        });
-    } else if (getCookie("userId")) {
-      this.userId = getCookie("userId");
-    }
+        } else {
+          this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
+        }
+        this.$store.dispatch('setToken', false)
+      });
   },
 
   watch: {
-    userId() {
+    userId () {
       if (this.userIdError) {
         this.userIdError = false;
       }
@@ -120,7 +121,7 @@ export default {
         this.message = null;
       }
     },
-    password() {
+    password () {
       if (this.passwordError) {
         this.passwordError = false;
       }
@@ -131,47 +132,47 @@ export default {
   },
 
   methods: {
-    clearError() {
+    clearError () {
       this.$refs.form.resetValidation();
       this.message = null;
     },
-    signin() {
+    signin () {
       if (this.$refs.form.validate()) {
-        if (!this.userId || !this.password || this.userId === "" || this.password === "") {
-          this.message = "아이디와 비밀번호를 입력해주세요.";
+        if (!this.userId || !this.password || this.userId === '' || this.password === '') {
+          this.message = '아이디와 비밀번호를 입력해주세요.';
           return false;
         }
-        setCookie("userId", this.userId, 30);
+        setCookie('userId', this.userId, 30);
         this.message = null;
         this.userIdError = false;
         this.passwordError = false;
         this.loading = true;
         this.$axios
           .post(
-            "/signin",
+            '/signin',
             {
               userId: this.userId,
               password: this.password,
               rememberMe: this.rememberMe
             },
-            {headers: {silent: true}}
+            { headers: { silent: true } }
           )
           .then(response => {
             this.$store.dispatch('setToken', true);
-            this.$store.dispatch("setUserId", this.userId);
+            this.$store.dispatch('setUserId', this.userId);
             const redirectTo = response.data.redirectTo;
             if (response.data.imminent || response.data.needEmail) {
-              this.$store.dispatch("updateAuthInformation", {imminent: response.data.imminent, needEmail: response.data.needEmail});
+              this.$store.dispatch('updateAuthInformation', { imminent: response.data.imminent, needEmail: response.data.needEmail });
             }
             if (redirectTo) {
-              if (redirectTo === "/auth" && getCookie("authRequirement") && getCookie("authRequirement") >= this.$moment().format("YMMDD")) {
-                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || "/");
+              if (redirectTo === '/auth' && getCookie('authRequirement') && getCookie('authRequirement') >= this.$moment().format('YMMDD')) {
+                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1')) || '/');
               } else {
-                this.$router.push(redirectTo + window.location.search); //preserve original redirect options
+                this.$router.push(redirectTo + window.location.search); // preserve original redirect options
               }
             } else {
-              const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("redirectTo").replace(/[.+*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-              this.$router.push(searchRedirectTo !== "/index" && searchRedirectTo !== "/signin" && searchRedirectTo !== "" ? searchRedirectTo : "/");
+              const searchRedirectTo = decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent('redirectTo').replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+              this.$router.push(searchRedirectTo !== '/index' && searchRedirectTo !== '/signin' && searchRedirectTo !== '' ? searchRedirectTo : '/');
             }
             this.loading = false;
           })
@@ -180,11 +181,11 @@ export default {
             if (err.response && err.response.data) {
               if (err.response.data.target && this.$refs[err.response.data.target]) {
                 switch (err.response.data.target) {
-                  case "userId":
+                  case 'userId':
                     this.userIdError = true;
                     this.$refs.userId.focus();
                     break;
-                  case "password":
+                  case 'password':
                     this.passwordError = true;
                     this.$refs.password.focus();
                     break;
@@ -194,13 +195,13 @@ export default {
               }
               this.message = err.response.data.message;
             } else {
-              this.message = "서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.";
+              this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
             }
           });
       }
     },
-    focusPassword() {
-      if (this.password !== "") {
+    focusPassword () {
+      if (this.password !== '') {
         this.signin();
       } else {
         this.$refs.password.focus();

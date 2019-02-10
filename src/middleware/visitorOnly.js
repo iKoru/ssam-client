@@ -7,10 +7,10 @@ export default (to, from, next) => {
       url: '/refresh'
     })
       .then(response => {
-        router.app.$store.dispatch('setToken', true)
         return next('/');
       })
       .catch(() => {
+        router.app.$store.dispatch('setToken', false)
         return next();
       });
   } else {

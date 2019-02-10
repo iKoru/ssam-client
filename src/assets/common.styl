@@ -47,6 +47,8 @@ td.ellipsis
   float:right
 .border-light
   border:1px solid #e8e8e8
+.wrap
+  white-space: normal
 //pedagy specific
 .boardTitle
   font-size:16px
@@ -55,7 +57,7 @@ td.ellipsis
 // vuetify-related
 .theme--light.v-divider.dark-border
   border-color:rgba(0,0,0,0.5)
-.v-menu__content
+.v-menu__content, .scrolling-touch
   -webkit-overflow-scrolling: touch
 .v-btn.plain:hover:before,
 .v-btn.plain:focus:before,
@@ -63,20 +65,26 @@ td.ellipsis
   background-color: transparent
 .v-text-field__details .v-messages__message
   line-height:1.1
-.v-select.hideLine .v-input__slot::before, .v-select.hideLine .v-input__slot::after
-  display:none
 .v-input.dense
   padding-top:0
   margin-top:0
 .v-text-field.dense .v-label, .v-select.dense .v-label, .v-input.dense input
   font-size: 16px
-// .v-text-field .v-input__slot
-//   padding-bottom:8px
 .v-text-field .v-input__slot
   padding-bottom:4px
-// .v-text-field.dense .v-input__slot
-//   padding-bottom:4px
-//   margin-bottom:0
+table.v-table thead td:not(:nth-child(1)),
+table.v-table tbody td:not(:nth-child(1)),
+table.v-table thead th:not(:nth-child(1)),
+table.v-table tbody th:not(:nth-child(1)),
+table.v-table thead td:first-child,
+table.v-table tbody td:first-child,
+table.v-table thead th:first-child,
+table.v-table tbody th:first-child
+  padding: 0 12px
+td:first-child
+  padding: 0 12px
+td:first-child .v-input--selection-controls__input
+  margin-right: 0
 .v-text-field.dense:not(.v-select) .v-input__slot
   padding-bottom: 0
   margin-bottom:4px
@@ -99,9 +107,9 @@ td.ellipsis
   text-transform: none
 .customAction .v-datatable__actions
   justify-content: space-between
-.noResult .v-datatable__actions .v-datatable__actions__pagination
+.noResult .v-datatable__actions .v-datatable__actions__pagination, .v-select.hideLine .v-input__slot::before, .v-select.hideLine .v-input__slot::after
   display:none
-table.v-table th:not(.multi-row), table.v-table td:not(.multi-row)
+table.v-table th:not(.multi-row), table.v-table td:not(.multi-row), .nowrap
   white-space:nowrap
 .v-list--dense .dense-list
   & .v-list__tile
@@ -115,12 +123,33 @@ table.v-table th:not(.multi-row), table.v-table td:not(.multi-row)
   padding-bottom:4px
 .v-text-field__slot input[type=text], .v-text-field__slot input[type=password]
   margin-bottom: 4px
-.v-subheader
+.v-subheader, table.v-table thead tr
   height: 32px
 .container.grid-list-xs .layout .flex
   padding: 1px 8px
-.application--wrap
+.application--wrap, .v-menu__content
   background-color: white
+.v-datatable__actions__pagination
+  margin: 0
+.theme--light.v-pagination .v-pagination__item,
+.theme--light.v-pagination .v-pagination__item--active,
+.theme--light.v-pagination .v-pagination__navigation
+  box-shadow: none
+  margin: 0
+  padding: 0
+.theme--light.v-pagination .v-pagination__item--active
+  color: black
+  font-weight: bold
+  font-size: 16px
+  background-color: white !important
+  border-color: white !important
+.last-tr-border tbody tr:last-child
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12)
+form .flex
+  padding-left: 0.5rem
+  padding-right: 0.5rem
+.v-list .v-subheader
+  padding-left: 0.5rem
 //file-pond
 .filepond--drop-label label
   cursor:pointer

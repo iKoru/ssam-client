@@ -7,7 +7,7 @@ import router from '../router'
 import qs from 'querystring'
 axios.defaults.baseURL = process.env.baseURL || process.env.VUE_APP_API_URL || 'https://node2-koru.c9users.io:8080'
 
-const _axios = axios.create({withCredentials:true, xsrfCookieName:'CSRF-TOKEN', xsrfHeaderName:'CSRF-TOKEN'})
+const _axios = axios.create({ withCredentials: true, xsrfCookieName: 'CSRF-TOKEN', xsrfHeaderName: 'CSRF-TOKEN' })
 
 _axios.interceptors.request.use(
   function (config) {
@@ -24,11 +24,11 @@ _axios.interceptors.request.use(
   }
 )
 
-function getCookie(cname) {
-  var name = cname + "=";
+function getCookie (cname) {
+  var name = cname + '=';
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
+  for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) === ' ') {
       c = c.substring(1);

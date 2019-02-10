@@ -41,13 +41,13 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from '../layouts/PublicLayout';
 export default {
-  name: "ResetPassword",
-  created() {
-    this.$emit("update:layout", PublicLayout);
+  name: 'ResetPassword',
+  created () {
+    this.$emit('update:layout', PublicLayout);
   },
-  data() {
+  data () {
     return {
       loading: false,
       userId: null,
@@ -55,55 +55,55 @@ export default {
       emailErrors: [],
       email: null,
       emailHost: null,
-      emailHostItems: ["sen.go.kr", "goe.go.kr", "ice.go.kr", "gwe.go.kr", "cbe.go.kr", "cne.go.kr", "dje.go.kr", "sje.go.kr", "jbe.go.kr", "jne.go.kr", "gen.go.kr", "gbe.go.kr", "gne.go.kr", "use.go.kr", "pen.go.kr", "jje.go.kr"],
-      emailRules: [v => !!v || "이메일을 입력해주세요", v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || "이메일이 올바르지 않습니다."],
-      userIdRules: [v => !!v || "ID를 입력해주세요.", v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || "알파벳, 숫자, _, ^, &, $만을 포함한 4~50자", v => (v && /^.*[a-zA-Z]+.*$/.test(v)) || "최소 1글자 이상의 알파벳 포함"],
-      emailHostRules: [v => !!v || "NEIS 이메일 뒷자리를 선택해주세요."]
+      emailHostItems: ['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbe.go.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
+      emailRules: [v => !!v || '이메일을 입력해주세요', v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || '이메일이 올바르지 않습니다.'],
+      userIdRules: [v => !!v || 'ID를 입력해주세요.', v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || '알파벳, 숫자, _, ^, &, $만을 포함한 4~50자', v => (v && /^.*[a-zA-Z]+.*$/.test(v)) || '최소 1글자 이상의 알파벳 포함'],
+      emailHostRules: [v => !!v || 'NEIS 이메일 뒷자리를 선택해주세요.']
     };
   },
   methods: {
-    goIndex() {
-      this.$router.push("/index");
+    goIndex () {
+      this.$router.push('/index');
     },
-    sendReset() {
+    sendReset () {
       this.loading = true;
       if (!this.$refs.form.validate() || this.userIdErrors.length > 0 || this.emailErrors.length > 0) {
-        this.$store.dispatch("showSnackbar", {text: "비밀번호를 변경할 ID와 확인용 이메일을 입력해주세요.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '비밀번호를 변경할 ID와 확인용 이메일을 입력해주세요.', color: 'error' });
         this.loading = false;
         return;
       }
       this.$axios
-        .post("/resetPassword", {userId: this.userId, email: this.email + "@" + this.emailHost}, {headers: {silent: true}})
+        .post('/resetPassword', { userId: this.userId, email: this.email + '@' + this.emailHost }, { headers: { silent: true } })
         .then(response => {
-          this.$store.dispatch("showSnackbar", {text: "등록된 메일주소로 임시 비밀번호를 보냈습니다. 메일을 확인해주세요.", color: "info"});
-          this.$router.push("/signin");
+          this.$store.dispatch('showSnackbar', { text: '등록된 메일주소로 임시 비밀번호를 보냈습니다. 메일을 확인해주세요.', color: 'info' });
+          this.$router.push('/signin');
         })
         .catch(error => {
           this.loading = false;
           if (error.response) {
             switch (error.response.data.target) {
-              case "userId":
+              case 'userId':
                 this.userIdErrors = [error.response.data.message];
                 return;
-              case "email":
+              case 'email':
                 this.emailErrors = [error.response.data.message];
                 return;
             }
-            this.$store.dispatch("showSnackbar", {text: error.response.data.message || "임시 비밀번호 메일을 보내지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response.data.message || '임시 비밀번호 메일을 보내지 못했습니다.', color: 'error' });
           } else {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: "임시 비밀번호 메일을 보내지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: '임시 비밀번호 메일을 보내지 못했습니다.', color: 'error' });
           }
         });
     }
   },
   watch: {
-    userId() {
+    userId () {
       if (this.userIdErrors.length > 0) {
         this.userIdErrors = [];
       }
     },
-    email() {
+    email () {
       if (this.emailErrors.length > 0) {
         this.emailErrors = [];
       }

@@ -20,23 +20,23 @@
 </template>
 
 <script>
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from '../layouts/MainLayout';
 export default {
-  name: "Search",
-  data() {
+  name: 'Search',
+  data () {
     return {
-      tab: ""
+      tab: ''
     };
   },
-  created() {
-    this.$emit("update:layout", MainLayout);
+  created () {
+    this.$emit('update:layout', MainLayout);
     this.$store.dispatch('setColumnType', 'HIDE_ALWAYS')
   },
   watch: {
     $route: {
       immediate: true,
-      handler() {
-        if (this.$route.name === "search") this.$router.push("searchDocument");
+      handler () {
+        if (this.$route.name === 'search') this.$router.push('searchDocument');
       }
     }
   }

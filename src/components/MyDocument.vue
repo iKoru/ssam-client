@@ -43,8 +43,8 @@
 </template>
 <script>
 export default {
-  name: "MyDocument",
-  data() {
+  name: 'MyDocument',
+  data () {
     return {
       selected: null,
       userDocuments: [],
@@ -54,25 +54,25 @@ export default {
     };
   },
   computed: {
-    boardItems() {
+    boardItems () {
       return this.$store.getters.boards;
     },
-    noresult() {
-      return this.loading ? "작성한 글을 불러오고 있습니다. 잠시만 기다려주세요..." : "아직 작성한 글이 없으시군요!";
+    noresult () {
+      return this.loading ? '작성한 글을 불러오고 있습니다. 잠시만 기다려주세요...' : '아직 작성한 글이 없으시군요!';
     },
-    headers() {
-      return this.$vuetify.breakpoint.xsOnly ? [{text: "", sortable: false, value: ""}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", class: this.$vuetify.breakpoint.xsOnly ? "px-1" : undefined, sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}] : [{text: "", sortable: false, value: ""}, {text: "게시판", align: "left", sortable: false, value: "boardId"}, {text: "제목", sortable: false, align: "left", value: "title", class: "ellipsis", width: "100%"}, {text: "추천", align: "right", sortable: false, value: "voteUpCount"}, {text: "작성일", sortable: false, align: "right", value: "writeDateTime"}];
+    headers () {
+      return this.$vuetify.breakpoint.xsOnly ? [{ text: '', sortable: false, value: '' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', class: this.$vuetify.breakpoint.xsOnly ? 'px-1' : undefined, sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'left', sortable: false, value: 'boardId' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
     }
   },
   methods: {
-    getMyDocuments() {
+    getMyDocuments () {
       this.loading = true;
       this.$axios
-        .get("/user/document", {
+        .get('/user/document', {
           params: {
             page: this.pagination.page
           },
-          headers: {silent: true}
+          headers: { silent: true }
         })
         .then(response => {
           this.userDocuments = response.data;
@@ -81,63 +81,44 @@ export default {
         })
         .catch(err => {
           this.loading = false;
-          this.$router.app.$emit("showSnackbar", `내가 쓴 글 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-          return;
+          this.$router.app.$emit('showSnackbar', `내가 쓴 글 목록을 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ''}]`, 'error');
         });
     },
-    openLink(path) {
-      const routeData = this.$router.resolve({path: path});
-      window.open(routeData.href, "_blank");
+    openLink (path) {
+      const routeData = this.$router.resolve({ path: path });
+      window.open(routeData.href, '_blank');
     },
-    deleteRow() {
+    deleteRow () {
       if (this.selected !== null) {
         this.$axios
-          .put("/document", {documentId: this.userDocuments[this.selected].documentId, isDeleted: true})
+          .put('/document', { documentId: this.userDocuments[this.selected].documentId, isDeleted: true })
           .then(response => {
             if (this.userDocuments.length === 1 && this.pagination.page > 1) {
               this.pagination.page--;
             }
             this.getMyDocuments();
             this.selected = null;
-            this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
+            this.$store.dispatch('showSnackbar', { text: '글을 삭제하였습니다.', color: 'success' });
           })
           .catch(error => {
             console.log(error);
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 삭제하지 못했습니다." : "글을 삭제하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 삭제하지 못했습니다.' : '글을 삭제하지 못했습니다.', color: 'error' });
           });
       } else {
-        this.$store.dispatch("showSnackbar", {text: "삭제할 글을 선택해주세요.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '삭제할 글을 선택해주세요.', color: 'error' });
       }
     }
   },
   watch: {
     pagination: {
-      handler() {
+      handler () {
         this.getMyDocuments();
       },
       deep: true
     }
   },
-  created() {
+  created () {
     this.getMyDocuments();
   }
 };
 </script>
-<style>
-table.v-table thead td:not(:nth-child(1)),
-table.v-table tbody td:not(:nth-child(1)),
-table.v-table thead th:not(:nth-child(1)),
-table.v-table tbody th:not(:nth-child(1)),
-table.v-table thead td:first-child,
-table.v-table tbody td:first-child,
-table.v-table thead th:first-child,
-table.v-table tbody th:first-child {
-  padding: 0 12px;
-}
-td:first-child {
-  padding: 0 12px;
-}
-td:first-child .v-input--selection-controls__input {
-  margin-right: 0;
-}
-</style>

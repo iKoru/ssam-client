@@ -18,10 +18,12 @@
               <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
-              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" no-action v-if="item.children.length > 5">
+              <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" v-if="item.children.length > 5" lazy>
                 <v-list-tile slot="activator" avatar>
                   <v-list-tile-action></v-list-tile-action>
-                  <v-list-tile-title class="text-xs-center"><small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small></v-list-tile-title>
+                  <v-list-tile-title class="text-xs-center">
+                    <small>{{item.active?'답글 숨기기':'이전 '+(item.children.length - 5)+'개의 답글 펼치기'}}</small>
+                  </v-list-tile-title>
                 </v-list-tile>
                 <div v-for="(childItem, childIndex) in item.children.filter((x, y) => y < (item.children.length - 5))" :key="'hidden'+childIndex">
                   <v-divider inset/>
@@ -31,8 +33,7 @@
                   </v-list-tile>
                 </div>
               </v-list-group>
-              <template v-if="item.children.length > 5">
-              </template>
+              <template v-if="item.children.length > 5"></template>
               <div v-for="(childItem, childIndex) in (item.children.length > 5 ? item.children.filter((x, y) => y >= (item.children.length - 5)) : item.children)" :key="childIndex">
                 <v-divider inset/>
                 <v-list-tile avatar>
@@ -41,7 +42,7 @@
                 </v-list-tile>
               </div>
             </div>
-            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index" class="pl-5">
+            <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index && isCommentWritable !== 'DELETED'" class="pl-5">
               <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :boardId="boardId"/>
             </v-list-tile>
             <v-divider :key="'divider'+index"></v-divider>
@@ -50,7 +51,7 @@
         <v-flex text-xs-center mt-2 xs12 v-if="pages > 1">
           <v-pagination id="commentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
         </v-flex>
-        <div class="pt-2">
+        <div class="pt-2" v-if="isCommentWritable !== 'DELETED'">
           <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
         </div>
       </v-card>
@@ -58,9 +59,9 @@
   </v-layout>
 </template>
 <script>
-import BoardMixins from "@/components/mixins/BoardMixins";
-import CommentItem from "./CommentItem";
-import CommentWriter from "./CommentWriter";
+import BoardMixins from '@/components/mixins/BoardMixins';
+import CommentItem from './CommentItem';
+import CommentWriter from './CommentWriter';
 
 export default {
   mixins: [BoardMixins],
@@ -68,20 +69,20 @@ export default {
     CommentItem,
     CommentWriter
   },
-  props: ["isAnonymous", "allowAnonymous", "isCommentWritable", "reportTypes", "boardId", "best", "pages"],
-  data() {
+  props: ['isAnonymous', 'allowAnonymous', 'isCommentWritable', 'reportTypes', 'boardId', 'best', 'pages'],
+  data () {
     return {
       commentList: [],
       openRecommentIndex: -1,
-      page:undefined
+      page: undefined,
+      documentId: this.$route.params.documentId
     };
   },
   methods: {
-    getCommentList() {
-      console.log('getcomments')
+    getCommentList () {
       this.openRecommentIndex = -1;
       this.$axios
-        .get("/comment", {params: {documentId: this.$route.params.documentId, page:this.page}, headers: {silent: true}})
+        .get('/comment', { params: { documentId: this.$route.params.documentId, page: this.page }, headers: { silent: true } })
         .then(res => {
           res.data.forEach(x => {
             if (Array.isArray(x.attach)) {
@@ -92,28 +93,32 @@ export default {
         })
         .catch(err => console.log(err));
     },
-    openRecomment(commentIndex) {
+    openRecomment (commentIndex) {
       if (this.openRecommentIndex === commentIndex) this.openRecommentIndex = -1;
       else this.openRecommentIndex = commentIndex;
     }
   },
   watch: {
-    "$route.params": {
-      handler() {
-        if(!this.page){
+    '$route.params': {
+      handler () {
+        if (!this.page || this.documentId !== this.$route.params.documentId) {
           this.$nextTick(() => {
+            this.documentId = this.$route.params.documentId;
             this.page = this.pages;
-          })
+          });
         }
       },
       deep: true,
       immediate: true
     },
-    page(val){
+    page (val) {
       this.getCommentList();
     },
-    pages(val){
-      this.page = this.pages
+    documentId (val) {
+      this.getCommentList();
+    },
+    pages (val) {
+      this.page = this.pages;
     }
   }
 };
@@ -122,18 +127,18 @@ export default {
 .commentList .v-list__tile__title {
   white-space: unset;
   overflow: visible;
-  height: fit-content;
+  height:auto;
 }
 .commentList.v-list--two-line .v-list__tile {
-  height: fit-content;
+  height: auto;
   padding: 8px 0;
 }
 .commentList .v-list__tile__content {
-  height: fit-content;
+  height: auto;
   padding: 0 16px;
 }
-.commentList .bestComment{
-  background-color:#B3E5FC;
+.commentList .bestComment {
+  background-color: #b3e5fc;
 }
 #commentPagination .v-pagination__item,
 #commentPagination .v-pagination__item--active,
@@ -148,12 +153,13 @@ export default {
   background-color: white !important;
   border-color: white !important;
 }
-.commentList.v-list .v-list__group--active:before, .commentList.v-list .v-list__group--active:after{
-  display:none;
+.commentList.v-list .v-list__group--active:before,
+.commentList.v-list .v-list__group--active:after {
+  display: none;
 }
-@media(max-width:599px){
+@media (max-width: 599px) {
   .commentList.theme--light.v-list .v-list__group__header:hover {
-    background-color:#fff;
+    background-color: #fff;
   }
 }
 </style>

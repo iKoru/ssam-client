@@ -54,13 +54,13 @@
 </template>
 <script>
 export default {
-  name: "ScrapGroupManager",
-  props: ["scrapGroups", "dialog"],
-  data() {
+  name: 'ScrapGroupManager',
+  props: ['scrapGroups', 'dialog'],
+  data () {
     return {
       loading: false,
-      headers: [{text: "그룹 이름", value: "scrapGroupName", sortable: false}, {sortable: false}],
-      scrapGroupNameRules: [v => !!v || "이름을 입력해주세요.", v => (!!v && v.length <= 50) || "50자 이내로 입력해주세요."],
+      headers: [{ text: '그룹 이름', value: 'scrapGroupName', sortable: false }, { sortable: false }],
+      scrapGroupNameRules: [v => !!v || '이름을 입력해주세요.', v => (!!v && v.length <= 50) || '50자 이내로 입력해주세요.'],
       tempScrapGroups: [],
       showCreateField: false,
       newScrapGroupName: null,
@@ -68,61 +68,61 @@ export default {
     };
   },
   methods: {
-    save(value) {
+    save (value) {
       if (JSON.stringify(this.tempScrapGroups) === JSON.stringify(this.scrapGroups)) {
-        this.$store.dispatch("showSnackbar", {text: "변경된 내용이 없습니다.", color: "info"});
+        this.$store.dispatch('showSnackbar', { text: '변경된 내용이 없습니다.', color: 'info' });
         return;
       }
-      if (this.tempScrapGroups.some(x => x.status === "DELETED") && !confirm("삭제할 스크랩 그룹이 있으시군요.\n해당 그룹의 스크랩은 모두 지워집니다. 정말 삭제하시겠어요?")) {
+      if (this.tempScrapGroups.some(x => x.status === 'DELETED') && !confirm('삭제할 스크랩 그룹이 있으시군요.\n해당 그룹의 스크랩은 모두 지워집니다. 정말 삭제하시겠어요?')) {
         return;
       }
       this.$axios
-        .put("/scrap/group", {scrapGroups: this.tempScrapGroups})
+        .put('/scrap/group', { scrapGroups: this.tempScrapGroups })
         .then(response => {
           if (Array.isArray(response.data.failedGroup) && response.data.failedGroup.length > 0) {
-            this.$store.dispatch("showSnackbar", {text: `오류가 있는 ${response.data.failedGroup.join(", ")}번째 항목을 제외하고 처리되었습니다.`, color: "warn"});
-            this.$emit("updateScrapGroup", null);
+            this.$store.dispatch('showSnackbar', { text: `오류가 있는 ${response.data.failedGroup.join(', ')}번째 항목을 제외하고 처리되었습니다.`, color: 'warn' });
+            this.$emit('updateScrapGroup', null);
           } else {
-            this.$store.dispatch("showSnackbar", {text: "변경된 내용을 반영하였습니다.", color: "success"});
-            this.$emit("updateScrapGroup", null);
-            this.$emit("closeDialog", null);
+            this.$store.dispatch('showSnackbar', { text: '변경된 내용을 반영하였습니다.', color: 'success' });
+            this.$emit('updateScrapGroup', null);
+            this.$emit('closeDialog', null);
           }
         })
         .catch(error => {
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "변경 내용을 반영하지 못했습니다." : "변경 내용을 반영하지 못했습니다.", color: "error"});
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '변경 내용을 반영하지 못했습니다.' : '변경 내용을 반영하지 못했습니다.', color: 'error' });
         });
     },
-    deleteItem(index) {
+    deleteItem (index) {
       let i = 0;
       while (i < this.tempScrapGroups.length && i <= index) {
-        if (this.tempScrapGroups[i].status === "DELETED") {
+        if (this.tempScrapGroups[i].status === 'DELETED') {
           index++;
         }
         i++;
       }
       if (this.tempScrapGroups[index].scrapGroupId) {
-        this.tempScrapGroups[index].status = "DELETED";
+        this.tempScrapGroups[index].status = 'DELETED';
         this.search = !this.search;
       } else {
         this.tempScrapGroups.splice(index, 1);
       }
     },
-    addNewRow() {
+    addNewRow () {
       if (this.$refs.newScrapGroupName.validate()) {
-        this.tempScrapGroups.push({scrapGroupName: this.newScrapGroupName});
+        this.tempScrapGroups.push({ scrapGroupName: this.newScrapGroupName });
         this.newScrapGroupName = null;
         this.showCreateField = false;
       } else {
-        this.$store.dispatch("showSnackbar", {text: "추가할 스크랩 그룹 이름이 올바르지 않습니다.", color: "error"});
+        this.$store.dispatch('showSnackbar', { text: '추가할 스크랩 그룹 이름이 올바르지 않습니다.', color: 'error' });
       }
     },
-    resetScrapGroups() {
-      this.tempScrapGroups = JSON.parse(JSON.stringify(this.scrapGroups)).map(x => ({...x, status: "NORMAL"}));
+    resetScrapGroups () {
+      this.tempScrapGroups = JSON.parse(JSON.stringify(this.scrapGroups)).map(x => ({ ...x, status: 'NORMAL' }));
     },
-    filterItem(item) {
-      return item.filter(x => x.status !== "DELETED");
+    filterItem (item) {
+      return item.filter(x => x.status !== 'DELETED');
     },
-    toggleCreateBtn() {
+    toggleCreateBtn () {
       this.newScrapGroupName = null;
       this.showCreateField = !this.showCreateField;
       if (this.showCreateField) {
@@ -132,33 +132,27 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.resetScrapGroups();
   },
   watch: {
-    dialog(val) {
+    dialog (val) {
       if (val) {
         this.resetScrapGroups();
-        document.body.style.position = "fixed";
+        document.body.style.position = 'fixed';
       } else {
-        document.body.style.position = "initial";
+        document.body.style.position = 'initial';
       }
     }
   }
 };
 </script>
 <style>
-.v-datatable__actions .v-btn:last-of-type {
+#scrapGroupTable .v-datatable__actions .v-btn:last-of-type {
   margin-left: 8px;
-}
-.v-datatable__actions__pagination {
-  margin: 0;
 }
 #largeCreateBtn + .v-input.dense {
   width: 0px;
-}
-table.v-table td.wrap {
-  white-space: normal;
 }
 #scrapGroupTable .v-small-dialog a > * {
   width: auto;

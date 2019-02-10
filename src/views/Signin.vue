@@ -18,14 +18,14 @@
 </template>
 
 <script>
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from '../layouts/PublicLayout';
 export default {
   components: {
-    Signin: () => import("@/components/Signin.vue")
+    Signin: () => import('@/components/Signin.vue')
   },
-  created() {
-    this.$emit("update:layout", PublicLayout);
+  created () {
+    this.$emit('update:layout', PublicLayout);
   },
-  name: "SigninPage"
+  name: 'SigninPage'
 };
 </script>

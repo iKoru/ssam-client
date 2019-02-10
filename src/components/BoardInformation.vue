@@ -84,71 +84,66 @@
 </template>
 <script>
 export default {
-  name: "boardInformation",
-  props: ["board"],
-  data() {
+  name: 'boardInformation',
+  props: ['board'],
+  data () {
     return {
       boardTypeItems: {
-        T: "토픽",
-        L: "라운지",
-        D: "아카이브",
-        X: "기타",
-        E: "전직교사",
-        N: "예비교사"
+        T: '토픽',
+        L: '라운지',
+        D: '아카이브',
+        X: '기타',
+        E: '전직교사',
+        N: '예비교사'
       },
       loading: false
     };
   },
   computed: {
-    boards() {
+    boards () {
       const original = this.$store.getters.boards;
       return original.filter(x => x.parentBoardId || !original.some(y => y.parentBoardId === x.boardId));
     },
-    userBoards() {
+    userBoards () {
       return this.$store.getters.userBoards;
     },
-    userGroups() {
+    userGroups () {
       return this.$store.getters.profile.groups;
     }
   },
   methods: {
-    join() {
+    join () {
       this.loading = true;
       this.$axios
-        .post("/user/board", {boardId: this.board.boardId}, {headers: {silent: true}})
+        .post('/user/board', { boardId: this.board.boardId }, { headers: { silent: true } })
         .then(response => {
-          this.$store.dispatch("addUserBoard", Object.assign({}, this.board));
+          this.$store.dispatch('addUserBoard', Object.assign({}, this.board));
           this.loading = false;
           this.closeDialog();
-          this.$store.dispatch("showSnackbar", {text: "토픽을 구독하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '토픽을 구독하였습니다.', color: 'success' });
         })
         .catch(error => {
           console.log(error);
           this.loading = false;
-          this.$store.dispatch("showSnackbar", {text: `토픽을 구독하지 못했습니다.${error && error.response && error.response.data ? "[" + error.response.data.message + "]" : ""}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `토픽을 구독하지 못했습니다.${error && error.response && error.response.data ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
         });
     },
-    leave() {
+    leave () {
       this.$axios
-        .delete("/user/board/" + this.board.boardId)
+        .delete('/user/board/' + this.board.boardId)
         .then(response => {
-          this.$store.dispatch("removeUserBoard", this.board.boardId);
+          this.$store.dispatch('removeUserBoard', this.board.boardId);
           this.closeDialog();
-          this.$store.dispatch("showSnackbar", {text: "토픽을 구독 해제하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '토픽을 구독 해제하였습니다.', color: 'success' });
         })
         .catch(error => {
           console.log(error.response);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "토픽을 구독 해제하지 못했습니다." : "토픽을 구독 해제하지 못했습니다.", color: "error"});
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '토픽을 구독 해제하지 못했습니다.' : '토픽을 구독 해제하지 못했습니다.', color: 'error' });
         });
     },
-    closeDialog() {
-      this.$emit("closeDialog", null);
+    closeDialog () {
+      this.$emit('closeDialog', null);
     }
   }
 };
 </script>
-<style>
-.v-subheader {
-  height: 32px;
-}
-</style>
