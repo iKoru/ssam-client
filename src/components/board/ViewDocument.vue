@@ -91,16 +91,16 @@
 
 <script>
 // import LinkPrevue from '@/components/LinkPrevue'
-import Survey from "@/components/board/survey/Survey";
-import CommentWriter from "@/components/board/CommentWriter";
-import UserLink from "@/components/UserLink";
-import ViewComments from "@/components/board/ViewComments";
-import BoardMixins from "@/components/mixins/BoardMixins";
-import Quill from "quill";
+import Survey from '@/components/board/survey/Survey';
+import CommentWriter from '@/components/board/CommentWriter';
+import UserLink from '@/components/UserLink';
+import ViewComments from '@/components/board/ViewComments';
+import BoardMixins from '@/components/mixins/BoardMixins';
+import Quill from 'quill';
 
 export default {
-  props: ["board", "boardId", "documentId"],
-  data() {
+  props: ['board', 'boardId', 'documentId'],
+  data () {
     return {
       document: null,
       documentHTML: null,
@@ -118,71 +118,71 @@ export default {
     UserLink
   },
   mixins: [BoardMixins],
-  created() {
+  created () {
     this.getScrapGroups();
     this.getReportTypes();
   },
   computed: {
-    isCommentWritable() {
+    isCommentWritable () {
       let board = this.board.boardId === this.document.boardId ? this.board : this.$store.getters.boards.find(x => x.boardId === this.document.boardId);
       if (!board) {
-        return "UNAVAILABLE";
+        return 'UNAVAILABLE';
       } else if (this.document.isDeleted) {
-        return "DELETED";
+        return 'DELETED';
       }
 
       const profile = this.$store.getters.profile;
       const userBoards = this.$store.getters.userBoards;
       if (board.statusAuth.comment.includes(profile.auth)) {
-        if (board.boardType === "T") {
+        if (board.boardType === 'T') {
           if (userBoards.some(x => x.boardId === board.boardId)) {
             const userBoard = userBoards.find(x => x.boardId === board.boardId);
-            if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-              return "AVAILABLE";
+            if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
+              return 'AVAILABLE';
             } else {
-              return "RESTRICTED";
+              return 'RESTRICTED';
             }
           } else {
             // need subscription
-            if (board.allGroupAuth === "READWRITE" || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
+            if (board.allGroupAuth === 'READWRITE' || board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
               // i can subscribe this board!
-              return "NEEDSUBSCRIPTION";
+              return 'NEEDSUBSCRIPTION';
             } else {
-              return "UNAVAILABLE";
+              return 'UNAVAILABLE';
             }
           }
         } else {
           if (board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
             if (userBoards.some(x => x.boardId === board.boardId)) {
               const userBoard = userBoards.find(x => x.boardId === board.boardId);
-              if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, "YYYYMMDD").isBefore(this.$moment())) {
-                return "AVAILABLE";
+              if (!userBoard.writeRestrictDate || this.$moment(userBoard.writeRestrictDate, 'YYYYMMDD').isBefore(this.$moment())) {
+                return 'AVAILABLE';
               } else {
-                return "RESTRICTED";
+                return 'RESTRICTED';
               }
             } else {
-              return "AVAILABLE";
+              return 'AVAILABLE';
             }
           } else {
-            return "UNAVAILABLE";
+            return 'UNAVAILABLE';
           }
         }
       } else {
-        return "UNAVAILABLE";
+        return 'UNAVAILABLE';
       }
     },
-    pages() {
-      return this.document.commentCount === 0 ? 1 : Math.ceil(this.document.commentCount / (process.env.NODE_ENV === "development" ? 10 : 100));
+    pages () {
+      return this.document.commentCount === 0 ? 1 : Math.ceil(this.document.commentCount / (process.env.NODE_ENV === 'development' ? 10 : 100));
     }
   },
   methods: {
-    getDocument: function() {
+    getDocument: function () {
       this.$axios
         .get(`/${this.boardId}/${this.documentId}`)
         .then(response => {
           if (response.data.isDeleted) {
-            this.$router.replace("/" + this.boardId);
-            this.$store.dispatch("showSnackbar", {text: "삭제된 글입니다.", color: "warning"});
+            this.$router.replace('/' + this.boardId);
+            this.$store.dispatch('showSnackbar', { text: '삭제된 글입니다.', color: 'warning' });
             return;
           }
           if (Array.isArray(response.data.attach)) {
@@ -191,43 +191,43 @@ export default {
           this.document = response.data;
           this.documentHTML = this.document.isDeleted ? this.document.contents : this.deltaToHTML(JSON.parse(this.document.contents));
           this.showAttach = false;
-          this.$emit("update:documentBoardId", this.document.boardId);
+          this.$emit('update:documentBoardId', this.document.boardId);
         })
         .catch(error => {
           console.log(error);
-          this.$router.replace("/error?error=" + (error && error.response ? error.response.status || "404" : "404"));
+          this.$router.replace('/error?error=' + (error && error.response ? error.response.status || '404' : '404'));
         });
     },
-    deleteDocument() {
-      if (confirm("이 글을 삭제하시겠습니까?")) {
+    deleteDocument () {
+      if (confirm('이 글을 삭제하시겠습니까?')) {
         this.$axios
-          .put("/document", {documentId: this.documentId, isDeleted: true})
+          .put('/document', { documentId: this.documentId, isDeleted: true })
           .then(response => {
-            this.$store.dispatch("showSnackbar", {text: "글을 삭제하였습니다.", color: "success"});
+            this.$store.dispatch('showSnackbar', { text: '글을 삭제하였습니다.', color: 'success' });
             this.$router.push(`/${this.boardId}`);
           })
           .catch(error => {
-            this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "글을 삭제하지 못했습니다."}`, color: "error"});
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 삭제하지 못했습니다.'}`, color: 'error' });
           });
       }
     },
-    voteDocument() {
+    voteDocument () {
       this.$axios
-        .post("/vote/document", {documentId: this.document.documentId}, {headers: {silent: true}})
+        .post('/vote/document', { documentId: this.document.documentId }, { headers: { silent: true } })
         .then(res => {
           this.document.voteUpCount = res.data.voteUpCount;
         })
         .catch(error => {
           console.log(error.response);
-          this.$store.dispatch("showSnackbar", {text: `${error.response ? error.response.data.message : "추천하지 못했습니다."}`, color: "error"});
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '추천하지 못했습니다.'}`, color: 'error' });
         });
     },
-    deltaToHTML(delta) {
-      let tempCont = document.createElement("div");
+    deltaToHTML (delta) {
+      let tempCont = document.createElement('div');
       let quill = new Quill(tempCont);
       let image;
       delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty("image")) {
+        if (item.insert.hasOwnProperty('image')) {
           image = this.document.attach.find(x => x.attach_name === item.insert.image);
           if (image) {
             image.insert = true;
@@ -247,105 +247,105 @@ export default {
       });
       quill.setContents(delta);
       // Clean spaces between tags
-      let newText = tempCont.getElementsByClassName("ql-editor")[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, "$1$3");
+      let newText = tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, '$1$3');
 
       // Clean empty paragraphs before the content
       // <p><br/><p> && <p></p>
       let slicer;
-      while (newText.slice(0, 7) === "<p></p>" || newText.slice(0, 11) === "<p><br></p>") {
-        if (newText.slice(0, 7) === "<p></p>") slicer = 7;
+      while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
+        if (newText.slice(0, 7) === '<p></p>') slicer = 7;
         else slicer = 11;
         newText = newText.substring(slicer, newText.length);
       }
 
       // Clean empty paragraphs after the content
-      while (newText.slice(-7) === "<p></p>" || newText.slice(-11) === "<p><br></p>") {
-        if (newText.slice(-7) === "<p></p>") slicer = 7;
+      while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
+        if (newText.slice(-7) === '<p></p>') slicer = 7;
         else slicer = 11;
         newText = newText.substring(0, newText.length - slicer);
       }
       // Return the clean Text
       return newText;
     },
-    reportDocument(item) {
+    reportDocument (item) {
       this.$axios
-        .post("/report/document", {documentId: this.document.documentId, reportTypeId: item.reportTypeId})
+        .post('/report/document', { documentId: this.document.documentId, reportTypeId: item.reportTypeId })
         .then(response => {
           this.reportMenu = false;
-          this.$store.dispatch("showSnackbar", {text: "이 글을 신고하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '이 글을 신고하였습니다.', color: 'success' });
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
             this.reportMenu = false;
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "info"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 신고하지 못했습니다.' : '글을 신고하지 못했습니다.', color: 'info' });
           } else {
             console.log(error);
             this.reportMenu = false;
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 신고하지 못했습니다." : "글을 신고하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 신고하지 못했습니다.' : '글을 신고하지 못했습니다.', color: 'error' });
           }
         });
     },
-    scrapDocument(item) {
+    scrapDocument (item) {
       this.$axios
-        .post("/scrap", {scrapGroupId: item.scrapGroupId, documentId: this.document.documentId})
+        .post('/scrap', { scrapGroupId: item.scrapGroupId, documentId: this.document.documentId })
         .then(response => {
           this.scrapMenu = false;
-          this.$store.dispatch("showSnackbar", {text: "이 글을 스크랩하였습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: '이 글을 스크랩하였습니다.', color: 'success' });
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
             this.scrapMenu = false;
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "info"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '스크랩에 추가하지 못했습니다.' : '스크랩에 추가하지 못했습니다.', color: 'info' });
           } else {
             console.log(error);
             this.scrapMenu = false;
-            this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩에 추가하지 못했습니다." : "스크랩에 추가하지 못했습니다.", color: "error"});
+            this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '스크랩에 추가하지 못했습니다.' : '스크랩에 추가하지 못했습니다.', color: 'error' });
           }
         });
     },
-    getScrapGroups() {
+    getScrapGroups () {
       if (!this.scrapGroups) {
         if (this.$store.getters.scrapGroups) {
           this.scrapGroups = this.$store.getters.scrapGroups;
         } else {
           this.$axios
-            .get("/scrap/group", {headers: {silent: true}})
+            .get('/scrap/group', { headers: { silent: true } })
             .then(response => {
-              this.$store.dispatch("setScrapGroups", response.data);
+              this.$store.dispatch('setScrapGroups', response.data);
               this.scrapGroups = response.data;
             })
             .catch(error => {
               console.log(error);
-              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "스크랩 그룹 목록을 가져오지 못했습니다." : "스크랩 그룹 목록을 가져오지 못했습니다.", color: "error"});
+              this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '스크랩 그룹 목록을 가져오지 못했습니다.' : '스크랩 그룹 목록을 가져오지 못했습니다.', color: 'error' });
             });
         }
       }
     },
-    getReportTypes() {
+    getReportTypes () {
       if (!this.reportTypes) {
         if (this.$store.getters.reportTypes) {
           this.reportTypes = this.$store.getters.reportTypes;
         } else {
           this.$axios
-            .get("/report/type", {headers: {silent: true}})
+            .get('/report/type', { headers: { silent: true } })
             .then(response => {
-              this.$store.dispatch("setReportTypes", response.data);
+              this.$store.dispatch('setReportTypes', response.data);
               this.reportTypes = response.data;
             })
             .catch(error => {
               console.log(error);
-              this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "신고 타입을 가져오지 못했습니다." : "신고 타입을 가져오지 못했습니다.", color: "error"});
+              this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '신고 타입을 가져오지 못했습니다.' : '신고 타입을 가져오지 못했습니다.', color: 'error' });
             });
         }
       }
     },
-    setNotice(isAdd) {
+    setNotice (isAdd) {
       this.$axios
-        .put("/board/notice", {boardId: this.document.boardId, documentId: this.document.documentId, isAdd: isAdd})
+        .put('/board/notice', { boardId: this.document.boardId, documentId: this.document.documentId, isAdd: isAdd })
         .then(response => {
-          this.$store.dispatch("showSnackbar", {text: isAdd ? "이 글을 공지로 지정했습니다." : "이 글을 공지에서 해제했습니다.", color: "success"});
+          this.$store.dispatch('showSnackbar', { text: isAdd ? '이 글을 공지로 지정했습니다.' : '이 글을 공지에서 해제했습니다.', color: 'success' });
           if (isAdd) {
-            this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({documentId: this.document.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title});
+            this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({ documentId: this.document.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title });
           } else {
             const notices = this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices;
             notices.splice(notices.findIndex(x => x.documentId === this.document.documentId), 1);
@@ -353,13 +353,13 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch("showSnackbar", {text: error.response ? error.response.data.message || "글을 공지로 지정하지 못했습니다." : "글을 공지로 지정하지 못했습니다.", color: "error"});
+          this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message || '글을 공지로 지정하지 못했습니다.' : '글을 공지로 지정하지 못했습니다.', color: 'error' });
         });
     }
   },
   watch: {
-    "$route.params": {
-      handler() {
+    '$route.params': {
+      handler () {
         this.getDocument();
       },
       deep: true,
