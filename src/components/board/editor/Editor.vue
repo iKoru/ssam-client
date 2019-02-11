@@ -34,7 +34,7 @@
         </div>
       </div>
       <div>
-        <v-btn small flat @click="selectImage">
+        <v-btn small flat @click="openImageDialog">
           <v-icon>image</v-icon>이미지
         </v-btn>
       </div>
@@ -44,7 +44,8 @@
         </v-btn>
       </div>
     </v-layout>
-    <input class="d-none" ref="fileInput" multiple id="file-upload" accept="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
+    <input class="d-none" ref="imageInput" multiple id="image-upload" accept="image/*" type="file" @click.native="$refs.imageInput.value = null" value="" @change="onImageChange" capture="filesystem">
+    <input class="d-none" ref="fileInput" multiple id="file-upload" accept="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp,application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" type="file" @click.native="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
     <v-slide-y-transition>
       <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
         <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
@@ -80,6 +81,8 @@
 import Survey from '@/components/board/survey/Survey';
 import SurveyMaker from '@/components/board/survey/SurveyMaker';
 import BoardMixins from '@/components/mixins/BoardMixins';
+
+import 'promise-polyfill';
 require('formdata-polyfill')
 export default {
   name: 'Editor',
@@ -176,10 +179,11 @@ export default {
           title: this.title,
           contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
         }
-
+        console.log(modifiedBody.contents)
         return this.$axios
           .put(`/document`, modifiedBody)
           .then(response => {
+            console.log(response)
             if (response.status === 200) {
               this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다', color: 'success' })
               this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
@@ -187,12 +191,14 @@ export default {
           })
           .catch(error => {
             console.log(error);
+            console.log('here')
             this.revertImages();
             delete this.formData
             this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
           })
       } catch (error) {
         console.log(error)
+        console.log('here2')
         this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
         this.revertImages();
         delete this.formData
@@ -201,12 +207,14 @@ export default {
     attachImages () {
       return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.hasOwnProperty('image')) {
+          console.log(item.insert.image)
           if (item.insert.image.includes('data:image')) {
             let imgSrc = item.insert.image;
             let imageName = this.uuid() + '.' + imgSrc.substring('data:image/'.length, imgSrc.indexOf(';base64'));
             this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName);
             item.insert.image = imageName;
             this.originImages.push({ name: imageName, src: imgSrc });
+            console.log(this.originImages)
           }
         }
       });
@@ -223,13 +231,17 @@ export default {
     async processFileChange () {
       // new images are already in formdata
       // process deleted images
+      console.log('process file change')
       let currentImageId = this.$refs.editor.quill.editor.delta.ops.map(item => {
         if (item.insert.hasOwnProperty('image')) {
           if (item.insert.image.startsWith('/attach')) {
-            return this.attachFromServer.find(a => item.insert.image === '/' + a.attach_path).attach_id
+            if(this.attachFromServer.find(a => item.insert.image.includes(a.attach_path))) {
+              return this.attachFromServer.find(a => item.insert.image.includes(a.attach_path)).attach_id
+            } else return undefined
           }
         }
-      });
+      }).filter(i=>i)
+      
       let deleteImageP, deleteFileP, uploadFileP
       this.attachFromServer = this.attachFromServer.filter(a => a !== null)
       this.attachFromServer.forEach(a => {
@@ -253,6 +265,7 @@ export default {
         if (pair[0] === 'attach') fileCount += 1;
       }
       if (fileCount > 0) {
+        console.log(fileCount)
         uploadFileP = this.$axios
           .post(`/document/attach`, this.formData)
           .catch(error => {
@@ -306,6 +319,7 @@ export default {
             if (image) {
               image.insert = true;
               item.insert.image = this.webUrl + image.attach_path
+              this.originImages.push({ name: item.insert.image, src: image.attach_path });
             }
           }
         })
@@ -319,9 +333,15 @@ export default {
       else this.$refs.pond.browse()
     },
     openFileDialog () {
+      console.log('openfile')
       document.getElementById('file-upload').click();
     },
+    openImageDialog () {
+      console.log('openimage')
+      document.getElementById('image-upload').click();
+    },
     async onFileChange (e) {
+      console.log('filechange')
       if (!this.rawFileData) this.rawFileData = new FormData();
       var self = this;
       var files = e.target.files || e.dataTransfer.files;
@@ -332,8 +352,31 @@ export default {
             break;
           }
           await self.rawFileData.append('file', files[i], files[i].name);
-          await self.attachedFilenames.push(files[i].name)
-          // keep delete -> attach case
+          self.attachedFilenames.push(files[i].name)
+        }
+      }
+    },
+    async onImageChange (e) {
+      console.log('imagechange')
+      var self = this;
+      var files = e.target.files || e.dataTransfer.files;
+      console.log(files)
+      if (files.length > 0) {
+        for (var i = 0; i < files.length; i++) {
+          if (files[i].size > 1024 * 1024 * 8) {
+            this.$store.dispatch('showSnackbar', { text: '8MB 이하의 이미지만 첨부가능합니다.', color: 'error' })
+            break;
+          }
+          if (/^image\//.test(files[i].type)) {
+           var reader = new FileReader();
+            reader.readAsDataURL(files[i])
+            reader.onload = function () {
+              let range = self.$refs.editor.quill.getSelection()
+              self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
+            }
+          } else {
+            this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
+          }
         }
       }
     },
@@ -375,31 +418,6 @@ export default {
         this.formData.append('attach', pair[1], filename + suffix + fileExtension)
       }
     },
-    selectImage () {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.click();
-      let self = this;
-      // Listen upload local image and save to server
-      input.onchange = () => {
-        const file = input.files[0];
-        var reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function () {
-          // file type is only image.
-          if (/^image\//.test(file.type)) {
-            let range = self.$refs.editor.quill.getSelection()
-            self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
-          } else {
-            this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
-          }
-        };
-        reader.onerror = function (error) {
-          console.log('Error: ', error);
-        };
-      };
-    }
   },
   computed: {
     editor () {
