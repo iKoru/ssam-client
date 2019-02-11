@@ -39,7 +39,7 @@
         </div>
         <v-flex mt-3>
           <v-btn block @click="pushQuestion" flat>
-            <v-icon>playlist_add</v-icon><v-label size="24">질문추가</v-label>
+            <v-icon>playlist_add</v-icon>질문추가
           </v-btn>
         </v-flex>
       </v-layout>
