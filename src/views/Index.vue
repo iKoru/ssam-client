@@ -4,9 +4,13 @@
       <v-flex>
         <div id="indexContents">
           <v-parallax id="indexImage" src="@/static/img/index.jpg" v-if="$vuetify.breakpoint.mdAndUp" height="500">
-            <v-layout align-center column justify-center>
-              <h1 class="display-2 font-weight-thin mb-3">Pedagy</h1>
-              <h4 class="subheading">선생님들의 노다지</h4>
+            <v-layout row wrap text-xs-center>
+              <v-flex xs12 mt-auto>
+                <h1 class="display-2 font-weight-thin mb-3">Pedagy</h1>
+              </v-flex>
+              <v-flex xs12 mb-auto>
+                <h4 class="subheading">선생님들의 노다지</h4>
+              </v-flex>
             </v-layout>
           </v-parallax>
           <v-layout v-if="$vuetify.breakpoint.mdAndUp" align-center justify-center text-xs-center row wrap class="px-5" style="height:calc(100% - 500px);min-height:236px;">

@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap>
+  <v-layout row wrap mb-5>
     <v-flex xs12 sm6>
       <board-extractor boardType="L" :maxCount="$vuetify.breakpoint.xsOnly?5:10" :class="{'mt-2':true, 'mx-2':$vuetify.breakpoint.smAndUp}"></board-extractor>
     </v-flex>

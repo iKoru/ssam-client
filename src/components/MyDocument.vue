@@ -19,7 +19,7 @@
               </td>
               <td class="text-xs-left px-2" v-if="$vuetify.breakpoint.smAndUp">{{ boardItems.some(x=>x.boardId === props.item.boardId)?boardItems.find(x=>x.boardId === props.item.boardId).boardName:'(삭제된 게시판)' }}</td>
               <td :class="{'text-xs-left multi-row cursor-pointer':true, 'px-0':$vuetify.breakpoint.xsOnly}" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
-                <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank">
+                <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank" @click.native.stop>
                   {{props.item.title}}
                   <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </a>
