@@ -28,7 +28,7 @@
           <v-icon>how_to_vote</v-icon>
           <span>설문조사</span>
         </v-btn>
-        <div v-else-if="survey" class="body-1 primary--text mr-2" title="등록한 설문조사는 수정할 수 없습니다.">
+        <div v-else-if="isSurveyDeletable" class="body-1 primary--text mr-2" title="등록한 설문조사는 수정할 수 없습니다.">
           <v-icon class="primary--text cursor-default vertical-align-middle">how_to_vote</v-icon>
           <span class="cursor-default">설문조사</span>
         </div>
@@ -305,7 +305,7 @@ export default {
             image = data.attach.find(x => x.attach_name === item.insert.image);
             if (image) {
               image.insert = true;
-              item.insert.image = this.webUrl + '/' + image.attach_path
+              item.insert.image = this.webUrl + image.attach_path
             }
           }
         })
