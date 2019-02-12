@@ -44,30 +44,19 @@ export default {
       },
       content: '',
       anonymous: this.isAnonymous | true,
-      originImages: [],
+      newlyAddedImages: [],
       loading: false
     };
   },
   components: {},
   mounted () {
     if (this.defaultComment) {
-      console.log(this.defaultComment);
       let contents = JSON.parse(this.defaultComment.contents);
-      console.log(contents);
       if (this.defaultComment.attach) {
-        let image;
-        contents.ops.forEach(item => {
-          if (item.insert.hasOwnProperty('image')) {
-            image = this.defaultComment.attach.find(x => x.attach_name === item.insert.image);
-            console.log(image);
-            if (image) {
-              image.insert = true;
-              item.insert.image = this.webUrl + '/' + image.attach_path;
-            }
-          }
+        contents.ops.filter(item => item.insert.image && this.defaultComment.attach.some(x => x.attach_name === item.insert.image)).forEach(item => {
+          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x.attach_name === item.insert.image).attach_path;
         });
       }
-      console.log(contents);
       this.$refs.commentEditor.quill.setContents(contents);
     }
   },
@@ -75,63 +64,84 @@ export default {
     onEditorChange ({ quill, html, text }) {
       this.content = html;
     },
-    selectImage () {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
+    async selectImage () {
+      let input = document.getElementById('commentFile')
+      if (!input) {
+        input = document.createElement('input');
+        input.setAttribute('id', 'commentFile');
+        input.setAttribute('type', 'file');
+        input.setAttribute('multiple', 'multiple');
+        input.setAttribute('accept', 'image/*');
+        input.classList.add('d-none');
+        document.body.appendChild(input);
+      }
       input.click();
       // Listen upload local image and save to server
-      input.onchange = () => {
-        const file = input.files[0];
-        var reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          // file type is only image.
-          if (/^image\//.test(file.type)) {
-            let commentEditor = this.$refs.commentEditor;
-            let range = commentEditor.quill.getSelection();
-            console.log(range);
-            commentEditor.quill.insertEmbed(range == null ? commentEditor.quill.getLength() : range.index, 'image', reader.result);
+      input.onchange = async () => {
+        let reader = new FileReader();
+        reader.onerror = function (error) {
+          console.log(error);
+          this.$store.dispatch('showSnackbar', { text: '파일을 업로드하지 못했습니다.', color: 'error' });
+        };
+        for (let i = 0; i < input.files.length; i++) {
+          if (input.files[i].type.startsWith('image/')) {
+            if (input.files[i].size > 1024 * 1024 * 8) {
+              this.$store.dispatch('showSnackbar', { text: '최대 8MB 이하의 이미지만 업로드할 수 있습니다.', color: 'error' });
+            } else {
+              await new Promise((resolve, reject) => {
+                reader.readAsDataURL(input.files[i]);
+                reader.onload = () => {
+                  // file type is only image.
+                  if (/^image\//.test(input.files[i].type)) {
+                    let commentEditor = this.$refs.commentEditor;
+                    let range = commentEditor.quill.getSelection();
+                    commentEditor.quill.insertEmbed(range == null ? commentEditor.quill.getLength() : range.index, 'image', reader.result);
+                  } else {
+                  }
+                  resolve();
+                };
+              });
+            }
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });
           }
-        };
-        reader.onerror = function (error) {
-          console.log('Error: ', error);
-        };
+        }
       };
     },
     attachImages () {
-      return this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty('image')) {
-          if (item.insert.image.includes('data:image')) {
-            let imgSrc = item.insert.image;
-            let imageName = this.uuid() + '.' + imgSrc.substring('data:image/'.length, imgSrc.indexOf(';base64'));
-            this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName);
-            item.insert.image = imageName;
-            this.originImages.push({ name: imageName, src: imgSrc });
-          }
+      this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.image && item.insert.image.startsWith('data:image')) { // newly inserted image
+          let imgSrc = item.insert.image;
+          let imageName = this.uuid() + '.' + imgSrc.substring('data:image/'.length, imgSrc.indexOf(';base64'));
+          this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName);
+          item.insert.image = imageName;
+          this.newlyAddedImages.push({ base64: imgSrc, attach_name: imageName })
+        }
+      });
+    },
+    restoreServerImages () { // restore already existed image on server from attach_path to attach_name
+      this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.image && this.defaultComment.attach.some(x => x.attach_path === item.insert.image)) {
+          item.insert.image = this.defaultComment.attach.find(x => x.attach_path === item.insert.image).attach_name;
         }
       });
     },
     revertImages () {
       this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty('image')) {
-          // random generated uuid should given here
-          let imgName = item.insert.image;
-          item.insert.image = this.originImages.find(img => img.name === imgName).src;
+        if (item.insert.image && this.newlyAddedImages.some(x => x.attach_name === item.insert.image)) {
+          item.insert.image = this.newlyAddedImages.find(x => x.attach_name === item.insert.image).base64;
+        } else if (item.insert.image && this.defaultComment.attach.some(x => x.attach_name === item.insert.image)) {
+          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x.attach_name === item.insert.image).attach_path
         }
       });
-      this.originImages = [];
+      this.newlyAddedImages = [];
     },
     async postComment () {
-      this.loading = true;
       if (this.isCommentWritable === 'NEEDSUBSCRIPTION') {
         try {
           await this.$axios.post('/user/board', { boardId: this.boardId }, { headers: { silent: true } });
         } catch (error) {
           if (!error.response || error.response.status !== 409) {
-            this.loading = false;
             this.$store.dispatch('showSnackbar', { text: `${error && error.response && error.response.data ? error.response.data.message || '댓글을 쓰기 위한 구독을 하지 못했습니다.' : '댓글을 쓰기 위한 구독을 하지 못했습니다.'}`, color: 'error' });
             return;
           }
@@ -144,12 +154,15 @@ export default {
         this.$store.dispatch('showSnackbar', { text: '댓글 내용을 입력해주세요.', color: 'error' });
         return;
       }
+
       if (!this.formData) this.formData = new FormData();
-      await this.attachImages();
+      this.attachImages();
       if (this.defaultComment) {
         await this.updateComment();
         return;
       }
+
+      this.loading = true;
       this.formData.append('documentId', this.$route.params.documentId);
       this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta));
       this.formData.append('isAnonymous', this.anonymous);
@@ -174,51 +187,68 @@ export default {
         });
     },
     async updateComment () {
-      if (!confirm('댓글을 수정하시겠습니까?')) {
-        this.loading = false;
-        return;
-      }
       // Convert Images And Upload First
       try {
-        if (!this.formData) this.formData = new FormData();
+        this.restoreServerImages();
         if (this.defaultComment.parentCommentId) {
           this.formData.append('parentCommentId', this.defaultComment.parentCommentId);
         }
-        this.formData.append('documentId', this.$route.params.documentId);
+        this.formData.append('documentId', this.defaultComment.documentId);
         this.formData.append('commentId', this.defaultComment.commentId);
-        await this.attachImages(); // change image url here
-        await this.processFileChange();
-        let modifiedBody = {
-          documentId: this.$route.params.documentId,
-          commentId: this.defaultComment.commentId,
-          contents: JSON.stringify(this.$refs.commentEditor.quill.editor.delta)
-        };
-        console.log(modifiedBody);
-        return this.$axios
-          .put(`/comment`, modifiedBody)
-          .then(response => {
-            this.loading = false;
-            if (response.status === 200) {
-              console.log(response);
-              this.$store.dispatch('showSnackbar', { text: '댓글을 수정하였습니다', color: 'success' });
+        if (await this.processFileChange()) {
+          this.$axios
+            .put(`/comment`, { documentId: this.$route.params.documentId, commentId: this.defaultComment.commentId, contents: JSON.stringify(this.$refs.commentEditor.quill.editor.delta) })
+            .then(response => {
+              this.loading = false;
+              this.$store.dispatch('showSnackbar', { text: '댓글을 수정하였습니다.', color: 'success' });
               this.$emit('update');
-            }
-          })
-          .catch(error => {
-            this.loading = false;
-            this.$store.dispatch('showSnackbar', { text: '댓글 수정에 실패했습니다. 다시 시도해주세요', color: 'error' });
-            console.log(error.response);
-          });
-      } catch (err) {
+            })
+            .catch(error => {
+              console.log(error);
+              this.loading = false;
+              this.revertImages();
+              this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 수정하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' });
+            });
+        } else {
+          this.loading = false;
+          this.revertImages();
+          delete this.formData;
+        }
+      } catch (error) {
         this.loading = false;
-        console.log(err);
-        this.$store.dispatch('showSnackbar', { text: '댓글 수정에 실패했습니다. 다시 시도해주세요', color: 'error' });
+        console.log(error);
+        this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 수정하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' });
         this.revertImages();
         delete this.formData;
       }
     },
     async processFileChange () {
-      let attachFromServer = this.defaultComment.attach.filter(a => a !== null);
+      // new images are already in formdata
+      // process deleted images
+      let currentImageId = this.$refs.commentEditor.quill.editor.delta.ops.filter(ops => ops.insert.image && this.defaultComment.attach.some(a => ops.insert.image === a.attach_name)).map(item => {
+        return this.defaultComment.attach.find(a => item.insert.image === a.attach_name).attach_id
+      })
+
+      let promises = []
+      this.defaultComment.attach.forEach(a => {
+        if (a.insert && !currentImageId.includes(a.attach_id)) { // inserted image, currently deleted
+          promises.push(this.$axios.delete(`/comment/attach/${this.defaultComment.commentId}/${a.attach_id}`));
+        }
+      })
+
+      if (this.newlyAddedImages.length > 0) { // newly added attach and images
+        promises.push(this.$axios.post(`/comment/attach`, this.formData));
+      }
+      if (promises.length > 0) {
+        await Promise.all(promises)
+          .catch(error => {
+            console.log(error)
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
+            return false;
+          })
+      }
+      return true;
+      /* let attachFromServer = this.defaultComment.attach.filter(a => a !== null);
       let currentImageId = this.$refs.commentEditor.quill.editor.delta.ops.map(item => {
         if (item.insert.hasOwnProperty('image')) {
           if (item.insert.image.startsWith('/attach')) {
@@ -265,7 +295,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.$store.dispatch('showSnackbar', { text: ' 댓글 수정에 실패했습니다. 다시 시도해주세요', color: 'error' });
-        });
+        }); */
     }
   }
 };
