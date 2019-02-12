@@ -23,3 +23,6 @@ yarn.lock
 package-lock.json
 
 public
+
+localhost.crt
+localhost.key

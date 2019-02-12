@@ -1,5 +1,5 @@
 var webpack = require('webpack')
-
+const fs = require('fs')
 module.exports = {
   outputDir: 'dist',
 
@@ -14,7 +14,10 @@ module.exports = {
       compress: true,
       disableHostCheck: true,
       port: 8082,
-      https: !!process.env.IS_LOCAL
+      https: process.env.IS_LOCAL?{
+        key:fs.readFileSync('./localhost.key'),
+        cert:fs.readFileSync('./localhost.crt')
+      }:undefined
     },
     loader: {
       test: /\.styl$/,

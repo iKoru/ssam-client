@@ -3,9 +3,10 @@ module.exports = {
     [
       '@vue/app',
       {
-        'useBuiltIns': 'entry'
+        'useBuiltIns': 'entry',
+        polyfills: ['filepond-polyfill', 'formdata-polyfill']
       },
-      '@babel/preset-env'
+      '@babel/preset-env',
     ]
   ],
   'plugins': [
