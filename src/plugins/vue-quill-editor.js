@@ -12,7 +12,6 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css
 import Quill from 'quill'
 import MagicUrl from 'quill-magic-url'
 import { ImageDrop } from 'quill-image-drop-module'
-import ImageResize from 'quill-image-resize-module'
 
 Quill.debug(process.env.NODE_ENV === 'development' ? 'warn' : 'error')
 let BlockEmbed = Quill.import('blots/block/embed')
@@ -64,6 +63,5 @@ VideoBlot.tagName = 'div';
 Quill.register(VideoBlot)
 Quill.register('modules/magicUrl', MagicUrl)
 Quill.register('modules/imageDrop', ImageDrop)
-Quill.register('modules/imageResize', ImageResize)
 
 Vue.use(VueQuillEditor)
