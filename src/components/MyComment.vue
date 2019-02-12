@@ -63,7 +63,7 @@ export default {
       return this.loading ? '작성한 댓글을 불러오고 있습니다. 잠시만 기다려주세요...' : '아직 작성한 댓글이 없으시군요!';
     },
     headers () {
-      return this.$vuetify.breakpoint.smAndDown ? [{ text: '', sortable: false, value: '' }, { text: '내용', sortable: false, align: 'left', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, class: this.$vuetify.breakpoint.xsOnly ? 'px-1' : undefined, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'left', sortable: false, value: 'boardId' }, { text: '내용', sortable: false, align: 'left', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
+      return this.$vuetify.breakpoint.smAndDown ? [{ text: '', sortable: false, value: '' }, { text: '내용', sortable: false, align: 'center', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, class: this.$vuetify.breakpoint.xsOnly ? 'px-1' : undefined, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'center', sortable: false, value: 'boardId' }, { text: '내용', sortable: false, align: 'center', value: 'contents', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
     }
   },
   methods: {

@@ -72,7 +72,7 @@ export default {
       return this.loading ? '스크랩한 글을 불러오고 있습니다. 잠시만 기다려주세요...' : '아직 스크랩한 글이 없으시군요!';
     },
     headers () {
-      return this.$vuetify.breakpoint.xsOnly ? [{ text: '', sortable: false, value: '' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'left', sortable: false, value: 'boardId' }, { text: '제목', sortable: false, align: 'left', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
+      return this.$vuetify.breakpoint.xsOnly ? [{ text: '', sortable: false, value: '' }, { text: '제목', sortable: false, align: 'center', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }] : [{ text: '', sortable: false, value: '' }, { text: '게시판', align: 'center', sortable: false, value: 'boardId' }, { text: '제목', sortable: false, align: 'center', value: 'title', class: 'ellipsis', width: '100%' }, { text: '추천', align: 'right', sortable: false, value: 'voteUpCount' }, { text: '작성일', sortable: false, align: 'right', value: 'writeDateTime' }];
     }
   },
   methods: {
