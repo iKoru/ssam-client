@@ -24,7 +24,7 @@
                       <v-flex xs12>
                         <span>{{props.item.boardName}}</span>
                       </v-flex>
-                      <v-flex xs12 class="ellipsis">
+                      <v-flex xs12 class="ellipsis grey--text lighten-1">
                         <small>{{props.item.boardDescription}}</small>
                       </v-flex>
                     </v-layout>

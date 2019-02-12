@@ -17,6 +17,14 @@
               </v-list-tile>
               <v-divider :key="'divider'+document.documentId"/>
             </template>
+            <template v-if="documents.length === 0">
+              <v-list-tile class="grey lighten-3">
+                <v-list-tile-content>
+                  <v-list-tile-title text-xs-center>아직 작성된 글이 없습니다. 첫 글을 작성해보세요!</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-divider/>
+            </template>
           </v-list>
           <v-list two-line class="py-0 border-x-light" id="cardView">
             <template v-for="document in documents.filter(x=>!x.isNotice)">
@@ -28,12 +36,16 @@
                       <small v-if="hasChildren" class="grey--text lighten-1 mr-1">
                         [<router-link :to="'/'+document.boardId" class="grey--text lighten-1" @click.native.stop>{{ boardItems.some(x=>x.boardId === document.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === document.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === document.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
                       </small>
-                      <div class="ellipsis font-weight-bold body-2">
-                        {{document.title}}
-                      </div>
+                      <div class="ellipsis font-weight-bold body-2">{{document.title}}</div>
                       <v-spacer/>
+                      <!--prettyhtml-ignore-->
                       <div class="caption">
-                        {{document.nickName}} | <v-icon color="primary" small>thumb_up_alt</v-icon> <span class="primary--text">{{document.voteUpCount}}</span> | <v-icon color="accent" small>chat_bubble_outline</v-icon> <span class="accent--text">{{document.commentCount}}</span> | <span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
+                        <span v-if="document.nickName !== ''">{{document.nickName}} | </span>
+                        <v-icon color="primary" small>thumb_up_alt</v-icon>
+                        <span class="primary--text">{{document.voteUpCount}}</span> |
+                        <v-icon color="accent" small>chat_bubble_outline</v-icon>
+                        <span class="accent--text">{{document.commentCount}}</span> |
+                        <span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
                       </div>
                     </v-layout>
                   </v-list-tile-title>
@@ -90,8 +102,10 @@
       </v-flex>
       <v-flex>
         <v-layout row pa-2 align-center>
-          <v-btn flat small @click="switchView" icon :title="isCardView?'목록형 보기':'카드형 보기'"><v-icon>{{isCardView?'list':'dashboard'}}</v-icon></v-btn>
-          <v-btn flat small @click="getDocuments" class="grey--text short" color="secondary" :loading="loading">새로고침</v-btn>
+          <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
+            <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
+          </v-btn>
+          <v-btn flat small @click="getDocuments" class="grey--text short ma-0" color="secondary" :loading="loading">새로고침</v-btn>
           <v-spacer/>
           <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
@@ -228,8 +242,8 @@ export default {
 #searchDocumentForm {
   min-width: 200px;
 }
-#cardView .v-list__tile__content .v-icon{
-  vertical-align:text-top;
-  margin-right:4px;
+#cardView .v-list__tile__content .v-icon {
+  vertical-align: text-top;
+  margin-right: 4px;
 }
 </style>
