@@ -88,6 +88,7 @@ export default {
         .post('/signout', null, { headers: { silent: true } })
         .then(() => {
           this.$store.dispatch('setToken', false);
+          this.$store.dispatch('setUserId', null);
           this.$router.push('/index');
         })
         .catch(error => {
