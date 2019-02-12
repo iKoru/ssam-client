@@ -44,8 +44,8 @@
         </v-btn>
       </div>
     </v-layout>
-    <input class="d-none" ref="imageInput" multiple id="image-upload" accept="image/*" type="file" @click.native="$refs.imageInput.value = null" value @change="onImageChange" capture="filesystem">
-    <input class="d-none" ref="fileInput" multiple id="file-upload" accept="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp, application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" type="file" @click.native="$refs.fileInput.value = null" value @change="onFileChange" capture="filesystem">
+    <input class="d-none" ref="imageInput" multiple id="image-upload" accept="image/*" type="file" @click.native="$refs.imageInput.value = null" value="" @change="onImageChange" capture="filesystem">
+    <input class="d-none" ref="fileInput" multiple id="file-upload" accept="application/zip, application/x-zip-compressed, multipart/x-zip, application/x-hwp,application/pdf, image/*, application/vnd.openxmlformats-officedocument.wordprocessingml.*, application/msword, application/vnd.ms-powerpoint, audio/*, video/*, application/vnd.ms-excel, application/haansofthwp, application/haansoftxlsx, application/haansoftxls, application/haansoftpptx, application/haansoftppt, application/haansoftdocx, application/haansoftdoc" type="file" @click.native="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
     <v-slide-y-transition>
       <v-layout v-if="attachedFilenames.length>0" wrap class="border-light">
         <v-flex xs6 md4 v-for="(item, index) in attachedFilenames" :key="index" px-2>
@@ -118,8 +118,8 @@ export default {
       formData: undefined,
       rawFileData: undefined,
       attachedFilenames: [], // for easy check
-      attachFromServer: undefined, // for keeping attaches when modifying document
-      originImages: [] // for Revert Imaage
+      attachFromServer: [], // for keeping attaches when modifying document
+      newlyAddedImages: []
     };
   },
   methods: {
@@ -129,10 +129,10 @@ export default {
     async post () {
       // manually add images as file
       if (!this.title || this.title.trim() === '') {
-        this.$store.dispatch('showSnackbar', { text: '글 제목을 입력해주세요.', color: 'error' });
+        this.$store.dispatch('showSnackbar', { text: '글 제목을 입력해주세요.', color: 'error' })
         return;
       } else if (!this.content || this.content.trim() === '') {
-        this.$store.dispatch('showSnackbar', { text: '글 내용을 입력해주세요.', color: 'error' });
+        this.$store.dispatch('showSnackbar', { text: '글 내용을 입력해주세요.', color: 'error' })
         return;
       }
       if (this.documentId) await this.uploadModifiedDocument();
@@ -140,135 +140,121 @@ export default {
     },
     async uploadDocument () {
       if (!this.formData) this.formData = new FormData();
-      await this.attachImages();
+      this.attachImages();
       this.formData.append('boardId', this.$route.params.boardId);
       this.formData.append('title', this.title);
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
+      this.formData.append('previewContents', this.$refs.editor.quill.getText(0, 50));
       this.formData.append('isAnonymous', this.isAnonymous);
       this.formData.append('allowAnonymous', this.isAnonymous ? true : !this.disallowAnonymous);
       if (this.isSurveyDeletable) {
         this.formData.append('survey', JSON.stringify(this.survey));
       }
-      await this.processUploadFiles();
-      return this.$axios
+      this.processUploadFiles()
+      this.$axios
         .post('/document', this.formData)
         .then(response => {
-          if (response.status === 200) {
-            this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
-          }
+          this.newlyAddedImages = [];
+          this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
         })
         .catch(error => {
           console.log(error);
-          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 등록하지 못했습니다. 다시 시도해주세요'}`, color: 'error' });
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 등록하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' })
           delete this.formData;
           this.revertImages();
+          this.newlyAddedImages = [];
         });
     },
     async uploadModifiedDocument () {
       // Convert Images And Upload First
       try {
         if (!this.formData) this.formData = new FormData();
-        this.formData.append('documentId', this.documentId);
-        await this.attachImages(); // change image url here
-        await this.processFileChange();
-        let modifiedBody = {
-          documentId: this.documentId,
-          title: this.title,
-          contents: JSON.stringify(this.$refs.editor.quill.editor.delta)
-        };
-        console.log(modifiedBody.contents);
-        return this.$axios
-          .put(`/document`, modifiedBody)
-          .then(response => {
-            console.log(response);
-            if (response.status === 200) {
-              this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다', color: 'success' });
+        this.formData.append('documentId', this.documentId)
+        this.restoreServerImages(); // revert originally existed image src
+        this.attachImages(); // change newly added image from base64 to filename here
+        if (await this.processFileChange()) {
+          this.$axios
+            .put(`/document`, { documentId: this.documentId, title: this.title, contents: JSON.stringify(this.$refs.editor.quill.editor.delta), previewContents: this.$refs.editor.quill.getText(0, 50) })
+            .then(response => {
+              this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다.', color: 'success' })
+              this.newlyAddedImages = [];
               this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            console.log('here');
-            this.revertImages();
-            delete this.formData;
-            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' });
-          });
+            })
+            .catch(error => {
+              console.log(error);
+              delete this.formData
+              this.revertImages();
+              this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' })
+            })
+        } else {
+          delete this.formData
+          this.revertImages();
+        }
       } catch (error) {
-        console.log(error);
-        console.log('here2');
-        this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' });
+        console.log(error)
+        this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' })
         this.revertImages();
-        delete this.formData;
+        delete this.formData
       }
     },
     attachImages () {
-      return this.$refs.editor.quill.editor.delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty('image')) {
-          console.log(item.insert.image);
-          if (item.insert.image.includes('data:image')) {
-            let imgSrc = item.insert.image;
-            let imageName = this.uuid() + '.' + imgSrc.substring('data:image/'.length, imgSrc.indexOf(';base64'));
-            this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName);
-            item.insert.image = imageName;
-            this.originImages.push({ name: imageName, src: imgSrc });
-            console.log(this.originImages);
-          }
+      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.image && item.insert.image.startsWith('data:image')) { // newly inserted image
+          let imgSrc = item.insert.image;
+          let imageName = this.uuid() + '.' + imgSrc.substring('data:image/'.length, imgSrc.indexOf(';base64'));
+          this.formData.append('attach', this.dataURItoBlob(imgSrc), imageName);
+          item.insert.image = imageName;
+          this.newlyAddedImages.push({ base64: imgSrc, attach_name: imageName })
         }
       });
     },
-    revertImages () {
+    restoreServerImages () { // restore already existed image on server from attach_path to attach_name
       this.$refs.editor.quill.editor.delta.ops.forEach(item => {
-        if (item.insert.hasOwnProperty('image')) {
-          let imgName = item.insert.image;
-          item.insert.image = this.originImages.find(img => img.name === imgName).src;
+        if (item.insert.image && this.attachFromServer.some(x => x.insert && x.attach_path === item.insert.image)) {
+          item.insert.image = this.attachFromServer.find(x => x.insert && x.attach_path === item.insert.image).attach_name;
         }
       });
-      this.originImages = [];
+    },
+    revertImages () { // revert translated image from attach_name to base64, attach_name to attach_path when failed to save
+      this.$refs.editor.quill.editor.delta.ops.forEach(item => {
+        if (item.insert.image && this.newlyAddedImages.some(x => x.attach_name === item.insert.image)) {
+          item.insert.image = this.newlyAddedImages.find(x => x.attach_name === item.insert.image).base64;
+        } else if (item.insert.image && this.attachFromServer.some(x => x.insert && x.attach_name === item.insert.image)) {
+          item.insert.image = this.webUrl + this.attachFromServer.find(x => x.insert && x.attach_name === item.insert.image).attach_path
+        }
+      });
+      this.newlyAddedImages = [];
     },
     async processFileChange () {
       // new images are already in formdata
       // process deleted images
-      console.log('process file change');
-      let currentImageId = this.$refs.editor.quill.editor.delta.ops
-        .map(item => {
-          if (item.insert.hasOwnProperty('image')) {
-            if (item.insert.image.startsWith('/attach')) {
-              if (this.attachFromServer.find(a => item.insert.image.includes(a.attach_path))) {
-                return this.attachFromServer.find(a => item.insert.image.includes(a.attach_path)).attach_id;
-              } else return undefined;
-            }
-          }
-        })
-        .filter(i => i);
+      let currentImageId = this.$refs.editor.quill.editor.delta.ops.filter(ops => ops.insert.image && this.attachFromServer.some(a => ops.insert.image === a.attach_name)).map(item => {
+        return this.attachFromServer.find(a => item.insert.image === a.attach_name).attach_id
+      })
 
-      let deleteImageP, deleteFileP, uploadFileP;
-      this.attachFromServer = this.attachFromServer.filter(a => a !== null);
+      let promises = []
       this.attachFromServer.forEach(a => {
-        if (a.insert && !currentImageId.filter(i => i !== undefined).includes(a.attach_id)) {
-          deleteImageP = this.$axios.delete(`/document/attach/${this.documentId}/${a.attach_id}`).catch(error => {
-            console.log(error);
-          });
-        } else if (!this.attachedFilenames.includes(a.attach_name) && !a.insert) {
-          deleteFileP = this.$axios.delete(`/document/attach/${this.documentId}/${a.attach_id}`).catch(error => {
-            console.log(error);
-          });
+        if (a.insert && !currentImageId.includes(a.attach_id)) { // inserted image, currently deleted
+          promises.push(this.$axios.delete(`/document/attach/${this.documentId}/${a.attach_id}`));
+        } else if (!a.insert && !this.attachedFilenames.includes(a.attach_name)) { // attached file, currently deleted
+          promises.push(this.$axios.delete(`/document/attach/${this.documentId}/${a.attach_id}`));
         }
-      });
-      await this.processUploadFiles();
-      let fileCount = 0;
-      for (let pair of this.formData.entries()) {
-        if (pair[0] === 'attach') fileCount += 1;
+      })
+
+      if (this.processUploadFiles() > 0) { // newly added attach and images
+        promises.push(this.$axios.post(`/document/attach`, this.formData));
       }
-      if (fileCount > 0) {
-        console.log(fileCount);
-        uploadFileP = this.$axios.post(`/document/attach`, this.formData).catch(error => {
-          console.log(error);
-        });
+      if (promises.length > 0) {
+        await Promise.all(promises)
+          .catch(error => {
+            console.log(error)
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' })
+            return false;
+          })
+        return true;
+      } else {
+        return true;
       }
-      await Promise.all([deleteImageP, deleteFileP, uploadFileP]).catch(error => {
-        console.log(error);
-        this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 수정하지 못했습니다. 다시 시도해주세요'}`, color: 'error' });
-      });
     },
     surveyButtonClick () {
       if (!this.isSurveyDeletable && this.survey.questions.length === 0) {
@@ -292,13 +278,13 @@ export default {
       }
     },
     parseDocument (data) {
-      this.title = data.title;
-      this.contents = JSON.parse(data.contents);
-      this.attachFromServer = data.attach;
-      this.isAnonymous = data.isAnonymous;
+      this.title = data.title
+      this.contents = JSON.parse(data.contents)
+      this.attachFromServer = data.attach
+      this.isAnonymous = data.isAnonymous
       if (data.survey) {
-        this.survey = data.survey;
-        this.isSurveyDeletable = true;
+        this.survey = data.survey
+        this.isSurveyDeletable = true
       }
       if (Array.isArray(data.attach)) {
         data.attach = data.attach.filter(x => x !== null);
@@ -309,106 +295,105 @@ export default {
           if (item.insert.hasOwnProperty('image')) {
             image = data.attach.find(x => x.attach_name === item.insert.image);
             if (image) {
-              image.insert = true;
-              item.insert.image = this.webUrl + image.attach_path;
-              this.originImages.push({ name: item.insert.image, src: image.attach_path });
+              image.insert = true;// mark to insert
+              item.insert.image = this.webUrl + image.attach_path
             }
           }
-        });
-        this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name);
+        })
+        this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
       }
 
-      this.$refs.editor.quill.setContents(this.contents);
-    },
-    attachButtonClick () {
-      if (this.documentId) this.openFileDialog();
-      else this.$refs.pond.browse();
+      this.$refs.editor.quill.setContents(this.contents)
     },
     openFileDialog () {
-      console.log('openfile');
       document.getElementById('file-upload').click();
     },
     openImageDialog () {
-      console.log('openimage');
       document.getElementById('image-upload').click();
     },
     async onFileChange (e) {
-      console.log('filechange');
       if (!this.rawFileData) this.rawFileData = new FormData();
-      var self = this;
       var files = e.target.files || e.dataTransfer.files;
-      if (files.length > 0) {
-        for (var i = 0; i < files.length; i++) {
-          if (files[i].size > 1024 * 1024 * 8) {
-            this.$store.dispatch('showSnackbar', { text: '8MB 이하의 파일만 첨부가능합니다.', color: 'error' });
-            break;
-          }
-          await self.rawFileData.append('file', files[i], files[i].name);
-          self.attachedFilenames.push(files[i].name);
+      let attachEntries;
+
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].size > 1024 * 1024 * 8) {
+          this.$store.dispatch('showSnackbar', { text: '8MB 이하의 파일만 첨부가능합니다.', color: 'error' })
+          break;
+        }
+        attachEntries = this.rawFileData.getAll('file');// this is an array
+        if (attachEntries.some(x => x.name === files[i].name)) { // conflict
+          let avoid = 0;
+          let splitter = files[i].name.lastIndexOf('.')
+          do {
+            avoid++;
+          } while (attachEntries.some(x => x.name === files[i].name.substring(0, splitter) + ` (${avoid})` + files[i].name.substring(splitter, files[i].name.length)));
+          this.rawFileData.append('file', files[i], files[i].name.substring(0, splitter) + ` (${avoid})` + files[i].name.substring(splitter, files[i].name.length))
+          this.attachedFilenames.push(files[i].name.substring(0, splitter) + ` (${avoid})` + files[i].name.substring(splitter, files[i].name.length))
+        } else { // no conflict in file names
+          this.rawFileData.append('file', files[i], files[i].name)
+          this.attachedFilenames.push(files[i].name)
         }
       }
     },
     async onImageChange (e) {
-      console.log('imagechange');
       var self = this;
       var files = e.target.files || e.dataTransfer.files;
-      console.log(files);
       if (files.length > 0) {
         for (var i = 0; i < files.length; i++) {
           if (files[i].size > 1024 * 1024 * 8) {
-            this.$store.dispatch('showSnackbar', { text: '8MB 이하의 이미지만 첨부가능합니다.', color: 'error' });
+            this.$store.dispatch('showSnackbar', { text: '8MB 이하의 이미지만 첨부가능합니다.', color: 'error' })
             break;
           }
           if (/^image\//.test(files[i].type)) {
             var reader = new FileReader();
-            reader.readAsDataURL(files[i]);
+            reader.readAsDataURL(files[i])
             reader.onload = function () {
-              let range = self.$refs.editor.quill.getSelection();
+              let range = self.$refs.editor.quill.getSelection()
               self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
-            };
+            }
           } else {
-            this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });
+            this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
           }
         }
       }
     },
     async removeFile (index) {
       if (this.rawFileData) {
-        let newFileData = new FormData();
-        let i = 0;
+        let newFileData = new FormData()
+        let i = 0
         for (let pair of this.rawFileData.entries()) {
           if (pair[0] === 'file') {
             if (i !== Number(index)) {
-              await newFileData.append(pair[0], pair[1], pair[1].name);
+              await newFileData.append(pair[0], pair[1], pair[1].name)
             }
-            i += 1;
+            i += 1
           }
         }
-        this.rawFileData = newFileData;
+        this.rawFileData = newFileData
       }
 
-      this.attachedFilenames.splice(index, 1);
+      this.attachedFilenames.splice(index, 1)
     },
     processUploadFiles () {
-      if (!this.rawFileData) this.rawFileData = new FormData();
-      let namesCount = {};
-      for (let pair of this.rawFileData.entries()) {
-        namesCount[pair[1].name] = {
-          count: namesCount[pair[1].name] ? namesCount[pair[1].name].count + 1 : 1,
-          index: 0
-        };
-      }
-      for (let pair of this.rawFileData.entries()) {
-        let splitter = pair[1].name.lastIndexOf('.');
-        let fileExtension = pair[1].name.substring(splitter, pair[1].name.length);
-        let filename = pair[1].name.substring(0, splitter);
-        let suffix = '';
-        if (namesCount[pair[1].name].count > 0) {
-          suffix = namesCount[pair[1].name].index === 0 ? '' : ` (${namesCount[pair[1].name].index})`;
-          namesCount[pair[1].name].index += 1;
+      if (this.rawFileData) {
+        // clear not to exist duplicate file names
+        let attachEntries;
+        for (let pair of this.rawFileData.entries()) {
+          attachEntries = this.formData.getAll('attach');// this is an array
+          if (attachEntries.some(x => x.name === pair[1].name)) { // conflict
+            let avoid = 0;
+            let splitter = pair[1].name.lastIndexOf('.')
+            do {
+              avoid++;
+            } while (attachEntries.some(x => x.name === pair[1].name.substring(0, splitter) + ` (${avoid})` + pair[1].name.substring(splitter, pair[1].name.length)));
+            this.formData.append('attach', pair[1], pair[1].name.substring(0, splitter) + ` (${avoid})` + pair[1].name.substring(splitter, pair[1].name.length))
+          } else { // no conflict in file names
+            this.formData.append('attach', pair[1], pair[1].name)
+          }
         }
-        this.formData.append('attach', pair[1], filename + suffix + fileExtension);
       }
+      return this.formData.getAll('attach').length;
     }
   },
   computed: {
@@ -428,11 +413,11 @@ export default {
       this.$axios
         .get(`/${this.$route.params.boardId}/${this.documentId}`)
         .then(response => {
-          this.parseDocument(response.data);
+          this.parseDocument(response.data)
         })
         .catch(error => {
-          console.log(error);
-          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글 내용을 불러오지 못했습니다.'}`, color: 'error' });
+          console.log(error)
+          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글 내용을 불러오지 못했습니다.'}`, color: 'error' })
           this.$router.replace('/error?error=' + (error && error.response ? error.response.status || '404' : '404'));
         });
     }
@@ -456,7 +441,7 @@ export default {
 #title,
 #toolbar,
 #toolbar + .ql-container.ql-snow,
-#write-editor .ql-container.ql-bubble {
+#write-editor .ql-container.ql-bubble{
   border-top: 1px solid #e8e8e8;
   border-left: none;
   border-right: none;
@@ -466,11 +451,11 @@ export default {
   border-bottom: none;
 }
 #toolbar + .ql-container.ql-snow,
-#write-editor .ql-container.ql-bubble {
+#write-editor .ql-container.ql-bubble{
   border-bottom: 1px solid #e8e8e8;
 }
 #write-editor .quill-editor .ql-bubble .ql-tooltip {
-  z-index: 1;
+  z-index:1
 }
 #write-editor .ql-bubble .ql-picker.ql-size {
   width: 70px;
@@ -479,32 +464,31 @@ export default {
   #title,
   #toolbar,
   #toolbar + .ql-container.ql-snow,
-  #write-editor .ql-container.ql-bubble {
+  #write-editor .ql-container.ql-bubble{
     border-left: 1px solid #e8e8e8;
     border-right: 1px solid #e8e8e8;
   }
   .ql-snow #toolbar {
     display: block;
   }
-  #write-editor .quill-editor .ql-container,
-  .write-editor .quill-editor .ql-editor {
+  #write-editor .quill-editor .ql-container, .write-editor .quill-editor .ql-editor {
     min-height: 30rem;
   }
 }
 #write-editor .ql-editor.ql-blank::before {
   font-style: normal;
 }
-#write-editor .video-container {
-  position: relative;
-  height: 0;
-  width: 100%;
-  padding-bottom: 56%;
+#write-editor .video-container{
+  position:relative;
+  height:0;
+  width:100%;
+  padding-bottom:56%;
 }
-#write-editor .video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+#write-editor .video-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
 }
 </style>

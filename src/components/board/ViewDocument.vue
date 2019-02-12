@@ -74,9 +74,9 @@
       </v-layout>
       <v-slide-y-transition>
         <v-layout column>
-          <v-layout row v-show="showAttach" my-2 wrap>
-            <v-flex px-2 xs6 md4 xl2 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
-              <router-link :to="webUrl + '/' + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline">{{item.attach_name}}</router-link>
+          <v-layout row v-show="showAttach" mt-1 wrap>
+            <v-flex px-2 xs6 md4 xl2 my-1 :key="index" v-for="(item, index) in document.attach.filter(x=>!x.insert)">
+              <router-link :to="webUrl + item.attach_path" target="_blank" :download="item.attach_name" class="ellipsis underline d-block">{{item.attach_name}}</router-link>
             </v-flex>
           </v-layout>
           <v-divider v-show="showAttach" class="my-2"/>
@@ -236,11 +236,6 @@ export default {
               alt: item.insert.image
             };
             item.insert.image = this.webUrl + image.attach_path;
-            /* item.insert.image = {
-              src: this.webUrl + "/" + image.attach_path,
-              download: item.insert.image,
-              alt: item.insert.image
-            } */
             item.attributes.link = item.insert.image;
           }
         }
