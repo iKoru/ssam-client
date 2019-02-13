@@ -301,6 +301,11 @@ export default {
 };
 </script>
 <style>
+.comment-editor{
+  width:100%;
+  display:table;
+  table-layout:fixed;
+}
 .comment-editor .ql-container.ql-bubble {
   min-height: 5rem;
   border: 1px solid #e8e8e8;

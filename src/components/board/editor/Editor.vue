@@ -450,6 +450,11 @@ export default {
   display: none;
   border-bottom: none;
 }
+#write-editor{
+  width:100%;
+  display:table;
+  table-layout:fixed;
+}
 #toolbar + .ql-container.ql-snow,
 #write-editor .ql-container.ql-bubble{
   border-bottom: 1px solid #e8e8e8;
