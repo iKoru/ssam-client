@@ -81,6 +81,7 @@
 import Survey from '@/components/board/survey/Survey';
 import SurveyMaker from '@/components/board/survey/SurveyMaker';
 import BoardMixins from '@/components/mixins/BoardMixins';
+import 'formdata-polyfill'
 
 export default {
   name: 'Editor',
@@ -347,11 +348,18 @@ export default {
           }
           if (/^image\//.test(files[i].type)) {
             var reader = new FileReader();
-            reader.readAsDataURL(files[i])
-            reader.onload = function () {
-              let range = self.$refs.editor.quill.getSelection()
-              self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
-            }
+            await new Promise((resolve, reject) => {
+              reader.readAsDataURL(files[i]);
+              reader.onload = () => {
+                // file type is only image.
+                if (/^image\//.test(files[i].type)) {
+                  let range = self.$refs.editor.quill.getSelection()
+                  self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
+                } else {
+                }
+                resolve();
+              };
+            });
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
           }

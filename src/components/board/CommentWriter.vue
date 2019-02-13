@@ -21,6 +21,7 @@
 
 <script>
 import BoardMixins from '@/components/mixins/BoardMixins';
+import 'formdata-polyfill'
 
 export default {
   name: 'WriteComment',
@@ -248,54 +249,6 @@ export default {
           })
       }
       return true;
-      /* let attachFromServer = this.defaultComment.attach.filter(a => a !== null);
-      let currentImageId = this.$refs.commentEditor.quill.editor.delta.ops.map(item => {
-        if (item.insert.hasOwnProperty('image')) {
-          if (item.insert.image.startsWith('/attach')) {
-            // '/attach/:documentId(^[\\d]+$)/:attachId
-            return attachFromServer.find(a => item.insert.image === '/' + a.attach_path).attach_id;
-          }
-        }
-      });
-      let deleteImageP, uploadFileP;
-      attachFromServer.forEach(a => {
-        if (a.insert && !currentImageId.filter(i => i !== undefined).includes(a.attach_id)) {
-          deleteImageP = this.$axios
-            .delete(`/comment/attach/${this.documentId}/${a.attach_id}`)
-            .then(response => {
-              if (response.status === 200) {
-                console.log(response);
-              }
-            })
-            .catch(error => {
-              console.log(error.response);
-            });
-        }
-      });
-      let fileCount = 0;
-      for (let pair of this.formData.entries()) {
-        if (pair[0] === 'attach') fileCount += 1;
-      }
-      if (fileCount > 0) {
-        uploadFileP = this.$axios
-          .post(`/comment/attach`, this.formData)
-          .then(response => {
-            if (response.status === 200) {
-              console.log(response);
-            }
-          })
-          .catch(error => {
-            console.log(error.response);
-          });
-      }
-      await Promise.all([deleteImageP, uploadFileP])
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-          this.$store.dispatch('showSnackbar', { text: ' 댓글 수정에 실패했습니다. 다시 시도해주세요', color: 'error' });
-        }); */
     }
   }
 };
