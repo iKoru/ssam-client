@@ -1,13 +1,13 @@
 module.exports = {
   'presets': [
     [
-      '@vue/app',
+      "@vue/app",
       {
-        'useBuiltIns': 'entry',
-        polyfills: ['filepond-polyfill', 'formdata-polyfill']
-      },
-      '@babel/preset-env',
-    ]
+        useBuiltIns:'entry'
+        //polyfills: ['es7.object.entries', 'es6.promise.finally', 'es6.array.iterator', 'es6.symbol', 'web.dom.iterable', 'filepond-polyfill', 'formdata-polyfill']
+      }
+    ],
+    '@babel/preset-env'
   ],
   'plugins': [
     [
