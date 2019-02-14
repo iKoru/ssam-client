@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "export NODE_ENV=production && vue-cli-service build --modern && export NODE_ENV=development",
+    "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "deploy": "vue-cli-service s3-deploy",
     "test:unit": "vue-cli-service test:unit"
