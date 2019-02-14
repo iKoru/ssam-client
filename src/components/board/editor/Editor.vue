@@ -155,7 +155,9 @@ export default {
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
       this.formData.append('previewContents', this.$refs.editor.quill.getText(0, 50));
       this.formData.append('isAnonymous', this.isAnonymous);
-      this.formData.append('category', this.category);
+      if (this.category) {
+        this.formData.append('category', this.category);
+      }
       this.formData.append('allowAnonymous', this.isAnonymous ? true : !this.disallowAnonymous);
       if (this.isSurveyDeletable) {
         this.formData.append('survey', JSON.stringify(this.survey));

@@ -136,6 +136,7 @@ export default {
 .commentList .v-list__tile__content {
   height: auto;
   padding: 0 16px;
+  display:block;
 }
 .commentList .bestComment {
   background-color: #b3e5fc;

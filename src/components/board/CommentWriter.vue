@@ -76,7 +76,6 @@ export default {
         input.classList.add('d-none');
         document.body.appendChild(input);
       }
-      input.click();
       // Listen upload local image and save to server
       input.onchange = async () => {
         let reader = new FileReader();
@@ -89,15 +88,14 @@ export default {
             if (input.files[i].size > 1024 * 1024 * 8) {
               this.$store.dispatch('showSnackbar', { text: '최대 8MB 이하의 이미지만 업로드할 수 있습니다.', color: 'error' });
             } else {
+              let commentEditor = this.$refs.commentEditor;
               await new Promise((resolve, reject) => {
                 reader.readAsDataURL(input.files[i]);
                 reader.onload = () => {
                   // file type is only image.
                   if (/^image\//.test(input.files[i].type)) {
-                    let commentEditor = this.$refs.commentEditor;
                     let range = commentEditor.quill.getSelection();
                     commentEditor.quill.insertEmbed(range == null ? commentEditor.quill.getLength() : range.index, 'image', reader.result);
-                  } else {
                   }
                   resolve();
                 };
@@ -108,6 +106,7 @@ export default {
           }
         }
       };
+      input.click();
     },
     attachImages () {
       this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
