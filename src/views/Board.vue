@@ -19,7 +19,7 @@
                 </v-layout>
               </v-flex>
               <v-spacer/>
-              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit') && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" :small="$vuetify.breakpoint.xsOnly">
+              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit') && ($route.params.boardId !== 'notice' || (board && board.isOwner)) && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" :small="$vuetify.breakpoint.xsOnly">
                 <v-icon small>edit</v-icon>
               </v-btn>
             </v-layout>
@@ -354,14 +354,14 @@ export default {
 </script>
 <style>
 #childBoardSelector {
-  display:none;
+  display: none;
 }
 .childBoardSelector {
   font-size: 14px;
 }
 .childBoardSelector .v-input__append-inner {
   margin-left: 0;
-  padding-left:0;
+  padding-left: 0;
   cursor: pointer;
 }
 .childBoardSelector .v-input__slot {
@@ -369,6 +369,6 @@ export default {
 }
 .childBoardSelector .v-select__selection {
   cursor: pointer;
-  white-space:nowrap;
+  white-space: nowrap;
 }
 </style>
