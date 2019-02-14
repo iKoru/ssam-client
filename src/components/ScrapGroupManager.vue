@@ -73,6 +73,10 @@ export default {
         this.$store.dispatch('showSnackbar', { text: '변경된 내용이 없습니다.', color: 'info' });
         return;
       }
+      if (this.tempScrapGroups.every(x => x.status === 'DELETED')) {
+        this.$store.dispatch('showSnackbar', { text: '최소 하나 이상의 스크랩 그룹은 있어야 합니다.', color: 'error' });
+        return;
+      }
       if (this.tempScrapGroups.some(x => x.status === 'DELETED') && !confirm('삭제할 스크랩 그룹이 있으시군요.\n해당 그룹의 스크랩은 모두 지워집니다. 정말 삭제하시겠어요?')) {
         return;
       }
