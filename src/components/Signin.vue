@@ -64,7 +64,7 @@ export default {
     passwordError: false,
     userId: '',
     password: '',
-    rememberMe: false,
+    rememberMe: true,
     userIdRules: [v => !!v || '아이디를 입력해주세요.'],
     passwordRules: [v => !!v || '비밀번호를 입력해주세요.']
   }),
@@ -78,7 +78,7 @@ export default {
         .then(response => {
           this.loading = false;
           this.$store.dispatch('setUserId', response.data.userId);
-          this.$store.dispatch('setToken', true)
+          this.$store.dispatch('setToken', true);
 
           const redirectTo = response.data.redirectTo;
           if (response.data.imminent || response.data.needEmail) {
@@ -107,7 +107,7 @@ export default {
           } else {
             this.message = '서버에 접속할 수 없습니다. 인터넷 연결을 확인해주세요.';
           }
-          this.$store.dispatch('setToken', false)
+          this.$store.dispatch('setToken', false);
         });
     } else {
       if (getCookie('userId')) {
