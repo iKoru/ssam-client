@@ -12,7 +12,7 @@
             <v-layout column>
               <template v-if="lounges.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :to="'/'+lounges[n-1].boardId" v-if="lounges[n-1].boardId !== null">{{lounges[n-1].boardName || '&nbsp;'}}</router-link>
+                  <router-link :to="'/'+lounges[n-1].boardId" v-if="lounges[n-1].boardId !== null" :title="lounges[n-1].boardName">{{lounges[n-1].boardName || '&nbsp;'}}</router-link>
                   <span v-else class="cursor-default">&nbsp;</span>
                 </v-flex>
               </template>
@@ -23,17 +23,17 @@
               </template>
               <template v-else-if="lounges.length === 1">
                 <v-flex class="ellipsis">
-                  <router-link :to="'/'+lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[0].boardId" :title="lounges[0].boardName">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
               </template>
               <template v-else>
                 <v-flex class="ellipsis">
-                  <router-link :to="'/'+lounges[0].boardId">{{lounges[0].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[0].boardId" :title="lounges[0].boardName">{{lounges[0].boardName}}</router-link>
                 </v-flex>
                 <v-flex class="ellipsis">
-                  <router-link :to="'/'+lounges[1].boardId" v-if="lounges[1].boardId">{{lounges[1].boardName}}</router-link>
+                  <router-link :to="'/'+lounges[1].boardId" v-if="lounges[1].boardId" :title="lounges[1].boardName">{{lounges[1].boardName}}</router-link>
                   <span v-else class="cursor-default">&nbsp;</span>
                 </v-flex>
                 <v-flex class="cursor-default">&nbsp;</v-flex>
@@ -55,7 +55,9 @@
             <div class="ml-2">
               <template v-if="topics.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :to="'/'+topics[n-1].boardId">{{topics[n-1].boardName}}</router-link>
+                  <router-link :class="{'white--text':true, 'text-darken-1':topics[n-1].notJoined}" :title="topics[n-1].notJoined?'추천 토픽':topics[n-1].boardName" :to="'/'+topics[n-1].boardId">{{topics[n-1].boardName}}
+                    <v-chip v-if="topics[n-1].notJoined" label class="ma-0">추천</v-chip>
+                  </router-link>
                 </v-flex>
               </template>
               <template v-else>
@@ -66,17 +68,23 @@
                 </template>
                 <template v-else-if="topics.length === 1">
                   <v-flex class="ellipsis">
-                    <router-link :to="'/'+topics[0].boardId">{{topics[0].boardName}}</router-link>
+                    <router-link :class="{'white--text':true, 'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
+                      <v-chip v-if="topics[0].notJoined" label class="ma-0">추천</v-chip>
+                    </router-link>
                   </v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
-                    <router-link :to="'/'+topics[0].boardId">{{topics[0].boardName}}</router-link>
+                    <router-link :class="{'white--text':true, 'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
+                      <v-chip v-if="topics[0].notJoined" label class="ma-0">추천</v-chip>
+                    </router-link>
                   </v-flex>
                   <v-flex class="ellipsis">
-                    <router-link :to="'/'+topics[1].boardId">{{topics[1].boardName}}</router-link>
+                    <router-link :class="{'white--text':true, 'text-darken-1':topics[1].notJoined}" :title="topics[1].notJoined?'추천 토픽':topics[1].boardName" :to="'/'+topics[1].boardId">{{topics[1].boardName}}
+                      <v-chip v-if="topics[1].notJoined" label class="ma-0">추천</v-chip>
+                    </router-link>
                   </v-flex>
                   <v-flex class="cursor-default">&nbsp;</v-flex>
                 </template>

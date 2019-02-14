@@ -70,7 +70,7 @@
   </v-card>
 </template>
 <script>
-const reserved = ['document', 'documents', 'profile', 'profiles', 'auth', 'user', 'users', 'comment', 'comments', 'vote', 'votes', 'report', 'reports', 'index', 'scraps', 'scrap', 'board', 'boards', 'manage', 'manages', 'chat', 'chats', 'message', 'messages', 'group', 'groups', 'event', 'events', 'signup', 'signin', 'signout', 'resetPassword', 'notification', 'notifications', 'survey', 'list', 'admin', 'ADMIN', 'ADMINISTRATOR', 'administrator', 'attach', 'profiles', 'animal', 'loungeBest', 'topicBest', 'lounge', 'topic', 'type', 'best', 'sanction', 'userId', 'nickName', 'myPage', 'myBoard', 'myCommunity', 'pedagy', 'myPedagy', 'Pedagy'];
+const reserved = ['document', 'documents', 'profile', 'profiles', 'auth', 'user', 'users', 'comment', 'comments', 'vote', 'votes', 'report', 'reports', 'index', 'scraps', 'scrap', 'board', 'boards', 'manage', 'manages', 'chat', 'chats', 'message', 'messages', 'group', 'groups', 'event', 'events', 'signup', 'signin', 'signout', 'resetPassword', 'notification', 'notifications', 'survey', 'list', 'admin', 'ADMIN', 'ADMINISTRATOR', 'administrator', 'attach', 'profiles', 'animal', 'loungeBest', 'topicBest', 'lounge', 'topic', 'type', 'best', 'sanction', 'userId', 'nickName', 'myPage', 'myBoard', 'myCommunity', 'pedagy', 'myPedagy', 'Pedagy', 'tools', 'privacy', 'contract', 'rules', 'error', 'search', 'searchBoard', 'searchDocument', 'myBoard', 'myDocument', 'myComment', 'authSubmit'];
 const boardIdRegex = [/^(?:[a-zA-Z]+)(?:[a-zA-Z0-9\-_]{0,15})$/, /^((?!(--|__)).)*$/];
 const groupName = { M: '전공', G: '학년', N: '일반', R: '지역', Z: '인증' };
 export default {
