@@ -61,7 +61,7 @@ export default {
         .concat(
           boards
             .filter(x => x.boardType === 'T' && x.allGroupAuth !== 'NONE' && !userBoards.some(y => y.boardId === x.boardId) && x.boardId !== 'topicBest')
-            .slice(0, 10)
+            .slice(0, 5)
             .map(x => ({ ...x, notJoined: true }))
         );
       if (boards.some(x => x.boardId === 'topicBest')) {

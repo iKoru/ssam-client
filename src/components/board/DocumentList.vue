@@ -40,7 +40,7 @@
                       <v-spacer/>
                       <!--prettyhtml-ignore-->
                       <div class="caption">
-                        <span v-if="document.nickName !== ''">{{document.nickName}} | </span>
+                        <span v-if="document.nickName !== '' && $vuetify.breakpoint.smAndUp">{{document.nickName}} | </span>
                         <v-icon color="primary" small>thumb_up_alt</v-icon>
                         <span class="primary--text">{{document.voteUpCount}}</span> |
                         <v-icon color="accent" small>chat_bubble_outline</v-icon>
@@ -105,10 +105,10 @@
           <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
             <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
           </v-btn>
-          <v-btn flat small @click="getDocuments" class="grey--text short ma-0" color="secondary" :loading="loading">새로고침</v-btn>
+          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" class="grey--text short ma-0" color="secondary" :loading="loading"><v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon><span v-else>새로고침</span></v-btn>
           <v-spacer/>
           <v-flex xs6 sm4 id="searchDocumentForm">
-            <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목 또는 내용으로 검색"></v-text-field>
+            <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목, 내용으로 검색"></v-text-field>
           </v-flex>
           <v-btn v-show="(($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short my-0" color="primary" @click="$emit('write')">쓰기</v-btn>
         </v-layout>
@@ -240,7 +240,7 @@ export default {
   height: 32px;
 }
 #searchDocumentForm {
-  min-width: 200px;
+  min-width: 170px;
 }
 #cardView .v-list__tile__content .v-icon {
   vertical-align: text-top;
