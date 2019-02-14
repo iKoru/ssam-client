@@ -95,7 +95,7 @@
           </template>
           <template slot="no-data">
             <tr>
-              <td :colspan="$vuetify.breakpoint.smAndUp?4:3" class="text-xs-center multi-row px-0">{{noDataText}}</td>
+              <td :colspan="$vuetify.breakpoint.smAndUp?4+(hasChildren?1:0):3+(hasChildren?1:0)" class="text-xs-center multi-row px-0">{{noDataText}}</td>
             </tr>
           </template>
         </v-data-table>
@@ -105,7 +105,10 @@
           <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
             <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
           </v-btn>
-          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" class="grey--text short ma-0" color="secondary" :loading="loading"><v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon><span v-else>새로고침</span></v-btn>
+          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" class="grey--text short ma-0" color="secondary" :loading="loading">
+            <v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon>
+            <span v-else>새로고침</span>
+          </v-btn>
           <v-spacer/>
           <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목, 내용으로 검색"></v-text-field>
