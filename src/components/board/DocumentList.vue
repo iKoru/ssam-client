@@ -36,6 +36,7 @@
                       <small v-if="hasChildren" class="grey--text lighten-1 mr-1">
                         [<router-link :to="'/'+document.boardId" class="grey--text lighten-1" @click.native.stop>{{ boardItems.some(x=>x.boardId === document.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === document.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === document.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
                       </small>
+                      <small v-else-if="board.categories.some(x=>x) && document.category" class="grey--text lighten-1 mr-1">[{{document.category}}]</small>
                       <div class="ellipsis font-weight-bold body-2">{{document.title}}</div>
                       <v-spacer/>
                       <!--prettyhtml-ignore-->
@@ -70,7 +71,7 @@
                   [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
                 </v-layout>
               </td>
-              <td class="text-xs-left pa-1" v-if="!hasChildren && board.category && board.category.length > 0">{{ props.item.category }}</td>
+              <td class="text-xs-center pa-1 grey--text lighten-1" v-if="!hasChildren && board.categories.some(x=>x)">{{ props.item.category?'['+props.item.category+']':'' }}</td>
               <td :class="{'text-xs-left py-1 ellipsis cursor-pointer':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
@@ -143,12 +144,12 @@ export default {
   },
   computed: {
     headers () {
-      let headers = [{ text: '제목', value: 'title', sortable: false, align: 'center' }, { text: '추천', value: 'voteUpCount', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '30' : '50' }, { text: '날짜', value: 'writeDateTime', sortable: false, align: 'center', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
+      let headers = [{ text: '제목', value: 'title', sortable: false, align: 'center' }, { text: '추천', value: 'voteUpCount', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '30' : '50' }, { text: '날짜', value: 'writeDateTime', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
       if (this.$vuetify.breakpoint.smAndUp) {
         headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
       }
-      if (!this.hasChildren && this.board.category) {
-        headers.splice(0, 0, { text: '카테고리', value: 'category', sortable: false, align: 'left' });
+      if (!this.hasChildren && this.board.categories.some(x => x)) {
+        headers.splice(0, 0, { text: '카테고리', value: 'category', sortable: false, align: 'left', width: '50' });
       }
       if (this.hasChildren) {
         headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
@@ -194,7 +195,11 @@ export default {
     },
     switchView () {
       this.isCardView = !this.isCardView;
-      localStorage.setItem('CardView', this.isCardView || null);
+      if (this.isCardView) {
+        localStorage.setItem('CardView', this.isCardView);
+      } else {
+        localStorage.removeItem('CardView')
+      }
     }
   },
   created () {

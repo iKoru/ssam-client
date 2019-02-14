@@ -7,10 +7,10 @@
             <div :class="{'text-xs-center':true, 'justify-center':true, 'align-center':true, 'pa-3':$vuetify.breakpoint.smAndUp}">
               <v-container fluid grid-list-xs>
                 <v-layout row>
-                  <v-flex xs4>
+                  <div>
                     <v-autocomplete ref="searchBoard" class="dense ellipsis" id="searchBoard" placeholder="검색할 게시판" v-model="boardId" :items="boardItems"></v-autocomplete>
-                  </v-flex>
-                  <v-flex xs8 pl-3>
+                  </div>
+                  <v-flex pl-3>
                     <v-text-field ref="searchQuery" placeholder="제목, 내용으로 검색" v-model="searchQuery" class="dense" @keyup.enter.stop="search" append-outer-icon="search" @click:append-outer="search"></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -97,7 +97,7 @@ export default {
       const auth = this.$store.getters.profile.auth;
       const userBoards = this.$store.getters.userBoards;
       let boardItems = this.boards.filter(x => (x.boardType !== 'T' && x.statusAuth.read.includes(auth)) || (x.boardType === 'T' && userBoards.some(y => y.boardId === x.boardId && y.boardType === 'T'))).map(x => ({ text: x.boardName, value: x.boardId }));
-      boardItems.splice(0, 0, { text: this.$vuetify.breakpoint.xsOnly ? '(공개)' : '(공개 게시판 전체)', value: null });
+      boardItems.splice(0, 0, { text: '(공개 게시판 전체)', value: null });
       return boardItems;
     },
     noresult () {

@@ -1,7 +1,14 @@
 <template>
   <v-layout column :mx-1="$vuetify.breakpoint.smAndUp" :mt-1="$vuetify.breakpoint.smAndUp">
     <v-flex id="title" class="mb-0 pb-0">
-      <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" :readonly="!!documentId" solo v-model="title" hide-details></v-text-field>
+      <v-layout row align-center>
+        <div>
+          <v-select :items="categoryItems" id="category" solo hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
+        </div>
+        <v-flex>
+          <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" :readonly="!!documentId" solo v-model="title" hide-details></v-text-field>
+        </v-flex>
+      </v-layout>
     </v-flex>
     <v-flex xs12 id="write-editor">
       <quill-editor v-model="content" ref="editor" :options="editorOption">
@@ -100,6 +107,7 @@ export default {
       surveyDialog: false,
       survey: { questions: [] },
       isSurveyDeletable: false,
+      category: null,
       editorOption: {
         placeholder: '내용을 입력해주세요.',
         modules: {
@@ -147,6 +155,7 @@ export default {
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
       this.formData.append('previewContents', this.$refs.editor.quill.getText(0, 50));
       this.formData.append('isAnonymous', this.isAnonymous);
+      this.formData.append('category', this.category);
       this.formData.append('allowAnonymous', this.isAnonymous ? true : !this.disallowAnonymous);
       if (this.isSurveyDeletable) {
         this.formData.append('survey', JSON.stringify(this.survey));
@@ -175,7 +184,7 @@ export default {
         this.attachImages(); // change newly added image from base64 to filename here
         if (await this.processFileChange()) {
           this.$axios
-            .put(`/document`, { documentId: this.documentId, title: this.title, contents: JSON.stringify(this.$refs.editor.quill.editor.delta), previewContents: this.$refs.editor.quill.getText(0, 50) })
+            .put(`/document`, { documentId: this.documentId, title: this.title, contents: JSON.stringify(this.$refs.editor.quill.editor.delta), previewContents: this.$refs.editor.quill.getText(0, 50), category: this.category })
             .then(response => {
               this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다.', color: 'success' })
               this.newlyAddedImages = [];
@@ -407,6 +416,15 @@ export default {
   computed: {
     editor () {
       return this.$refs.editor.quill;
+    },
+    categoryItems () {
+      if (Array.isArray(this.board.categories) && this.board.categories.length > 0) {
+        let categories = this.board.categories.map(x => ({ text: x, value: x }));
+        categories.splice(0, 0, { text: '(카테고리 없음)', value: null })
+        return categories
+      } else {
+        return []
+      }
     }
   },
   watch: {
@@ -443,8 +461,12 @@ export default {
 #write-editor .quill-editor .ql-editor {
   min-height: 20rem;
 }
+#category{
+  display:none;
+}
 #title .v-input__slot {
   box-shadow: none;
+  margin-bottom:0;
 }
 #title,
 #toolbar,
