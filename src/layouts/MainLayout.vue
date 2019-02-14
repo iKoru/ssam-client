@@ -164,7 +164,8 @@ export default {
   margin-right: auto;
 }
 .popup{
-  width:auto;
+  width:100vw;
+  max-width:500px;
   min-width:300px;
 }
 .dismiss, .dismiss .v-icon{
