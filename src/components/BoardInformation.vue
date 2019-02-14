@@ -64,6 +64,7 @@
       </v-layout>
       <p v-if="board.boardType === 'T'" class="justify-center align-center text-xs-center mt-3 font-weight-bold">
         <template v-if="userBoards.some(x=>x.boardId === board.boardId)">내가 구독중인 토픽입니다.</template>
+        <template v-else-if="profile.auth !== 'A'">인증회원만 토픽을 구독할 수 있습니다.</template>
         <template v-else-if="board.allGroupAuth === 'READWRITE' || board.boardAuth.some(x=>userGroups.some(y=>y === x.groupId))">이 토픽을 구독할 수 있습니다.</template>
         <template v-else-if="board.allGroupAuth === 'READONLY'">이 토픽을 구독할 수 없지만 글을 읽을 수 있습니다.</template>
         <template v-else>내가 구독할 수 없는 조건의 토픽입니다.</template>
@@ -72,7 +73,7 @@
     <v-card-actions>
       <v-btn @click="leave" flat v-if="board.boardType === 'T' && userBoards.some(x=>x.boardId === board.boardId)">구독취소</v-btn>
       <v-spacer/>
-      <template v-if="board.boardType === 'T' && !userBoards.some(x=>x.boardId === board.boardId) && (board.allGroupAuth === 'READWRITE' || board.boardAuth.some(x=>userGroups.some(y=>y === x.groupId)))">
+      <template v-if="board.boardType === 'T' && profile.auth === 'A' && !userBoards.some(x=>x.boardId === board.boardId) && (board.allGroupAuth === 'READWRITE' || board.boardAuth.some(x=>userGroups.some(y=>y === x.groupId)))">
         <v-btn flat @click="dialog=false">취소</v-btn>
         <v-btn color="primary" @click="join" :loading="loading">구독</v-btn>
       </template>
@@ -109,6 +110,9 @@ export default {
     },
     userGroups () {
       return this.$store.getters.profile.groups;
+    },
+    profile () {
+      return this.$store.getters.profile;
     }
   },
   methods: {
