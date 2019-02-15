@@ -34,7 +34,7 @@
       </v-card-title>
     </v-card>
     <v-card flat :class="{'my-3':$route.path.endsWith('write') || $route.path.endsWith('edit')}">
-      <router-view :board="board" :documentBoardId.sync="documentBoardId"/>
+      <router-view :board="board" :documentBoardId.sync="documentBoardId" @updateBoardNotice="updateBoardNotice"/>
     </v-card>
     <v-card flat v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit')">
       <document-list :board="board" :hasChildren="!board.parentBoardId && childBoardItems.length > 1" @write="moveToWriteDocument" :documentBoardId.sync="documentBoardId"/>
@@ -277,6 +277,21 @@ export default {
     },
     closeDialog () {
       this.dialog = false;
+    },
+    updateBoardNotice (contents) {
+      this.$store.dispatch('showSnackbar', { text: contents.isAdd ? '이 글을 공지로 지정했습니다.' : '이 글을 공지에서 해제했습니다.', color: 'success' });
+      if (contents.isAdd) {
+        this.$store.getters.boards.find(x => x.boardId === contents.boardId).notices.push({ documentId: contents.documentId, isNotice: true, boardId: contents.boardId, title: contents.title });
+        if (this.board.boardId === contents.boardId) {
+          this.board.notices.push({ documentId: contents.documentId, isNotice: true, boardId: contents.boardId, title: contents.title })
+        }
+      } else {
+        const notices = this.$store.getters.boards.find(x => x.boardId === contents.boardId).notices;
+        notices.splice(notices.findIndex(x => x.documentId === contents.documentId), 1);
+        if (this.board.boardId === contents.boardId) {
+          this.board.notices.splice(this.board.notices.findIndex(x => x.documentId === contents.documentId), 1)
+        }
+      }
     }
   },
   created () {
