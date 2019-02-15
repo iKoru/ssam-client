@@ -86,7 +86,7 @@ export default {
   computed: {
     boards () {
       const original = this.$store.getters.boards;
-      return original.filter(x => x.parentBoardId || !original.some(y => y.parentBoardId === x.boardId));
+      return original.filter(x => !x.parentBoardId);
     },
     userBoards () {
       return this.$store.getters.userBoards;
