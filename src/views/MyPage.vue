@@ -15,12 +15,12 @@
                     <v-list-tile @click="deleteProfilePath">
                       <v-list-tile-title>프로필 사진 삭제</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="bottomSheet = false;openDialog()">
+                    <v-list-tile @click="bottomSheet = false;selectImage()">
                       <v-list-tile-title>프로필 사진 변경</v-list-tile-title>
                     </v-list-tile>
                   </v-list>
                 </component>
-                <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="openDialog" title="클릭하여 이미지 등록" v-else>
+                <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="selectImage" title="클릭하여 이미지 등록" v-else>
                   <img :src="require('@/static/img/defaultUser.png')" alt="기본 프로필 이미지">
                 </v-avatar>
               </p>
@@ -110,19 +110,6 @@
           </v-layout>
         </v-card-actions>
       </v-card>
-      <v-dialog v-model="dialog" width="500" lazy content-class="overflow-hidden">
-        <v-card>
-          <v-card-title class="headline" primary-title>
-            <span>{{profile.picturePath? '프로필 사진 변경':'프로필 사진 등록'}}</span>
-            <v-spacer/>
-            <v-icon @click="dialog = false">close</v-icon>
-          </v-card-title>
-          <v-card-text>
-            <file-pond name="picture" ref="pond" :server="server" accepted-file-types="image/*"/>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-      <v-layout v-show="dialog"></v-layout>
     </v-layout>
   </v-container>
 </template>
@@ -130,43 +117,11 @@
 <script>
 import MainLayout from '../layouts/MainLayout';
 
-import 'filepond-polyfill';
-import vueFilePond, { setOptions } from 'vue-filepond';
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js';
-const FilePond = vueFilePond(FilePondPluginFileValidateType);
-setOptions({
-  labelIdle: '이미지를 여기로 끌어다놓거나 여기를 눌러서 올려주세요.(400KB 이내)',
-  labelFileWaitingForSize: '파일의 크기를 확인중입니다...',
-  labelFileSizeNotAvailable: '파일의 크기를 확인할 수 없습니다.',
-  labelFileLoading: '이미지를 불러오는 중...',
-  labelFileLoadError: '이미지를 불러오지 못헀습니다.',
-  labelFileProcessing: '서버로 업로드중...',
-  labelFileProcessingComplete: '이미지를 서버로 업로드하였습니다.',
-  labelFileProcessingAborted: '업로드가 취소되었습니다.',
-  labelFileProcessingError: '이미지를 업로드하지 못했습니다.',
-  labelTapToCancel: '',
-  labelTapToRetry: '재시도',
-  labelTapToUndo: '',
-  labelButtonRemoveItem: '삭제',
-  labelButtonAbortItemLoad: '중지',
-  labelButtonRetryItemLoad: '재시도',
-  labelButtonAbortItemProcessing: '취소',
-  labelButtonUndoItemProcessing: '재시도',
-  labelButtonProcessItem: '업로드',
-  labelFileTypeNotAllowed: '허용된 파일 형식이 아닙니다.',
-  fileValidateTypeLabelExpectedTypes: 'jpg, png, gif, png 등 이미지 파일만 업로드 가능합니다.',
-  allowRevert: false
-});
-
 export default {
   name: 'MyPage',
-  components: {
-    FilePond
-  },
   data () {
     return {
       loading: false,
-      dialog: false,
       grade: null,
       major: null,
       password: null,
@@ -177,30 +132,6 @@ export default {
       passwordRules: [v => !v || (v.length > 3 && v.length < 26) || '4~25자'],
       nickNameRules: [v => (!!v && v !== '') || '닉네임/필명을 입력해주세요.', v => (!!v && v.length > 3 && v.length <= 50) || '4~50자로 입력해주세요.'],
       bottomSheet: false,
-      server: {
-        process: (fieldName, file, metadata, load, error, progress, abort) => {
-          if (file.size > 400 * 1024) {
-            this.$store.dispatch('showSnackbar', { text: '이미지는 400KB 이내만 업로드할 수 있습니다.', color: 'error' });
-            abort();
-            return;
-          }
-          const formData = new FormData();
-          formData.append('picture', file, file.name);
-          this.$axios
-            .post('/user/picture', formData)
-            .then(response => {
-              this.profile.picturePath = response.data.picturePath;
-              this.dialog = false;
-              this.$store.dispatch('updateProfile', { picturePath: this.profile.picturePath });
-              load();
-            })
-            .catch(error => {
-              abort();
-              this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '프로필 이미지를 업로드하지 못했습니다.'}`, color: 'error' });
-            });
-          return { load, error, progress, abort };
-        }
-      },
       labels: {},
       userAuthItems: {
         N: '미인증(예비교사)',
@@ -417,18 +348,39 @@ export default {
           });
       }
     },
-    openDialog () {
-      this.dialog = true;
-      if (this.$refs.pond) {
-        this.$refs.pond.browse();
-      } else {
-        let check = setInterval(() => {
-          if (this.$refs.pond) {
-            clearInterval(check);
-            this.$refs.pond.browse();
-          }
-        }, 100);
+    selectImage () {
+      let input = document.getElementById('profileFile')
+      if (!input) {
+        input = document.createElement('input');
+        input.setAttribute('id', 'profileFile');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.classList.add('d-none');
+        document.body.appendChild(input);
       }
+      // Listen upload local image and save to server
+      input.onchange = () => {
+        if (input.files[0] && input.files[0].type.startsWith('image/')) {
+          if (input.files[0].size > 1024 * 400) {
+            this.$store.dispatch('showSnackbar', { text: '최대 400KB 이하의 이미지만 업로드할 수 있습니다.', color: 'error' });
+          } else {
+            const formData = new FormData();
+            formData.append('picture', input.files[0], input.files[0].name);
+            this.$axios
+              .post('/user/picture', formData)
+              .then(response => {
+                this.profile.picturePath = response.data.picturePath;
+                this.$store.dispatch('updateProfile', { picturePath: this.profile.picturePath });
+              })
+              .catch(error => {
+                this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '프로필 이미지를 업로드하지 못했습니다.'}`, color: 'error' });
+              });
+          }
+        } else {
+          this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });
+        }
+      };
+      input.click();
     }
   },
   watch: {
