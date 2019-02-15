@@ -160,7 +160,7 @@ export default {
       return this.$store.getters.boards;
     },
     pages () {
-      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
+      return this.pagination.rowsPerPage && this.totalDocuments > 0 ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
     }
   },
   methods: {
