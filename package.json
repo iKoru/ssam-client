@@ -17,7 +17,6 @@
     "@vue/cli-service-global": "^3.2.1",
     "autoprefixer": "^9.4.7",
     "axios": "^0.18.0",
-    "babel-polyfill": "^6.26.0",
     "file-loader": "^3.0.1",
     "formdata-polyfill": "^3.0.15",
     "moment": "^2.23.0",
