@@ -213,14 +213,16 @@ export default {
       let errors, nickName;
       switch (target) {
         case 'loungeNickName':
-          errors = this.loungeNickNameErrors;
-          nickName = this.profile.loungeNickName;
+          this.loungeNickNameErrors = [];
           this.$refs.loungeNickName.validate();
+          nickName = this.profile.loungeNickName;
+          errors = this.loungeNickNameErrors;
           break;
         case 'topicNickName':
-          errors = this.topicNickNameErrors;
-          nickName = this.profile.topicNickName;
+          this.topicNickNameErrors = [];
           this.$refs.topicNickName.validate();
+          nickName = this.profile.topicNickName;
+          errors = this.topicNickNameErrors;
           break;
         default:
           if (typeof callback === 'function') {
