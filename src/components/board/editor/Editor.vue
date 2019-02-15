@@ -3,10 +3,10 @@
     <v-flex id="title" class="mb-0 pb-0">
       <v-layout row align-center>
         <div>
-          <v-select :items="categoryItems" id="category" solo hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
+          <v-select :items="categoryItems" id="category" solo flat hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
         </div>
         <v-flex>
-          <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" :readonly="!!documentId" solo v-model="title" hide-details></v-text-field>
+          <v-text-field placeholder="제목" class="dense" solo flat :readonly="!!documentId" v-model="title" hide-details></v-text-field>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -107,7 +107,7 @@ export default {
       surveyDialog: false,
       survey: { questions: [] },
       isSurveyDeletable: false,
-      category: null,
+      category: '',
       editorOption: {
         placeholder: '내용을 입력해주세요.',
         modules: {
@@ -155,7 +155,7 @@ export default {
       this.formData.append('contents', JSON.stringify(this.$refs.editor.quill.editor.delta));
       this.formData.append('previewContents', this.$refs.editor.quill.getText(0, 50));
       this.formData.append('isAnonymous', this.isAnonymous);
-      if (this.category) {
+      if (this.category && this.category !== '') {
         this.formData.append('category', this.category);
       }
       this.formData.append('allowAnonymous', this.isAnonymous ? true : !this.disallowAnonymous);
@@ -292,7 +292,7 @@ export default {
     parseDocument (data) {
       this.title = data.title
       this.contents = JSON.parse(data.contents)
-      this.attachFromServer = data.attach
+      this.attachFromServer = data.attach.filter(x => x)
       this.isAnonymous = data.isAnonymous
       if (data.survey) {
         this.survey = data.survey
@@ -349,8 +349,8 @@ export default {
       }
     },
     async onImageChange (e) {
-      var self = this;
       var files = e.target.files || e.dataTransfer.files;
+      let quill = this.$refs.editor.quill
       if (files.length > 0) {
         for (var i = 0; i < files.length; i++) {
           if (files[i].size > 1024 * 1024 * 8) {
@@ -364,9 +364,25 @@ export default {
               reader.onload = () => {
                 // file type is only image.
                 if (/^image\//.test(files[i].type)) {
-                  let range = self.$refs.editor.quill.getSelection()
-                  self.$refs.editor.quill.insertEmbed(range == null ? self.$refs.editor.quill.getLength() : range.index, 'image', reader.result);
-                } else {
+                  let range = quill.getSelection()
+                  if (range) {
+                    if (quill.getLine(range.index)[1]) { // current line has the contents
+                      quill.insertText(range.index, '\n')
+                      range.index++;
+                    }
+                    quill.insertEmbed(range.index, 'image', reader.result);
+                    quill.insertText(++range.index, '\n')
+                    quill.setSelection(++range.index)
+                  } else {
+                    let index = quill.getLength()
+                    if (quill.getLine(index)[1]) { // last line has the contents
+                      quill.insertText(index, '\n')
+                      index++;
+                    }
+                    quill.insertEmbed(index, 'image', reader.result);
+                    quill.insertText(++index, '\n')
+                    quill.setSelection(++index)
+                  }
                 }
                 resolve();
               };
@@ -422,7 +438,7 @@ export default {
     categoryItems () {
       if (Array.isArray(this.board.categories) && this.board.categories.length > 0) {
         let categories = this.board.categories.map(x => ({ text: x, value: x }));
-        categories.splice(0, 0, { text: '(카테고리 없음)', value: null })
+        categories.splice(0, 0, { text: '(분류 없음)', value: '' })
         return categories
       } else {
         return []
@@ -467,7 +483,6 @@ export default {
   display:none;
 }
 #title .v-input__slot {
-  box-shadow: none;
   margin-bottom:0;
 }
 #title,

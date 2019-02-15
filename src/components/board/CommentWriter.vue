@@ -44,7 +44,7 @@ export default {
         theme: 'bubble'
       },
       content: '',
-      anonymous: this.isAnonymous | true,
+      anonymous: this.isAnonymous || true,
       newlyAddedImages: [],
       loading: false
     };
@@ -79,6 +79,7 @@ export default {
       // Listen upload local image and save to server
       input.onchange = async () => {
         let reader = new FileReader();
+        let quill = this.$refs.commentEditor.quill;
         reader.onerror = function (error) {
           console.log(error);
           this.$store.dispatch('showSnackbar', { text: '파일을 업로드하지 못했습니다.', color: 'error' });
@@ -88,14 +89,30 @@ export default {
             if (input.files[i].size > 1024 * 1024 * 8) {
               this.$store.dispatch('showSnackbar', { text: '최대 8MB 이하의 이미지만 업로드할 수 있습니다.', color: 'error' });
             } else {
-              let commentEditor = this.$refs.commentEditor;
               await new Promise((resolve, reject) => {
                 reader.readAsDataURL(input.files[i]);
                 reader.onload = () => {
                   // file type is only image.
                   if (/^image\//.test(input.files[i].type)) {
-                    let range = commentEditor.quill.getSelection();
-                    commentEditor.quill.insertEmbed(range == null ? commentEditor.quill.getLength() : range.index, 'image', reader.result);
+                    let range = quill.getSelection();
+                    if (range) {
+                      if (quill.getLine(range.index)[1]) { // current line has the contents
+                        quill.insertText(range.index, '\n')
+                        range.index++;
+                      }
+                      quill.insertEmbed(range.index, 'image', reader.result);
+                      quill.insertText(++range.index, '\n')
+                      quill.setSelection(++range.index)
+                    } else {
+                      let index = quill.getLength()
+                      if (quill.getLine(index)[1]) { // last line has the contents
+                        quill.insertText(index, '\n')
+                        index++;
+                      }
+                      quill.insertEmbed(index, 'image', reader.result);
+                      quill.insertText(++index, '\n')
+                      quill.setSelection(++index)
+                    }
                   }
                   resolve();
                 };

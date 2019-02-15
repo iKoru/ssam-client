@@ -151,6 +151,8 @@ export default {
               return 'UNAVAILABLE';
             }
           }
+        } else if (board.boardType === 'N' || board.boardType === 'E' || board.boardType === 'X') {
+          return 'AVAILABLE';
         } else {
           if (board.allowedGroups.some(x => x === profile.region || x === profile.major || x === profile.grade || profile.groups.includes(x))) {
             if (userBoards.some(x => x.boardId === board.boardId)) {

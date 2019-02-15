@@ -50,7 +50,7 @@
                       </div>
                     </v-layout>
                   </v-list-tile-title>
-                  <v-list-tile-sub-title>{{document.previewContents || '(텍스트가 없는 글입니다.)'}}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{(!document.previewContents || document.previewContents.trim() === '')? '(텍스트가 없는 글입니다.)' : document.previewContents}}</v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
               <v-divider :key="'divider'+document.documentId"/>
@@ -60,7 +60,12 @@
         <v-data-table v-else :headers="headers" xs12 :items="documents" class="last-tr-border" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
-              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text body-2':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">{{header.text}}</th>
+              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text body-2':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">
+                <v-select v-if="header.value === 'category'" :items="categoryItems" dense solo flat hide-details :class="{'mt-0 pt-0':true, 'primary--text':category !== ''}" :append-icon="null" v-model="category"></v-select>
+                <span v-else>
+                  {{header.text}}
+                </span>
+              </th>
             </tr>
           </template>
           <template slot="items" slot-scope="props">
@@ -106,7 +111,7 @@
           <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
             <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
           </v-btn>
-          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" class="grey--text short ma-0" color="secondary" :loading="loading">
+          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" :class="{'grey--text ma-0':true, 'short':$vuetify.breakpoint.smAndUp, 'ml-1':$vuetify.breakpoint.xsOnly }" color="secondary" :loading="loading">
             <v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon>
             <span v-else>새로고침</span>
           </v-btn>
@@ -139,7 +144,8 @@ export default {
       boardId: null, // local current boardId,
       noDataText: '아직 작성된 글이 없습니다. 첫 글을 작성해보세요!',
       searchQuery: null,
-      isCardView: !!localStorage.getItem('CardView')
+      isCardView: !!localStorage.getItem('CardView'),
+      category: ''
     };
   },
   computed: {
@@ -149,7 +155,7 @@ export default {
         headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
       }
       if (!this.hasChildren && this.board.categories.some(x => x)) {
-        headers.splice(0, 0, { text: '카테고리', value: 'category', sortable: false, align: 'left', width: '50' });
+        headers.splice(0, 0, { text: '분류', value: 'category', sortable: false, align: 'center', width: '50' });
       }
       if (this.hasChildren) {
         headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
@@ -160,14 +166,23 @@ export default {
       return this.$store.getters.boards;
     },
     pages () {
-      return this.pagination.rowsPerPage ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
+      return this.pagination.rowsPerPage && this.totalDocuments > 0 ? Math.ceil(this.totalDocuments / this.pagination.rowsPerPage) : 1;
+    },
+    categoryItems () {
+      if (Array.isArray(this.board.categories) && this.board.categories.length > 0) {
+        let categories = this.board.categories.map(x => ({ text: x, value: x }));
+        categories.splice(0, 0, { text: '분류', value: '' })
+        return categories
+      } else {
+        return []
+      }
     }
   },
   methods: {
     getDocuments () {
       this.loading = true;
       this.$axios
-        .get(`/${this.boardId}`, { params: { page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20 }, headers: { silent: true } })
+        .get(`/${this.boardId}`, { params: { page: this.pagination.page, rowsPerPage: this.$vuetify.breakpoint.xsOnly ? 10 : 20, category: this.category === '' ? undefined : this.category }, headers: { silent: true } })
         .then(response => {
           this.documents = response.data;
           this.totalDocuments = response.data.length > 0 ? response.data[0].totalCount : 0;
@@ -196,6 +211,7 @@ export default {
     switchView () {
       this.isCardView = !this.isCardView;
       if (this.isCardView) {
+        this.category = ''
         localStorage.setItem('CardView', this.isCardView);
       } else {
         localStorage.removeItem('CardView')
@@ -228,6 +244,9 @@ export default {
         this.pagination.page = val;
         this.getDocuments();
       }
+    },
+    category (val) {
+      this.getDocuments();
     }
   }
 };
@@ -243,12 +262,32 @@ export default {
   padding-left: 0;
   padding-right: 0;
 }
+#documentTable thead .v-text-field.v-text-field--solo .v-input__control{
+  min-height:32px;
+  font-size:14px;
+}
+#documentTable thead .v-select__selections{
+  justify-content:center;
+}
+#documentTable thead .v-select__selections .v-select__selection--comma{
+  margin:0;
+}
+#documentTable thead .primary--text .v-select__selections{
+  color:#3f51b5;
+}
+#documentTable thead .v-select__selections > input[type=text]{
+  display:none;
+}
 #documentTable tbody td,
 #documentTable tbody th {
   height: 32px;
 }
 #searchDocumentForm {
   min-width: 170px;
+}
+#searchDocumentForm .v-input__append-outer{
+  margin-top:auto;
+  margin-bottom:auto;
 }
 #cardView .v-list__tile__content .v-icon {
   vertical-align: text-top;

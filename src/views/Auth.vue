@@ -37,16 +37,16 @@
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
             <template v-if="$store.getters.profile.auth === 'E' && $store.getters.profile.emailVerifiedDate">
-              <v-btn @click="notAnymore" flat class="mt-2">더이상 보지 않기</v-btn>
+              <v-btn @click="notAnymore" flat class="mt-2" :block="$vuetify.breakpoint.xsOnly">더이상 보지 않기</v-btn>
               <div v-if="$vuetify.breakpoint.xsOnly"></div>
             </template>
             <template v-if="$store.getters.profile.auth !== 'E' || $store.getters.profile.emailVerifiedDate">
-              <v-btn @click="notToday" class="mt-2">오늘 더이상 보지 않기</v-btn>
+              <v-btn @click="notToday" class="mt-2" :block="$vuetify.breakpoint.xsOnly">오늘 더이상 보지 않기</v-btn>
               <div v-if="$vuetify.breakpoint.xsOnly"></div>
             </template>
-            <v-btn @click="goNext" class="mt-2">다음에 인증하기</v-btn>
+            <v-btn @click="goNext" class="mt-2" :block="$vuetify.breakpoint.xsOnly">다음에 인증하기</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="sendAuth" color="primary" :loading="loading" class="mt-2">{{$store.getters.auth.needEmail?'이메일 등록 및 ':''}}인증메일 보내기</v-btn>
+            <v-btn @click="sendAuth" color="primary" :loading="loading" class="mt-2" :block="$vuetify.breakpoint.xsOnly">{{$store.getters.auth.needEmail?'이메일 등록 및 ':''}}인증메일 보내기</v-btn>
           </v-layout>
         </v-card-actions>
       </v-card>

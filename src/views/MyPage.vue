@@ -215,7 +215,7 @@ export default {
       return process.env.NODE_ENV === 'development' || new Date().getMonth() === 2;
     },
     checkProfileUpdatable () {
-      return (!this.profile.infoModifiedDate || this.$moment(this.profile.infoModifiedDate, 'YYYYMMDD').year() < new Date().getYear()) && this.isMarch;
+      return (!this.profile.infoModifiedDate || (this.isMarch && this.$moment(this.profile.infoModifiedDate, 'YYYYMMDD').isBefore(this.$moment().date(1).month(2))));
     },
     checkLoungeNickNameUpdatable () {
       return (
