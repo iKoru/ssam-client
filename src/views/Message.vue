@@ -18,7 +18,7 @@
                   </td>
                   <td class="text-xs-left px-1" v-if="$vuetify.breakpoint.smAndUp" :title="props.item.chatType === 'T'?'토픽 닉네임':'라운지 필명'">{{ props.item.otherNickName }}</td>
                   <td class="text-xs-left multi-row px-2">{{getShortContents(props.item.lastContents)}}</td>
-                  <td class="text-xs-right px-2">{{props.item.lastSendTimestamp.fromNow()}}</td>
+                  <td class="text-xs-right px-2">{{props.item.lastSendTimestamp? props.item.lastSendTimestamp.fromNow() : ''}}</td>
                   <td class="px-2">
                     <v-btn class="short" @click.stop="deleteChat(props.item)" small color="error">삭제</v-btn>
                   </td>
@@ -123,7 +123,7 @@ export default {
       this.$axios
         .get('/message/list', { params: { page: this.pagination.page }, headers: { silent: true } })
         .then(response => {
-          this.chats = response.data.map(x => ({ ...x, lastSendTimestamp: this.$moment(x.lastSendTimestamp, 'YYYYMMDDHHmmss') }));
+          this.chats = response.data.map(x => ({ ...x, lastSendTimestamp: x.lastSendTimestamp ? this.$moment(x.lastSendTimestamp, 'YYYYMMDDHHmmss') : null }));
           this.totalChats = response.data.length > 0 ? response.data[0].totalCount : 0;
           this.loading = false;
         })
@@ -139,7 +139,7 @@ export default {
         if (message.data.text.trim().length > 0) {
           message.data.text = message.data.text.trim();
           const chat = this.chats.find(x => x.chatId === this.chatId);
-          const lastSendTimestamp = this.$moment(chat.lastSendTimestamp).format('YMMDDHHmmss');
+          const lastSendTimestamp = chat.lastSendTimestamp ? this.$moment(chat.lastSendTimestamp).format('YMMDDHHmmss') : this.$moment().format('YMMDDHHmmss');
           this.$axios
             .post('/message', { chatId: this.chatId, contents: message.data.text, lastSendTimestamp }, { headers: { silent: true } })
             .then(response => {
