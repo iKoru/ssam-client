@@ -149,7 +149,7 @@ export default {
         headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
       }
       if (!this.hasChildren && this.board.categories.some(x => x)) {
-        headers.splice(0, 0, { text: '카테고리', value: 'category', sortable: false, align: 'left', width: '50' });
+        headers.splice(0, 0, { text: '분류', value: 'category', sortable: false, align: 'center', width: '50' });
       }
       if (this.hasChildren) {
         headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
