@@ -358,7 +358,34 @@ export default {
             break;
           }
           if (/^image\//.test(files[i].type)) {
-            var reader = new FileReader();
+            await new Promise((resolve) => {
+              this.$loadImage(files[i], (img) => {
+                if (img.type === 'error') {
+                  this.$store.dispatch('showSnackbar', { text: '이미지를 업로드하지 못했습니다.', color: 'error' });
+                }
+                let range = quill.getSelection()
+                if (range) {
+                  if (quill.getLine(range.index)[1]) { // current line has the contents
+                    quill.insertText(range.index, '\n')
+                    range.index++;
+                  }
+                  quill.insertEmbed(range.index, 'image', img.toDataURL());
+                  quill.insertText(++range.index, '\n')
+                  quill.setSelection(++range.index)
+                } else {
+                  let index = quill.getLength()
+                  if (quill.getLine(index)[1]) { // last line has the contents
+                    quill.insertText(index, '\n')
+                    index++;
+                  }
+                  quill.insertEmbed(index, 'image', img.toDataURL());
+                  quill.insertText(++index, '\n')
+                  quill.setSelection(++index)
+                }
+                resolve();
+              }, { orientation: true })
+            })
+            /* var reader = new FileReader();
             await new Promise((resolve, reject) => {
               reader.readAsDataURL(files[i]);
               reader.onload = () => {
@@ -386,7 +413,7 @@ export default {
                 }
                 resolve();
               };
-            });
+            }); */
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
           }
