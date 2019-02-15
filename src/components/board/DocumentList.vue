@@ -36,7 +36,7 @@
                       <small v-if="hasChildren" class="grey--text lighten-1 mr-1">
                         [<router-link :to="'/'+document.boardId" class="grey--text lighten-1" @click.native.stop>{{ boardItems.some(x=>x.boardId === document.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === document.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === document.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
                       </small>
-                      <small v-else-if="board.categories.some(x=>x) && document.category" class="grey--text lighten-1 mr-1">[{{document.category}}]</small>
+                      <small v-else-if="board.categories && board.categories.some(x=>x) && document.category" class="grey--text lighten-1 mr-1">[{{document.category}}]</small>
                       <div class="ellipsis font-weight-bold body-2">{{document.title}}</div>
                       <v-spacer/>
                       <!--prettyhtml-ignore-->
@@ -155,7 +155,7 @@ export default {
         headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
       }
       if (!this.hasChildren && this.board.categories.some(x => x)) {
-        headers.splice(0, 0, { text: '분류', value: 'category', sortable: false, align: 'center', width: '50' });
+        headers.splice(0, 0, { text: '분류', value: 'category', sortable: false, align: 'center', width: '40' });
       }
       if (this.hasChildren) {
         headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
@@ -220,6 +220,7 @@ export default {
   },
   created () {
     this.page = this.$route.query.page * 1 > 0 && Number.isInteger(this.$route.query.page * 1) ? this.$route.query.page * 1 : 1; // set page and trigger the watch function
+    this.$root.$on('updateDocumentList', this.getDocuments)
   },
   watch: {
     '$route.params': {
@@ -261,6 +262,9 @@ export default {
 #documentTable thead th {
   padding-left: 0;
   padding-right: 0;
+}
+#documentTable thead .v-text-field.v-text-field--solo .v-input__slot{
+  padding:0 8px;
 }
 #documentTable thead .v-text-field.v-text-field--solo .v-input__control{
   min-height:32px;
