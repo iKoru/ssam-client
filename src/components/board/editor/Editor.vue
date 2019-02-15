@@ -3,10 +3,10 @@
     <v-flex id="title" class="mb-0 pb-0">
       <v-layout row align-center>
         <div>
-          <v-select :items="categoryItems" id="category" solo hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
+          <v-select :items="categoryItems" id="category" solo flat hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
         </div>
         <v-flex>
-          <v-text-field placeholder="제목" class="dense" :flat="$vuetify.breakpoint.xsOnly" :readonly="!!documentId" solo v-model="title" hide-details></v-text-field>
+          <v-text-field placeholder="제목" class="dense" solo flat :readonly="!!documentId" v-model="title" hide-details></v-text-field>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -438,7 +438,7 @@ export default {
     categoryItems () {
       if (Array.isArray(this.board.categories) && this.board.categories.length > 0) {
         let categories = this.board.categories.map(x => ({ text: x, value: x }));
-        categories.splice(0, 0, { text: '(카테고리 없음)', value: '' })
+        categories.splice(0, 0, { text: '(분류 없음)', value: '' })
         return categories
       } else {
         return []
@@ -483,7 +483,6 @@ export default {
   display:none;
 }
 #title .v-input__slot {
-  box-shadow: none;
   margin-bottom:0;
 }
 #title,
