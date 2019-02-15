@@ -22,7 +22,7 @@
                   <v-text-field slot="input" v-model="props.item.scrapGroupName" :rules="scrapGroupNameRules" label="스크랩 그룹 이름" class="dense pt-3" single-line></v-text-field>
                 </v-edit-dialog>
               </td>
-              <td class="justify-center layout px-0">
+              <td class="justify-center align-center layout px-0">
                 <v-icon small @click="deleteItem(props.index)">delete</v-icon>
               </td>
             </template>
