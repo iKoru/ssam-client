@@ -71,7 +71,7 @@
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
       </div>
       <div>
-        <v-checkbox :disabled="isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
+        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
       </div>
       <v-spacer></v-spacer>
     </v-layout>
@@ -446,9 +446,14 @@ export default {
     }
   },
   watch: {
-    isAnonymous: {
-      handler (to) {
-        if (to) this.disallowAnonymous = false;
+    isAnonymous (to) {
+      if (to) {
+        this.$nextTick(() => (this.disallowAnonymous = false));
+      }
+    },
+    disallowAnonymous (to) {
+      if (to) {
+        this.$nextTick(() => (this.isAnonymous = false));
       }
     }
   },
