@@ -71,7 +71,7 @@
         <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
       </div>
       <div>
-        <v-checkbox :disabled="isAnonymous" hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
+        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
       </div>
       <v-spacer></v-spacer>
     </v-layout>
@@ -119,7 +119,8 @@ export default {
           },
           imageDrop: true
         },
-        theme: this.$vuetify.breakpoint.xsOnly ? 'bubble' : 'snow'
+        theme: this.$vuetify.breakpoint.xsOnly ? 'bubble' : 'snow',
+        spellCheck: false
       },
       show: false,
       isAnonymous: false,
@@ -358,35 +359,33 @@ export default {
             break;
           }
           if (/^image\//.test(files[i].type)) {
-            var reader = new FileReader();
-            await new Promise((resolve, reject) => {
-              reader.readAsDataURL(files[i]);
-              reader.onload = () => {
-                // file type is only image.
-                if (/^image\//.test(files[i].type)) {
-                  let range = quill.getSelection()
-                  if (range) {
-                    if (quill.getLine(range.index)[1]) { // current line has the contents
-                      quill.insertText(range.index, '\n')
-                      range.index++;
-                    }
-                    quill.insertEmbed(range.index, 'image', reader.result);
-                    quill.insertText(++range.index, '\n')
-                    quill.setSelection(++range.index)
-                  } else {
-                    let index = quill.getLength()
-                    if (quill.getLine(index)[1]) { // last line has the contents
-                      quill.insertText(index, '\n')
-                      index++;
-                    }
-                    quill.insertEmbed(index, 'image', reader.result);
-                    quill.insertText(++index, '\n')
-                    quill.setSelection(++index)
+            await new Promise((resolve) => {
+              this.$loadImage(files[i], (img) => {
+                if (img.type === 'error') {
+                  this.$store.dispatch('showSnackbar', { text: '이미지를 업로드하지 못했습니다.', color: 'error' });
+                }
+                let range = quill.getSelection()
+                if (range) {
+                  if (quill.getLine(range.index)[1]) { // current line has the contents
+                    quill.insertText(range.index, '\n')
+                    range.index++;
                   }
+                  quill.insertEmbed(range.index, 'image', img.toDataURL());
+                  quill.insertText(++range.index, '\n')
+                  quill.setSelection(++range.index)
+                } else {
+                  let index = quill.getLength()
+                  if (quill.getLine(index)[1]) { // last line has the contents
+                    quill.insertText(index, '\n')
+                    index++;
+                  }
+                  quill.insertEmbed(index, 'image', img.toDataURL());
+                  quill.insertText(++index, '\n')
+                  quill.setSelection(++index)
                 }
                 resolve();
-              };
-            });
+              }, { canvas: true, orientation: true, meta: true })
+            })
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
           }
@@ -446,9 +445,14 @@ export default {
     }
   },
   watch: {
-    isAnonymous: {
-      handler (to) {
-        if (to) this.disallowAnonymous = false;
+    isAnonymous (to) {
+      if (to) {
+        this.$nextTick(() => (this.disallowAnonymous = false));
+      }
+    },
+    disallowAnonymous (to) {
+      if (to) {
+        this.$nextTick(() => (this.isAnonymous = false));
       }
     }
   },

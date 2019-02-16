@@ -41,7 +41,8 @@ export default {
           imageDrop: true
         },
         formData: undefined,
-        theme: 'bubble'
+        theme: 'bubble',
+        spellCheck: false
       },
       content: '',
       anonymous: this.isAnonymous || true,
@@ -89,34 +90,33 @@ export default {
             if (input.files[i].size > 1024 * 1024 * 8) {
               this.$store.dispatch('showSnackbar', { text: '최대 8MB 이하의 이미지만 업로드할 수 있습니다.', color: 'error' });
             } else {
-              await new Promise((resolve, reject) => {
-                reader.readAsDataURL(input.files[i]);
-                reader.onload = () => {
-                  // file type is only image.
-                  if (/^image\//.test(input.files[i].type)) {
-                    let range = quill.getSelection();
-                    if (range) {
-                      if (quill.getLine(range.index)[1]) { // current line has the contents
-                        quill.insertText(range.index, '\n')
-                        range.index++;
-                      }
-                      quill.insertEmbed(range.index, 'image', reader.result);
-                      quill.insertText(++range.index, '\n')
-                      quill.setSelection(++range.index)
-                    } else {
-                      let index = quill.getLength()
-                      if (quill.getLine(index)[1]) { // last line has the contents
-                        quill.insertText(index, '\n')
-                        index++;
-                      }
-                      quill.insertEmbed(index, 'image', reader.result);
-                      quill.insertText(++index, '\n')
-                      quill.setSelection(++index)
+              await new Promise((resolve) => {
+                this.$loadImage(input.files[i], (img) => {
+                  if (img.type === 'error') {
+                    this.$store.dispatch('showSnackbar', { text: '이미지를 업로드하지 못했습니다.', color: 'error' });
+                  }
+                  let range = quill.getSelection()
+                  if (range) {
+                    if (quill.getLine(range.index)[1]) { // current line has the contents
+                      quill.insertText(range.index, '\n')
+                      range.index++;
                     }
+                    quill.insertEmbed(range.index, 'image', img.toDataURL());
+                    quill.insertText(++range.index, '\n')
+                    quill.setSelection(++range.index)
+                  } else {
+                    let index = quill.getLength()
+                    if (quill.getLine(index)[1]) { // last line has the contents
+                      quill.insertText(index, '\n')
+                      index++;
+                    }
+                    quill.insertEmbed(index, 'image', img.toDataURL());
+                    quill.insertText(++index, '\n')
+                    quill.setSelection(++index)
                   }
                   resolve();
-                };
-              });
+                }, { canvas: true, orientation: true, meta: true })
+              })
             }
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });

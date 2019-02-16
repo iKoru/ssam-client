@@ -35,8 +35,8 @@
     <v-flex class="my-2">
       <v-layout row>
         <v-flex v-if="board.isOwner">
-          <v-btn v-if="board.notices.indexOf(documentId)>=0" @click="setNotice(false)" class="ma-0 px-2 short">공지해제</v-btn>
-          <v-btn v-else @click="setNotice(true)" class="ma-0 px-2 short">공지지정</v-btn>
+          <v-btn v-if="board.notices.some(x=>x.documentId === document.documentId)" @click="setNotice(false)" class="my-0 px-2 short">공지해제</v-btn>
+          <v-btn v-else @click="setNotice(true)" class="my-0 px-2 short">공지지정</v-btn>
         </v-flex>
         <v-spacer/>
         <v-flex pr-2 text-xs-right>
@@ -340,13 +340,7 @@ export default {
       this.$axios
         .put('/board/notice', { boardId: this.document.boardId, documentId: this.document.documentId, isAdd: isAdd })
         .then(response => {
-          this.$store.dispatch('showSnackbar', { text: isAdd ? '이 글을 공지로 지정했습니다.' : '이 글을 공지에서 해제했습니다.', color: 'success' });
-          if (isAdd) {
-            this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices.push({ documentId: this.document.documentId, isNotice: true, boardId: this.document.boardId, title: this.document.title });
-          } else {
-            const notices = this.$store.getters.boards.find(x => x.boardId === this.document.boardId).notices;
-            notices.splice(notices.findIndex(x => x.documentId === this.document.documentId), 1);
-          }
+          this.$emit('updateBoardNotice', { boardId: this.document.boardId, documentId: this.document.documentId, isAdd: isAdd, title: this.document.title });
         })
         .catch(error => {
           console.log(error);
