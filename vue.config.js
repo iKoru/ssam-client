@@ -22,11 +22,12 @@ module.exports = {
     loader: {
       test: /\.styl$/,
       loader: ['style-loader', 'css-loader', 'stylus-loader']
-    }
+    },
+    devtool:process.env.NODE_ENV === 'development'?'source-map':undefined
   },
 
   //publicPath: process.env.NODE_ENV === 'development'?'/':'/',   
-  transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/,  /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]quill-magic-url[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]formdata-polyfill[/\\\\]/],
+  transpileDependencies: [/node_modules[/\\\\]vuetify[/\\\\]/, /node_modules[/\\\\]escape-goat[/\\\\]/, /node_modules[/\\\\]msgdown[/\\\\]/, /node_modules[/\\\\]quill-image-drop-module[/\\\\]/, /node_modules[/\\\\]quill-magic-url[/\\\\]/, /node_modules[/\\\\]vue-beautiful-chat[/\\\\]/, /node_modules[/\\\\]formdata-polyfill[/\\\\]/],
   
   productionSourceMap:false,
   chainWebpack: config => {
