@@ -119,7 +119,8 @@ export default {
           },
           imageDrop: true
         },
-        theme: this.$vuetify.breakpoint.xsOnly ? 'bubble' : 'snow'
+        theme: this.$vuetify.breakpoint.xsOnly ? 'bubble' : 'snow',
+        spellCheck: false
       },
       show: false,
       isAnonymous: false,

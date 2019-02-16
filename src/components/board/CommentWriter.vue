@@ -41,7 +41,8 @@ export default {
           imageDrop: true
         },
         formData: undefined,
-        theme: 'bubble'
+        theme: 'bubble',
+        spellCheck: false
       },
       content: '',
       anonymous: this.isAnonymous || true,
