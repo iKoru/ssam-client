@@ -35,13 +35,13 @@
           <v-subheader>설명</v-subheader>
         </v-flex>
         <v-flex xs8 md10>
-          <div class="v-subheader">{{board.boardDescription || '(등록된 설명이 없습니다.)'}}</div>
+          <div class="v-subheader d-inline-block word-break-all">{{board.boardDescription || '(등록된 설명이 없습니다.)'}}</div>
         </v-flex>
         <v-flex xs4 md2>
           <v-subheader>공개여부</v-subheader>
         </v-flex>
         <v-flex xs8 md4>
-          <div class="v-subheader d-inline-block">{{board.allGroupAuth === 'NONE'?'비공개':'공개'}}</div>
+          <div class="v-subheader">{{board.allGroupAuth === 'NONE'?'비공개':'공개'}}</div>
         </v-flex>
         <v-flex xs4 md2>
           <v-subheader>익명 게시물</v-subheader>
