@@ -114,36 +114,8 @@ export default {
                     quill.setSelection(++index)
                   }
                   resolve();
-                }, { orientation: true })
+                }, { canvas: true, orientation: true, meta: true })
               })
-              /* await new Promise((resolve, reject) => {
-                reader.readAsDataURL(input.files[i]);
-                reader.onload = () => {
-                  // file type is only image.
-                  if (/^image\//.test(input.files[i].type)) {
-                    let range = quill.getSelection();
-                    if (range) {
-                      if (quill.getLine(range.index)[1]) { // current line has the contents
-                        quill.insertText(range.index, '\n')
-                        range.index++;
-                      }
-                      quill.insertEmbed(range.index, 'image', reader.result);
-                      quill.insertText(++range.index, '\n')
-                      quill.setSelection(++range.index)
-                    } else {
-                      let index = quill.getLength()
-                      if (quill.getLine(index)[1]) { // last line has the contents
-                        quill.insertText(index, '\n')
-                        index++;
-                      }
-                      quill.insertEmbed(index, 'image', reader.result);
-                      quill.insertText(++index, '\n')
-                      quill.setSelection(++index)
-                    }
-                  }
-                  resolve();
-                };
-              }); */
             }
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });

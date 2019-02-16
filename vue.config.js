@@ -22,7 +22,8 @@ module.exports = {
     loader: {
       test: /\.styl$/,
       loader: ['style-loader', 'css-loader', 'stylus-loader']
-    }
+    },
+    devtool:process.env.NODE_ENV === 'development'?'source-map':undefined
   },
 
   //publicPath: process.env.NODE_ENV === 'development'?'/':'/',   
