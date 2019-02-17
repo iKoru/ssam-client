@@ -31,13 +31,13 @@
                       <v-subheader @click="focus('loungeNickName')">라운지 필명</v-subheader>
                     </v-flex>
                     <v-flex sm4 xs8 py-0>
-                      <v-text-field ref="loungeNickName" placeholder="라운지 필명" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('loungeNickName')" v-model="profile.loungeNickName" :error-messages="loungeNickNameErrors" :readonly="!checkLoungeNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkLoungeNickNameUpdatable?'라운지와 프로필 등에서 사용되는 필명입니다.':'마지막 수정 후 1개월 뒤에 다시 바꿀 수 있습니다.'"></v-text-field>
+                      <v-text-field ref="loungeNickName" placeholder="라운지 필명" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('loungeNickName')" v-model="profile.loungeNickName" :error-messages="loungeNickNameErrors" :readonly="!checkLoungeNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkLoungeNickNameUpdatable?'라운지와 프로필 등에서 사용되는 필명입니다.':'마지막 수정 1개월 후에 다시 바꿀 수 있습니다.'"></v-text-field>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
                       <v-subheader @click="focus('topicNickName')">토픽 닉네임</v-subheader>
                     </v-flex>
                     <v-flex sm4 xs8 py-0>
-                      <v-text-field ref="topicNickName" placeholder="토픽 닉네임" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('topicNickName')" v-model="profile.topicNickName" :error-messages="topicNickNameErrors" :readonly="!checkTopicNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkTopicNickNameUpdatable?'토픽에서 사용되는 닉네임입니다.':'마지막 수정 후 1개월 뒤에 다시 바꿀 수 있습니다.'"></v-text-field>
+                      <v-text-field ref="topicNickName" placeholder="토픽 닉네임" :rules="nickNameRules" @keydown.enter.stop="submit" @blur="checkNickName('topicNickName')" v-model="profile.topicNickName" :error-messages="topicNickNameErrors" :readonly="!checkTopicNickNameUpdatable" class="mt-0 pt-0 dense" :hint="checkTopicNickNameUpdatable?'토픽에서 사용되는 닉네임입니다.':'마지막 수정 1개월 후에 다시 바꿀 수 있습니다.'"></v-text-field>
                     </v-flex>
                     <v-flex sm2 xs4 py-0>
                       <v-subheader :style="{'padding-bottom':$vuetify.breakpoint.xsOnly?'12px':false}">인증상태</v-subheader>
