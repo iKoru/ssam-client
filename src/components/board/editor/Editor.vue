@@ -11,7 +11,7 @@
       </v-layout>
     </v-flex>
     <v-flex xs12 id="write-editor">
-      <quill-editor v-model="content" ref="editor" :options="editorOption">
+      <quill-editor ref="editor" :options="editorOption">
         <div id="toolbar" slot="toolbar">
           <button class="ql-bold">Bold</button>
           <button class="ql-italic">Italic</button>
@@ -24,7 +24,6 @@
         </div>
       </quill-editor>
     </v-flex>
-    <div>{{savedContent}}</div>
     <v-dialog v-model="surveyDialog" max-width="500px" :fullscreen="$vuetify.breakpoint.xsOnly" scrollable v-if="!documentId">
       <survey-maker @deleteSurvey="deleteSurvey" @closeSurvey="closeSurvey" @extractSurvey="extractSurvey" :survey="survey" :isSurveyDeletable="isSurveyDeletable" :dialog="surveyDialog"/>
     </v-dialog>
@@ -68,10 +67,10 @@
     </v-slide-y-transition>
     <v-layout py-2 ml-3 justify-center v-if="board.allowAnonymous">
       <div class="mr-3">
-        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" label="익명"></v-checkbox>
+        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" :disabled="!!documentId" label="익명"></v-checkbox>
       </div>
       <div>
-        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" label="익명댓글불가"></v-checkbox>
+        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" :disabled="!!documentId" label="익명댓글불가"></v-checkbox>
       </div>
       <v-spacer></v-spacer>
     </v-layout>
@@ -100,10 +99,7 @@ export default {
   mixins: [BoardMixins],
   data () {
     return {
-      savedContent: undefined,
-      link: undefined,
       title: null,
-      content: '',
       surveyDialog: false,
       survey: { questions: [] },
       isSurveyDeletable: false,
@@ -122,7 +118,6 @@ export default {
         theme: this.$vuetify.breakpoint.xsOnly ? 'bubble' : 'snow',
         spellCheck: false
       },
-      show: false,
       isAnonymous: false,
       disallowAnonymous: false,
       formData: undefined,
@@ -133,17 +128,12 @@ export default {
     };
   },
   methods: {
-    onEditorChange ({ quill, html, text }) {
-      this.content = html;
-    },
     async post () {
       // manually add images as file
       if (!this.title || this.title.trim() === '') {
         this.$store.dispatch('showSnackbar', { text: '글 제목을 입력해주세요.', color: 'error' })
-        return;
-      } else if (!this.content || this.content.trim() === '') {
+      } else if (this.$refs.editor.quill.getText().replace(/\n/g, '').trim() === '' && this.$refs.editor.quill.editor.delta.ops.every(x => typeof x.insert === 'string')) {
         this.$store.dispatch('showSnackbar', { text: '글 내용을 입력해주세요.', color: 'error' })
-        return;
       }
       if (this.documentId) await this.uploadModifiedDocument();
       else await this.uploadDocument();
@@ -169,6 +159,7 @@ export default {
         .then(response => {
           this.newlyAddedImages = [];
           this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
+          this.$root.$emit('updateDocumentList');
         })
         .catch(error => {
           console.log(error);
@@ -292,7 +283,7 @@ export default {
     },
     parseDocument (data) {
       this.title = data.title
-      this.contents = JSON.parse(data.contents)
+      let contents = JSON.parse(data.contents)
       this.attachFromServer = data.attach.filter(x => x)
       this.isAnonymous = data.isAnonymous
       if (data.survey) {
@@ -304,7 +295,7 @@ export default {
       }
       if (data.attach) {
         let image;
-        this.contents.ops.forEach(item => {
+        contents.ops.forEach(item => {
           if (item.insert.hasOwnProperty('image')) {
             image = data.attach.find(x => x.attach_name === item.insert.image);
             if (image) {
@@ -316,7 +307,7 @@ export default {
         this.attachedFilenames = data.attach.filter(f => !f.insert).map(f => f.attach_name)
       }
 
-      this.$refs.editor.quill.setContents(this.contents)
+      this.$refs.editor.quill.setContents(contents)
     },
     openFileDialog () {
       document.getElementById('file-upload').click();
