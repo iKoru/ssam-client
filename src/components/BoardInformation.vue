@@ -22,7 +22,7 @@
             <router-link class="primary--text" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)
           </div>
         </v-flex>
-        <template v-if="board.boardType === 'T'">
+        <!--<template v-if="board.boardType === 'T'">
           <v-flex xs4 md2>
             <v-subheader>토픽지기</v-subheader>
           </v-flex>
@@ -30,7 +30,7 @@
             <div class="v-subheader">{{board.owner}}</div>
           </v-flex>
           <v-flex md6 v-if="$vuetify.breakpoint.mdAndUp"></v-flex>
-        </template>
+        </template>-->
         <v-flex xs4 md2>
           <v-subheader>설명</v-subheader>
         </v-flex>
