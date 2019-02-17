@@ -17,7 +17,7 @@
           <v-subheader>이름</v-subheader>
         </v-flex>
         <v-flex xs8 md4>
-          <div class="v-subheader">
+          <div class="v-subheader d-inline-block word-break-all">
             {{board.boardName}}(
             <router-link class="primary--text" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)
           </div>
