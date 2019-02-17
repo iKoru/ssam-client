@@ -1,7 +1,7 @@
 <template>
   <v-layout column px-3>
     <v-flex class="comment-editor">
-      <quill-editor v-model="content" ref="commentEditor" :options="editorOption"></quill-editor>
+      <quill-editor ref="commentEditor" :options="editorOption"></quill-editor>
     </v-flex>
     <v-flex>
       <v-layout row align-center py-2>
@@ -44,7 +44,6 @@ export default {
         theme: 'bubble',
         spellCheck: false
       },
-      content: '',
       anonymous: this.isAnonymous || true,
       newlyAddedImages: [],
       loading: false
@@ -63,9 +62,6 @@ export default {
     }
   },
   methods: {
-    onEditorChange ({ quill, html, text }) {
-      this.content = html;
-    },
     async selectImage () {
       let input = document.getElementById('commentFile')
       if (!input) {
@@ -167,7 +163,7 @@ export default {
         this.$store.dispatch('showSnackbar', { text: `${this.$store.getters.boards.find(x => x.boardId === this.boardId).boardName} 토픽을 구독하였습니다.`, color: 'info' });
       }
 
-      if (!this.content || this.content.trim() === '') {
+      if (this.$refs.commentEditor.quill.getText().replace(/\n/g, '').trim() === '' && this.$refs.commentEditor.quill.editor.delta.ops.every(x => typeof x.insert === 'string')) {
         this.$store.dispatch('showSnackbar', { text: '댓글 내용을 입력해주세요.', color: 'error' });
         return;
       }
