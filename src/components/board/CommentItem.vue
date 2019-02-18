@@ -6,7 +6,7 @@
           <v-chip label small color="primary" class="white--text ml-0 my-0 ml-3" v-if="isBest">베스트</v-chip>
         </v-flex>
         <v-flex v-if="!updatingComment">
-          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1':comment.isDeleted,'grey--text':comment.isDeleted, 'lighten-1':comment.isDeleted}"></div>
+          <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1 grey--text lighten-1':comment.isDeleted}"></div>
         </v-flex>
       </v-layout>
     </v-list-tile-title>

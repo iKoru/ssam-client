@@ -2,7 +2,7 @@
 <template>
   <div class="position-relative">
     <div class="pt-3 px-2 position-relative boardTitle">
-      <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 베스트</router-link>
+      <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 인기글</router-link>
     </div>
     <v-divider class="my-2 dark-border"/>
     <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
@@ -50,7 +50,7 @@ export default {
       })
       .catch(error => {
         console.log(error);
-        this.$store.dispatch('showSnackbar', { text: `베스트 게시물을 가져오는 데 오류가 발생했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
+        this.$store.dispatch('showSnackbar', { text: `인기글 목록을 가져오지 못했습니다.${error.response ? '[' + error.response.data.message + ']' : ''}`, color: 'error' });
       });
   }
 };
