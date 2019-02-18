@@ -1,10 +1,10 @@
 <template>
-  <v-layout column :px-3="!commentTo && !defaultComment">
-    <v-flex class="comment-editor">
+  <v-layout column>
+    <v-flex class="comment-editor px-3">
       <quill-editor ref="commentEditor" :options="editorOption"></quill-editor>
     </v-flex>
     <v-flex>
-      <v-layout row align-center py-2 :justify-end="$vuetify.breakpoint.xsOnly">
+      <v-layout row align-center py-2 pr-2 :justify-end="$vuetify.breakpoint.xsOnly">
         <span class="ml-3" v-show="allowAnonymous">
           <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>

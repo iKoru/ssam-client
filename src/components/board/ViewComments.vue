@@ -15,7 +15,7 @@
         <v-list two-line class="commentList py-0 pb-1">
           <template v-for="(item, index) in commentList">
             <v-list-tile :key="index">
-              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+              <comment-item :comment="item" :commentIndex="index" @openRecomment="openRecomment" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :isAddingChild="openRecommentIndex === index"/>
             </v-list-tile>
             <div :key="'child'+index" v-if="item.children">
               <v-list-group v-model="item.active" :key="item.title" :prepend-icon="item.action" v-if="item.children.length > 5" lazy>
