@@ -1,19 +1,19 @@
 <template>
-  <v-layout column px-3>
+  <v-layout column :px-3="!commentTo && !defaultComment">
     <v-flex class="comment-editor">
       <quill-editor ref="commentEditor" :options="editorOption"></quill-editor>
     </v-flex>
     <v-flex>
-      <v-layout row align-center py-2>
+      <v-layout row align-center py-2 :justify-end="$vuetify.breakpoint.xsOnly">
         <span class="ml-3" v-show="allowAnonymous">
-          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
+          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
-        <v-btn @click="selectImage" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
-          <v-icon>image</v-icon>이미지
+        <v-btn @click="selectImage" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :icon="$vuetify.breakpoint.xsOnly" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
+          <v-icon>image</v-icon><template v-if="$vuetify.breakpoint.smAndUp">이미지</template>
         </v-btn>
         <v-spacer/>
+        <v-btn v-if="defaultComment" small depressed @click="$emit('revokeUpdate')" class="short ma-0">취소</v-btn>
         <v-btn small depressed @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">{{defaultComment?'수정':'등록'}}</v-btn>
-        <v-btn v-if="defaultComment" small depressed @click="$emit('revokeUpdate')" color="default" class="short">취소</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -53,9 +53,9 @@ export default {
   mounted () {
     if (this.defaultComment) {
       let contents = JSON.parse(this.defaultComment.contents);
-      if (this.defaultComment.attach) {
-        contents.ops.filter(item => item.insert.image && this.defaultComment.attach.some(x => x.attach_name === item.insert.image)).forEach(item => {
-          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x.attach_name === item.insert.image).attach_path;
+      if (this.defaultComment.attach && this.defaultComment.attach.some(x => x)) {
+        contents.ops.filter(item => item.insert.image && this.defaultComment.attach.some(x => x && x.attach_name === item.insert.image)).forEach(item => {
+          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x && x.attach_name === item.insert.image).attach_path;
         });
       }
       this.$refs.commentEditor.quill.setContents(contents);
@@ -139,8 +139,8 @@ export default {
     },
     restoreServerImages () { // restore already existed image on server from attach_path to attach_name
       this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
-        if (item.insert.image && this.defaultComment.attach.some(x => x.attach_path === item.insert.image)) {
-          item.insert.image = this.defaultComment.attach.find(x => x.attach_path === item.insert.image).attach_name;
+        if (item.insert.image && this.defaultComment.attach.some(x => x && x.attach_path === item.insert.image)) {
+          item.insert.image = this.defaultComment.attach.find(x => x && x.attach_path === item.insert.image).attach_name;
         }
       });
     },
@@ -148,8 +148,8 @@ export default {
       this.$refs.commentEditor.quill.editor.delta.ops.forEach(item => {
         if (item.insert.image && this.newlyAddedImages.some(x => x.attach_name === item.insert.image)) {
           item.insert.image = this.newlyAddedImages.find(x => x.attach_name === item.insert.image).base64;
-        } else if (item.insert.image && this.defaultComment.attach.some(x => x.attach_name === item.insert.image)) {
-          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x.attach_name === item.insert.image).attach_path
+        } else if (item.insert.image && this.defaultComment.attach.some(x => x && x.attach_name === item.insert.image)) {
+          item.insert.image = this.webUrl + this.defaultComment.attach.find(x => x && x.attach_name === item.insert.image).attach_path
         }
       });
       this.newlyAddedImages = [];
@@ -252,13 +252,13 @@ export default {
     async processFileChange () {
       // new images are already in formdata
       // process deleted images
-      let currentImageId = this.$refs.commentEditor.quill.editor.delta.ops.filter(ops => ops.insert.image && this.defaultComment.attach.some(a => ops.insert.image === a.attach_name)).map(item => {
-        return this.defaultComment.attach.find(a => item.insert.image === a.attach_name).attach_id
+      let currentImageId = this.$refs.commentEditor.quill.editor.delta.ops.filter(ops => ops.insert.image && this.defaultComment.attach.some(a => a && ops.insert.image === a.attach_name)).map(item => {
+        return this.defaultComment.attach.find(a => a && item.insert.image === a.attach_name).attach_id
       })
 
       let promises = []
       this.defaultComment.attach.forEach(a => {
-        if (a.insert && !currentImageId.includes(a.attach_id)) { // inserted image, currently deleted
+        if (a && a.insert && !currentImageId.includes(a.attach_id)) { // inserted image, currently deleted
           promises.push(this.$axios.delete(`/comment/attach/${this.defaultComment.commentId}/${a.attach_id}`));
         }
       })
