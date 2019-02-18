@@ -77,7 +77,7 @@
     <v-layout row mt-3>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn class="primary" @click="post()">{{documentId?'수정':'등록'}}</v-btn>
+        <v-btn class="primary" @click="post()" :loading="loading">{{documentId?'수정':'등록'}}</v-btn>
       </v-flex>
     </v-layout>
   </v-layout>
@@ -124,7 +124,8 @@ export default {
       rawFileData: undefined,
       attachedFilenames: [], // for easy check
       attachFromServer: [], // for keeping attaches when modifying document
-      newlyAddedImages: []
+      newlyAddedImages: [],
+      loading: false
     };
   },
   methods: {
@@ -154,14 +155,17 @@ export default {
         this.formData.append('survey', JSON.stringify(this.survey));
       }
       this.processUploadFiles()
+      this.loading = true;
       this.$axios
-        .post('/document', this.formData)
+        .post('/document', this.formData, { headers: { silent: true } })
         .then(response => {
+          this.loading = false;
           this.newlyAddedImages = [];
           this.$router.push(`/${this.$route.params.boardId}/${response.data.documentId}`);
           this.$root.$emit('updateDocumentList');
         })
         .catch(error => {
+          this.loading = false;
           console.log(error);
           this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '글을 등록하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' })
           delete this.formData;
@@ -176,15 +180,18 @@ export default {
         this.formData.append('documentId', this.documentId)
         this.restoreServerImages(); // revert originally existed image src
         this.attachImages(); // change newly added image from base64 to filename here
+        this.loading = true;
         if (await this.processFileChange()) {
           this.$axios
-            .put(`/document`, { documentId: this.documentId, title: this.title, contents: JSON.stringify(this.$refs.editor.quill.editor.delta), previewContents: this.$refs.editor.quill.getText(0, 50), category: this.category })
+            .put(`/document`, { documentId: this.documentId, title: this.title, contents: JSON.stringify(this.$refs.editor.quill.editor.delta), previewContents: this.$refs.editor.quill.getText(0, 50), category: this.category }, { headers: { silent: true } })
             .then(response => {
+              this.loading = false;
               this.$store.dispatch('showSnackbar', { text: '글을 수정하였습니다.', color: 'success' })
               this.newlyAddedImages = [];
               this.$router.push(`/${this.$route.params.boardId}/${this.documentId}`);
             })
             .catch(error => {
+              this.loading = false;
               console.log(error);
               delete this.formData
               this.revertImages();
@@ -339,6 +346,10 @@ export default {
           this.attachedFilenames.push(files[i].name)
         }
       }
+      try {
+        this.$refs.fileInput.value = '';
+      } catch (error) {
+      }
     },
     async onImageChange (e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -361,7 +372,8 @@ export default {
                     quill.insertText(range.index, '\n')
                     range.index++;
                   }
-                  quill.insertEmbed(range.index, 'image', img.toDataURL());
+
+                  quill.insertEmbed(range.index, 'image', img.toDataURL(files[i].type, (files[i].type === 'image/jpeg' || files[i].type === 'image/webp') ? 0.91 : undefined));
                   quill.insertText(++range.index, '\n')
                   quill.setSelection(++range.index)
                 } else {
@@ -370,7 +382,7 @@ export default {
                     quill.insertText(index, '\n')
                     index++;
                   }
-                  quill.insertEmbed(index, 'image', img.toDataURL());
+                  quill.insertEmbed(index, 'image', img.toDataURL(files[i].type, (files[i].type === 'image/jpeg' || files[i].type === 'image/webp') ? 0.91 : undefined));
                   quill.insertText(++index, '\n')
                   quill.setSelection(++index)
                 }
@@ -380,6 +392,10 @@ export default {
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' })
           }
+        }
+        try {
+          this.$refs.imageInput.value = '';
+        } catch (error) {
         }
       }
     },

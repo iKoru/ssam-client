@@ -97,7 +97,7 @@ export default {
                       quill.insertText(range.index, '\n')
                       range.index++;
                     }
-                    quill.insertEmbed(range.index, 'image', img.toDataURL());
+                    quill.insertEmbed(range.index, 'image', img.toDataURL(input.files[i].type, (input.files[i].type === 'image/jpeg' || input.files[i].type === 'image/webp') ? 0.91 : undefined));
                     quill.insertText(++range.index, '\n')
                     quill.setSelection(++range.index)
                   } else {
@@ -106,7 +106,7 @@ export default {
                       quill.insertText(index, '\n')
                       index++;
                     }
-                    quill.insertEmbed(index, 'image', img.toDataURL());
+                    quill.insertEmbed(index, 'image', img.toDataURL(input.files[i].type, (input.files[i].type === 'image/jpeg' || input.files[i].type === 'image/webp') ? 0.91 : undefined));
                     quill.insertText(++index, '\n')
                     quill.setSelection(++index)
                   }
@@ -117,6 +117,11 @@ export default {
           } else {
             this.$store.dispatch('showSnackbar', { text: '이미지 파일만 업로드할 수 있습니다.', color: 'error' });
           }
+        }
+        try {
+          input.value = '';
+        } catch (error) {
+          input.parentNode.removeChild(input);
         }
       };
       input.click();
@@ -168,36 +173,44 @@ export default {
         return;
       }
 
-      if (!this.formData) this.formData = new FormData();
-      this.attachImages();
-      if (this.defaultComment) {
-        await this.updateComment();
-        return;
-      }
+      try {
+        if (!this.formData) this.formData = new FormData();
+        this.attachImages();
+        if (this.defaultComment) {
+          await this.updateComment();
+          return;
+        }
 
-      this.loading = true;
-      this.formData.append('documentId', this.$route.params.documentId);
-      this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta));
-      this.formData.append('isAnonymous', this.anonymous);
-      if (this.commentTo) {
-        this.formData.append('parentCommentId', this.commentTo);
+        this.loading = true;
+        this.formData.append('documentId', this.$route.params.documentId);
+        this.formData.append('contents', JSON.stringify(this.$refs.commentEditor.quill.editor.delta));
+        this.formData.append('isAnonymous', this.anonymous);
+        if (this.commentTo) {
+          this.formData.append('parentCommentId', this.commentTo);
+        }
+        this.$axios
+          .post('/comment', this.formData, { headers: { silent: true } })
+          .then(res => {
+            this.$refs.commentEditor.quill.setText('');
+            this.revertImages();
+            this.loading = false;
+            this.$emit('update');
+            delete this.formData;
+          })
+          .catch(error => {
+            console.log(error);
+            delete this.formData;
+            this.revertImages();
+            this.loading = false;
+            this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 등록하지 못했습니다.'}`, color: 'error' });
+          });
+      } catch (error) {
+        this.loading = false;
+        console.log(error);
+        this.$store.dispatch('showSnackbar', { text: `댓글을 등록하지 못했습니다. 다시 시도해주세요.[${error.message || error}]`, color: 'error' });
+        this.revertImages();
+        delete this.formData;
       }
-      this.$axios
-        .post('/comment', this.formData, { headers: { silent: true } })
-        .then(res => {
-          this.$refs.commentEditor.quill.setText('');
-          this.revertImages();
-          this.loading = false;
-          this.$emit('update');
-          delete this.formData;
-        })
-        .catch(error => {
-          console.log(error);
-          delete this.formData;
-          this.revertImages();
-          this.loading = false;
-          this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 등록하지 못했습니다.'}`, color: 'error' });
-        });
     },
     async updateComment () {
       // Convert Images And Upload First
@@ -209,6 +222,7 @@ export default {
         this.formData.append('documentId', this.defaultComment.documentId);
         this.formData.append('commentId', this.defaultComment.commentId);
         if (await this.processFileChange()) {
+          this.loading = true;
           this.$axios
             .put(`/comment`, { documentId: this.$route.params.documentId, commentId: this.defaultComment.commentId, contents: JSON.stringify(this.$refs.commentEditor.quill.editor.delta) })
             .then(response => {
@@ -230,7 +244,7 @@ export default {
       } catch (error) {
         this.loading = false;
         console.log(error);
-        this.$store.dispatch('showSnackbar', { text: `${error.response ? error.response.data.message : '댓글을 수정하지 못했습니다. 다시 시도해주세요.'}`, color: 'error' });
+        this.$store.dispatch('showSnackbar', { text: `댓글을 수정하지 못했습니다. 다시 시도해주세요.[${error.message || error}]`, color: 'error' });
         this.revertImages();
         delete this.formData;
       }
