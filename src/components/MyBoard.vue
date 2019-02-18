@@ -40,27 +40,27 @@
             </v-layout>
             <span class="ellipsis subtitle">드래그하여 순서를 변경할 수 있습니다.</span>
             <v-divider class="my-3"/>
-            <draggable v-model="topics" v-if="topics.length > 0">
+            <draggable v-model="topics" v-if="topics.length > 0" :options="{handle:'.cursor-move'}">
               <transition-group>
-                <v-layout class="cursor-move align-center" row v-for="(topic, index) in topics" :key="topic.boardId">
-                  <v-flex class="ellipsis align-center">
-                    <div class="align-center ellipsis">
+                <v-layout class="align-center" row v-for="(topic, index) in topics" :key="topic.boardId">
+                  <v-flex class="cursor-move ellipsis align-center">
+                    <div class="cursor-move align-center ellipsis">
                       {{topic.boardName}}
                       <v-icon v-if="topic.isOwner" class="vertical-align-middle" title="토픽지기">person</v-icon>
                     </div>
                   </v-flex>
                   <v-spacer/>
                   <template v-if="!topic.readRestrictDate && !topic.writeRestrictDate">
-                    <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click="removeItem(index)">구독해제</v-btn>
-                    <v-btn flat v-else primary small class="mx-0" @click="openDialog(topic)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
+                    <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click.native.prevent.stop="removeItem(index)">구독해제</v-btn>
+                    <v-btn flat v-else primary small class="mx-0" @click.native.prevent.stop="openDialog(topic)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
                   </template>
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
-                      <v-chip slot="activator" color="red" text-color="white" small>쓰기제한</v-chip>
+                      <v-chip slot="activator" color="red" text-color="white" class="cursor-move" small>쓰기제한</v-chip>
                       <span>{{$moment(topic.writeRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                     <v-tooltip v-if="topic.readRestrictDate" bottom>
-                      <v-chip slot="activator" color="red" text-color="white" small>읽기제한</v-chip>
+                      <v-chip slot="activator" color="red" text-color="white" class="cursor-move" small>읽기제한</v-chip>
                       <span>{{$moment(topic.readRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                   </template>
@@ -82,9 +82,9 @@
     </v-card-title>
     <v-card-actions pa-3>
       <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
-        <v-btn @click="reset" class="mt-2" flat>초기화</v-btn>
+        <v-btn @click="reset" class="mt-2" flat :block="$vuetify.breakpoint.xsOnly">초기화</v-btn>
         <v-spacer></v-spacer>
-        <v-btn @click="save" color="primary" :loading="loading" class="mt-2">저장</v-btn>
+        <v-btn @click="save" color="primary" :loading="loading" class="mt-2" :block="$vuetify.breakpoint.xsOnly">저장</v-btn>
       </v-layout>
     </v-card-actions>
   </v-card>
@@ -243,9 +243,6 @@ export default {
 };
 </script>
 <style>
-.cursor-move {
-  height: 40px;
-}
 .subtitle {
   display: block;
 }
