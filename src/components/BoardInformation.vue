@@ -58,7 +58,7 @@
             </v-subheader>
           </v-flex>
           <v-flex xs8 md10>
-            <div class="v-subheader">{{board.allGroupAuth === 'READWRITE'? '모든 인증된 회원들이 구독할 수 있습니다.': board.boardAuth.map(x=>x.groupName).join(', ')}}</div>
+            <div class="v-subheader d-inline-block word-break-all">{{board.allGroupAuth === 'READWRITE'? '모든 인증된 회원들이 구독할 수 있습니다.': board.boardAuth.map(x=>x.groupName).join(', ')}}</div>
           </v-flex>
         </template>
       </v-layout>

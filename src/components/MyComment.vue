@@ -21,7 +21,7 @@
               <td :class="{'text-xs-left multi-row cursor-pointer':true, 'px-0':$vuetify.breakpoint.xsOnly}" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
                 <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank" @click.native.stop>
                   {{ selectContents(props.item.contents) }}
-                  <span class="primary--text" title="대댓글 수">{{props.item.childCount > 0?'['+props.item.childCount+']':''}}</span>
+                  <span class="accent--text" title="대댓글 수">{{props.item.childCount > 0?'['+props.item.childCount+']':''}}</span>
                 </a>
               </td>
               <td class="text-xs-right px-2">{{ props.item.voteUpCount }}</td>
@@ -110,15 +110,17 @@ export default {
       }
     },
     selectContents (delta) {
-      let object;
+      let object, contents;
       try {
         object = JSON.parse(delta);
+        object.ops = object.ops.filter(x => typeof x.insert === 'string');
       } catch (error) {
-        return '';
+        return '(텍스트가 없는 댓글입니다.)';
       }
       let quill = new Quill(document.createElement('div'));
       quill.setContents(object);
-      return quill.getText(0, 50) + (quill.getLength() > 50 ? '...' : '');
+      contents = quill.getText(0, 50).replace(/\n/g, '').trim();
+      return contents === '' ? '(텍스트가 없는 댓글입니다.)' : (contents + (quill.getLength() > 50 ? '...' : ''));
     }
   },
   watch: {

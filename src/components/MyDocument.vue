@@ -21,7 +21,7 @@
               <td :class="{'text-xs-left multi-row cursor-pointer':true, 'px-0':$vuetify.breakpoint.xsOnly}" @click.stop="openLink(`/${props.item.boardId}/${props.item.documentId}`)">
                 <a :href="`/${props.item.boardId}/${props.item.documentId}`" target="_blank" @click.native.stop>
                   {{props.item.title}}
-                  <span class="primary--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
+                  <span class="accent--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </a>
               </td>
               <td class="text-xs-right px-2">{{ props.item.voteUpCount }}</td>
