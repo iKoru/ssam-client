@@ -33,7 +33,7 @@
     </v-flex>
     <v-divider/>
     <v-flex class="my-2">
-      <v-layout row>
+      <v-layout row id="document-actions">
         <v-flex v-if="board.isOwner">
           <v-btn v-if="board.notices.some(x=>x.documentId === document.documentId)" @click="setNotice(false)" class="my-0 px-2 short">공지해제</v-btn>
           <v-btn v-else @click="setNotice(true)" class="my-0 px-2 short">공지지정</v-btn>
