@@ -180,6 +180,10 @@ export default {
       }
 
       try {
+        this.$refs.commentEditor.quill.emitter.emit('text-change', this.$refs.commentEditor.quill.editor.delta)
+      } catch (error) {
+      }
+      try {
         if (!this.formData) this.formData = new FormData();
         this.attachImages();
         if (this.defaultComment) {

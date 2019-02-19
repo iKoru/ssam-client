@@ -1,6 +1,6 @@
 <template>
   <v-layout row>
-    <v-flex xs12>
+    <v-flex xs12 id="commentList">
       <v-card class="mb-3 elevation-1" flat v-if="best && best.length > 0">
         <v-list two-line class="commentList py-0">
           <template v-for="(item, index) in best">
@@ -120,6 +120,13 @@ export default {
       immediate: true
     },
     page (val) {
+      if (this.commentList) {
+        try {
+          document.getElementById('commentList').scrollIntoView({ behavior: 'smooth', block: 'start' })
+        } catch (error) {
+
+        }
+      }
       this.getCommentList();
     },
     documentId (val) {
