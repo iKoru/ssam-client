@@ -17,20 +17,11 @@
           <v-subheader>이름</v-subheader>
         </v-flex>
         <v-flex xs8 md4>
+          <!--prettyhtml-ignore-->
           <div class="v-subheader d-inline-block word-break-all">
-            {{board.boardName}}(
-            <router-link class="primary--text" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)
+            <span class="d-inline-block">{{board.boardName}} </span><span class="d-inline-block">(<router-link class="primary--text d-inline-flex" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)</span>
           </div>
         </v-flex>
-        <!--<template v-if="board.boardType === 'T'">
-          <v-flex xs4 md2>
-            <v-subheader>토픽지기</v-subheader>
-          </v-flex>
-          <v-flex xs8 md4>
-            <div class="v-subheader">{{board.owner}}</div>
-          </v-flex>
-          <v-flex md6 v-if="$vuetify.breakpoint.mdAndUp"></v-flex>
-        </template>-->
         <v-flex xs4 md2>
           <v-subheader>설명</v-subheader>
         </v-flex>
@@ -51,11 +42,7 @@
         </v-flex>
         <template v-if="board.allGroupAuth !== 'READWRITE'">
           <v-flex xs4 md2>
-            <v-subheader class="pr-0">
-              <span>
-                <span v-if="board.boardType === 'T'">구독/</span>글쓰기 조건
-              </span>
-            </v-subheader>
+            <v-subheader class="pr-0 d-inline">{{board.boardType === 'T'?'구독/':''}}글쓰기 조건</v-subheader>
           </v-flex>
           <v-flex xs8 md10>
             <div class="v-subheader d-inline-block word-break-all">{{board.allGroupAuth === 'READWRITE'? '모든 인증된 회원들이 구독할 수 있습니다.': board.boardAuth.map(x=>x.groupName).join(', ')}}</div>
