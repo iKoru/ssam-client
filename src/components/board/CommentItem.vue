@@ -8,6 +8,9 @@
         <v-flex v-if="!updatingComment">
           <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1 grey--text lighten-1':comment.isDeleted}"></div>
         </v-flex>
+        <v-flex v-else-if="isCommentWritable !== 'DELETED'">
+          <comment-writer :defaultComment="comment" @revokeUpdate="updatingComment=false" @update="updatingComment=false; $emit('update')" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :focus="true"/>
+        </v-flex>
       </v-layout>
     </v-list-tile-title>
     <v-list-tile-sub-title v-if="!comment.isDeleted" class="px-3">
@@ -49,9 +52,6 @@
           </template>
         </v-flex>
       </v-layout>
-      <v-layout v-else-if="isCommentWritable !== 'DELETED'">
-        <comment-writer :defaultComment="comment" @revokeUpdate="updatingComment=false" @update="updatingComment=false; $emit('update')" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
-      </v-layout>
     </v-list-tile-sub-title>
   </v-list-tile-content>
 </template>
@@ -72,6 +72,11 @@ export default {
     return {
       updatingComment: false
     }
+  },
+  mounted () {
+    this.$root.$on('closeEditingComment', () => {
+      this.updatingComment = false;
+    })
   },
   methods: {
     voteUp () {
@@ -98,7 +103,11 @@ export default {
         });
     },
     updateComment () {
-      this.updatingComment = true
+      this.$root.$emit('closeEditingComment');
+      this.$emit('openRecomment', -1);
+      this.$nextTick(() => {
+        this.updatingComment = true;
+      })
     },
     reportComment (item) {
       this.$axios
@@ -153,9 +162,11 @@ export default {
       return newText
     },
     getImagePath (imagePath) {
-      console.log(this.comment);
-      let attach = this.comment.attach;
-      return this.webUrl + attach.find(item => item.attachName === imagePath).attachPath;
+      if (this.comment.attach.some(x => x.attachName === imagePath)) {
+        return this.webUrl + this.comment.attach.find(item => item.attachName === imagePath).attachPath;
+      } else {
+        return imagePath;
+      }
     }
   }
 };

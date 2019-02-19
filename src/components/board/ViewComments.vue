@@ -29,7 +29,7 @@
                   <v-divider inset/>
                   <v-list-tile avatar>
                     <v-list-tile-action></v-list-tile-action>
-                    <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+                    <comment-item :comment="childItem" :commentIndex="childIndex" @openRecomment="openRecomment" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
                   </v-list-tile>
                 </div>
               </v-list-group>
@@ -38,12 +38,14 @@
                 <v-divider inset/>
                 <v-list-tile avatar>
                   <v-list-tile-action></v-list-tile-action>
-                  <comment-item :comment="childItem" :commentIndex="childIndex" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
+                  <comment-item :comment="childItem" :commentIndex="childIndex" @openRecomment="openRecomment" :children="true" @update="getCommentList" :reportTypes="reportTypes" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
                 </v-list-tile>
               </div>
             </div>
             <v-list-tile :key="'writer'+index" v-if="openRecommentIndex === index && isCommentWritable !== 'DELETED'" class="pl-5">
-              <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :boardId="boardId"/>
+              <div class="pl-2">
+                <CommentWriter :commentTo="item.commentId" @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable" :boardId="boardId" :focus="true"/>
+              </div>
             </v-list-tile>
             <v-divider :key="'divider'+index"></v-divider>
           </template>
@@ -94,8 +96,14 @@ export default {
         .catch(err => console.log(err));
     },
     openRecomment (commentIndex) {
-      if (this.openRecommentIndex === commentIndex) this.openRecommentIndex = -1;
-      else this.openRecommentIndex = commentIndex;
+      if (this.openRecommentIndex === commentIndex) {
+        this.openRecommentIndex = -1;
+      } else {
+        this.openRecommentIndex = commentIndex;
+      }
+      if (this.openRecommentIndex !== -1) {
+        this.$root.$emit('closeEditingComment')
+      }
     }
   },
   watch: {

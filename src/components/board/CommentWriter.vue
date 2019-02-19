@@ -3,17 +3,17 @@
     <v-flex class="comment-editor px-3">
       <quill-editor ref="commentEditor" :options="editorOption"></quill-editor>
     </v-flex>
-    <v-flex>
+    <v-flex class="comment-writer-actions">
       <v-layout row align-center py-2 pr-2 :justify-end="$vuetify.breakpoint.xsOnly">
         <span class="ml-3" v-show="allowAnonymous">
-          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
+          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0 small" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
-        <v-btn @click="selectImage" flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :icon="$vuetify.breakpoint.xsOnly" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
-          <v-icon>image</v-icon><template v-if="$vuetify.breakpoint.smAndUp">이미지</template>
+        <v-btn @click="selectImage" small flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :icon="$vuetify.breakpoint.xsOnly" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
+          <v-icon>image</v-icon><span v-if="$vuetify.breakpoint.smAndUp" class="ml-2">이미지</span>
         </v-btn>
         <v-spacer/>
         <v-btn v-if="defaultComment" small depressed @click="$emit('revokeUpdate')" class="short ma-0">취소</v-btn>
-        <v-btn small depressed @click="postComment" color="primary" class="short" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">{{defaultComment?'수정':'등록'}}</v-btn>
+        <v-btn small depressed @click="postComment" color="primary" class="short my-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">{{defaultComment?'수정':'등록'}}</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -26,7 +26,7 @@ import 'formdata-polyfill'
 export default {
   name: 'WriteComment',
   mixins: [BoardMixins],
-  props: ['commentTo', 'isAnonymous', 'allowAnonymous', 'isCommentWritable', 'boardId', 'defaultComment'],
+  props: ['commentTo', 'isAnonymous', 'allowAnonymous', 'isCommentWritable', 'boardId', 'defaultComment', 'focus'],
   data () {
     return {
       editorOption: {
@@ -59,6 +59,12 @@ export default {
         });
       }
       this.$refs.commentEditor.quill.setContents(contents);
+    }
+    if (this.focus) {
+      try {
+        this.$refs.commentEditor.$el.childNodes[1].childNodes[0].focus();
+      } catch (error) {
+      }
     }
   },
   methods: {
@@ -311,5 +317,9 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+.comment-writer-actions .small label{
+  margin-top:auto;
+  margin-bottom:auto;
 }
 </style>
