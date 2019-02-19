@@ -60,7 +60,7 @@
         <v-data-table v-else :headers="headers" xs12 :items="documents" class="last-tr-border" id="documentTable" hide-actions :rows-per-page-items="[$vuetify.breakpoint.xsOnly?10:20]" :loading="loading" :total-items="totalDocuments" :pagination.sync="pagination" :no-data-text="noDataText">
           <template slot="headers" slot-scope="props">
             <tr>
-              <th v-for="header in props.headers" :key="header.value" :class="{'px-1 font-weight-bold black--text body-2':true, 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.width || false">
+              <th v-for="header in props.headers" :key="header.value" role="columnheader" scope="col" :class="{'column px-1 font-weight-bold black--text body-2':true, 'ellipsis':header.value === 'title', 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.value === 'title'? '100%' : false">
                 <v-select v-if="header.value === 'category'" :items="categoryItems" dense solo flat hide-details :class="{'mt-0 pt-0':true, 'primary--text':category !== ''}" :append-icon="null" v-model="category"></v-select>
                 <span v-else>
                   {{header.text}}
@@ -76,7 +76,7 @@
                   [<router-link :to="'/'+props.item.boardId" class="grey--text lighten-1">{{ boardItems.some(x=>x.boardId === props.item.boardId)?($vuetify.breakpoint.smAndUp?boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(/\s/g, '').substring(0,5):boardItems.find(x=>x.boardId === props.item.boardId).boardName.replace(boardTypeItems[board.boardType],'').replace(/\s/g, '').substring(0,2)):'' }}</router-link>]
                 </v-layout>
               </td>
-              <td class="text-xs-center pa-1 grey--text lighten-1" v-if="!hasChildren && board.categories.some(x=>x)">{{ props.item.category?'['+props.item.category+']':'' }}</td>
+              <td class="text-xs-center pa-1 grey--text lighten-1" v-if="!hasChildren && board.categories.some(x=>x)"><template v-if="props.item.category">[<div class="ellipsis limit-width d-inline-flex">{{ props.item.category }}</div>]</template></td>
               <td :class="{'text-xs-left py-1 ellipsis cursor-pointer':true, 'px-2':!hasChildren, 'px-0':hasChildren, 'font-weight-bold':$route.params.documentId === props.item.documentId}" @click.stop="$router.push(`/${board.boardId}/${props.item.documentId}`)">
                 <v-layout row>
                   <div class="ellipsis text-xs-left">
@@ -85,7 +85,7 @@
                   <span class="accent--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </v-layout>
               </td>
-              <td class="text-xs-center pa-1 ellipsis" v-if="$vuetify.breakpoint.smAndUp">{{ props.item.nickName }}</td>
+              <td class="text-xs-center pa-1" v-if="$vuetify.breakpoint.smAndUp"><div class="ellipsis limit-width">{{ props.item.nickName }}</div></td>
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
@@ -150,15 +150,15 @@ export default {
   },
   computed: {
     headers () {
-      let headers = [{ text: '제목', value: 'title', sortable: false, align: 'center' }, { text: '추천', value: 'voteUpCount', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '30' : '50' }, { text: '날짜', value: 'writeDateTime', sortable: false, align: 'right', width: this.$vuetify.breakpoint.xsOnly ? '50' : '100' }];
+      let headers = [{ text: '제목', value: 'title', align: 'center' }, { text: '추천', value: 'voteUpCount', align: 'right' }, { text: '날짜', value: 'writeDateTime', align: 'right' }];
       if (this.$vuetify.breakpoint.smAndUp) {
-        headers.splice(1, 0, { text: '글쓴이', value: 'nickName', sortable: false, align: 'center', width: '100' });
+        headers.splice(1, 0, { text: '글쓴이', value: 'nickName', align: 'center' });
       }
       if (!this.hasChildren && this.board.categories.some(x => x)) {
-        headers.splice(0, 0, { text: '분류', value: 'category', sortable: false, align: 'center', width: '40' });
+        headers.splice(0, 0, { text: '분류', value: 'category', align: 'center' });
       }
       if (this.hasChildren) {
-        headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', sortable: false, align: 'center', width: this.$vuetify.breakpoint.smAndUp ? '100' : '50' });
+        headers.splice(0, 0, { text: this.boardTypeItems[this.board.boardType], value: 'boardId', align: 'center' });
       }
       return headers;
     },
@@ -253,9 +253,6 @@ export default {
 };
 </script>
 <style>
-#documentTable table {
-  table-layout: fixed;
-}
 #documentTable thead tr {
   height: 24px;
 }
@@ -285,6 +282,9 @@ export default {
 #documentTable tbody td,
 #documentTable tbody th {
   height: 32px;
+}
+#documentTable tbody .ellipsis.limit-width{
+  max-width:70px;
 }
 #searchDocumentForm {
   min-width: 170px;
