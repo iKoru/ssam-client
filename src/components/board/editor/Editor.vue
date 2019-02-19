@@ -136,6 +136,10 @@ export default {
       } else if (this.$refs.editor.quill.getText().replace(/\n/g, '').trim() === '' && this.$refs.editor.quill.editor.delta.ops.every(x => typeof x.insert === 'string')) {
         this.$store.dispatch('showSnackbar', { text: '글 내용을 입력해주세요.', color: 'error' })
       }
+      try {
+        this.$refs.editor.quill.emitter.emit('text-change', this.$refs.editor.quill.editor.delta)
+      } catch (error) {
+      }
       if (this.documentId) await this.uploadModifiedDocument();
       else await this.uploadDocument();
     },
