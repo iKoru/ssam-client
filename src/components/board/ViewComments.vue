@@ -51,7 +51,7 @@
           </template>
         </v-list>
         <v-flex text-xs-center mt-2 xs12 v-if="pages > 1">
-          <v-pagination id="commentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined"></v-pagination>
+          <v-pagination id="commentPagination" v-model="page" :length="pages" :total-visible="$vuetify.breakpoint.smAndUp?10:undefined" @input="pageChanged"></v-pagination>
         </v-flex>
         <div class="pt-2" v-if="isCommentWritable !== 'DELETED'">
           <comment-writer @update="getCommentList" :isAnonymous="isAnonymous" :allowAnonymous="allowAnonymous" :isCommentWritable="isCommentWritable"/>
@@ -104,6 +104,12 @@ export default {
       if (this.openRecommentIndex !== -1) {
         this.$root.$emit('closeEditingComment')
       }
+    },
+    pageChanged () {
+      try {
+        document.getElementById('document-actions').scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } catch (error) {
+      }
     }
   },
   watch: {
@@ -120,13 +126,6 @@ export default {
       immediate: true
     },
     page (val) {
-      if (this.commentList) {
-        try {
-          document.getElementById('commentList').scrollIntoView({ behavior: 'smooth', block: 'start' })
-        } catch (error) {
-
-        }
-      }
       this.getCommentList();
     },
     documentId (val) {

@@ -16,7 +16,7 @@ const router = new Router({
       component: () => import('@/views/Index'),
       beforeEnter: visitorOnly,
       meta: {
-        title: '선생님들의 노다지'
+        title: '교실 밖 선생님들의 이야기'
       }
     },
     {
@@ -156,7 +156,7 @@ const router = new Router({
       name: 'tools',
       component: () => import('@/views/Tools'),
       meta: {
-        title: '도구'
+        title: '생활기록부 도구'
       }
     },
     { // should be placed at the last of array
@@ -192,7 +192,7 @@ const router = new Router({
     } else if (to.hash) {
       return { selector: to.hash }
     } else {
-      return { x: 0, y: 0 }
+      return { selector: '#app' }
     }
   }
 })

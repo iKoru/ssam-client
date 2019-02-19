@@ -101,7 +101,7 @@
           </template>
           <template slot="no-data">
             <tr>
-              <td :colspan="$vuetify.breakpoint.smAndUp?4+(hasChildren?1:0):3+(hasChildren?1:0)" class="text-xs-center multi-row px-0">{{noDataText}}</td>
+              <td :colspan="$vuetify.breakpoint.smAndUp?4+(hasChildren?1:0)+(headers.some(x=>x.value === 'category')?1:0):3+(hasChildren?1:0)+(headers.some(x=>x.value === 'category')?1:0)" class="text-xs-center multi-row px-0">{{noDataText}}</td>
             </tr>
           </template>
         </v-data-table>
@@ -264,7 +264,7 @@ export default {
   padding-right: 0;
 }
 #documentTable thead .v-text-field.v-text-field--solo .v-input__slot{
-  padding:0 8px;
+  padding:0;
 }
 #documentTable thead .v-text-field.v-text-field--solo .v-input__control{
   min-height:32px;
