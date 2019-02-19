@@ -62,7 +62,7 @@ export default {
     }
     if (this.focus) {
       try {
-        this.$refs.commentEditor.$el.childNodes[1].childNodes[0].focus();
+        this.$refs.commentEditor.quill.setSelection(this.$refs.commentEditor.quill.getLength());
       } catch (error) {
       }
     }
