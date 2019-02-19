@@ -6,7 +6,7 @@
           <v-select :items="categoryItems" id="category" solo flat hide-details class="pt-0 mt-0 nowrap" v-model="category" v-if="board.categories.some(x=>x)" placeholder="카테고리 선택"></v-select>
         </div>
         <v-flex>
-          <v-text-field placeholder="제목" class="dense" solo flat :readonly="!!documentId" v-model="title" hide-details></v-text-field>
+          <v-text-field placeholder="제목" class="dense" solo flat :autofocus="!documentId" :readonly="!!documentId" v-model="title" hide-details></v-text-field>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -315,6 +315,10 @@ export default {
       }
 
       this.$refs.editor.quill.setContents(contents)
+      try {
+        this.$refs.editor.quill.setSelection(this.$refs.editor.quill.getLength());
+      } catch (error) {
+      }
     },
     openFileDialog () {
       document.getElementById('file-upload').click();

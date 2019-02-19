@@ -14,7 +14,7 @@
         <v-layout row xs12 wrap>
           <v-flex xs6 class="mb-1">
             <v-text-field v-if="board" v-model="boardId" class="dense" readonly label="토픽ID" hint="pedagy.com/<b>seoul</b>과 같이 URL주소에 들어가는 문구입니다."></v-text-field>
-            <v-text-field v-else v-model="boardId" :rules="boardIdRules" class="dense" :error-messages="boardIdErrors" maxlength="15" label="토픽ID" hint="pedagy.com/<b>seoul</b>과 같이 URL주소에 들어갈 문구입니다." placeholder="비워두면 임의로 생성됩니다." validate-on-blur @blur="checkBoardId"></v-text-field>
+            <v-text-field v-else v-model="boardId" autofocus :rules="boardIdRules" class="dense" :error-messages="boardIdErrors" maxlength="15" label="토픽ID" hint="pedagy.com/<b>seoul</b>과 같이 URL주소에 들어갈 문구입니다." placeholder="비워두면 임의로 생성됩니다." validate-on-blur @blur="checkBoardId"></v-text-field>
           </v-flex>
           <v-flex xs6 class="mb-1">
             <v-text-field v-model="boardName" :rules="boardNameRules" class="dense" maxlength="200" label="토픽 이름" required hint="토픽 목록에 표시되는 이름입니다." validate-on-blur></v-text-field>
