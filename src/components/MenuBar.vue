@@ -4,7 +4,7 @@
       <v-flex sm2 :class="{'loungeTab scrollContainer overflow-hidden position-relative':true, 'hide-menuBar':!menuBar}" order-sm1 xs6 order-xs1>
         <v-flex class="position-absolute menuBarTab">
           <v-tabs light hide-slider v-model="menu" :mandatory="false" height="32">
-            <v-tab :key="0" class="loungeTab flex" @click.stop="toggleMenuBar('lounge')">라운지</v-tab>
+            <v-tab :key="0" class="loungeTab primary flex" @click.stop="toggleMenuBar('lounge')">라운지</v-tab>
           </v-tabs>
         </v-flex>
         <v-layout row class="menuBarContents" :style="{'margin-top':menuBar?0:'32px'}" v-if="$vuetify.breakpoint.smAndUp">
@@ -50,12 +50,12 @@
         <v-layout row class="menuBarContents">
           <v-flex class="menuColumn position-relative" id="topicFixedColumn">
             <div class="switchTabIcon switchToLounge cursor-pointer" @click="toggleMenuBar('topic')">
-              <v-icon class="white--text">navigate_before</v-icon>
+              <v-icon>navigate_before</v-icon>
             </div>
             <div class="ml-2">
               <template v-if="topics.length > 2">
                 <v-flex v-for="n in 3" :key="n" class="ellipsis">
-                  <router-link :class="{'white--text':true, 'text-darken-1':topics[n-1].notJoined}" :title="topics[n-1].notJoined?'추천 토픽':topics[n-1].boardName" :to="'/'+topics[n-1].boardId">{{topics[n-1].boardName}}
+                  <router-link :class="{'text-darken-1':topics[n-1].notJoined}" :title="topics[n-1].notJoined?'추천 토픽':topics[n-1].boardName" :to="'/'+topics[n-1].boardId">{{topics[n-1].boardName}}
                     <v-chip v-if="topics[n-1].notJoined" label class="ma-0">추천</v-chip>
                   </router-link>
                 </v-flex>
@@ -68,7 +68,7 @@
                 </template>
                 <template v-else-if="topics.length === 1">
                   <v-flex class="ellipsis">
-                    <router-link :class="{'white--text':true, 'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
+                    <router-link :class="{'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
                       <v-chip v-if="topics[0].notJoined" label class="ma-0">추천</v-chip>
                     </router-link>
                   </v-flex>
@@ -77,12 +77,12 @@
                 </template>
                 <template v-else>
                   <v-flex class="ellipsis">
-                    <router-link :class="{'white--text':true, 'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
+                    <router-link :class="{'text-darken-1':topics[0].notJoined}" :title="topics[0].notJoined?'추천 토픽':topics[0].boardName" :to="'/'+topics[0].boardId">{{topics[0].boardName}}
                       <v-chip v-if="topics[0].notJoined" label class="ma-0">추천</v-chip>
                     </router-link>
                   </v-flex>
                   <v-flex class="ellipsis">
-                    <router-link :class="{'white--text':true, 'text-darken-1':topics[1].notJoined}" :title="topics[1].notJoined?'추천 토픽':topics[1].boardName" :to="'/'+topics[1].boardId">{{topics[1].boardName}}
+                    <router-link :class="{'text-darken-1':topics[1].notJoined}" :title="topics[1].notJoined?'추천 토픽':topics[1].boardName" :to="'/'+topics[1].boardId">{{topics[1].boardName}}
                       <v-chip v-if="topics[1].notJoined" label class="ma-0">추천</v-chip>
                     </router-link>
                   </v-flex>
@@ -94,7 +94,7 @@
         </v-layout>
       </v-flex>
       <v-flex order-sm2 order-xs3>
-        <v-tabs-items v-model="menu" :dark="menu!==undefined?menu===1:!isLight" :mandatory="false" touchless>
+        <v-tabs-items v-model="menu" :mandatory="false" touchless>
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents':true}">
             <template v-show="menu===0">
               <v-flex class="scrollContainer" v-if="$vuetify.breakpoint.smAndUp">
@@ -196,8 +196,8 @@
         </v-tabs-items>
       </v-flex>
       <v-flex xs6 sm2 class="topicTabMenuBar" order-xs2>
-        <v-tabs dark hide-slider v-model="menu" :mandatory="false" height="32">
-          <v-tab :key="1" class="topicTab flex" @click.stop="toggleMenuBar('topic')">토픽</v-tab>
+        <v-tabs hide-slider v-model="menu" :mandatory="false" height="32">
+          <v-tab :key="1" class="topicTab flex secondary" @click.stop="toggleMenuBar('topic')">토픽</v-tab>
         </v-tabs>
       </v-flex>
     </v-layout>
@@ -262,8 +262,8 @@ export default {
   margin-top: 0.1px;
 }
 #menubarContainer {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1px solid #9dd1b7;
+  border-bottom: 1px solid #9dd1b7;
 }
 .menuBarTab {
   max-height: 32px;
@@ -274,16 +274,20 @@ export default {
   position: absolute !important;
   width: 100%;
 }
-.loungeTab {
-  background-color: white;
+.primary a, .secondary a{
+  background-color:inherit;
+  color:white;
+}
+/*.loungeTab {
+  background-color: #9dd1b7;
 }
 .topicTab {
-  background-color: #424242;
+  background-color: #0067c2;
 }
 .topicTab a,
 .topicTab .flex {
   color: white;
-}
+}*/
 .v-tabs__div.topicTab {
   width: 100%;
   font-size: 16px;
@@ -348,7 +352,7 @@ export default {
   margin: auto 0px;
   padding: 0 20px;
   min-width: 100px;
-  border-right: 1px solid #e8e8e8;
+  border-right: 1px solid #9dd1b7;
   align-self:center;
 }
 .menuColumn .flex {
