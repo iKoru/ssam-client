@@ -2,8 +2,8 @@
   <v-container px-0 py-0 fluid>
     <v-layout>
       <v-navigation-drawer :value="$store.getters.menuDrawer" @input="drawerChanged" app id="menuDrawer">
-        <v-toolbar flat>
-          <v-list>
+        <v-toolbar flat class="bg-light">
+          <v-list class="py-0">
             <v-list-tile @click="myPage">
               <v-list-tile-title class="subheading">{{($store.getters.isLight?$store.getters.loungeNickName:$store.getters.topicNickName) +'님, 안녕하세요!'}}</v-list-tile-title>
             </v-list-tile>
@@ -14,7 +14,7 @@
           <v-list-group v-model="openLounge" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-title>
-                <b>라운지</b>
+                <b class="primary--text">라운지</b>
               </v-list-tile-title>
             </v-list-tile>
 
@@ -25,7 +25,7 @@
           <v-list-group v-model="openTopic" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-title>
-                <b>토픽</b>
+                <b class="secondary--text">토픽</b>
               </v-list-tile-title>
             </v-list-tile>
 

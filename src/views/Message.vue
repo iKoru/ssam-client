@@ -11,7 +11,7 @@
               <template slot="items" slot-scope="props">
                 <tr class="cursor-pointer" @click="getChat(props.item)">
                   <td class="px-2">
-                    <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
+                    <v-avatar :color="props.item.chatType !== 'T'?null:'secondary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
                       <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.svg')">
                       <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
                     </v-avatar>
@@ -62,17 +62,17 @@ export default {
       isChatOpen: false,
       colors: {
         header: {
-          bg: '#4e8cff',
+          bg: '#9dd1b7',
           text: '#ffffff'
         },
         launcher: {
-          bg: '#4e8cff'
+          bg: '#9dd1b7'
         },
         messageList: {
           bg: '#ffffff'
         },
         sentMessage: {
-          bg: '#4e8cff',
+          bg: '#9dd1b7',
           text: '#ffffff'
         },
         receivedMessage: {
@@ -80,7 +80,7 @@ export default {
           text: '#222222'
         },
         userInput: {
-          bg: '#f4f7f9',
+          bg: '#f3f9f6',
           text: '#565867'
         }
       },
@@ -175,7 +175,7 @@ export default {
       this.axios
         .get('/message', { params: { chatId: item.chatId } })
         .then(response => {
-          this.messageList = response.data.map(x => ({ author: x.isSender ? 'me' : item.otherNickName, type: 'text', data: { text: x.contents, meta: this.$moment(x.sendTimestamp, 'YYYYMMDDHHmmss').format('Y.M.D hh:mm:ss a') } })); console.log(this.messageList, 'messageList');
+          this.messageList = response.data.map(x => ({ author: x.isSender ? 'me' : item.otherNickName, type: 'text', data: { text: x.contents, meta: this.$moment(x.sendTimestamp, 'YYYYMMDDHHmmss').format('Y.M.D hh:mm:ss a') } }));
           this.messageList.reverse();
           if (this.disabled) {
             this.messageList.push({ type: 'system', data: { text: `${item.otherNickName} 님이 채팅을 나갔습니다.` } });
@@ -196,6 +196,15 @@ export default {
           console.log(error.response);
           this.$store.dispatch('showSnackbar', { text: error.response ? error.response.data.message : '채팅을 불러오지 못했습니다.', color: 'error' });
         });
+      if (item.chatType === 'T') {
+        this.colors.header.bg = '#0067c2'
+        this.colors.launcher.bg = '#0067c2'
+        this.colors.sentMessage.bg = '#0067c2'
+      } else {
+        this.colors.header.bg = '#9dd1b7'
+        this.colors.launcher.bg = '#9dd1b7'
+        this.colors.sentMessage.bg = '#9dd1b7'
+      }
       this.title = item.otherNickName + '님과의 대화';
     },
     deleteChat (item) {

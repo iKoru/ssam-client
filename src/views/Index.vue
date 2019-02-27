@@ -1,6 +1,6 @@
  <template>
   <div class="fill-height">
-    <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown">
+    <v-layout fill-height grid-list-sm fluid :column="$vuetify.breakpoint.smAndDown" :class="{'bg-light':$vuetify.breakpoint.smAndDown}">
       <v-flex>
         <div id="indexContents">
           <v-layout v-if="$vuetify.breakpoint.mdAndUp" column fill-height>

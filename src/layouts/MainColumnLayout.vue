@@ -20,13 +20,15 @@
                       <small-document-list :list="notice? notice.documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
                     <v-flex class="py-2 px-3 bg-light">
-                      <span class="subheading font-weight-bold">따끈따끈 베스트</span>
+                      <span class="subheading font-weight-bold cursor-default">따끈따끈 베스트</span>
                     </v-flex>
                     <v-flex class="px-2">
                       <small-document-list :list="best? best.documents : []" :maxCount="5" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
                     <v-flex class="py-2 px-3 bg-light">
-                      <router-link to="/tools" class="subheading font-weight-bold">생활기록부 도구</router-link>
+                      <router-link to="/tools" class="subheading font-weight-bold">생활기록부 도구
+                        <v-chip id="hotChip" color="error ma-0" text-color="white" label>hot</v-chip>
+                      </router-link>
                     </v-flex>
                     <v-flex class="text-xs-center"><!--ad--></v-flex>
                   </v-layout>
@@ -95,5 +97,14 @@ export default {
 }
 #columnAside {
   display: flex;
+}
+#hotChip {
+  height: 18px;
+  vertical-align:baseline;
+}
+#hotChip .v-chip__content {
+  cursor:pointer;
+  padding:2px 4px;
+  font-size: 12px;
 }
 </style>

@@ -27,7 +27,7 @@
                         </v-btn>
                       </v-flex>
                       <v-flex text-xs-center>
-                        <v-checkbox hide-details v-model="question.allowMultipleChoice" label="복수응답 허용" class="mt-0 pt-0"></v-checkbox>
+                        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" v-model="question.allowMultipleChoice" label="복수응답 허용" class="mt-0 pt-0"></v-checkbox>
                       </v-flex>
                     </v-layout>
                   </v-flex>

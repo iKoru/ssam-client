@@ -36,11 +36,11 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <router-link to="/search" class="d-flex fill-height align-center">
-      <v-icon>search</v-icon>
+      <v-icon :color="$store.getters.isLight?'primary':'secondary'">search</v-icon>
     </router-link>
     <v-menu offset-y left nudge-bottom="5px" :open-on-hover="$vuetify.breakpoint.smAndUp" v-model="menu">
       <v-btn small flat class="plain notificationActivator" v-if="$vuetify.breakpoint.smAndUp" slot="activator">
-        <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'primary'">
+        <v-avatar size="30px" class="mr-1" :color="$store.getters.isLight?null:'secondary'">
           <img v-if="$store.getters.isLight" :src="$store.getters.profile.picturePath || require('@/static/img/defaultUser.svg')" title="프로필 이미지">
           <span v-else class="white--text subheading">{{nickName? nickName.substring(0, 1) : '?'}}</span>
         </v-avatar>
