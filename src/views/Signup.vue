@@ -195,7 +195,7 @@
         </v-card>
         <v-layout row>
           <v-spacer></v-spacer>
-          <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-end align-center my-0 mr-3"></v-checkbox>
+          <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-end align-center my-0 mr-3" color="primary" onIcon="check_circle" offIcon="radio_button_unchecked"></v-checkbox>
           <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
         </v-layout>
       </v-stepper-content>
@@ -207,6 +207,9 @@
               <v-flex>
                 <v-form ref="form" v-model="valid">
                   <v-layout row xs12 wrap>
+                    <v-flex xs12 mb-3>
+                      <v-subheader class="pl-0">필수 정보</v-subheader>
+                    </v-flex>
                     <v-flex xs12>
                       <v-text-field v-model="userId" class="dense" :rules="userIdRules" :error-messages="userIdErrors" maxlength="50" label="아이디" required hint="최대 50자" validate-on-blur autofocus @blur="checkUserId"></v-text-field>
                     </v-flex>
@@ -215,6 +218,9 @@
                     </v-flex>
                     <v-flex xs6>
                       <v-text-field ref="rePassword" v-model="rePassword" class="dense" type="password" :error-messages="rePasswordErrors" maxlength="25" label="비밀번호 재입력" required hint="4~25자" validate-on-blur @blur="checkRePassword"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12 mb-3 mt-2>
+                      <v-subheader class="pl-0">선택 정보</v-subheader>
                     </v-flex>
                     <v-flex xs6>
                       <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" :error-messages="emailErrors" label="NEIS 이메일" hint="교사인증 메일을 받을 NEIS이메일" validate-on-blur @blur="checkEmail" placeholder="이메일ID"></v-text-field>
@@ -445,7 +451,7 @@ export default {
 </script>
 <style>
 #contractContents {
-  max-height: calc(100vh - 340px);
+  max-height: calc(100vh - 350px);
   overflow-y: scroll;
 }
 #signupStepper {

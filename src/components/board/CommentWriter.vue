@@ -6,7 +6,7 @@
     <v-flex class="comment-writer-actions">
       <v-layout row align-center py-2 pr-2 :justify-end="$vuetify.breakpoint.xsOnly">
         <span class="ml-3" v-show="allowAnonymous">
-          <v-checkbox hide-details label="익명" v-model="anonymous" class="pt-0 mt-0 small" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
+          <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" label="익명" v-model="anonymous" class="pt-0 mt-0 small" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
         <v-btn @click="selectImage" small flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :icon="$vuetify.breakpoint.xsOnly" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
           <v-icon>image</v-icon><span v-if="$vuetify.breakpoint.smAndUp" class="ml-2">이미지</span>

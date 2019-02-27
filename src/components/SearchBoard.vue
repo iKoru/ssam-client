@@ -38,7 +38,7 @@
                 </tr>
               </template>
               <template slot="actions-prepend">
-                <v-btn color="primary" flat @click="openTopicDialog">토픽 만들기</v-btn>
+                <v-btn color="accent" flat @click="openTopicDialog">토픽 만들기</v-btn>
                 <v-spacer></v-spacer>
               </template>
             </v-data-table>

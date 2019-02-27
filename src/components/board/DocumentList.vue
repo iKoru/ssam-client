@@ -41,12 +41,10 @@
                       <v-spacer/>
                       <!--prettyhtml-ignore-->
                       <div class="caption">
-                        <span v-if="document.nickName !== '' && $vuetify.breakpoint.smAndUp">{{document.nickName}} | </span>
+                        <span v-if="document.nickName !== '' && $vuetify.breakpoint.smAndUp">{{document.nickName}} </span>
                         <v-icon color="primary" small>thumb_up_alt</v-icon>
-                        <span class="primary--text">{{document.voteUpCount}}</span> |
-                        <v-icon color="accent" small>chat_bubble_outline</v-icon>
-                        <span class="accent--text">{{document.commentCount}}</span> |
-                        <span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
+                        <span class="primary--text font-weight-bold">{{document.voteUpCount}}</span>&nbsp;<v-icon color="accent" small>chat_bubble_outline</v-icon>
+                        <span class="accent--text font-weight-bold">{{document.commentCount}}</span>&nbsp;<span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
                       </div>
                     </v-layout>
                   </v-list-tile-title>
@@ -85,7 +83,7 @@
                   <span class="accent--text" title="댓글 수">{{props.item.commentCount > 0?'['+props.item.commentCount+']':''}}</span>
                 </v-layout>
               </td>
-              <td class="text-xs-center pa-1" v-if="$vuetify.breakpoint.smAndUp"><div class="ellipsis limit-width">{{ props.item.nickName }}</div></td>
+              <td class="text-xs-center pa-1" v-if="$vuetify.breakpoint.smAndUp"><div class="ellipsis limit-width2">{{ props.item.nickName }}</div></td>
               <td class="text-xs-right pa-1">{{ props.item.voteUpCount }}</td>
               <td class="text-xs-right pa-1 grey--text lighten-1">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</td>
             </tr>
@@ -111,7 +109,7 @@
           <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
             <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
           </v-btn>
-          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" :class="{'grey--text ma-0':true, 'short':$vuetify.breakpoint.smAndUp, 'ml-1':$vuetify.breakpoint.xsOnly }" color="secondary" :loading="loading">
+          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" :class="{'ma-0':true, 'short grey--text':$vuetify.breakpoint.smAndUp, 'ml-1':$vuetify.breakpoint.xsOnly}" :loading="loading">
             <v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon>
             <span v-else>새로고침</span>
           </v-btn>
@@ -286,6 +284,9 @@ export default {
 #documentTable tbody .ellipsis.limit-width{
   max-width:70px;
 }
+#documentTable tbody .ellipsis.limit-width2{
+  max-width:90px;
+}
 #searchDocumentForm {
   min-width: 170px;
 }
@@ -294,7 +295,7 @@ export default {
   margin-bottom:auto;
 }
 #cardView .v-list__tile__content .v-icon {
-  vertical-align: text-top;
+  vertical-align: middle;
   margin-right: 4px;
 }
 </style>

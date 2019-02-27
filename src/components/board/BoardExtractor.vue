@@ -2,10 +2,10 @@
 <template>
   <div class="position-relative">
     <div class="pt-3 px-2 position-relative boardTitle">
-      <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'">{{boardType === 'T'?'토픽':'라운지'}} 인기글</router-link>
+      <router-link :to="boardType==='T'?'/topicBest':'/loungeBest'" :class="{'secondary--text':secondary}">{{boardType === 'T'?'토픽':'라운지'}} 인기글</router-link>
     </div>
-    <v-divider class="my-2 dark-border"/>
-    <small class="boardExtractorPeriod">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
+    <v-divider :class="{'my-2':true, 'dark-border':!secondary, 'secondary-border':secondary}"/>
+    <small :class="{'boardExtractorPeriod':true, 'secondary--text':secondary}" :style="{'color':secondary?undefined:'#b5b5b5'}">{{period === 0?'오늘':(period === 1?'이번주':'이번달')}}</small>
     <v-carousel cycle hide-controls light v-model="period" class="periodBestCarousel text-xs-center" :interval="10000" :height="(maxCount || 10)*28 + 50">
       <v-carousel-item transition="fade-transition" reverse-transition="fade-transition">
         <small-document-list :list="items.daily" :maxCount="maxCount" v-if="items.daily && items.daily.length > 0" :showDateTime="false" :showVoteUpCount="true"></small-document-list>
@@ -35,7 +35,7 @@ export default {
   components: {
     SmallDocumentList
   },
-  props: ['boardType', 'maxCount'],
+  props: ['boardType', 'maxCount', 'secondary'],
   data () {
     return {
       period: 0,
@@ -84,6 +84,5 @@ export default {
   position: absolute;
   top: 16px;
   right: 8px;
-  color: #aaa;
 }
 </style>

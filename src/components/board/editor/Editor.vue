@@ -67,10 +67,10 @@
     </v-slide-y-transition>
     <v-layout py-2 ml-3 justify-center v-if="board.allowAnonymous">
       <div class="mr-3">
-        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="isAnonymous" :disabled="!!documentId" label="익명"></v-checkbox>
+        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="isAnonymous" :disabled="!!documentId" label="익명"></v-checkbox>
       </div>
       <div>
-        <v-checkbox hide-details class="mr-1 my-auto mb-0" v-model="disallowAnonymous" :disabled="!!documentId" label="익명댓글불가"></v-checkbox>
+        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="disallowAnonymous" :disabled="!!documentId" label="익명댓글불가"></v-checkbox>
       </div>
       <v-spacer></v-spacer>
     </v-layout>

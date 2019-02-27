@@ -23,11 +23,11 @@
             <v-textarea ref="boardDescription" v-model="boardDescription" :rows="3" maxlength="1000" height="80px" label="토픽 소개" hint="토픽 이름 아래에 작게 표시되는 설명입니다." validate-on-blur></v-textarea>
           </v-flex>
           <v-flex xs6>
-            <v-checkbox ref="allowAnonymous" v-model="allowAnonymous" class="dense mt-2" label="익명글 허용" hide-details></v-checkbox>
+            <v-checkbox ref="allowAnonymous" v-model="allowAnonymous" class="dense mt-2" label="익명글 허용" color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked"></v-checkbox>
           </v-flex>
           <v-flex xs6>
             <v-tooltip bottom>
-              <v-checkbox ref="useCategory" slot="activator" v-model="useCategory" class="dense mt-2" label="카테고리 분류 사용" hide-details></v-checkbox>
+              <v-checkbox ref="useCategory" slot="activator" v-model="useCategory" class="dense mt-2" label="카테고리 분류 사용" color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked"></v-checkbox>
               <span>글을 작성할 때 작성자가 기본/정보/질문 중 하나의 카테고리를 지정할 수 있습니다.</span>
             </v-tooltip>
           </v-flex>

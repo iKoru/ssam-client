@@ -27,7 +27,7 @@
                 <span class="error--text">금지어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item">{{item}}</v-chip>
+                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
@@ -41,7 +41,7 @@
                 <span class="warning--text">주의어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small color="secondary" :key="item">{{item}}</v-chip>
+                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="warningCandidate" placeholder="추가할 주의어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addWarningItems"></v-text-field>
@@ -85,10 +85,10 @@ export default {
       text: '',
       filtered: '금지어, 주의어가 입력되면 강조되어 표시됩니다.',
       debounce: null,
-      forbidden: ['금지어', '호호'],
-      defaultForbidden: ['금지어', '호호'],
-      warning: ['주의어', '키키'],
-      defaultWarning: ['주의어', '키키'],
+      forbidden: null,
+      defaultForbidden: [{ text: '대회', value: '대회' }, { text: '경시', value: '경시' }, { text: '공모전', value: '공모전' }, { text: '수상', value: '수상' }, { text: '논문', value: '논문' }, { text: '모의고사', value: '모의고사' }, { text: '토익', value: '토익' }, { text: '토플', value: '토플' }, { text: '텝스', value: '텝스' }, { text: '학회지', value: '학회지' }, { text: '헌혈', value: '헌혈' }, { text: '선플', value: '선플' }, { text: '모금', value: '모금' }, { text: '소양교육', value: '소양교육' }],
+      warning: null,
+      defaultWarning: [{ text: '(모든 영어단어)', value: /([a-z]+)/gi }, { text: '1인칭 시점 문장(\'~다.\')', value: /(했(?:습니)?다\.|하였(?:습니)?다\.|었(?:습니)?다\.|이다\.|느꼈(?:습니)?다\.|꼈(?:습니)?다\.|됐(?:습니)?다\.|되었(?:습니)?다\.|된다\.|았(?:습니)?다\.|얻어냈(?:습니)?다\.|얻어 냈(?:습니)?다\.|깨달았(?:습니)?다\.)/g }, { text: '적극적으로 참여', value: '적극적으로 참여' }, { text: '열심히 참여', value: '열심히 참여' }, { text: 'ppt', value: /(ppT)/gi }],
       candidate: null,
       warningCandidate: null
     };
@@ -113,6 +113,7 @@ export default {
   created () {
     this.$emit('update:layout', MainLayout);
     this.$store.dispatch('setColumnType', 'HIDE_SM');
+    this.reset();
   },
   methods: {
     inputChanged () {
@@ -121,11 +122,17 @@ export default {
       }
       this.debounce = setTimeout(() => {
         let words = this.text;
-        if (this.forbidden.length > 0) {
-          words = this.text.replace(new RegExp('(' + this.forbidden.join('|') + ')', 'g'), '<span class="error--text">$1</span>');
+        this.forbidden.filter(x => typeof x.value === 'object').forEach(x => {
+          words = words.replace(x.value, '<span class="error--text" title="' + x.text + '">$1</span>');
+        })
+        this.warning.filter(x => typeof x.value === 'object').forEach(x => {
+          words = words.replace(x.value, '<span class="warning--text" title="' + x.text + '">$1</span>');
+        })
+        if (this.forbidden.some(x => typeof x.value === 'string')) {
+          words = words.replace(new RegExp('(' + this.forbidden.filter(x => typeof x.value === 'string').map(x => x.value).join('|') + ')', 'g'), '<span class="error--text">$1</span>');
         }
-        if (this.warning.length > 0) {
-          words = words.replace(new RegExp('(' + this.warning.join('|') + ')', 'g'), '<span class="warning--text">$1</span>');
+        if (this.warning.some(x => typeof x.value === 'string')) {
+          words = words.replace(new RegExp('(' + this.warning.filter(x => typeof x.value === 'string').map(x => x.value).join('|') + ')', 'g'), '<span class="warning--text">$1</span>');
         }
         words = words.replace(/(?:\r\n|\r|\n)/g, '<br>');
         this.filtered = words;
@@ -133,19 +140,22 @@ export default {
     },
     itemRemoved (index) {
       this.forbidden.splice(index, 1);
+      this.inputChanged();
     },
     warningItemRemoved (index) {
       this.warning.splice(index, 1);
+      this.inputChanged();
     },
     addItems () {
       if (typeof this.candidate === 'string') {
         this.candidate.split(',').forEach(x => {
           x = x.replace(/(<|>)/g, '');
+          const escaped = x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           if (x !== '') {
-            if (this.forbidden.indexOf(x) >= 0) {
+            if (this.forbidden.some(y => y.value === escaped)) {
               return;
             }
-            this.forbidden.push(x);
+            this.forbidden.push({ text: x, value: escaped });
           }
         });
         this.inputChanged();
@@ -156,11 +166,12 @@ export default {
       if (typeof this.warningCandidate === 'string') {
         this.warningCandidate.split(',').forEach(x => {
           x = x.replace(/(<|>)/g, '');
+          const escaped = x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           if (x !== '') {
-            if (this.warning.indexOf(x) >= 0) {
+            if (this.warning.some(y => y.value === escaped)) {
               return;
             }
-            this.warning.push(x);
+            this.warning.push({ text: x, value: escaped });
           }
         });
         this.inputChanged();
@@ -184,7 +195,7 @@ export default {
       this.text = '';
       this.forbidden = this.defaultForbidden.slice();
       this.warning = this.defaultWarning.slice();
-      this.inputChanged();
+      this.filtered = '금지어, 주의어가 입력되면 강조되어 표시됩니다.';
     }
   }
 };

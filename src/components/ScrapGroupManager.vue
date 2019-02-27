@@ -28,17 +28,17 @@
             </template>
             <template slot="actions-prepend">
               <template v-if="$vuetify.breakpoint.xsOnly">
-                <v-btn class="short" :color="showCreateField?null:'primary'" small flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
+                <v-btn class="short" small flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
                 <v-btn class="short" color="primary" small @click="save" :loading="loading">저장</v-btn>
               </template>
               <v-spacer></v-spacer>
             </template>
           </v-data-table>
           <v-layout row v-if="$vuetify.breakpoint.smAndUp" align-center>
-            <v-btn id="largeCreateBtn" class="mb-3" :color="showCreateField?null:'primary'" flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
+            <v-btn id="largeCreateBtn" class="mb-3" flat @click="toggleCreateBtn">{{showCreateField?'취소':'추가'}}</v-btn>
             <template v-if="showCreateField">
               <v-text-field ref="newScrapGroupName" v-model="newScrapGroupName" validate-on-blur dense class="dense mt-0 pl-2" single-line label="추가할 그룹 이름" :rules="scrapGroupNameRules" @keydown.enter="addNewRow"></v-text-field>
-              <v-btn flat color="primary" @click="addNewRow">등록</v-btn>
+              <v-btn @click="addNewRow">등록</v-btn>
             </template>
             <v-spacer/>
             <v-btn color="primary" @click="save" :loading="loading">저장</v-btn>

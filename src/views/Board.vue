@@ -74,6 +74,11 @@ export default {
     DocumentList: () => import('@/components/board/DocumentList'),
     BoardInformation: () => import('@/components/BoardInformation')
   },
+  watch: {
+    dialog (val) {
+      document.body.style.position = val ? 'fixed' : 'initial';
+    }
+  },
   computed: {
     childBoardItems () {
       if (this.board.parentBoardId) {

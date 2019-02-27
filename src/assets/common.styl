@@ -1,4 +1,4 @@
-$body-font-family = 'Nanum Gothic', 'Roboto', sans-serif
+$body-font-family = 'Noto Sans KR', 'Nanum Gothic', 'Roboto', 'Malgun Gothic', sans-serif
 @import '~vuetify/src/stylus/app'
 html
   overflow-y: auto
@@ -49,11 +49,15 @@ td.ellipsis
   float:right
 .border-light
   border:1px solid #e8e8e8
+.border-primary
+  border:1px solid #9dd1b7
 .border-x-light
   border-left:1px solid #e8e8e8
   border-right:1px solid #e8e8e8
 .wrap
   white-space: normal
+.bg-light
+  background-color:#f3f9f6 !important
 @media screen and (-webkit-min-device-pixel-ratio:0) { 
   select,
   select:focus,
@@ -70,10 +74,12 @@ td.ellipsis
 .boardTitle
   font-size:16px
   font-weight:bold
-
+svg .st0{fill:#FFFFFF} svg .st1{fill:#0067C2} svg .st2{fill:#9DD1B7} svg .st3{fill:#83D6B4} svg .st4{fill:#3B1DCE} svg .st5{fill:none;stroke:#9DD1B7;stroke-width:5;stroke-linejoin:round;stroke-miterlimit:10} svg .st6{fill:#3B1DCE;stroke:#9DD1B7;stroke-width:5;stroke-linejoin:round;stroke-miterlimit:10} svg .st7{fill:#9655C9} svg .st8{fill:#707070}
 // vuetify-related
 .theme--light.v-divider.dark-border
-  border-color:rgba(0,0,0,0.5)
+  border-color:#959595
+.theme--light.v-divider.secondary-border
+  border-color:#0067c2
 .v-menu__content, .scrolling-touch
   -webkit-overflow-scrolling: touch
 .v-btn.plain:hover:before,

@@ -21,7 +21,7 @@
                   </v-list>
                 </component>
                 <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="selectImage" title="클릭하여 이미지 등록" v-else>
-                  <img :src="require('@/static/img/defaultUser.png')" alt="기본 프로필 이미지">
+                  <img :src="require('@/static/img/defaultUser.svg')" alt="기본 프로필 이미지">
                 </v-avatar>
               </p>
               <v-form ref="form" lazy-validation>
@@ -60,7 +60,7 @@
                   <v-divider class="my-2"></v-divider>
                   <v-layout>
                     <v-tooltip bottom>
-                      <v-switch slot="activator" class="pl-4" label="프로필 공개" v-model="profile.isOpenInfo"></v-switch>
+                      <v-switch slot="activator" class="pl-4" label="프로필 공개" color="primary" v-model="profile.isOpenInfo"></v-switch>
                       <span>다른 회원들이 내 프로필(사진, 필명, 지역, 학년, 전공)을 볼 수 있습니다.</span>
                     </v-tooltip>
                   </v-layout>
