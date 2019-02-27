@@ -12,7 +12,7 @@
                 <tr class="cursor-pointer" @click="getChat(props.item)">
                   <td class="px-2">
                     <v-avatar :color="props.item.chatType !== 'T'?null:'primary'" :title="props.item.otherNickName + '님과의 대화'" size="32px">
-                      <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.png')">
+                      <img v-if="props.item.chatType !== 'T'" :src="props.item.picturePath || require('@/static/img/defaultUser.svg')">
                       <span v-else class="white--text subheading">{{props.item.otherNickName === '(알 수 없음)'?'?':props.item.otherNickName.substring(0, 1)}}</span>
                     </v-avatar>
                   </td>
@@ -186,7 +186,7 @@ export default {
             {
               id: item.otherNickName,
               name: item.otherNickName,
-              imageUrl: item.chatType === 'T' ? '' : item.picturePath || require('@/static/img/defaultUser.png')
+              imageUrl: item.chatType === 'T' ? '' : item.picturePath || require('@/static/img/defaultUser.svg')
             }
           ];
           this.chatId = item.chatId;
