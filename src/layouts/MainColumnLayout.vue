@@ -10,53 +10,25 @@
             <v-flex xs12>
               <v-card flat>
                 <v-card-title>
-                  <v-layout column class="border-light">
-                    <v-flex class="pa-2 font-weight-bold grey lighten-3">
+                  <v-layout column class="border-primary">
+                    <v-flex class="py-2 px-3 bg-light">
                       <router-link to="/notice">
-                        <span>공지사항</span>
+                        <span class="subheading font-weight-bold">공지사항</span>
                       </router-link>
                     </v-flex>
                     <v-flex class="px-2">
                       <small-document-list :list="notice? notice.documents : []" :maxCount="2" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
-                    <v-flex class="pa-2 font-weight-bold grey lighten-3">
-                      <span>따끈따끈 베스트</span>
+                    <v-flex class="py-2 px-3 bg-light">
+                      <span class="subheading font-weight-bold">따끈따끈 베스트</span>
                     </v-flex>
                     <v-flex class="px-2">
                       <small-document-list :list="best? best.documents : []" :maxCount="5" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
-                    <v-flex class="pa-2 grey lighten-3 font-weight-bold">
-                      <router-link to="/tools">생활기록부 도구</router-link>
+                    <v-flex class="py-2 px-3 bg-light">
+                      <router-link to="/tools" class="subheading font-weight-bold">생활기록부 도구</router-link>
                     </v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
-                    <v-flex class="text-xs-center">광고가 들어갈것이다.</v-flex>
+                    <v-flex class="text-xs-center"><!--ad--></v-flex>
                   </v-layout>
                 </v-card-title>
               </v-card>

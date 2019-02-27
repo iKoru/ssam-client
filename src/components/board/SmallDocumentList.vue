@@ -13,7 +13,7 @@
             <v-list-tile-title>
               <v-layout row>
                 <span class="ellipsis">{{list[n-1].title}}</span>
-                <span v-if="list[n-1].commentCount > 0" class="primary--text">[{{list[n-1].commentCount}}]</span>
+                <span v-if="list[n-1].commentCount > 0" class="accent--text">[{{list[n-1].commentCount}}]</span>
                 <v-spacer/>
                 <v-subheader class="tiny align-center mx-1 px-0" v-if="showDateTime">
                   <small>{{list[n-1].writeDateTime.fromNow()}}</small>

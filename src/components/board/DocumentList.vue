@@ -43,10 +43,8 @@
                       <div class="caption">
                         <span v-if="document.nickName !== '' && $vuetify.breakpoint.smAndUp">{{document.nickName}} | </span>
                         <v-icon color="primary" small>thumb_up_alt</v-icon>
-                        <span class="primary--text">{{document.voteUpCount}}</span> |
-                        <v-icon color="accent" small>chat_bubble_outline</v-icon>
-                        <span class="accent--text">{{document.commentCount}}</span> |
-                        <span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
+                        <span class="primary--text font-weight-bold">{{document.voteUpCount}}</span>&nbsp;<v-icon color="accent" small>chat_bubble_outline</v-icon>
+                        <span class="accent--text font-weight-bold">{{document.commentCount}}</span>&nbsp;<span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
                       </div>
                     </v-layout>
                   </v-list-tile-title>
@@ -111,7 +109,7 @@
           <v-btn flat small @click="switchView" icon class="ma-0" :title="isCardView?'목록형 보기':'카드형 보기'">
             <v-icon>{{isCardView?'list':'dashboard'}}</v-icon>
           </v-btn>
-          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" :class="{'grey--text ma-0':true, 'short':$vuetify.breakpoint.smAndUp, 'ml-1':$vuetify.breakpoint.xsOnly }" color="secondary" :loading="loading">
+          <v-btn flat small @click="getDocuments" :icon="$vuetify.breakpoint.xsOnly" :class="{'grey--text ma-0':true, 'short':$vuetify.breakpoint.smAndUp, 'ml-1':$vuetify.breakpoint.xsOnly}" :loading="loading">
             <v-icon v-if="$vuetify.breakpoint.xsOnly">refresh</v-icon>
             <span v-else>새로고침</span>
           </v-btn>

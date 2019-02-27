@@ -7,9 +7,9 @@
         </div>
       </v-flex>
       <v-flex text-xs-center>
-        <router-link to="/contract" class="caption mr-1 primary--text">이용약관</router-link>|
-        <router-link to="/privacy" class="caption mr-1 primary--text">개인정보 처리방침</router-link>|
-        <router-link to="/rules" class="caption primary--text">커뮤니티 이용규칙</router-link>
+        <router-link to="/contract" class="caption mr-1">이용약관</router-link>|
+        <router-link to="/privacy" class="caption mr-1">개인정보 처리방침</router-link>|
+        <router-link to="/rules" class="caption">커뮤니티 이용규칙</router-link>
       </v-flex>
     </v-layout>
   </v-footer>
