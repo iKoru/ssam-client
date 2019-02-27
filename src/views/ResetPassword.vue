@@ -30,9 +30,9 @@
         </v-card-title>
         <v-card-actions pa-3>
           <v-layout :row="$vuetify.breakpoint.smAndUp" :column="$vuetify.breakpoint.xsOnly" wrap text-xs-right>
-            <v-btn @click="goIndex" class="mt-2">돌아가기</v-btn>
+            <v-btn @click="goIndex" class="mt-2" round depressed>돌아가기</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="sendReset" color="primary" :loading="loading" class="mt-2">임시 비밀번호 만들기</v-btn>
+            <v-btn @click="sendReset" color="primary" :loading="loading" class="mt-2" round depressed>임시 비밀번호 만들기</v-btn>
           </v-layout>
         </v-card-actions>
       </v-card>

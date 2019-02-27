@@ -13,10 +13,10 @@
                   <v-spacer/>
                   <div>
                     <router-link to="/index">
-                      <v-btn flat>메인화면으로 이동</v-btn>
+                      <v-btn flat depressed>메인화면으로 이동</v-btn>
                     </router-link>
                     <router-link to="/signin">
-                      <v-btn color="primary">로그인</v-btn>
+                      <v-btn color="primary" round depressed>로그인</v-btn>
                     </router-link>
                   </div>
                 </v-layout>

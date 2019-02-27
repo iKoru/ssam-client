@@ -7,7 +7,7 @@
             <div class="mr-3 hidden-sm-and-down ml-auto">
               <img :src="require('@/static/img/error/'+errorCode+'.svg')" alt="에러 이미지">
             </div>
-            <div :class="{'text-xs-center':true, 'ml-auto':$vuetify.breakpoint.smAndDown, 'mr-auto':true}">
+            <div :class="{'text-xs-center mr-auto':true, 'ml-auto':$vuetify.breakpoint.smAndDown}">
               <h1 class="errorCode">{{errorCode}}</h1>
               <h2 class="my-3 headline" v-if="errorCode === 400">올바르지 않은 요청입니다.</h2>
               <h2 class="my-3 headline" v-else-if="errorCode === 403">회원 인증 후 이용할 수 있습니다.</h2>
