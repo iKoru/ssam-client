@@ -1,7 +1,7 @@
 <template>
   <v-container :class="{'pa-3':$vuetify.breakpoint.xsOnly}">
-    <div class="mx-auto mb-5" style="width:50%">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1650 512" style="enable-background:new 0 0 1650 512;" xml:space="preserve">
+    <div class="mx-auto mb-5 position-relative" style="width:50%;height:0;padding-top:16%">
+      <svg version="1.1" id="signin-logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1650 512" style="enable-background:new 0 0 1650 512;" xml:space="preserve">
         <path class="st1" d="M698.2,240.1c0-17.4-14.1-31.6-31.6-31.6c-17.4,0-31.6,14.1-31.6,31.6c0,17.4,14.1,31.6,31.6,31.6 C684.1,271.6,698.2,257.5,698.2,240.1"/>
         <path class="st1" d="M962.2,240.1c0-17.4-14.1-31.6-31.6-31.6c-17.4,0-31.6,14.1-31.6,31.6c0,17.4,14.1,31.6,31.6,31.6 C948,271.6,962.2,257.5,962.2,240.1"/>
         <g>
@@ -33,7 +33,7 @@
     </div>
 
     <v-layout>
-      <v-flex>
+      <v-flex xs12>
         <v-form ref="form" lazy-validation>
           <v-text-field color="primary" name="userId" ref="userId" height="20" v-model="userId" :error="userIdError" :rules="userIdRules" label="아이디" required maxlength="50" @focus="clearError" autofocus @keydown.enter.stop="focusPassword"></v-text-field>
           <v-text-field color="primary" name="password" ref="password" height="20" v-model="password" :error="passwordError" :rules="passwordRules" label="비밀번호" required type="password" @keydown.enter.stop="signin" @focus="clearError"></v-text-field>
@@ -248,6 +248,12 @@ export default {
 </script>
 
 <style>
+#signin-logo{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+}
 .rememberMe.v-input--checkbox .v-label.theme--light{
   color:#12824a;
 }
