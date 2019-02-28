@@ -33,12 +33,12 @@
                     <router-link :to="'/'+props.item.boardId" v-if="props.item.boardType !== 'T' || userBoards.some(x=>x.boardId === props.item.boardId)">
                       <v-btn small flat class="short">바로가기</v-btn>
                     </router-link>
-                    <v-btn small class="short" v-else @click.stop="openDialog(props.item, true)" color="primary">구독하기</v-btn>
+                    <v-btn small class="short" v-else @click.stop="openDialog(props.item, true)" color="secondary">구독하기</v-btn>
                   </td>
                 </tr>
               </template>
               <template slot="actions-prepend">
-                <v-btn color="accent" flat @click="openTopicDialog">토픽 만들기</v-btn>
+                <v-btn color="secondary" flat @click="openTopicDialog">토픽 만들기</v-btn>
                 <v-spacer></v-spacer>
               </template>
             </v-data-table>

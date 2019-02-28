@@ -6,14 +6,14 @@
     <v-flex class="comment-writer-actions">
       <v-layout row align-center py-2 pr-2 :justify-end="$vuetify.breakpoint.xsOnly">
         <span class="ml-3" v-show="allowAnonymous">
-          <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" label="익명" v-model="anonymous" class="pt-0 mt-0 small" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
+          <v-checkbox :color="$store.getters.isLight?'primary':'secondary'" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" label="익명" v-model="anonymous" class="pt-0 mt-0 small" :readonly="!!defaultComment" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'"></v-checkbox>
         </span>
         <v-btn @click="selectImage" small flat :class="{'my-0':true, 'ml-0':!allowAnonymous}" :icon="$vuetify.breakpoint.xsOnly" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'">
           <v-icon>image</v-icon><span v-if="$vuetify.breakpoint.smAndUp" class="ml-2">이미지</span>
         </v-btn>
         <v-spacer/>
         <v-btn v-if="defaultComment" small depressed @click="$emit('revokeUpdate')" class="short ma-0">취소</v-btn>
-        <v-btn small depressed @click="postComment" color="primary" class="short my-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">{{defaultComment?'수정':'등록'}}</v-btn>
+        <v-btn small depressed @click="postComment" :color="$store.getters.isLight?'primary':'secondary'" class="short my-0" :disabled="isCommentWritable !== 'AVAILABLE' && isCommentWritable !== 'NEEDSUBSCRIPTION'" :loading="loading">{{defaultComment?'수정':'등록'}}</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>

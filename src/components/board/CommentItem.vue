@@ -3,7 +3,7 @@
     <v-list-tile-title>
       <v-layout column>
         <v-flex>
-          <v-chip label small color="primary" class="white--text ml-0 my-0 ml-3" v-if="isBest">베스트</v-chip>
+          <v-chip label small :color="$store.getters.isLight?'primary':'secondary'" class="white--text ml-0 my-0 ml-3" v-if="isBest">베스트</v-chip>
         </v-flex>
         <v-flex v-if="!updatingComment">
           <div v-html="comment.isDeleted?comment.contents:deltaToHTML(JSON.parse(comment.contents))" :class="{'commentContents ql-editor pa-0 px-3':true, 'body-1 grey--text lighten-1':comment.isDeleted}"></div>
@@ -19,19 +19,19 @@
         <v-flex text-xs-left>
           <user-link :nickName="comment.nickName" :boardType="$store.getters.boardType"/>
           <small class="accent--text">({{comment.animalName}})</small><small class="ml-1">{{$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(comment.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):timeParser(comment.writeDateTime)}}</small>
-          <b v-if="!children && !isBest && isCommentWritable !== 'DELETED'" :class="{'cursor-pointer':true, 'primary--text':isAddingChild}" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
+          <b v-if="!children && !isBest && isCommentWritable !== 'DELETED'" :class="{'cursor-pointer':true, 'primary--text':isAddingChild && $store.getters.isLight, 'secondary--text':isAddingChild && !$store.getters.isLight}" @click="$emit('openRecomment', commentIndex)" title="답글 쓰기">
             답글{{comment.childCount > 0? `(${comment.childCount})`:""}}
           </b>
         </v-flex>
         <v-spacer/>
         <v-flex text-xs-right px-2>
           <span @click="voteUp" class="cursor-pointer" title="추천" v-if="isBest">
-            <v-icon color="primary" small>thumb_up</v-icon>
+            <v-icon :color="$store.getters.isLight?'primary':'secondary'" small>thumb_up</v-icon>
             <b class="mx-1 body--text">{{comment.voteUpCount}}</b>
           </span>
           <template v-else>
             <span @click="voteUp" class="cursor-pointer" title="추천">
-              <v-icon color="primary" small>thumb_up</v-icon>
+              <v-icon :color="$store.getters.isLight?'primary':'secondary'" small>thumb_up</v-icon>
               <b class="mx-1 body--text">{{comment.voteUpCount}}</b> |
             </span>
             <template v-if="comment.isWriter">

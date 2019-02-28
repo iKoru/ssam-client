@@ -42,9 +42,9 @@
                       <!--prettyhtml-ignore-->
                       <div class="caption">
                         <span v-if="document.nickName !== '' && $vuetify.breakpoint.smAndUp">{{document.nickName}} </span>
-                        <v-icon color="primary" small>thumb_up_alt</v-icon>
-                        <span class="primary--text font-weight-bold">{{document.voteUpCount}}</span>&nbsp;<v-icon color="accent" small>chat_bubble_outline</v-icon>
-                        <span class="accent--text font-weight-bold">{{document.commentCount}}</span>&nbsp;<span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
+                        <v-icon :color="$store.getters.isLight?'primary':'secondary'" small>thumb_up_alt</v-icon><span :class="{'primary--text':$store.getters.isLight, 'secondary--text': !$store.getters.isLight, 'font-weight-bold':true}">{{document.voteUpCount}}</span>&nbsp;
+                        <v-icon color="accent" small>chat_bubble_outline</v-icon><span class="accent--text font-weight-bold">{{document.commentCount}}</span>&nbsp;
+                        <span class="grey--text lighten-1">{{ $moment(document.writeDateTime, 'YYYYMMDDHHmmss').isSame($moment(), 'day')?$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format('HH:mm'):$moment(document.writeDateTime, 'YYYYMMDDHHmmss').format($vuetify.breakpoint.xsOnly?'M/D':'Y/M/D') }}</span>
                       </div>
                     </v-layout>
                   </v-list-tile-title>
@@ -59,7 +59,7 @@
           <template slot="headers" slot-scope="props">
             <tr>
               <th v-for="header in props.headers" :key="header.value" role="columnheader" scope="col" :class="{'column px-1 font-weight-bold black--text body-2':true, 'ellipsis':header.value === 'title', 'text-xs-center':header.align === 'center', 'text-xs-left':header.align === 'left', 'text-xs-right':header.align === 'right'}" :width="header.value === 'title'? '100%' : false">
-                <v-select v-if="header.value === 'category'" :items="categoryItems" dense solo flat hide-details :class="{'mt-0 pt-0':true, 'primary--text':category !== ''}" :append-icon="null" v-model="category"></v-select>
+                <v-select v-if="header.value === 'category'" :items="categoryItems" dense solo flat hide-details :class="{'mt-0 pt-0':true, 'primary--text':(category !== '') && $store.getters.isLight, 'secondary--text':(category !== '') && !$store.getters.isLight}" :append-icon="null" v-model="category"></v-select>
                 <span v-else>
                   {{header.text}}
                 </span>
@@ -117,7 +117,7 @@
           <v-flex xs6 sm4 id="searchDocumentForm">
             <v-text-field hide-details dense class="dense mt-0 pt-0" v-model="searchQuery" append-outer-icon="search" @keydown.enter.stop="search" @click:append-outer="search" placeholder="제목, 내용으로 검색"></v-text-field>
           </v-flex>
-          <v-btn v-show="($route.params.boardId !== 'notice' || (board && board.isOwner)) && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short my-0" color="primary" @click="$emit('write')">쓰기</v-btn>
+          <v-btn v-show="($route.params.boardId !== 'notice' || (board && board.isOwner)) && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" depressed small class="short my-0" :color="$store.getters.isLight?'primary':'secondary'" @click="$emit('write')">쓰기</v-btn>
         </v-layout>
       </v-flex>
       <v-flex text-xs-center mt-2 xs12>
@@ -272,7 +272,10 @@ export default {
   margin:0;
 }
 #documentTable thead .primary--text .v-select__selections{
-  color:#3f51b5;
+  color:#9dd1b7;
+}
+#documentTable thead .secondary--text .v-select__selections{
+  color:#0067c2;
 }
 #documentTable thead .v-select__selections > input[type=text]{
   display:none;

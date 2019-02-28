@@ -9,7 +9,7 @@
                 <v-layout row align-center>
                   <span class="title cursor-pointer" @click="$route.params.documentId || $route.path.endsWith('write')?$router.push('/'+board.boardId):openDialog()">{{board.boardName}}</span>
                   <v-tooltip bottom v-if="reservedContents" close-delay="500" class="cursor-default">
-                    <v-icon slot="activator" class="ml-1 vertical-align-middle" color="primary">event_note</v-icon>
+                    <v-icon slot="activator" class="ml-1 vertical-align-middle" color="accent">event_note</v-icon>
                     <span v-html="reservedContents"></span>
                   </v-tooltip>
                   <span class="ml-2" v-if="childBoardItems.length > 1">
@@ -19,7 +19,7 @@
                 </v-layout>
               </v-flex>
               <v-spacer/>
-              <v-btn depressed color="primary" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit') && ($route.params.boardId !== 'notice' || (board && board.isOwner)) && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" :small="$vuetify.breakpoint.xsOnly">
+              <v-btn depressed :color="$store.getters.isLight?'primary':'secondary'" icon class="ma-0" @click="moveToWriteDocument" v-show="!$route.path.endsWith('write') && !$route.path.endsWith('edit') && ($route.params.boardId !== 'notice' || (board && board.isOwner)) && (($route.params.boardId !== 'loungeBest' && $route.params.boardId !== 'topicBest') || (documentBoardId && $route.params.documentId))" :small="$vuetify.breakpoint.xsOnly">
                 <v-icon small>edit</v-icon>
               </v-btn>
             </v-layout>
