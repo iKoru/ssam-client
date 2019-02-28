@@ -35,7 +35,7 @@
             <v-layout row :class="{'titleRow':true, 'mb-2':lounges.length === 0}">
               <span :class="{'title':lounges.length > 0, 'headline':lounges.length===0}">토픽</span>
               <v-spacer/>
-              <v-btn id="createTopic" small @click="openDialog(null)" color="accent" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
+              <v-btn id="createTopic" small @click="openDialog(null)" color="secondary" :class="{'my-0':true, 'ml-0':true, 'mr-0':$vuetify.breakpoint.xsOnly}" title="새로운 토픽을 만들 수 있습니다.">토픽만들기</v-btn>
               <br>
             </v-layout>
             <span class="ellipsis subtitle">드래그하여 순서를 변경할 수 있습니다.</span>
@@ -51,16 +51,16 @@
                   </v-flex>
                   <v-spacer/>
                   <template v-if="!topic.readRestrictDate && !topic.writeRestrictDate">
-                    <v-btn flat v-if="!topic.isOwner" primary small class="mx-0" @click.native.prevent.stop="removeItem(index)">구독해제</v-btn>
-                    <v-btn flat v-else primary small class="mx-0" @click.native.prevent.stop="openDialog(topic)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
+                    <v-btn flat v-if="!topic.isOwner" secondary small class="mx-0" @click.native.prevent.stop="removeItem(index)">구독해제</v-btn>
+                    <v-btn flat v-else secondary small class="mx-0" @click.native.prevent.stop="openDialog(topic)" title="내가 토픽지기인 토픽은 구독해제할 수 없습니다.">토픽관리</v-btn>
                   </template>
                   <template v-else>
                     <v-tooltip v-if="topic.writeRestrictDate" bottom>
-                      <v-chip slot="activator" color="red" text-color="white" class="cursor-move" small>쓰기제한</v-chip>
+                      <v-chip slot="activator" color="error" text-color="white" class="cursor-move" small>쓰기제한</v-chip>
                       <span>{{$moment(topic.writeRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                     <v-tooltip v-if="topic.readRestrictDate" bottom>
-                      <v-chip slot="activator" color="red" text-color="white" class="cursor-move" small>읽기제한</v-chip>
+                      <v-chip slot="activator" color="error" text-color="white" class="cursor-move" small>읽기제한</v-chip>
                       <span>{{$moment(topic.readRestrictDate, 'YYYYMMDD').format('Y년 M월 D일까지')}}</span>
                     </v-tooltip>
                   </template>

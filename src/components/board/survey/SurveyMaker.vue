@@ -1,23 +1,23 @@
 <template>
   <v-card>
-    <v-toolbar flat>
+    <v-toolbar flat :class="$store.getters.isLight?'bg-light':'bg-secondary-light'">
       <v-toolbar-title>설문조사</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn class="toolbar-btn-last" @click="$emit('closeSurvey')" icon><v-icon>close</v-icon></v-btn>
     </v-toolbar>
     <v-card-text class="pb-0">
       <v-layout column>
-        <div class="border-light" id="surveyMaker">
+        <div id="surveyMaker" class="border-light ma-2">
           <v-flex :key="index" v-for="(question, index) in currentSurvey.questions">
             <v-card flat>
               <v-card-title class="pb-1">
                 {{index + 1}}.
-                <v-text-field v-model="question.title" single-line hide-details dense class="dense mt-0 pt-0 ml-2" placeholder="질문 내용" append-outer-icon="close" @click:append-outer="deleteQuestion(index)"></v-text-field>
+                <v-text-field v-model="question.title" :color="$store.getters.isLight?'primary':'secondary'" single-line hide-details dense class="dense mt-0 pt-0 ml-2" placeholder="질문 내용" append-outer-icon="close" @click:append-outer="deleteQuestion(index)"></v-text-field>
               </v-card-title>
               <v-card-text class="py-0">
                 <v-layout column>
                   <v-flex :key="answerIndex" v-for="(choice, answerIndex) in question.choices" class="mt-2">
-                    <v-text-field class="pt-1 dense" box single-line :placeholder="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="delete" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
+                    <v-text-field class="pt-1 dense" box single-line :color="$store.getters.isLight?'primary':'secondary'" :placeholder="'선택지'+(answerIndex+1)" v-model="question.choices[answerIndex]" hide-details append-icon="delete" @click:append="deleteAnswer(index, answerIndex)"></v-text-field>
                   </v-flex>
                   <v-flex>
                     <v-layout row align-center justify-space-around>
@@ -27,7 +27,7 @@
                         </v-btn>
                       </v-flex>
                       <v-flex text-xs-center>
-                        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" v-model="question.allowMultipleChoice" label="복수응답 허용" class="mt-0 pt-0"></v-checkbox>
+                        <v-checkbox :color="$store.getters.isLight?'primary':'secondary'" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" v-model="question.allowMultipleChoice" label="복수응답 허용" class="mt-0 pt-0"></v-checkbox>
                       </v-flex>
                     </v-layout>
                   </v-flex>
@@ -47,7 +47,7 @@
     <v-card-actions class="align-start">
       <v-spacer/>
       <v-btn color="error" depressed @click="$emit('deleteSurvey')" :disabled="!isSurveyDeletable">설문 삭제</v-btn>
-      <v-btn color="primary" depressed @click="extractSurvey">저장</v-btn>
+      <v-btn :color="$store.getters.isLight?'primary':'secondary'" depressed @click="extractSurvey">저장</v-btn>
     </v-card-actions>
   </v-card>
 </template>

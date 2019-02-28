@@ -8,7 +8,7 @@
             <v-spacer/>
             <v-flex text-xs-right>
               <user-link :nickName="document.nickName" :boardType="board.boardType"/>
-              | 댓글 {{document.commentCount}} | 조회 {{document.viewCount}} | {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
+              댓글 <b>{{document.commentCount}}</b> 조회 <b>{{document.viewCount}}</b> {{$moment(document.writeDateTime, "YYYYMMDDHHmmss").format("Y.MM.DD HH:mm:ss")}}
             </v-flex>
           </v-layout>
         </div>
@@ -27,7 +27,7 @@
     </v-layout>
     <v-flex text-xs-center my-2>
       <v-btn @click="voteDocument" class="font-weight-bold short">
-        <v-icon color="primary" small>thumb_up</v-icon>&nbsp;
+        <v-icon :color="$store.getters.isLight?'primary':'secondary'" small>thumb_up</v-icon>&nbsp;
         <span>{{document.voteUpCount}}</span>
       </v-btn>
     </v-flex>
@@ -42,7 +42,7 @@
         <v-flex pr-2 text-xs-right>
           <v-btn-toggle id="bottomBottons">
             <template v-if="document.attach && document.attach.some(x=>!x.insert)">
-              <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
+              <v-btn @click="showAttach=!showAttach" title="첨부파일 보기" :class="{'primary--text':showAttach && $store.getters.isLight, 'secondary--text':showAttach && !$store.getters.isLight}">첨부파일({{document.attach.filter(x=>!x.insert).length}})</v-btn>
             </template>
             <v-btn class="short" v-show="document.isWriter" :to="`/${$route.params.boardId}/${document.documentId}/edit`">
               <span>수정</span>

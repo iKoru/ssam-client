@@ -30,12 +30,12 @@
 
     <v-layout pt-1 pl-2 align-center>
       <div>
-        <v-btn small flat @click="surveyButtonClick" :color="isSurveyDeletable?'primary':'default'" v-if="!documentId">
+        <v-btn small flat @click="surveyButtonClick" :color="isSurveyDeletable?($store.getters.isLight?'primary':'secondary'):'default'" v-if="!documentId">
           <v-icon>how_to_vote</v-icon>
           <span>설문조사</span>
         </v-btn>
-        <div v-else-if="isSurveyDeletable" class="body-1 primary--text mr-2" title="등록한 설문조사는 수정할 수 없습니다.">
-          <v-icon class="primary--text cursor-default vertical-align-middle">how_to_vote</v-icon>
+        <div v-else-if="isSurveyDeletable" :class="{'body-1 mr-2':true, 'primary--text': $store.getters.isLight, 'secondary--text':!$store.getters.isLight}" title="등록한 설문조사는 수정할 수 없습니다.">
+          <v-icon :class="{'primary--text':$store.getters.isLight, 'secondary--text':!$store.getters.isLight, 'cursor-default vertical-align-middle':true}">how_to_vote</v-icon>
           <span class="cursor-default">설문조사</span>
         </div>
       </div>
@@ -67,17 +67,17 @@
     </v-slide-y-transition>
     <v-layout py-2 ml-3 justify-center v-if="board.allowAnonymous">
       <div class="mr-3">
-        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="isAnonymous" :disabled="!!documentId" label="익명"></v-checkbox>
+        <v-checkbox :color="$store.getters.isLight?'primary':'secondary'" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="isAnonymous" :disabled="!!documentId" label="익명"></v-checkbox>
       </div>
       <div>
-        <v-checkbox color="primary" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="disallowAnonymous" :disabled="!!documentId" label="익명댓글불가"></v-checkbox>
+        <v-checkbox :color="$store.getters.isLight?'primary':'secondary'" hide-details onIcon="check_circle" offIcon="radio_button_unchecked" class="mr-1 my-auto mb-0" v-model="disallowAnonymous" :disabled="!!documentId" label="익명댓글불가"></v-checkbox>
       </div>
       <v-spacer></v-spacer>
     </v-layout>
     <v-layout row mt-3>
       <v-flex text-xs-center>
         <v-btn @click="$router.go(-1)">돌아가기</v-btn>
-        <v-btn class="primary" @click="post()" :loading="loading">{{documentId?'수정':'등록'}}</v-btn>
+        <v-btn :color="$store.getters.isLight?'primary':'secondary'" @click="post()" :loading="loading">{{documentId?'수정':'등록'}}</v-btn>
       </v-flex>
     </v-layout>
   </v-layout>

@@ -11,7 +11,7 @@
       </v-layout>
     </v-flex>
     <v-flex v-for="(item, index) in survey.surveyContents.questions" :key="index" class="px-3 pt-2">
-      <div id="poll">
+      <div id="poll" :class="{'light':$store.getters.isLight}">
         <div class="font-weight-bold body-2 mb-2">{{(index+1) + '. ' + item.title}}<small v-if="item.allowMultipleChoice" class="grey--text lighten-1">(복수응답)</small></div>
         <div class="ans-cnt">
           <div v-for="(choice,answerIndex) in item.choices" :key="answerIndex" class="ans">
@@ -38,7 +38,7 @@
         <v-btn small @click="showSurveyResult = !showSurveyResult">
           {{showSurveyResult? '돌아가기':'결과보기'}}
         </v-btn>
-        <v-btn small color="primary" @click="completeSurvey" :disabled="finalResults">응답하기</v-btn>
+        <v-btn small :color="$store.getters.isLight?'primary':'secondary'" @click="completeSurvey" :disabled="finalResults">응답하기</v-btn>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -123,7 +123,6 @@ export default {
             answer: answer
           })
           .then(response => {
-            console.log(response);
             if (!response.data.survey) {
               this.$axios
                 .get(`/${this.$route.params.boardId}/${this.$route.params.documentId}`)
@@ -187,7 +186,10 @@ export default {
   position: relative;
 }
 #poll .ans-cnt .ans-no-vote.active{
-  background: #d5d5d5;
+  background-color: rgba(0,103,194, 0.5);
+}
+#poll.light .ans-cnt .ans-no-vote.active{
+  background-color: rgba(157,209,183,0.6);
 }
 #poll .ans-cnt .ans-no-vote.active .txt::before{
   content:'✔';
@@ -205,7 +207,10 @@ export default {
   left: 0;
   bottom: 0;
   z-index: 0;
-  background-color: #77C7F7;
+  background-color: rgba(0,103,194, 0.5);
   transition: width .3s ease-in-out;
+}
+#poll.light .ans-cnt .ans .bg{
+  background-color:rgba(157,209,183,0.6);
 }
 </style>
