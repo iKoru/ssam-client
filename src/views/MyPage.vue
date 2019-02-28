@@ -130,7 +130,7 @@ export default {
       loungeNickNameErrors: [],
       topicNickNameErrors: [],
       passwordRules: [v => !v || (v.length > 3 && v.length < 26) || '4~25자'],
-      nickNameRules: [v => (!!v && v !== '') || '닉네임/필명을 입력해주세요.', v => (!!v && v.length > 3 && v.length <= 50) || '4~50자로 입력해주세요.'],
+      nickNameRules: [v => (!!v && v !== '') || '닉네임/필명을 입력해주세요.', v => (!!v && v.length > 1 && v.length <= 50) || '2~50자로 입력해주세요.'],
       bottomSheet: false,
       labels: {},
       userAuthItems: {

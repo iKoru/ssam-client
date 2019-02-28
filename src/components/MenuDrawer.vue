@@ -4,7 +4,7 @@
       <v-navigation-drawer :value="$store.getters.menuDrawer" @input="drawerChanged" app id="menuDrawer">
         <v-toolbar flat class="bg-light">
           <v-list class="py-0">
-            <v-list-tile @click="myPage">
+            <v-list-tile @click="myPage" class="bg-light">
               <v-list-tile-title class="subheading">{{($store.getters.isLight?$store.getters.loungeNickName:$store.getters.topicNickName) +'님, 안녕하세요!'}}</v-list-tile-title>
             </v-list-tile>
           </v-list>
