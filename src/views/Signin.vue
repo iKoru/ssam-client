@@ -4,11 +4,6 @@
       <v-flex xs12 sm8 md6 lg4>
         <v-content>
           <v-card flat>
-            <v-card-title>
-              <div xs12>
-                <span class="headline">pedagy 로그인</span>
-              </div>
-            </v-card-title>
             <Signin/>
           </v-card>
         </v-content>
