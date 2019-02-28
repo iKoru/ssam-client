@@ -51,8 +51,8 @@
               </v-layout>
             </v-flex>
             <v-flex class="half-height primary white--text">
-              <v-layout fill-height align-center justify-center px-5>
-                <v-layout text-xs-center column>
+              <v-layout fill-height align-center justify-center px-5 mx-auto>
+                <v-layout text-xs-center column style="max-width:1200px">
                   <v-flex>
                     <v-layout>
                       <v-flex sm4 mr-3>
@@ -123,7 +123,7 @@
                         동료 교사와 교실 속 이야기를 함께 나누는 라운지
                       </v-flex>
                       <v-flex sm4 mx-5>
-                        수업자료부터 생활기록부 검사기까지 - 모든 것이 있는 유익한 자료실, 아카이브
+                        수업자료부터 생활기록부 검사기까지<br>- 모든 것이 있는 유익한 자료실, 아카이브
                       </v-flex>
                       <v-flex sm4 ml-3>
                         일상의 가벼운 잡담을 나눌 수 있는 토픽
@@ -173,8 +173,8 @@ export default {
 </script>
 <style>
 .half-height{
-  height:calc(50% - 26px);
-  min-height:calc(50vh - 26px);
+  height:50%;
+  min-height:538px;
 }
 #signinContainer .periodBestCarousel .v-carousel__controls{
   background-color:#f3f9f6;
@@ -185,6 +185,7 @@ export default {
     position: fixed;
     right: 0;
     height: 100%;
+    overflow-y:auto;
   }
   #indexContents {
     margin-right: 350px;
