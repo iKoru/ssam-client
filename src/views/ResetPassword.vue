@@ -55,7 +55,7 @@ export default {
       emailErrors: [],
       email: null,
       emailHost: null,
-      emailHostItems: ['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbe.go.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
+      emailHostItems: ['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbedu.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
       emailRules: [v => !!v || '이메일을 입력해주세요', v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || '이메일이 올바르지 않습니다.'],
       userIdRules: [v => !!v || 'ID를 입력해주세요.', v => (v && /^[a-zA-Z0-9_^&$]{4,50}$/.test(v)) || '알파벳, 숫자, _, ^, &, $만을 포함한 4~50자', v => (v && /^.*[a-zA-Z]+.*$/.test(v)) || '최소 1글자 이상의 알파벳 포함'],
       emailHostRules: [v => !!v || 'NEIS 이메일 뒷자리를 선택해주세요.']
