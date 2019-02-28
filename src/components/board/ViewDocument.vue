@@ -364,6 +364,9 @@ export default {
   opacity: 1;
   font-weight: bold;
 }
+#documentContents{
+  overflow-y:visible;
+}
 #documentContents p img,
 #documentContents img {
   max-width: 100%;
