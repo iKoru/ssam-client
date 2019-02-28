@@ -79,7 +79,7 @@ export default {
       emailHost: null,
       emailErrors: [],
       emailHostErrors: [],
-      emailHostItems: ['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbe.go.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
+      emailHostItems: ['sen.go.kr', 'goe.go.kr', 'ice.go.kr', 'gwe.go.kr', 'cbe.go.kr', 'cne.go.kr', 'dje.go.kr', 'sje.go.kr', 'jbedu.kr', 'jne.go.kr', 'gen.go.kr', 'gbe.go.kr', 'gne.go.kr', 'use.go.kr', 'pen.go.kr', 'jje.go.kr'],
       emailRules: [v => !!v || '이메일을 입력해주세요', v => !v || /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*/.test(v) || '이메일이 올바르지 않습니다.']
     };
   },
