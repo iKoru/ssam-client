@@ -400,7 +400,7 @@ export default {
 .secondary .menuColumn{
   border-right: 1px solid #0067c2;
 }
-.menuColumn .flex {
+.menuColumn .ellipsis {
   margin: 2px 0;
 }
 @media (min-width: 600px) {
