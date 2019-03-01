@@ -2,7 +2,7 @@
   <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'" class="publicLayoutContents">
     <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
-        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75"></v-img>
+        <v-img src="/img/index.jpg" aspect-ratio="2.75"></v-img>
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">비밀번호 찾기</h3>

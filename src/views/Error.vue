@@ -5,7 +5,7 @@
         <v-content>
           <v-layout row>
             <div class="mr-3 hidden-sm-and-down ml-auto">
-              <img :src="require('@/static/img/error/'+errorCode+'.svg')" alt="에러 이미지">
+              <img :src="'/img/error/'+errorCode+'.svg'" alt="에러 이미지">
             </div>
             <div :class="{'text-xs-center mr-auto':true, 'ml-auto':$vuetify.breakpoint.smAndDown}">
               <h1 class="errorCode">{{errorCode}}</h1>
@@ -14,12 +14,12 @@
               <h2 class="my-3 headline" v-else-if="errorCode === 404">페이지를 찾을 수 없습니다.</h2>
               <h2 class="my-3 headline" v-else>요청을 처리하던 도중 에러가 발생하였습니다.</h2>
               <v-layout :column="$vuetify.breakpoint.xsOnly">
-                <v-btn class="mx-0" @click="$router.go(-1)">이전 페이지로 가기</v-btn>
+                <v-btn :block="$vuetify.breakpoint.xsOnly" round class="mx-0" @click="$router.go(-1)">이전 페이지로 가기</v-btn>
                 <router-link to="/auth" v-if="errorCode === 403">
-                  <v-btn :block="$vuetify.breakpoint.xsOnly">인증 페이지로 가기</v-btn>
+                  <v-btn :block="$vuetify.breakpoint.xsOnly" round>인증 페이지로 가기</v-btn>
                 </router-link>
                 <router-link to="/">
-                  <v-btn :block="$vuetify.breakpoint.xsOnly" color="primary">메인 페이지로 가기</v-btn>
+                  <v-btn :block="$vuetify.breakpoint.xsOnly" round color="primary">메인 페이지로 가기</v-btn>
                 </router-link>
               </v-layout>
             </div>

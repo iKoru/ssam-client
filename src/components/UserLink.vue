@@ -28,7 +28,7 @@
               <div class="text-xs-center justify-center align-center">
                 <p>
                   <v-avatar size="200">
-                    <img :src="profile.picturePath? webUrl+ profile.picturePath : require('@/static/img/defaultUser.svg')" alt="프로필 이미지">
+                    <img :src="profile.picturePath? webUrl+ profile.picturePath : '/img/defaultUser.svg'" alt="프로필 이미지">
                   </v-avatar>
                 </p>
                 <v-layout row wrap>
