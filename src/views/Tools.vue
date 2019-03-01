@@ -3,7 +3,7 @@
     <v-layout row wrap>
       <v-flex xs12 class="mb-3 pl-2">
         <span class="title">글자수 세기 / 금지어 체크</span>
-        <v-subheader>영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</v-subheader>
+        <v-subheader class="d-inline-block">영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</v-subheader>
       </v-flex>
       <v-flex xs12 :sm6="forbidden.length > 0" :class="{'pr-3':$vuetify.breakpoint.smAndUp}">
         <v-layout column>
@@ -27,7 +27,7 @@
                 <span class="error--text">금지어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
+                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
@@ -41,7 +41,7 @@
                 <span class="warning--text">주의어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
+                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="warningCandidate" placeholder="추가할 주의어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addWarningItems"></v-text-field>
