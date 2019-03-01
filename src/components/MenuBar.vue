@@ -51,7 +51,6 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex sm2 :class="{'topicTab scrollContainer':true, 'hide-menuBar':!menuBar}" id="topicTabScreen" v-if="$vuetify.breakpoint.smAndUp"></v-flex>
       <v-flex sm2 :class="{'topicTab scrollContainer overflow-hidden':true, 'hide-menuBar':!menuBar}" order-sm3 v-show="menu===0 && $vuetify.breakpoint.smAndUp">
         <v-layout row class="menuBarContents">
           <v-flex class="menuColumn position-relative" id="topicFixedColumn">
@@ -111,7 +110,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex order-sm2 order-xs3>
+      <v-flex order-sm2 order-xs3 :xs12="$vuetify.breakpoint.xsOnly">
         <v-tabs-items v-model="menu" :mandatory="false" touchless>
           <v-tab-item :key="0" :class="{'d-none':!menuBar, 'menuBarContents primary':true}">
             <template v-show="menu===0">
@@ -334,6 +333,9 @@ export default {
   background-color:inherit;
   color:white;
 }
+#menuBar .v-tabs__div{
+  max-width:100%;
+}
 .v-tabs__div.topicTab {
   width: 100%;
   font-size: 16px;
@@ -354,16 +356,6 @@ export default {
 }
 #topicFixedColumn{
   border-left:1px solid #0067c2;
-}
-#topicTabScreen {
-  position: absolute;
-  width: 100%;
-  right: 0;
-  visibility: visible;
-  transition: height 0.3s linear;
-}
-#topicTabScreen.hide-menuBar {
-  visibility: hidden;
 }
 .menuBarContents {
   -webkit-box-align: center;
