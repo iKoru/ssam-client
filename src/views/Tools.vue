@@ -27,7 +27,7 @@
                 <span class="error--text">금지어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
+                <v-chip v-for="(item, index) in forbidden" close @input="itemRemoved(index)" outline small :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="candidate" placeholder="추가할 금지어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addItems"></v-text-field>
@@ -41,7 +41,7 @@
                 <span class="warning--text">주의어</span> 설정
               </span>
               <div class="mt-2">
-                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small color="secondary" :key="item.text">{{item.text}}</v-chip>
+                <v-chip v-for="(item, index) in warning" close @input="warningItemRemoved(index)" outline small :key="item.text">{{item.text}}</v-chip>
               </div>
               <v-layout row align-center>
                 <v-text-field v-model="warningCandidate" placeholder="추가할 주의어 입력" single-line class="dense mt-0 pt-0" hint="여러개는 쉼표(,)로 구분하여 한번에 입력하실 수 있습니다." persistent-hint @keydown.enter.stop="addWarningItems"></v-text-field>
