@@ -2,11 +2,36 @@ importScripts("/precache-manifest.9e0e632c8f5fbd38a599e842ccea4c02.js", "https:/
 
 /* global workbox */
 if (workbox) {
-    console.log(`Workbox is loaded`);
+  workbox.setConfig({
+    debug: process.env.NODE_ENV === 'development'
+  })
 
-    workbox.precaching.precacheAndRoute(self.__precacheManifest);
-
+  workbox.precaching.precacheAndRoute(self.__precacheManifest);
+  // Cache the Google Fonts webfont files with a cache first strategy for 1 year.
+  workbox.routing.registerRoute(
+    new RegExp('https://fonts.(?:googleapis|gstatic).com/(.*)'),
+    workbox.strategies.cacheFirst({
+      cacheName: 'google-fonts-webfonts',
+      plugins: [
+        new workbox.cacheableResponse.Plugin({
+          statuses: [0, 200],
+        }),
+        new workbox.expiration.Plugin({
+          maxAgeSeconds: 60 * 60 * 24 * 365,
+        }),
+      ],
+    }),
+  ); 
+  workbox.routing.registerRoute(
+    /\.(?:png|gif|jpg|jpeg|svg)$/,
+    workbox.strategies.cacheFirst({
+      cacheName: 'images',
+      plugins: [
+        new workbox.expiration.Plugin({
+          maxEntries: 60,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        }),
+      ],
+    }),
+  ); 
 } 
-else {
-    console.log(`Workbox didn't load`);
-}
