@@ -21,7 +21,7 @@
                   </v-list>
                 </component>
                 <v-avatar :size="$vuetify.breakpoint.xsOnly?100:200" class="cursor-pointer" @click="selectImage" title="클릭하여 이미지 등록" v-else>
-                  <img :src="require('@/static/img/defaultUser.svg')" alt="기본 프로필 이미지">
+                  <img src="/img/defaultUser.svg" alt="기본 프로필 이미지">
                 </v-avatar>
               </p>
               <v-form ref="form" lazy-validation>

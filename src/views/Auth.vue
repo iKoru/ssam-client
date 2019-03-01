@@ -2,7 +2,7 @@
   <component :is="$vuetify.breakpoint.smAndUp?'v-container':'div'">
     <v-layout row height="200px" justify-center align-center>
       <v-card width="100%" flat>
-        <v-img src="@/static/img/index.jpg" aspect-ratio="2.75" :max-height="$vuetify.breakpoint.xsOnly?'200px':'calc(100vh - 535px)'"></v-img>
+        <v-img src="/img/index.jpg" aspect-ratio="2.75" :max-height="$vuetify.breakpoint.xsOnly?'200px':'calc(100vh - 535px)'"></v-img>
         <v-card-title primary-title>
           <v-flex xs12>
             <h3 class="headline mb-0">교사 인증</h3>
@@ -12,7 +12,7 @@
                   선생님들의 노다지, Pedagy에 오신 것을 환영합니다.
                   <br>교사임을 인증하여 지역&middot;학년&middot;전공별 라운지, 학습자료가 모인 아카이브, 관심사별 토픽을 이용해보세요.
                   <br>아래에서 NEIS 이메일을 등록하여 인증하시거나,
-                  <span>webmaster@pedagy.com</span>으로 정교사 자격증을 보내어 인증하실 수 있습니다.
+                  <a href="mailto:webmaster@pedagy.com">webmaster@pedagy.com</a>으로 정교사 자격증을 보내주시면 인증하실 수 있습니다.
                 </p>
                 <v-form ref="form" lazy-validation>
                   <v-layout row xs12 wrap>
