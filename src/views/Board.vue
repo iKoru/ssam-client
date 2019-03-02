@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-if="board" pt-2>
+  <v-container fluid v-if="board" pt-2 :px-0="$vuetify.breakpoint.xsOnly">
     <v-card flat class="mb-2">
       <v-card-title primary-title class="py-2">
         <v-layout column>

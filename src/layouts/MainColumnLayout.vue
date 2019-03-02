@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid pb-0 :pt-0="$route.path !== '/'">
+  <v-container fluid pb-0 :pt-0="$route.path !== '/'" :px-0="$route.path !== '/'">
     <v-layout row wrap align-center>
       <v-layout row wrap>
         <v-flex xs12 :md9="columnType !== 'HIDE_ALWAYS'">
@@ -87,24 +87,3 @@ export default {
   methods: {}
 };
 </script>
-<style>
-.cover-title {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-#columnAside {
-  display: flex;
-}
-#hotChip {
-  height: 18px;
-  vertical-align:baseline;
-}
-#hotChip .v-chip__content {
-  cursor:pointer;
-  padding:2px 4px;
-  font-size: 12px;
-}
-</style>

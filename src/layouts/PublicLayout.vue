@@ -17,25 +17,3 @@ export default {
   }
 };
 </script>
-<style>
-.publicLayout {
-  background-color: white;
-  height: 100%;
-}
-.publicLayout__main {
-  height:calc(100% - 174px);
-  margin-top:0;
-}
-.publicLayoutContents {
-  max-width: 900px;
-  margin: 10rem auto 74px auto;
-}
-.publicLayoutContents.stickToTop{
-  margin-top:0;
-}
-@media (max-width: 600px) {
-  .publicLayoutContents {
-    margin-top: 0;
-  }
-}
-</style>

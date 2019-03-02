@@ -1,0 +1,58 @@
+//main layout
+.mainLayout
+  background-color: white
+  min-height: 100vh
+.mainLayout__main
+  max-width: 1200px
+  margin-bottom: 53px
+  margin-left: auto
+  margin-right: auto
+@media (max-width: 960px)
+  .mainLayout__main
+    margin-bottom: 80px
+.mainLayout__nav
+  max-width: 1200px
+  margin-left: auto
+  margin-right: auto
+//main column layout
+.popup
+  width:100vw
+  max-width:500px
+  min-width:300px
+.dismiss, .dismiss .v-icon
+  font-size:20px
+.dismiss .v-input--selection-controls__input
+  margin-right:0
+.dismiss .v-label
+  font-size:14px
+  color:#000
+#columnAside
+  display: flex
+#hotChip
+  height: 18px
+  vertical-align:baseline
+#hotChip .v-chip__content
+  cursor:pointer
+  padding:2px 4px
+  font-size: 12px
+//public layout
+.publicLayout
+  background-color: white
+  height: 100%
+.publicLayoutContents
+  max-width: 900px
+  margin-top: 4rem
+  margin-bottom:74px
+.publicLayoutContents.stickToTop
+  margin-top:0
+@media (max-width: 600px)
+  .publicLayoutContents
+    margin-top: 0
+.indexLayout
+  height:calc(100% - 53px)
+  margin-bottom:53px
+  min-height:calc(21vw + 450px)
+@media(max-width:1264px)
+  .indexLayout
+    height:calc(100% - 73px)
+    margin-bottom:73px
