@@ -3,7 +3,7 @@
     <v-layout row wrap>
       <v-flex xs12 class="mb-3 pl-2">
         <span class="title">생활기록부 글자수 세기 / 금지어 체크</span>
-        <v-subheader class="d-inline-block">영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</v-subheader>
+        <v-subheader class="d-inline-block mt-2" style="line-height:1.3">영숫자 1바이트, 한글 3바이트로 글자수 세기 및 지정된 금지어가 있는지 여부를 체크합니다.</v-subheader>
       </v-flex>
       <v-flex xs12 :sm6="forbidden.length > 0" :class="{'pr-3':$vuetify.breakpoint.smAndUp}">
         <v-layout column>
