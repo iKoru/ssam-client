@@ -193,7 +193,7 @@
               <p>본 약관은 2019년 2월 1일부터 적용됩니다.</p>
           </div>
         </v-card>
-        <v-layout row>
+        <v-layout row align-center>
           <v-spacer></v-spacer>
           <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-end align-center my-0 mr-3" color="primary" onIcon="check_circle" offIcon="radio_button_unchecked"></v-checkbox>
           <v-btn color="primary" round depressed :disabled="!agreeContract" @click="step = 2">다음</v-btn>
@@ -249,8 +249,8 @@
         </v-card>
         <v-divider class="my-2"/>
         <v-layout row>
-          <v-spacer/>
           <v-btn flat round @click="step=1">이전</v-btn>
+          <v-spacer/>
           <v-btn color="primary" round depressed @click="submit">회원가입</v-btn>
         </v-layout>
       </v-stepper-content>
@@ -271,7 +271,7 @@
         </v-card>
         <v-layout row>
           <v-spacer/>
-          <v-btn color="primary" round depressed @click="goIndex">로그인</v-btn>
+          <v-btn color="primary" round depressed to="/">로그인</v-btn>
         </v-layout>
       </v-stepper-content>
     </v-stepper-items>
@@ -355,9 +355,6 @@ export default {
           this.$store.dispatch('showSnackbar', { text: '회원 정보를 정확히 입력해주세요.', color: 'error' });
         }
       });
-    },
-    goIndex () {
-      this.$router.push('/');
     },
     checkUserId () {
       if (this.userId && this.userIdErrors.length === 0) {

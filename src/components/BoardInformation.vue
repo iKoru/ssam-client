@@ -19,7 +19,7 @@
         <v-flex xs8 md4>
           <!--prettyhtml-ignore-->
           <div class="v-subheader d-inline-block word-break-all">
-            <span class="d-inline-block">{{board.boardName}} </span><span class="d-inline-block">(<router-link class="primary--text d-inline-flex" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)</span>
+            <span class="d-inline-block">{{board.boardName}} </span><span class="d-inline-block">(<router-link :class="{'primary--text':$store.getters.isLight, 'secondary--text':!$store.getters.isLight, 'd-inline-flex':true}" :to="'/'+board.boardId" @click.native="closeDialog">/{{board.boardId}}</router-link>)</span>
           </div>
         </v-flex>
         <v-flex xs4 md2>
@@ -62,10 +62,10 @@
       <v-spacer/>
       <template v-if="board.boardType === 'T' && profile.auth === 'A' && !userBoards.some(x=>x.boardId === board.boardId) && (board.allGroupAuth === 'READWRITE' || board.boardAuth.some(x=>userGroups.some(y=>y === x.groupId)))">
         <v-btn flat @click="closeDialog">취소</v-btn>
-        <v-btn color="primary" @click="join" :loading="loading">구독</v-btn>
+        <v-btn :color="$store.getters.isLight?'primary':'secondary'" @click="join" :loading="loading">구독</v-btn>
       </template>
       <template v-else>
-        <v-btn color="primary" @click="closeDialog">닫기</v-btn>
+        <v-btn :color="$store.getters.isLight?'primary':'secondary'" @click="closeDialog">닫기</v-btn>
       </template>
     </v-card-actions>
   </v-card>

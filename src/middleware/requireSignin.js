@@ -3,7 +3,7 @@ import router from '../router'
 import checkSignin from './checkSignin'
 export default async (to, from, next) => {
   const result = await checkSignin(to, from, router.app, store);
-  if (typeof result === 'boolean' && result) {
+  if (result === true) {
     next();
   } else {
     next(result);
