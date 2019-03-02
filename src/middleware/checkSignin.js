@@ -24,7 +24,7 @@ export default async (to, from, app, store) => {
         url: '/refresh'
       })
     } catch (error) {
-      return (to.path === '/' ? '/index?' : '/signin?') + qs.stringify({ redirectTo: to.path })
+      return (to.path === '/' ? '/index' : ('/signin?' + qs.stringify({ redirectTo: to.path })))
     }
     app.$store.dispatch('setToken', true);
     app.$store.dispatch('setUserId', response.data.userId);
