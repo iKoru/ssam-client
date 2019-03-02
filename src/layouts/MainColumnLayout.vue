@@ -87,17 +87,3 @@ export default {
   methods: {}
 };
 </script>
-<style>
-#columnAside {
-  display: flex;
-}
-#hotChip {
-  height: 18px;
-  vertical-align:baseline;
-}
-#hotChip .v-chip__content {
-  cursor:pointer;
-  padding:2px 4px;
-  font-size: 12px;
-}
-</style>
