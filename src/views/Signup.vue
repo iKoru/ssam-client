@@ -271,7 +271,7 @@
         </v-card>
         <v-layout row>
           <v-spacer/>
-          <v-btn color="primary" round depressed @click="goIndex">로그인</v-btn>
+          <v-btn color="primary" round depressed to="/">로그인</v-btn>
         </v-layout>
       </v-stepper-content>
     </v-stepper-items>
@@ -355,9 +355,6 @@ export default {
           this.$store.dispatch('showSnackbar', { text: '회원 정보를 정확히 입력해주세요.', color: 'error' });
         }
       });
-    },
-    goIndex () {
-      this.$router.push('/');
     },
     checkUserId () {
       if (this.userId && this.userIdErrors.length === 0) {

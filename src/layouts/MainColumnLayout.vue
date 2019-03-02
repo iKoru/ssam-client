@@ -26,7 +26,7 @@
                       <small-document-list :list="best? best.documents : []" :maxCount="5" :showDateTime="false" :showVoteUpCount="false"></small-document-list>
                     </v-flex>
                     <v-flex class="py-2 px-3 bg-light">
-                      <router-link to="/tools" class="subheading font-weight-bold">생활기록부 도구
+                      <router-link to="/tools" class="subheading font-weight-bold">생활기록부 검사기
                         <v-chip id="hotChip" color="error ma-0" text-color="white" label>hot</v-chip>
                       </router-link>
                     </v-flex>
