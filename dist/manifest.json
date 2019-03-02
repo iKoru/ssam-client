@@ -1,6 +1,6 @@
 {
   "short_name": "Pedagy",
-  "name": "선생님들의 노다지 - Pedagy",
+  "name": "교실 밖 선생님들의 이야기 - Pedagy",
   "icons": [
     {
       "src": "/img/icons/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/index",
+  "start_url": "/",
   "background_color": "#FFFFFF",
   "display": "standalone",
   "scope": "/",
