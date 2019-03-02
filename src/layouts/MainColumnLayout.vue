@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid pb-0 :pt-0="$route.path !== '/'">
+  <v-container fluid pb-0 :pt-0="$route.path !== '/'" :px-0="$route.path !== '/'">
     <v-layout row wrap align-center>
       <v-layout row wrap>
         <v-flex xs12 :md9="columnType !== 'HIDE_ALWAYS'">
