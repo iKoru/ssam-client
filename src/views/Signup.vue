@@ -5,7 +5,7 @@
       <v-divider></v-divider>
       <v-stepper-step :complete="step > 2" step="2">회원정보 입력</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step step="3">이메일 인증</v-stepper-step>
+      <v-stepper-step step="3">완료</v-stepper-step>
     </v-stepper-header>
     <v-stepper-items>
       <v-stepper-content step="1">
@@ -196,7 +196,7 @@
         <v-layout row>
           <v-spacer></v-spacer>
           <v-checkbox v-model="agreeContract" label="약관에 동의합니다." hide-details class="justify-end align-center my-0 mr-3" color="primary" onIcon="check_circle" offIcon="radio_button_unchecked"></v-checkbox>
-          <v-btn color="primary" :disabled="!agreeContract" @click="step = 2">다음</v-btn>
+          <v-btn color="primary" round depressed :disabled="!agreeContract" @click="step = 2">다음</v-btn>
         </v-layout>
       </v-stepper-content>
 
@@ -221,11 +221,12 @@
                     </v-flex>
                     <v-flex xs12 mb-3 mt-2>
                       <v-subheader class="pl-0">선택 정보</v-subheader>
+                      <span class="body-1 ml-3">* NEIS 이메일은 교사 인증을 위해서 사용됩니다. 미인증 시 서비스 이용이 일부 제한될 수 있습니다.</span>
                     </v-flex>
-                    <v-flex xs6>
+                    <v-flex xs6 mt-1>
                       <v-text-field ref="email" v-model="email" class="dense" :rules="emailRules" maxlength="90" :error-messages="emailErrors" label="NEIS 이메일" hint="교사인증 메일을 받을 NEIS이메일" validate-on-blur @blur="checkEmail" placeholder="이메일ID"></v-text-field>
                     </v-flex>
-                    <v-flex xs6>
+                    <v-flex xs6 mt-1>
                       <v-autocomplete ref="emailHost" v-model="emailHost" class="dense" :items="emailHostItems" :error-messages="emailHostErrors" dense prepend-icon="alternate_email" label="NEIS 이메일 뒷자리" validate-on-blur @blur="checkEmail" clearable></v-autocomplete>
                     </v-flex>
                     <v-flex xs4>
@@ -249,8 +250,8 @@
         <v-divider class="my-2"/>
         <v-layout row>
           <v-spacer/>
-          <v-btn flat @click="step=1">취소</v-btn>
-          <v-btn color="primary" @click="submit">회원가입</v-btn>
+          <v-btn flat round @click="step=1">이전</v-btn>
+          <v-btn color="primary" round depressed @click="submit">회원가입</v-btn>
         </v-layout>
       </v-stepper-content>
 
@@ -270,7 +271,7 @@
         </v-card>
         <v-layout row>
           <v-spacer/>
-          <v-btn color="primary" @click="goIndex">로그인</v-btn>
+          <v-btn color="primary" round depressed @click="goIndex">로그인</v-btn>
         </v-layout>
       </v-stepper-content>
     </v-stepper-items>
@@ -451,12 +452,15 @@ export default {
 </script>
 <style>
 #contractContents {
-  max-height: calc(100vh - 350px);
+  max-height: calc(100vh - 380px);
+  min-height:200px;
+  height:100%;
   overflow-y: scroll;
 }
 #signupStepper {
   max-width: 900px;
   margin: 3rem auto 74px auto;
+  box-shadow:none;
 }
 @media(max-width:599px){
   #signupStepper {

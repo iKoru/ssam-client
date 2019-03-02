@@ -119,12 +119,12 @@
                       </v-layout>
                     </v-flex>
                     <v-flex mt-4>
-                      <v-layout class="subheading font-weight-bold">
+                      <v-layout class="subheading font-weight-bold" style="word-break:keep-all">
                         <v-flex sm4 mr-3>
                           동료 교사와 교실 속 이야기를 함께 나누는 라운지
                         </v-flex>
                         <v-flex sm4 mx-5>
-                          수업자료부터 생활기록부 검사기까지<br>- 모든 것이 있는 유익한 자료실, 아카이브
+                          수업자료부터 생활기록부 검사기까지 -<br>모든 것이 있는 유익한 자료실, 아카이브
                         </v-flex>
                         <v-flex sm4 ml-3>
                           일상의 가벼운 잡담을 나눌 수 있는 토픽
@@ -141,9 +141,6 @@
       </v-flex>
       <v-flex align-center justify-center text-xs-center id="rightDrawer" class="bg-light">
         <div id="signinContainer" class="mx-auto">
-          <!--<v-img src="@/assets/logo.png" height="30" contain class="d-inline-flex" alt="Pedagy 로고"></v-img>
-          <span v-if="$vuetify.breakpoint.mdAndUp">Pedagy</span>
-          <h1 v-else>Pedagy</h1>-->
           <Signin/>
           <div class="text-xs-left container">
             <BoardExtractor boardType="L" :secondary="true"/>
@@ -166,11 +163,7 @@ export default {
   name: 'Index',
   created () {
     this.$emit('update:layout', IndexLayout);
-  },
-  data () {
-    return {};
-  },
-  methods: {}
+  }
 };
 </script>
 <style>
