@@ -1,4 +1,5 @@
-$body-font-family = 'Noto Sans KR', 'Nanum Gothic', 'Roboto', 'Malgun Gothic', sans-serif
+$body-font-family = 'Noto Sans KR', 'Nanum Gothic', 'Roboto', sans-serif
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
 @import '~vuetify/src/stylus/app'
 html
   overflow-y: auto
@@ -73,6 +74,15 @@ td.ellipsis
   }
 }
 //pedagy specific
+#spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.v-snack-content span{
+  word-break: break-all;
+}
 .boardTitle
   font-size:16px
   font-weight:bold
