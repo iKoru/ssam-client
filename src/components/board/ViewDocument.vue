@@ -244,19 +244,19 @@ export default {
       });
       quill.setContents(delta);
       // Clean spaces between tags
-      let newText = tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, '$1$3');
+      let newText = tempCont.getElementsByClassName('ql-editor')[0].innerHTML;// .replace(/(<(pre|script|style|textarea)[^]+?<\/\2)|(^|>)\s+|\s+(?=<|$)/g, '$1$3');
 
-      // Clean empty paragraphs before the content
+      // Clean empty paragraphs before the content only on the first line. if want to remove all blank lines, just change the sentense "if" to "while"
       // <p><br/><p> && <p></p>
       let slicer;
-      while (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
+      if (newText.slice(0, 7) === '<p></p>' || newText.slice(0, 11) === '<p><br></p>') {
         if (newText.slice(0, 7) === '<p></p>') slicer = 7;
         else slicer = 11;
         newText = newText.substring(slicer, newText.length);
       }
 
-      // Clean empty paragraphs after the content
-      while (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
+      // Clean empty paragraphs after the content only on the last line. if want to remove all blank lines, just change the sentense "if" to "while"
+      if (newText.slice(-7) === '<p></p>' || newText.slice(-11) === '<p><br></p>') {
         if (newText.slice(-7) === '<p></p>') slicer = 7;
         else slicer = 11;
         newText = newText.substring(0, newText.length - slicer);
