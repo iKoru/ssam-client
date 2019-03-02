@@ -88,11 +88,3 @@ export default {
   mounted () {}
 };
 </script>
-<style>
-#menuDrawer .v-list__group__items--no-action .v-list__tile {
-  padding-left: 40px;
-}
-.recommand a div {
-  color: rgba(0, 0, 0, 0.54);
-}
-</style>

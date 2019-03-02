@@ -139,24 +139,3 @@ export default {
   }
 };
 </script>
-<style>
-.mainLayout .v-dialog__content {
-  position: fixed;
-  align-items: baseline;
-  justify-content: flex-end;
-}
-.mainLayout .v-dialog__content .notificationDialog:not(.v-dialog--fullscreen) {
-  min-width: 400px;
-  max-width: 500px;
-  width: 30vw;
-  position: absolute;
-  top: 30px;
-  right: 0;
-}
-#mainToolbarMenu {
-  white-space: nowrap;
-}
-#mainToolbarMenu .v-list__tile__content {
-  align-items: flex-end;
-}
-</style>

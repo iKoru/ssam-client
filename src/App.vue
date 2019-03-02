@@ -52,15 +52,3 @@ export default {
   }
 };
 </script>
-<style>
-@import url(https://fonts.googleapis.com/css?family=Material+Icons);
-#spinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.v-snack-content span{
-  word-break: break-all;
-}
-</style>
