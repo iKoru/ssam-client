@@ -1,11 +1,12 @@
-importScripts("/precache-manifest.1c6d51dbac69bb48952e8d0c8f8ec2a8.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
+importScripts("/precache-manifest.1a82bbcbd983303f7fbeeb437e4e9279.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 if (workbox) {
   workbox.setConfig({
     debug: false
   })
 
-  workbox.precaching.precacheAndRoute(self.__precacheManifest.filter(x=>x !== '/index.html' && x.url !== '/index.html'));
+  //workbox.precaching.precacheAndRoute(self.__precacheManifest.filter(x=>x !== '/index.html' && x.url !== '/index.html'));
+  workbox.precaching.precacheAndRoute(self.__precacheManifest);
   // Cache the Google Fonts webfont files with a cache first strategy for 1 year.
   workbox.routing.registerRoute(
     new RegExp('https://fonts.(?:googleapis|gstatic).com/(.*)'),
